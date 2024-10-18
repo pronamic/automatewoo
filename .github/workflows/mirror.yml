@@ -22,6 +22,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           woo-access-token: ${{ secrets.WOOCOMMERCE_HELPER_ACCESS_TOKEN }}
-          woo-access-token-secret: ${{ secrets.WOOCOMMERCE_HELPER_ACCESS_TOKEN_SECRET }}
+          woo-access-token-secret: ${{ secrets.WOOCOMMERCE_HELPER_ACCESS_SECRET }}
           woo-product-id: 4652610
           plugin-basename: automatewoo/automatewoo.php

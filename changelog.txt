@@ -1,0 +1,1918 @@
+*** AutomateWoo Changelog ***
+
+2024-09-05 - version 6.1.0
+* Break - Remove WooCommerce Navigation integration.
+* Tweak - WC 9.3.0 compatibility.
+
+2024-08-28 - version 6.0.33
+* Bump min WC version to 7.9, reuse upstreamed classes.
+
+2024-08-14 - version 6.0.32
+* Tweak - WC 9.2.0 compatibility.
+
+2024-08-06 - version 6.0.31
+* Dev - Fix false positive warning in QIT.
+* Fix - Add Active Campaign Pagination for tags.
+
+2024-07-24 - version 6.0.30
+* Dev - Upgrade to use Node.js 20 and bump npm dependencies.
+* Fix - HTML formatting in the Workflows timing column.
+* Fix - Skip recurring jobs in the system check if the job is disabled.
+* Fix - The days input of "When to run" in the "Customer Birthday" trigger is not properly hidden when adding new workflow.
+
+2024-07-09 - version 6.0.29
+* Fix - Make the "Order - Created Via" rule support the Admin and Store API (Checkout Block) options.
+* Fix - Map `@babel/runtime/regenerator` request to `regenerator-runtime` in webpack.
+* Tweak - WC 9.1 compatibility.
+* Tweak - WP 6.6 compatibility.
+
+2024-07-02 - version 6.0.28
+* Tweak - Hide active carts and guests captured widgets if cart tracking is disabled.
+* Tweak - Remove unused scheduled actions and prevent further actions from being scheduled if job is disabled.
+
+2024-06-25 - version 6.0.27
+* Dev - PHPCS for Memberships.
+* Dev - PHPCS for Send Email actions.
+
+2024-06-18 - version 6.0.26
+* Dev - fix unit tests for protecting admin roles.
+* Tweak -  Replace woo.com references with woocommerce.com.
+
+2024-06-11 - version 6.0.25
+* Add - Action to manage WooCommerce Membership statuses.
+* Add - Support for one-click unsubscribe links in non-transactional emails.
+* Dev - PHPCS for Campaign Monitor files.
+* Dev - PHPCS for Order Actions files.
+* Dev - PHPCS for WooCommerce Subscriptions related files.
+* Dev - PHPCS for list-table, workflow-list and coupons-list.
+* Dev - PHPCS for: Actions/Customer_Add_Tags, Actions/Customer_Remove_Tags and Actions/Customer_Change_Role.
+* Fix - Input validation on variable modal fields.
+* Fix - Security issues.
+* Fix - The coupon code formatting to avoid the related Actions or Variables not working correctly.
+* Fix - WC_Site_Tracking throwing a fatal error.
+* Tweak - Add more logs when Active Campaign doesn't find the Contact Tag.
+* Tweak - Compatible with the React 18 used since WordPress 6.2.
+* Tweak - WC 9.0 compatibility.
+
+2024-05-21 - version 6.0.24
+* Fix - The usage of the `automatewoo/workflows/presets` filter.
+* Tweak - Add Order data to the Booking DataLayer.
+
+2024-05-14 - version 6.0.23
+* Fix - E2E test when using RC.
+* Tweak - Allow to choose how bundled products are counted for order.itemscount variable.
+* Tweak - WC 8.9 compatibility.
+
+2024-05-07 - version 6.0.22
+* Fix - Handle Duplicated tags for Active Campaigns Integration.
+* Tweak - Add an error message when using variables and a trigger is not selected.
+* Tweak - Hide variables metabox when no trigger is selected.
+
+2024-04-30 - version 6.0.21
+* Fix - Error when creating the same tag with different case.
+* Fix - Missing Guest Data for blockified checkout pages.
+* Tweak - Remove deprecated async requests.
+
+2024-04-16 - version 6.0.20
+* Dev - Add QIT workflow.
+* Dev - Add a manual workflow run for PHP unit tests.
+* Dev - E2E: Install WC by adding it in `.wp-env.json`'s `plugins` section.
+* Update - Bump minimum PHP version to 7.4.
+
+2024-04-09 - version 6.0.19
+* Dev - Remove deprecated background processing classes and add comments to remove redundant phpcs and semgrep warnings.
+* Tweak - WC 8.8 compatibility.
+* Update - Remove the ActiveCampaign SDK and use version 3 of the REST API for actions.
+
+2024-03-26 - version 6.0.18
+* Fix - Excessive logging for WC Bookings.
+* Fix - Fatal error when choose the action `Trigger Order Action` with 3rd party plugins like WC PayPal Payment 2.5.3.
+* Tweak - Add WP 6.5 Require plugins header.
+
+2024-03-12 - version 6.0.17
+* Tweak - WC 8.7 compatibility.
+* Tweak - WP 6.5 compatibility.
+
+2024-02-21 - version 6.0.16
+* Fix - MailPoet Opt-In subscription SYNC.
+* Tweak - Adjust the database tables system check to confirm that each of the tables exist.
+
+2024-02-06 - version 6.0.15
+* Fix - Add log entry for a failed scheduled event if a workflow no longer validates for the order.
+* Fix - Mailchimp tags converted to numeric tags.
+* Fix - Replace deprecated shop_catalog image type with woocommerce_thumbnail.
+* Tweak - Adjust the assets loading conditions for the Analytics pages and declare feature compatibility for the product block editor.
+* Tweak - WC 8.6 compatibility.
+
+2024-01-30 - version 6.0.14
+* Fix - Edit Workflow: Change back to the previously selected manual trigger option when the compatibility warning modal is canceled.
+* Fix - Highlight the "Workflow" submenu when viewing the "Add New Workflow" page.
+* Fix - Load blocks integration in administration area.
+* Fix - Set correct post status when restoring a workflow from trash.
+* Tweak - Expand collapsed action boxes if field is invalid.
+* Tweak - Order alphabetically the list of variables shown in the Workflow.
+* Tweak - Refactor Session Tracker PHPCS.
+* Tweak - Remove spacing at top of the email preview window.
+* Tweak - Use Order Status Name instead of the slug for the Order Status variable.
+
+2024-01-09 - version 6.0.13
+* Fix - Fatal error triggered by invalid tool ID.
+* Fix - margins for marketing opt-in checkbox in block editor.
+* Tweak - Reduce Customer not found logs.
+* Tweak - Update Import Link in Opt-In / Opt-Out page.
+
+2024-01-03 - version 6.0.12
+* Add - REST API endpoint for workflow run logs.
+* Tweak - WC 8.5 compatibility.
+
+2023-12-26 - version 6.0.11
+* Dev - Enable HPOS in unit tests with method compatible in WC 8.4.
+* Dev - Unit test compatibility with PHP 8.3.
+* Fix - Confirm customer is found before opting in user.
+* Fix - Exclude anonymized orders when setting up guest customers.
+
+2023-12-12 - version 6.0.10
+* Add - Expand REST API endpoints for creating and updating workflows.
+* Dev - Enable PHPCS checking for optins list table.
+* Dev - Fix WC notice when bootstrapping unit tests.
+* Dev - Remove custom DEWP config for `@woocommerce/blocks-checkout`.
+* Fix - Prevent infinite loop with subscription status transition.
+* Fix - Return correct workflow creation date when a draft has been saved.
+* Fix - Screen options for the opt-ins page.
+* Fix - Show guests admin page when cart tracking is disabled.
+* Fix - Update Mad Mimi Integration to resolve fatal error.
+* Fix - Use standardized property names when tracking rules for workflows.
+* Tweak - Initialize tracking classes only when opted in.
+* Tweak - Select coupon action use autofill field.
+* Tweak - WC 8.4 compatibility.
+
+2023-11-15 - version 6.0.9
+* Dev - Add missing translator comments.
+* Dev - Reduce PHPCS Exceptions.
+* Dev - Remove gulp-related packages that are no longer in use.
+* Dev - Update WordPressCS to version 3.0.
+* Dev - Update phpunit polyfills to 1.1 for WP 6.4.
+* Fix - Improve user tags.
+
+2023-11-07 - version 6.0.8
+* Dev - Update legacy Reports E2E test.
+* Tweak - Set required attribute for Term field.
+* Tweak - WC 8.3 compatibility.
+* Tweak - WP 6.4 compatibility.
+* Update - Use new Woo.com domain.
+
+2023-10-24 - version 6.0.7
+* Dev - Remove support for legacy classes deprecated since 5.0.0.
+* Tweak - Declare cart_checkout_blocks feature compatibility.
+
+2023-10-10 - version 6.0.6
+* Dev - Add E2E tests for Menu and basic page elements.
+* Dev - Add E2E tests for Settings, Presets and Tools.
+* Dev - Add tests for Cart tracking.
+* Dev - Enable phpcs checking for admin utilities file.
+* Fix - Externalize WordPress JS packages to avoid CSS style conflicts.
+* Tweak - Add documentation link with UTM parameters.
+* Tweak - Add sorting when listing customers with purchase orders within a specific date range.
+* Tweak - WC 8.2 compatibility.
+
+2023-09-22 - version 6.0.5
+* Dev -  E2E tests for Dashboard page.
+* Dev - Remove unit test marked as incomplete.
+* Dev - Update WooCommerce Bookings payment gateway title.
+* Fix - Fatal error when enabling Active Campaign integration without API key.
+* Fix - Logic for automatic database updates.
+* Fix - Shop order transients hook setting customer id to 0.
+* Fix - Use helper function for checking supported subscription payment methods.
+
+2023-09-14 - version 6.0.4
+* Dev - Add E2E documentation reference in the Readme file.
+* Dev - Add documentation about engines directive.
+* Dev - Add node ^18.17 and npm ^9.5 as supported engines for dependabot.
+* Dev - Fix Linter for JS.
+* Dev - Implement wp-env for E2E tests.
+* Dev - Setup E2E Test Github Action Workflow.
+* Dev - Setup Playwright for E2E tests.
+* Fix - Fatal error getting product permalink on emails.
+* Fix - HPOS SET clause for WC 8.1.
+* Fix - Hide Tool Items Submenu items in WP.COM shops.
+* Fix - Merge - Anonymize tracking data.
+* Fix - Restore trigger options when cancelling a trigger change.
+* Tweak - Anonymize specific workflow values for usage tracking.
+* Tweak - Remove unnecessary columns from workflows table.
+* Tweak - WC 8.1.0 compatibility.
+
+2023-08-29 - version 6.0.3
+* Dev - Add Action for Hooks Documentation Generator.
+* Dev - Fetch WooCommerce and WordPress versions for our tests.
+* Dev - Override vulnerability packages: xmlhttprequest-ssl and ws.
+* Fix - {{ order.items }} variable does not return the correct variation if attributes are set to "Any...".
+* Tweak - Apply consistent admin theme colors to common UI components.
+* Tweak - Auto update the database if the filter woocommerce_enable_auto_update_db returns true.
+
+2023-08-15 - version 6.0.2
+* Dev - Remove local subscription helper.
+* Dev - Use `merge-trunk-develop-pr` action.
+* Fix - Email actions not imported with WP Importer.
+* Update - Bump minimum PHP version to 7.3.
+
+2023-08-08 - version 6.0.1
+* Add - Filter to disable Async queue runner.
+* Fix - Recording guest data when using checkout blocks.
+* Fix - Resolve critical error in the send email action preview.
+* Tweak -  Refactor Order and Order by Clean calls.
+* Tweak - Add Status Verification Check for Booking Status Changes Trigger.
+* Tweak - WC 8.0 compatibility.
+* Tweak - WP 6.3 compatibility.
+
+2023-07-25 - version 6.0.0
+* Break - Remove deprecated Events code and automatewoo_events database table.
+* Dev - Add Unit Tests for Action Scheduler Jobs.
+* Dev - Automate merging trunk to develop after a release.
+* Dev - Deprecate Background Process Base Class.
+* Dev - Deprecate Cron Workers' usage in StartOnHook based Jobs.
+* Dev - Remove deprecated Background Proccess Classes.
+* Dev - Unit Tests for Action Scheduler Jobs.
+* Fix - Prevent PHP 8.2 deprecation messages.
+* Tweak - Adding a System Check for Action Scheduler Jobs.
+* Update - Migrate Cron-based Jobs to Action Scheduler Jobs.
+
+2023-07-19 - version 5.8.5
+* Add - Activate or Update notification type.
+* Add - Inbox notification for Mailchimp API key failure.
+* Add - Inbox notification for failed system checks.
+* Add - Inbox notification when site is running minimum version of PHP supported by AW.
+* Add - Inbox notifications for Add-ons.
+* Add - Inbox notifications.
+* Add - Migrate existing Welcome Note to Notifications.
+* Add - Notifications for remaining integrations.
+* Add - Unit tests for NotificationsInitializer.
+* Dev - Update Sensei Integration Unit Tests.
+* Fix - Avoid error notice on AW installation.
+* Fix - Date input pattern.
+* Fix - Datepicker initialization in Workflow.
+* Fix - Fix Sensei Quiz Rules not working when using Sensei v4.16.0 .
+* Fix - Revert trigger when using any method to close incompatible actions modal.
+* Tweak - Track currency for conversions.
+
+2023-07-11 - version 5.8.4
+* Add - subscription.retry_payment_date variable.
+* Dev - Fix PHP unit test failed because of test paths changed in WC Subscriptions.
+
+2023-07-04 - version 5.8.3
+* Tweak - Install DB tables using WP CLI.
+* Tweak - WC 7.9 compatibility.
+
+2023-06-29 - version 5.8.2
+* Fix - Use of style tags in email templates.
+* Tweak - Set priority for AutomateWoo Async Actions.
+
+2023-06-28 - version 5.8.1
+* Dev - Set engines for the repository.
+* Dev - Tweak the tests for WC 7.8.1.
+* Fix - Load blocks integration only if opt-in should be displayed during checkout.
+* Tweak - Migrate AbandonedCarts Job from Cron Worker to ActionScheduler Recurrent Action.
+
+2023-06-27 - version 5.8.0
+* Fix - Avoid removing slashes in Sending Email content.
+* Tweak - Add logs for all the Mailchimp Actions.
+
+2023-06-14 - version 5.7.7
+* Dev - Unit tests for restoring cart.
+* Fix - Do not display widget wrapper when contents is empty.
+* Fix - The timezone offset calculation for the boundaries of stats intervals in the analytics pages.
+* Tweak - Add logs to MailChimp - Add Contact To List action.
+* Tweak - WC 7.8 compatibility.
+
+2023-06-08 - version 5.7.6
+* Dev - Add release preparation GH workflow.
+* Tweak - Ability to disable the Mailchimp integration without a valid API key.
+* Tweak - Security improvements.
+
+2023-05-30 - version 5.7.5
+* Dev - Made `AutomateWoo` namespace available instantly before the `DOMContentLoaded`.
+* Dev - Remove the `"inline"` `AutomateWoo.Modal` type, export actionable classes in `AutomateWoo.Modal.triggerClasses`.
+* Fix - Avoid the AutomateWoo indirectly changing the "Publish" button in the new post page to "Schedule" when the site timezone is other than UTC.
+* Fix - Prevent cart from being restored after checkout.
+* Fix - `woocommerce_admin_report_currency` filter integration.
+* Tweak - Compile CSS files without emitting a UTF-8 byte-order mark (BOM) to get better compatibility with other extensions optimizing CSS file loading.
+* Tweak - Use WP helper function for increasing memory limit.
+
+2023-05-10 - version 5.7.4
+* Fix - Prevent WP Nonce verification in Use bulk actions if the action is not related to AW.
+* Tweak - WC 7.7 compatibility.
+
+2023-05-02 - version 5.7.3
+* Compat - Improve PHP 8.2 compatibility.
+* Dev - Remove previous copy of Sensei when installing unit tests.
+* Dev - Remove the sign in the dynamic modifier from all DateTime::modify.
+* Dev - Security improvements: Fix array_filter with no callback and ignore include file warnings.
+* Dev - Security improvements: Fix/Clean unescaped add_query_vars.
+* Dev - Security improvements: Remove security issue with CURLOPT_SSL_VERIFYPEER.
+* Fix - Limit the Customer pause period days of abandoned cart triggers to at least 1.
+* Fix - PHP 8.2 Compatibility: Fix the incorrect time conversion for scheduled workflow in UTC-X timezones.
+
+2023-04-18 - version 5.7.2
+* Tweak - Improve Security.
+* Tweak - Remove Welcome Notice when a workflow is created.
+* Tweak - Security improvements.
+
+2023-04-04 - version 5.7.1
+* Dev - Add PHP Code coverage report as GitHub action.
+* Fix - Missed import references.
+* Fix - Remove undesired margin top in WP Admin when AutomateWoo is installed.
+
+2023-03-28 - version 5.7.0
+* Add - Endpoint for unmarking conversions.
+* Add - In case AW user is unsubscribed. Update AW user to subscribed when MailPoet user is subscribed.
+* Add - Migrate Report pages to React-based WooCommerce Analytics. And REST endpoints. Prepare for HPOS.
+* Add - Unsubscribe from MailPoet lists when user opted-out in AutomateWoo.
+* Add - conversion list table.
+* Add - dashboard widgets that use Analytics REST API.
+* Add-  empty class param preventing PHP NOTICE undefined index.
+* Dev - Allow selective externalizing from otherwise opted-out packages.
+* Dev - Drop PHP Unit tests support for PHP 7.4.
+* Dev - Fix a flaky unit test where the students list has a different sort order by default.
+* Fix - AW menu issues.
+* Fix - Email preview critical error when calling `custom_styles` action.
+* Fix - Hotfix/revert php unit test matrix.
+* Fix - Plugin icon not showing in some pages.
+* Fix - Required status of Time fields.
+* Fix - Tooltip styling.
+* Tweak - Activate MailPoet integration automatically when MailPoet is available.
+* Tweak - Hide legacy Reports menu entry when HPOS is enabled, declare HPOS-compat.
+* Tweak - Invalidate store, reload components after unmarking conversions.
+* Tweak - Show deprecation warning pointing to new Analytics.
+* Tweak - Use CSS instead of JS to center modals.
+* Tweak - WC 7.6 compatibility.
+
+2023-03-14 - version 5.6.10
+* Add - Added "Student Added To the Group" trigger.
+* Add - Added "Student Removed From the Group" trigger.
+* Add - Added `group.id` & `group.title` variables.
+* Add - Composite Products, Product Bundles compatibility with abandoned carts (updated versions of both Extensions required).
+* Add - MailPoet Integration (Add and Remove Subscribers from lists).
+* Add - Sensei LMS Integration.
+* Dev - Unit testing for MailPoet Integration.
+* Tweak - PHP 8.1 compatibility detected during unit test runs.
+
+2023-03-07 - version 5.6.9
+* Add - conversions stats endpoint, use it for Conversion Analytics.
+* Dev - Fix issues in some Customer Order Rules tests.
+* Fix - Fatal error in {{ cart.items }} caused by deleted products.
+* Tweak - WC 7.5 compatibility.
+* Tweak - WP 6.2 compatibility.
+
+2023-02-15 - version 5.6.8
+* Dev - Update phpunit to allow testing with PHP 8.0.
+* Fix - prevent Order Created trigger to run on Subscription Orders.
+
+2023-02-07 - version 5.6.7
+* Fix - Replace direct WP query for Subscriptions for HPOS compatibility.
+* Tweak - WC 7.4 compatibility.
+
+2023-01-31 - version 5.6.6
+* Add - **Downloadable Product Purchased** trigger.
+* Add - **File Downloaded** trigger.
+* Add - **File Not Yet Downloaded** trigger.
+* Add - `download.file_name` and `download.url` variables.
+* Dev - Use the latest released versions of dependent plugins for unit testing.
+
+2023-01-24 - version 5.6.5
+* Fix - Prevent critical error when an invalid time is set in Fixed time workflows.
+
+2023-01-17 - version 5.6.4
+* Compat - Compatibility with MailPoet email customizer
+* Compat - Quickfilter Compatibility for Subscriptions with HPOS.
+* Dev - Reuse HPOS Toggle trait from WooCommerce core to prevent temporary tables from being created during unit tests.
+* Dev - Unit testing for delete order hooks with HPOS.
+* Dev - Unit testing for order and subscription status changes.
+* Fix - Escape Term Slug inside admin_url function in the users tags column.
+* Fix - Use get_edit_order_url for admin Subscription links.
+
+2023-01-10 - version 5.6.3
+* Tweak - Compat - Remove deprecated from before the 5.0.0 release.
+* Tweak - WC 7.3 compatibility.
+
+2022-12-20 - version 5.6.2
+* Add - **Order Refunded Manually** trigger.
+* Add - `refund.amount` and `refund.reason` refund workflow variables.
+* Tweak - Updated **Order Refunded** trigger to run on partial and full refunds.
+
+2022-12-14 - version 5.6.1
+* Dev - Add eslinting to `/admin/assets/js/*.js`.
+* Dev - Build scripts without gulp.
+* Dev - Fix the Subscription unit tests.
+* Dev - Update comments for supported WP/WC versions in GH workflows.
+* Fix - Add workflow filters to analytic pages.
+* Fix - Register mocked AW Analytics under WC Analytics.
+* Tweak - WC 7.2 compatibility.
+* Update - Drop support for WordPress 5.8.
+
+2022-11-15 - version 5.6.0
+* Update - Improve Marketing Opt-in validation.
+
+2022-11-09 - version 5.5.23
+* Add - Declare incompatibility for High Performance Order Storage.
+* Fix - Tracker conversion queries compatibility with custom order tables.
+* Fix - Use order status changes to detect new order created from draft status.
+* Tweak - Remove deprecated order compatibility classes.
+* Update - Handle order deleted actions when HPOS is enabled.
+* Update - Make Order Query rules compatible with HPOS.
+* Update - Refactor customer order queries to support customer order tables.
+* Update - Use order functions for admin edit order URL.
+* Update - Use wc_get_orders to retrieve conversions.
+
+2022-11-03 - version 5.5.22
+* Dev - Add JS & CSS linting to GitHub workflows.
+* Dev - Update Node to 16.
+* Dev - Update Webpack-related dependencies.
+* Dev - Update bundled `@wordpress/` & `@woo…` packages to wp-5.8 & WC 6.7 .
+* Dev -Externalize `@woocommerce/tracks`.
+* Fix - Error logging when workflow run or search fails.
+* Tweak - WC 7.1 compatibility.
+* Tweak - WP 6.1 compatibility.
+* Update - Drop WordPress < 5.8 & WooCommerce < 6.7 support.
+
+2022-10-04 - version 5.5.21
+* Tweak - WC 7.0 compatibility.
+
+2022-09-20 - version 5.5.20
+* Add - Show notice for to be dropped WP<5.8 & WC<6.7 versions.
+* Dev - Add bundlewatch to monitor the size of bundles.
+* Dev - Fix tests in WC 6.9.
+* Dev - Updated `sass@^1.54.9` & gulp related packages.
+
+2022-09-02 - version 5.5.19
+* Fix - Dev - Add branch-labels GH workflow.
+* Fix - Dev - Fixed missed `changelog: doc`.
+* Fix - Fix version string in package files.
+* Tweak - WC 6.9 compatibility.
+
+2022-08-03 - version 5.5.18
+* Tweak - WC 6.8 compatibility.
+
+2022-07-05 - version 5.5.17
+* Add - Actions for updating trial end, and subscription end date fields.
+* Dev - Allow plugins required in composer.json for automated tests.
+* Fix - Check if the subscription applied coupons before recalculating coupons.
+* Tweak - WooCommerce 6.7 compatibility.
+* Update - Drop the PHP support for version < 7.2.
+
+2022-06-21 - version 5.5.16
+* Fix - Added sanitize_text_field in the JSON search Results.
+* Fix - Enhanced error logging for database related issues.
+
+2022-06-07 - version 5.5.15
+* Tweak - WC 6.6 compatibility.
+
+2022-05-17 - version 5.5.14
+* Fix - Booking unit tests.
+* Fix - Discrepancies in the number of manual workflow subscription results found.
+* Tweak - Fix unit test errors and bump versions.
+* Tweak - WC 6.5 and WP 6.0 compatibility.
+
+2022-03-29 - version 5.5.13
+* Fix - Compatibility with WC Blocks 7.2.
+
+2022-03-16 - version 5.5.12
+* Add - Support for Subscriptions with WooCommerce Payments.
+* Fix - variable start date is using the correct value.
+
+2022-03-03 - version 5.5.11
+* Fix - Mailer failing sometimes on PHP 8.
+
+2022-02-22 - version 5.5.10
+* Add - Order Note Author free text field.
+
+2022-02-08 - version 5.5.9
+* Fix - Decode entities/ascii codes in email subjects.
+* Fix - Introduce Newsletter block for Checkout block.
+* Tweak - WC 6.2 compatibility.
+
+2022-01-17 - version 5.5.8
+* Fix - Change `changelog.txt` header format to match woorelease
+* Fix - Fix/1073 opt ins emails with apostrophes not imported
+* Fix - Replace is_ajax (deprecated in 6.1) with wp_doing_ajax
+
+2021-12-15 - version 5.5.7
+* Fix - Update Test config (#1071)
+* Tweak - Add WooCommerce 6.0.0 to Travis test matrix (#1077)
+* Tweak - Bump "WC tested up to" to version 6.0 (#1079)
+
+2021-11-25 - version 5.5.6
+* Add - Filter for custom workflow timing options.
+
+2021-10-27 - version 5.5.5
+* Fix - Prevent Order Created action from running too early
+
+2021-10-12 - version 5.5.4
+* Fix - Escape html in email preheader.
+
+2021-09-21 - version 5.5.3
+* Fix - Prevent adding unnecessary notes to subscription when running edit actions
+* Tweak - Use `Features::is_enabled` instead of deprecated `Loader::is_feature_enabled`
+
+2021-08-24 - version 5.5.2
+* Fix - Manual workflow runner not loading
+
+2021-08-23 - version 5.5.1
+* Fix - Error when using the 'Trigger Order Action' action when WooCommerce Payments is installed
+* Fix - Sanitize user tag value when filtering users
+* Fix - Issue where some guest orders could be skipped during setup
+
+2021-08-04 - version 5.5.0
+* New - Enable abandoned cart features for new block-based checkout
+* Fix - Issue where original prices in emails could have strikethroughs on new WooCommerce versions
+* Fix - The user profile language setting can now be used to set the plugin's language in WP Admin
+* Fix - Check workflow is still active and has conversion tracking enabled before marking an order as a conversion
+* Fix - Make "Order - Subscription Payment Retry Count" rule count only failed automatic subscription payment retries
+
+2021-06-04 - version 5.4.2
+* Fix - "Subscription - Remove Coupon" action did not remove the discount applied
+
+2021-04-09 - version 5.4.1
+* Fix - "Subscription - Update product" action product price field always resulted in a price of zero
+
+2021-03-25 - version 5.4.0
+* Updated Minimum Requirements - WooCommerce 4.8
+* New - Moved all features from the "AutomateWoo Subscriptions Add-on" into "AutomateWoo core"
+* New - Added "Booking Created" trigger
+* New - Added booking workflow variables: `booking.persons`, `booking.start_date`, `booking.end_date`, `booking.start_time`, `booking.end_time`
+* New - Added workflow variable: `shop.shop_url`
+* Tweak - Improve and clarify wording of the workflow timing description column
+* Fix - Duplicate cart items could appear if logging in after restoring an abandoned cart
+* Fix - Certain necessary characters couldn't be used workflow variable parameters
+* Fix - Removed deprecated jQuery uses
+* Fix - Minor error notices when previewing emails on a fresh install for some triggers
+
+2021-02-18 - version 5.3.0
+* New - Integration with WooCommerce Bookings! Requires WooCommerce Bookings v1.15.35
+* New - `Booking Status Changed` trigger
+* New - Bookings variables: `booking.id`, `booking.status`, `booking.cost`, `booking.resource`
+* New - Improved support for new WooCommerce admin dashboard navigation
+* Fix - Error when viewing or sending abandoned carts with bookable products (WooCommerce Bookings)
+* Fix - Prevent storing multiple `automatewoo_cart_id` values in order meta
+* Fix - `New Review Posted` no longer triggers for spam product reviews
+* Fix - When sending SMS, default to full URL if bitly API request fails (e.g. rate limit, misconfiguration)
+* Fix - Correct typos in missing/undefined variable error message
+* Tweak - WooCommerce 5.0 compatibility
+* Tweak - Removed legacy AutomateWoo.com license system
+
+2021-01-06 - version 5.2.1
+* Fix - Remove invalid 5.2 announcement link from changelog
+
+2021-01-06 - version 5.2.0
+* Updated Minimum Requirements - WooCommerce 4.5
+* New - Add support for PHP 8
+* New - Add "Reply to" field to email actions
+* New - Add "cart.id" variable
+* New - Moved all event handling to use ActionScheduler
+* New - Convert tools background processor to use ActionScheduler
+* New - Add a customer filter to the carts page
+* Fix - Issue where the customer win back trigger would stall due to stale customer last purchase data
+* Fix - Add welcome notice for add-ons
+* Fix - Move the the Membership Created trigger to run async to improve stability
+* Tweak - Display warnings when using deprecated functions and classes
+* Deprecated - AutomateWoo\Events
+* Deprecated - AutomateWoo\Report_Events
+* Deprecated - AutomateWoo\Background_Processes\Event_Runner
+* Deprecated - AutomateWoo\Event
+* Deprecated - AutomateWoo\Event_Factory
+* Deprecated - AutomateWoo\Events_Runner_Async_Request
+* Deprecated - AutomateWoo\Event_Query
+* Deprecated - AutomateWoo\Action::can_be_previewed()
+* Deprecated - AutomateWoo\Action::preview()
+
+2020-11-17 - version 5.1.3
+* Fix - Ensure AW admin works if WooCommerce Admin is disabled via the woocommerce_admin_disabled filter
+* New - Add warning notice that some features will not work if WooCommerce Admin is disabled
+
+2020-11-10 - version 5.1.2
+* Fix - Issues where AW caused the WordPress footer to be hidden on all admin pages
+* Fix - Misleading title of workflow preset
+* Fix - Add "automatewoo/workflow/created" action when creating a workflow from a preset
+* Fix - Issue where incorrect taxes could be applied to an order in some cases when the Membership Created trigger was used
+* New - Notice regarding planned changes to minimum requirements: WooCommerce >= 4.5
+
+2020-10-20 - version 5.1.1
+* Fix - Issue where abandoned carts job could incorrectly throw an exception in some cases
+
+2020-10-15 - version 5.1.0
+* Announcement - https://woocommerce.com/posts/automatewoo-5-1/
+
+* New Minimum Requirements - WordPress 5.3 and WooCommerce 4.3
+* Database Upgrade Required - Use `date-desc` sorting for existing `shop.products` variables
+
+* New - Preset workflows. Choose from a preset workflow to quickly and easily create your own workflows
+* New - Add rule: "Shop - Current Date/Time"
+* New - Add "Default" sorting for the "shop.products" variable
+* New - Add “Month” unit for scheduled and delayed workflows
+* New - Implement the "matches regex", "is blank" and "is not blank" conditions for some manual workflows
+* Tweak - Begin using ActionScheduler to run certain processes
+* Tweak - Make the "Order - Customer Field" and "Subscription - Custom Field" rules quick filterable and ready for use with manual workflows
+* Tweak - Removed "automatewoo-clipboard" script and use the newly added clipboard-js script in WordPress core
+* Tweak - Adjustments to opt-in tracking data for AutomateWoo sent to WooCommerce:
+        * Workflow tab viewed event added
+        * Preset workflow list button clicked event added
+    To disable this tracking, opt out of WooCommerce tracking, see https://woocommerce.com/usage-tracking/
+* Fix - Subscription early renewal redirect URL is now correctly URL encoded
+* Fix - AutomateWoo > Dashboard - Console errors when resizing browser window
+* Dev - Deprecated the following: - AutomateWoo\Action_Subscription_Edit_Item_Abstract::get_recalculate_coupons_compatibility_text()
+* Dev - Added "Query_Abstract::get_results_as_ids()" and deprecated "Query_Abstract::set_return()"
+
+2020-09-07 - version 5.0.3
+* Fix - Issue where PHPMailer errors were not retrieved correctly
+* Fix - Remove deprecated usage of the "WC_Order_Item" class
+* Fix - Incorrect use of undefined WC_ADMIN_APP constant (from 5.0.2)
+
+2020-09-03 - version 5.0.2
+* Tweak - Removed usage of the deprecated "woocommerce_before_cart_item_quantity_zero" action
+* Fix - Manual workflows not working with variable timing
+* Fix - Numeric rules not matching decimal values
+
+2020-08-10 - version 5.0.1
+* New - Add support for WordPress 5.5 and WooCommerce 4.4
+
+2020-07-29 - version 5.0.0
+
+* Announcement - https://woocommerce.com/posts/automatewoo-5/
+
+* New Minimum Requirements - WordPress 5.2, WooCommerce 4.0 and PHP 7.0
+* Database Upgrade Required - Adds workflow type and updates existing workflows to ‘automatic’
+
+* New - Manual workflows. Manual workflows have no trigger and are instead manually started by a store manager. Existing workflows with triggers are now considered 'automatic' workflows in comparison.
+* New - "Order Note Added - Each Line Item" trigger
+* New - "Workflow – Run Count For Subscription" rule
+* New - Connect all AutomateWoo pages to WooCommerce Admin (adds the inbox/notification center etc).
+* Tweak - Replace jquery-cookie with js-cookie
+* Tweak - Set SameSite attribute for JS cookies
+* Tweak - Set Secure attribute on cookies when SSL is in use
+* Tweak - Removed "#tab-reviews" link anchor from review product templates based on customer feedback. Instead use the "url_append" field to set your own anchor.
+* Tweak - Removed the previously deprecated triggers:
+        * Order Includes Product From Category
+        * Order Includes Product From Tag
+        * Order Includes a Specific Product
+* Tweak - Removed deprecated legacy Campaign Monitor action
+* Tweak - Adjustments to opt-in tracking data for AutomateWoo sent to WooCommerce:
+        * Additional workflow type property sent for events
+        * Manual workflow runner workflow selected event added
+        * Manual workflow run button clicked event added
+        * Manual workflow find matching items cancel button clicked event added
+        * Manual workflow queue items cancel button clicked event added
+        * Manual workflow run completed event added
+    To disable this tracking, opt out of WooCommerce tracking, see https://woocommerce.com/usage-tracking/
+* Fix - Deprecated use of implode in PHP 7.4
+* Fix - Issue where dates in workflow variables were not localized
+* Fix - Make failed queued workflow deletion more scalable. Failed items are deleted at a much faster rate.
+* Dev - Removed unsubscribes table and related code used prior to version 3.6
+* Dev - Removed `data_items` column from queue table used prior to version 2.9.7
+* Dev - Removed some existing deprecated code and renamed some legacy classes. See the announcement post for full details.
+
+2020-07-15 - version 4.9.8
+* Fix - Issue where dates in workflow variables were not localized
+* Fix - Issue with data formats in YITH Wishlist versions 3.0+
+
+2020-07-08 - version 4.9.7
+* Fix - Multi-select options not being displayed in the settings tab
+
+2020-07-06 - version 4.9.6
+* New - Add support for WooCommerce 4.3
+* Fix - Ensure that guests' recent orders are correctly identified
+
+2020-06-03 - version 4.9.5
+* New - Add support for WooCommerce 4.2
+* New - Notice regarding planned changes to minimum requirements: WordPress >= 5.1 and WooCommerce >= 4.0
+* Fix - Copy the "Active for x payments" value correctly when generating "Recurring Product Discount" coupons
+* Fix - Missing text in database upgrade modal
+
+2020-05-21 - version 4.9.4
+* Fix - Updated "Subscribes" dashboard block and link to "Opt-ins" or "Opt-Outs"
+* Fix - Error when deselecting an action type in a workflow
+* Fix - Autocomplete filter styles
+* New - [developer] Positive_Number field class for triggers
+
+2020-05-08 - version 4.9.3
+* Fix - Fatal error when editing posts or pages on PHP 5.6 (introduced in 4.9.0)
+* Fix - Workflow save error when using the "Order Includes Product from Taxonomy Terms" trigger
+
+2020-05-04 - version 4.9.2
+* Fix - Error when activating plugin from the new WooCommerce Marketing Hub
+* Fix - Error when previewing an email on a store with no orders
+
+2020-04-29 - version 4.9.1
+* New - Add support for WooCommerce 4.1
+* Fix - Resolve compatibility issue with WooCommerce Free Gift Coupons 2.0
+* Fix - "subscription.early_renewal_url" variable now works if the customer is logged out when they click the link
+
+2020-04-16 - version 4.9.0
+* Announcement - https://woocommerce.com/posts/automatewoo-4-9/
+* New - "subscription.payment_count" variable.
+* New - Order line item rules:
+  * Order Line Item - Product
+  * Order Line Item - Subtotal
+  * Order Line Item - Tax Total
+  * Order Line Item - Total
+* New - An error message will be added to the workflow log when there are no valid email recipients.
+* New - Add "AUTOMATEWOO_ACTIVE_CAMPAIGN_DEBUG" constant for debugging Active Campaign.
+* New - Update Bitly API to version 4.
+* New - Opt-in tracking data for AutomateWoo
+    Data sent to WooCommerce:
+        * Plugin version
+        * Settings:
+          * Whether opt-in is enabled, whether the checkbox is available on the checkout page, and whether the checkbox is available on the account sign-up page
+          * Whether session tracking is enabled
+          * Whether session tracking requires cookie consent and the name of the cookie
+          * Whether presubmit capture is enabled
+          * Whether the abandoned cart feature is enabled
+          * Whether the communication account tab is enabled
+          * The license system in use (legacy automatewoo.com vs. woocommerce.com)
+          * Whether any of these integrations are in use: Mailchimp, Campaign Monitor, Active Campaign, Twilio, Bitly
+        * The names of actions that are in use
+        * The name of triggers that are in use
+        * The number of active workflows
+        * The number of conversions that have been made
+        * The total value of all conversions
+        * Workflow Log data:
+          * Number of times workflows have run
+          * Number of times a workflow ran with conversion tracking enabled
+          * Number of times a workflow ran with tracking enabled
+    To disable this tracking, opt out of WooCommerce tracking, see https://woocommerce.com/usage-tracking/
+
+* Tweak - [Instant Event Dispatching](https://automatewoo.com/docs/asynchronous-triggers/#reducing-the-asynchronous-delay) is now enabled by default.
+* Tweak - Updates all background processed trigger descriptions and greatly improves the descriptions for the Subscription Before Renewal/End triggers.
+* Tweak - Abandoned cart timeout minimum is now 5 minutes.
+* Fix - Ensure tax labels are hidden when taxes are disabled in WC settings.
+* Fix - "order.cross_sells" and "order.related_products" variables will now display Subscription products.
+* Fix - Override select2 input field to make it more responsive.
+* Fix - Error thrown when non-numeric value encountered for carts preview data.
+
+2020-03-10 - version 4.8.3
+* Add support for WooCommerce 4.0
+
+2020-02-26 - version 4.8.2
+* Fix - "Subscription - Item Categories" rule was broken
+* Fix - "customer.order_count" variable was always blank for guest customers
+
+2020-01-15 - version 4.8.1
+* Fix - Issue where private/draft products could appear when using the "shop.products" variable
+* Fix - Prevent false positive click on links shortened by Bitly
+* Fix - Issue where expired AutomateWoo coupons were not being deleted
+
+2019-12-9 - version 4.8.0
+* Announcement - https://woocommerce.com/posts/automatewoo-4-8/
+* New - Add subscription order triggers which enable the use of subscription variables with order triggers. New triggers:
+  * "Subscription Order Created"
+  * "Subscription Order Paid"
+  * "Subscription Order Status Changed"
+* New - Add support for adding/removing Mailchimp tags with new action "Mailchimp - Update Contact Tags"
+* New - Add trigger: "Subscription Created - Each Line Item"
+* New - Add rule "Customer - 2nd Last Paid Order Date"
+* New - Add subscription item variables: "subscription_item.attribute", "subscription_item.meta" and "subscription_item.quantity"
+* New - Add order variables: "order.date_paid" and "order.date_completed"
+* New - Add a "WooCommerce Deposits" option to the "Order - Created Via" rule as an integration with the WooCommerce Deposits extension
+* New - Add support for using "WooCommerce Points & Rewards" points modifier coupons with workflow generated coupons
+* New - Allow email templates to have a custom file path. This means templates can be added in plugins rather than the current theme.
+* Performance - Major optimization of the async events system. Events are now only created when they are specifically required by the site.
+* Performance - Optimize initial customer setup database queries
+* Tweak - Increase minimum PHP version to 5.6.20
+* Tweak - Recalculate coupons when adding/removing subscription products via a workflow (requires WooCommerce 3.8)
+* Tweak - Exclude orders not created via the checkout from conversion tracking e.g. automatic subscription renewals are excluded
+* Tweak - Allow the "Customer - Opted In" trigger to be used for stores in "Opt-out" mode
+* Tweak - Use the order created date instead of order paid date in customer purchase rules
+* Tweak - Allow a custom path to be set for email templates allowing templates to be created by plugins
+* Tweak - Updated ActiveCampaign API wrapper to the latest version
+* Fix - Campaign Monitor API error
+* Fix - A plugin conflict with admin screen items per page settings
+* Fix - Issue where subscription before renewal/end queries were missing the first and last second of each day
+* Fix - Carts admin table: Sorting by the total column did not work
+* Fix - UTM tracking params did not work with the "order.reorder_url" variable
+
+2019-11-16 - version 4.7.4
+* Fix - Missing class error that occurred in the background on WooCommerce versions older than 3.7
+
+2019-11-07 - version 4.7.3
+* Fix - Issue with number based rules where, if value was 0, nothing would be displayed after saving
+
+2019-10-24 - version 4.7.2
+* Fix - Incorrect plugin directory name in 4.7.1
+
+2019-10-23 - version 4.7.1
+* Fix - The "Copy to clipboard" button now copies only text, not HTML
+* Fix - Include subscriptions with a status of "Pending Cancellation" in the "Before end" trigger
+* Fix - Properly check whether an email address is a subscriber to a Mailchimp list
+* New - Add the `automatewoo/cart/get_item_count` filter to the `AutomateWoo\Cart::get_item_count()` method.
+
+2019-10-10 - version 4.7.0
+* Add support for plugin updates via the WooCommerce.com Extension Marketplace
+
+2019-09-15 - version 4.6.1
+* Fix - Pre-submit capturing sometimes missed the billing country field
+* Fix - WooCommerce Subscriptions 2.6.0 compatibility in the Subscription Payment Count rule
+
+2019-08-26 - version 4.6.0
+* New - Action: Subscription Add Note
+* New - Variables: customer.username and order.subtotal
+* New - Added background trigger activity logs. Logs show when a process is started, continued and finished
+* New - Added a regex comparison option for all string rules and meta rules
+* New - Added support for workflow variables in price fields
+* New - Implemented AJAX search for coupons rules instead of loading all coupons at once
+* New - The customer.generate_coupon variable builder now uses a searchable coupon field - no more having to copy and paste coupon codes!
+* New - Improved performance by adding object caching to all custom table meta values
+* New - Customer order count and total spend for registered users now includes guest orders made by the same billing email. We also optimized the database queries to retrieve these values and adding caching to improve performance.
+* New - Improved support for localized price formats. If you are expecting non-localized prices be sure to double check your workflows.
+* Tweak - Remove pre WooCommerce 3.0 legacy code. Our minimum required version is still 3.0
+* Tweak - We've removed the subscription payment complete trigger from the manual trigger tool to avoid confusion about how it works. In the not too distant future we’ll handle this better with a new manual workflows feature.
+* Tweak - Moved to using a single customer meta data table. Previously customer meta data was split between 2 tables, either in the WP user meta table when the customer was registered or in the AW guest meta table when the customer was a guest.
+* Tweak - We now cast all workflow variables including the meta variable as strings - this fixes an issue where handling of array or object meta fields would cause unexpected results.
+* Tweak - Because product reviews can not be added to product variations we have modified our product review templates to convert product variations to parent products
+* Fix - Bug where workflows could run with missing or trashed data items.
+* Fix - Ensure that users prior orders when placed as guest are now considered by the "Order - Is Customer's" First rule
+* Fix - Disabled workflows are now visible in the "all" view of the admin list table
+* Fix - Rare issue where rules could fail to load correctly depending on the order they were used
+* Fix - We no longer set session tracking cookies on admin requests. Cookies will be set as normal by WooCommerce and AutomateWoo ajax requests (e.g. checkout, add to cart) since they aren't routed via admin ajax.
+* Fix - Improved reliability of AutomateWoo Cron scheduling and handling of day light saving timezone changes.
+* Fix - The order.date_shipped variable now displays a human readable date instead of a timestamp. The format can also be adjusted, defaulting to the standard WooCommerce date format.
+* Fix - WPML - Workflow email previews now only show products in the language of the current workflow
+
+2019-08-09 - version 4.5.6
+* New - Added support for WooCommerce 3.7
+
+2019-05-29 - version 4.5.5
+* Fix - Error when loading the Emogrifier library in some environments
+* Tweak - Added two requested filter hooks `automatewoo/cart_item/get_quantity` and `automatewoo/cart/get_shipping_total_html`
+
+2019-05-17 - version 4.5.4
+* Fix - Backwards compatibility error
+
+2019-05-14 - version 4.5.3
+* Fix - PHP error notice
+
+2019-05-13 - version 4.5.2
+* Fix - Gutenberg API error that affected the parent page selector
+
+2019-04-18 - version 4.5.1
+* Fix - Added support for WooCommerce 3.6
+
+2019-03-27 - version 4.5.0
+
+[Read the update blog post →](https://automatewoo.com/blog/product-update-march-2019/)
+
+* New - Added integration with the WooCommerce Points and Rewards plugin
+  * New action: **Customer - Add Points**
+  * New action: **Customer - Remove Points**
+  * New variable: **customer.points**
+  * New rule: **Customer - Points**
+* New - Added trigger **Subscription Note Added**
+* New - Added rule **Subscription - Can Renew Early**
+* New - Added variable **subscription.early_renewal_url**
+* New - Added common date formats select box to date variables
+* New - Added price format parameter to price variables
+* New - Added subscription coupon rules
+* New - Added action **Order Item - Update Custom Field**
+* New - Added variables **order.admin_url** and **subscription.admin_url**
+* New - Added variables **customer.address_line_1** and **customer.address_line_2**
+* New - **Customer Win Back** - Added a default value to the the **Maximum days since purchase**
+field which is 3 days higher than minimum days value
+* Performance - Improved scalability of all background processed triggers such as **Customer Win Back**, **Subscription
+Before Renewal** and **Wishlist Reminder**
+* Tweak - Added support for decimal quantities to abandoned carts
+* Tweak - Adjusted customer review count so multiple reviews on the same product count as a single review. This matches
+how the **New Review Posted** trigger functions.
+* Tweak - Show a warning in the workflow edit view if it contains a rule that has been removed
+* Fix - Issue where if a registered user left a review when signed out but used the same email address, it was not
+included in the customer’s review count
+* Fix - Issue where the customer review count included all comments by the user not just product review comments
+* Fix - Issue where digits within parentheses were incorrectly removed from phone numbers when sending an SMS
+
+2019-01-31 - version 4.4.3
+* New - Add rule **Subscription - Has Payment Method** for WC Subscriptions 2.5
+* New - Add variable **subscription.change_payment_method_url** for WC Subscriptions 2.5
+* Tweak - Add notice when a rule used in a workflow is not available
+* Fix - Add support custom order paid statuses in conversion reports
+* Fix - Issue with search tool on opt-in/out admin list view
+
+2019-01-07 - version 4.4.2
+* New - Added variables for each order shipping field
+* Fix - PHP 7.3 issue where emails were displayed with no CSS
+* Fix - Possible date rule validation error when using certain comparisons
+* Fix - Issue where email preview didn't work before the workflow was saved
+* Tweak - Workflows will now use the customer's email from their account profile in favour of the billing email on their order/subscription. This was changed because it's possible for a user to modify their own email but this doesn't update their orders/subscriptions so it's more logical that they receive emails from the updated email field.
+
+2018-12-04 - version 4.4.1
+* Fix - API error when using **Campaign Monitor - Add Subscriber to List**  (from 4.4.0)
+* Fix - Issue when sending SMS where country codes were not added for Brazilian numbers
+* Fix - Potential fatal error when using the **Send Email** action (from 4.4.0)
+
+2018-11-28 - version 4.4.0
+* Note - Dropped support for WooCommerce 2.6, minimum version is now 3.0
+* New - Added date based workflow rules:
+  * Customer - First Order Date
+  * Customer - Last Order Date
+  * Customer - Account Created Date
+  * Customer - Last Review Date
+  * Order - Created Date
+  * Order - Paid Date
+  * Cart - Created Date
+  * Subscription - Created Date
+  * Subscription - End Date
+  * Subscription - Trial-End Date
+  * Subscription - Next Payment Date
+  * Subscription - Last Payment Date
+  * Workflow - Last Run Date For Customer
+* New - Added actions to **add or remove product items** from subscriptions
+* New - Added actions to **add or remove coupons** from subscriptions
+* New - Added a **Send Email** action for plain text emails
+* New - Added a sort by random option to the **shop.products** variable
+* New - Added variable **membership.meta**
+* Tweak - Improved support for **Subscribe All The Things** by allowing any product to be selectable on subscription triggers
+* Performance - Optimized products queries used in the **shop.products** variable
+* Fix - Add field value sanitization and escaping for all trigger and action fields
+* Fix - Subscriptions created by admins now trigger the **Subscription Created** trigger
+* Fix - Issue where coupons rules could fail due to case sensitivity
+
+2018-10-25 - version 4.3.3
+* Tweak - Declare support for WooCommerce 3.5
+
+2018-09-17 - version 4.3.2
+* Fix - Issue where an SMS could be incorrectly sent to an opted-out customer
+* Fix - Issue where the **Wishlist Item On Sale** trigger could never trigger on a site
+
+2018-08-24 - version 4.3.1
+* Fix - Issue where emojis could not be used with some database configurations
+
+2018-08-14 - version 4.3.0
+* Performance - Major rewrite of session tracking code, optimizes various aspects of the module
+* New - Added rule **Order Is Subscription Parent**
+* New - Added a honey pot field to the **Sign up page** to reduce spam
+* New - Added constant **AUTOMATEWOO_LOG_SENT_SMS**, when enabled will keep a log of sent SMSs
+* Tweak - Prevent ambiguous characters from being used in unique coupons
+* Tweak - Allowed native emojis to display in emails rather than convert them to images
+* Tweak - The **New Review Posted** trigger will only run once if a customer places multiple reviews on the same product
+* Fix - Issue where the **order.related_products** variable didn't work for product variations
+* Fix - Issue where some workflow variables were incorrectly generated when used as URLs
+* Fix - Issue preventing the **Trigger Order Action** action from running in batches
+* Fix - Issue where the **Order Created** trigger could skip some orders when processing subscription renewals
+* Fix - Issue where the customer full name variable fallback parameter didn't display
+
+2018-06-26 - version 4.2.0
+* New - Added rules **Order Coupon Count**, **Customer Phone** and **Customer Company**
+* New - Added action **Add / Update Subscription Meta**
+* New - Added variables **membership.renewal_url** and **cart.item_count**
+* New - Added error catching when running a workflow that records the error in the workflow log
+* Tweak - Improved stability of guest migration for v4.0
+* Tweak - When a customer field is blank on the order fall back to the user meta data
+* Tweak - Improved tools text in admin area
+
+2018-06-12 - version 4.1.1
+* Fix - 2 issues related to the manual order and subscription trigger tools
+
+2018-05-30 - version 4.1.0.1
+* Fix - JS error when editing workflows
+
+2018-05-28 - version 4.1.0
+* New - Added search function to opt-in/out view
+* New - Updated German translations for version 4.0
+* Tweak - Improved signup form success messages
+* Tweak - Made signup page preference checked by default
+
+2018-05-28 - version 4.0.2
+* Fix - Potential error with some older payment gateways
+* Fix - Error in cart table when product is deleted
+
+2018-05-23 - version 4.0.1
+* Fix - Shortcode error when using some page builder plugins
+* Tweak - Improve styling of communication and signup pages
+
+2018-05-23 - version 4.0.0
+* New - GDPR - Added option to require customers to opt-in before receiving marketing emails or SMS
+* New - GDPR - Added option to add checkbox to opt-in at checkout and account signup
+* New - GDPR - Added customer communication preference page and account tab to allow opt-in/opt-out at any time
+* New - GDPR - Added tool to import opt-in and opt-out customers
+* New - GDPR - Added ability to disable session cookies until cookie consent is given by a third-party cookie
+* New - GDPR - Improved plugin settings page with more info about privacy and more options to customize data and cookie usage
+* New - GDPR - Added support for the **Personal Data Eraser / Exporter** tools in WordPress 4.9.6
+* New - GDPR - Added content for the **Privacy Policy Guide** in WordPress 4.9.6
+* New - GDPR - Made pre-submit data capture disabled by default
+* New - GDPR - Added option to delete all guests who have not placed an order
+* New - GDPR - Reduced the amount of guest data that is stored
+* New - Added triggers **Customer Opted In** and **Customer Opted Out**
+* New - Added variable **{{ subscription.total }}**
+* New - Added variable **{{ product.meta_date }}**
+
+2018-05-10 - version 3.9.1
+* Tweak - Hide footer on plain text emails when there is no unsubscribe link needed
+* Fix - Issue with manual order trigger
+
+2018-05-03 - version 3.9.0
+**Deprecated classes removed** - For performance reasons many classes were removed including AW_Trigger, AW_Variable and AW_Action. [See the full list](https://gist.github.com/danielbitzer/838072cd7fa34889e403d934c34e6621). If you have custom code for AutomateWoo running on your site this may affect you.
+
+**Deprecated triggers removed** - User Leaves a Product Review and Guest Leaves a Product Review were removed in favour of the trigger **New Review Posted**.
+
+* New - Added option to mark a workflow as transactional, meaning it can't be unsubscribed to
+* New - Added support for click and conversion tracking for SMS
+* New - Added support for link shortening for SMS with Bitly
+* New - Added ability to add unsubscribe link to SMS
+* New - Added variable **{{ order.meta_date }}** to allow better handling of date based meta fields
+* Tweak - Updated the Emogrifier library
+* Tweak - Removed the Twilio API library due to it's size, replaced with `wp_remote_get()`
+* Fix - Timezone issue when displaying some dates in the admin area
+* Fix - Issue with the manual trigger tools failing to run
+
+2018-04-24 - version 3.8.1
+* Fix - Potential code conflict with some email templates
+* Fix - Calculation issue with one of the order count methods
+
+2018-04-18 - version 3.8.0.2
+* Fix - Issue with order pending scheduled check
+
+2018-04-17 - version 3.8.0.1
+* Fix - Issue with admin tools form processing
+
+2018-04-17 - version 3.8.0
+* New - Add the ability to set a time of day for daily workflows to run, affects **Customer Win Back**, **Customer Before Saved Card Expiry**, **Wishlist Reminder**, **Subscription Before Renewal** and **Subscription Before End**
+* New - Add rule **Order Created Via**
+* New - Show literal date and time on rollover of time diff strings in UI
+* New - Localize date and time formats in UI
+* Performance - Improvements to background processing
+* Performance - Increase speed of processing all tools with the new background processor
+* Other misc UX and performance improvements
+
+2018-03-30 - version 3.7.0.1
+* Fix - Display issue with the **shop.products** variable
+
+2018-03-27 - version 3.7.0
+* New - Add trigger **Customer Before Saved Card Expiry** and various variables for cards
+* New - Add support for the **WooCommerce Free Gift Coupons** plugin
+* New - Add three new product templates with 'Leave a review' buttons
+* New - Add rule **Subscription Requires Manual Renewal**
+* New - Add ability to bulk change cart statuses in admin area
+* Tweak - Move presubmit javascript to an actual JS file, instead of rendering in footer
+* Tweak - Make subscription payment triggers asynchronous
+* Performance - Add background processing to the **Wishlist Reminder** trigger
+* Performance - Avoid cases of multiple background processors running at the same time
+* Fix - Issue with **Customer Win Back** trigger not working for guest customers
+* Fix - Prevent **Wishlist Reminder** trigger from reminding too early
+* Fix - Issue where the trigger **Subscription Trial End** was not loading
+* Fix - Issue where the **Memberships Status Changed** trigger would not run with some configurations
+
+2018-02-22 - version 3.6.1
+* New - Add rules **Order Status**, **Customer State**, **Customer State - Text Match**, **Customer Postcode**, **Customer City**
+* New - Add option to **Send Email - Raw HTML** which allows merging the basic AutomateWoo CSS to the supplied HTML
+* Fix - Issue where orders created in admin area were not triggering order created events
+* Fix - Issue with the **Campaign Monitor - Remove Subscriber** action where some emails failed to be removed
+
+2018-02-13 - version 3.6.0
+
+**Database Upgrade Required** - Migrates unsubscribe data
+
+* New - **BEHAVIOUR CHANGED** - Unsubscribes now apply to all workflows instead of a single workflow
+* New - Add action **Send Email - Raw HTML** which is a version of **Send Email** that accepts raw HTML/CSS
+* New - Refresh **Campaign Monitor** integration: improve UX, add **Remove Subscriber From List** action
+* New - Add variables **customer.city** and **customer.postcode**
+* New - Add flag to **logs view** showing if a log has any failed actions
+* New - Add flag to **logs view** showing if any emails failed to send due to a customer being unsubscribed
+* New - Add ability to disable email open/click tracking for a single recipient by adding the parameter '--notracking', useful when sending to admins
+* New - Add filter to completely [blacklist email addresses](https://gist.github.com/danielbitzer/7000bd17a72060df3f0d60d0762a71c0)
+* Tweak - Include cancelled orders when the option to 'include pending and failed orders with abandoned cart triggers' is enabled
+* Tweak - Exclude customers with an active subscription from the **Customer Win Back** trigger
+* Tweak - Remove orders with the status 'pending' from the **Customer Order Count** rule
+
+2018-01-16 - version 3.5.0
+**Database Upgrade Required** - Optimizes unsubscribe data
+
+* New - Add support for email preheaders
+* New - Add variable **order_item.quantity**
+* New - Add rule **Order Item Tags**
+* New - Add rule **Order Line Item Quantity**
+* New - Add rule **Customer's Active Membership Plans**
+* New - Add action **Add Order Note**
+* New - Add action **Send Subscription Invoice**
+* Tweak - Unsubscribe data now only references the AutomateWoo customer ID instead of the user ID or email
+* Tweak - Unsubscribe URLs now use a unique customer key instead of email for better security
+* Tweak - Add ability to set a reply to address for workflow emails via filter
+* Tweak - On all order triggers, the variables for customer email and name will now pull values from the order data in favour of the user account data
+* Tweak - Prevent click tracking redirect from redirecting to a different domain for security reasons
+* Fix - Hide cart tax totals when tax is disabled
+* Fix - **cart.link** variable, the option to link the checkout had stopped working
+* Deprecated - The following triggers have been deprecated because their functionality is now better achieved with rules **Order Includes a Specific Product**, **Order Includes Product From Category** and **Order Includes Product From Tag**
+
+2017-12-11 - version 3.4.2.2
+* Fix - Multisite background processor issue
+
+2017-12-08 - version 3.4.2.1
+* Fix - Potential for order status changes to be missed when multiple changes happened in a short space of time
+
+2017-12-05 - version 3.4.2
+* New - Add variable **customer.state**
+* Fix - Object cache issue, affecting carts
+* Various other minor improvements
+
+2017-11-23 - version 3.4.1
+* New - Add rule **Order Line Count**
+* Fix - Issue with object cache invalidation, this could cause customer data to be lost on some workflow logs
+
+2017-11-21 - version 3.4.0
+* New - Add support for MailChimp Groups with new actions **Add Contact To Group** and **Remove Contact From Group**
+* New - Add support for cart fees
+* New - Add internal event system to improve stability of asynchronous workflows
+* Tweak - When an email is clicked also record as an 'open'
+* Tweak - In emails replace `<del>` and `<ins>` HTML tags with CSS to support Outlook
+* Tweak - The wc_enqueue_js() function is now used for inline javascript
+* Fix - Issue where cron jobs could sometimes be incorrectly locked
+* Fix - Session tracking issue with cookies found on some servers
+* Fix - Rare issue where background processor stop
+
+2017-11-07 - version 3.3.2
+* New - Add option to include pending and failed orders in abandoned cart triggers
+* Performance - Optimize cart tracking, particularly important for WC 3.2
+* Performance - Optimize various queries
+* Tweak - Add first and last name fields to the MailChimp subscribe action
+* Fix - Issue when using WPML, the **shop.products** variable would sometimes not be language filtered
+* Fix - Issue when using WPML, **MailChimp for WordPress** trigger not working for languages other than the site default
+
+2017-10-26 - version 3.3.1.3
+* Fix - Use of wc_get_coupon_id_by_code() function not backwards compatible before WC 3.0
+
+2017-10-23 - version 3.3.1.2
+* Fix - Error when using the log **Re-run workflow** for delayed workflows
+
+2017-10-19 - version 3.3.1.1
+* Fix - Issue with cart totals being incorrectly calculated in some cases
+
+2017-10-18 - version 3.3.1
+* Fix - For issue in WooCommerce 3.2 when manually creating orders or subscriptions
+* Tweak - Improve expired coupon clearing scalability
+* Tweak - Use async hooks for order and subscription status changes
+* Tweak - Add filter to allow modification of cart price currency
+* Tweak - Add filter to allow modification of admin settings
+
+2017-10-04 - version 3.3.0
+* Tweak - **BEHAVIOUR CHANGED** - The triggers **Subscription Payment Complete** and **Subscription Payment Failed** now only trigger for renewal payments and have been renamed accordingly.
+* New - Add order data to **Subscription Renewal Payment Complete** and **Subscription Renewal Payment Failed** triggers
+* New - Added rule **Customer Is Subscribed To MailChimp List?**
+* New - Added rule **Customer's Purchased Categories - All Time**
+* New - Added rule **Cart Item Tags**
+* New - Added rule **Subscription Status**
+* New - Ability to re-run a workflow from a log
+* New - Support for multiple recipients on SMS action
+* New - Ability to filter AutomateWoo admin pages by guest customers
+* New - Ability to change number of items per page in AutomateWoo admin pages
+* New - Improvements to coupon generation including a filter to modify length and option to remove prefix
+
+2017-09-19 - version 3.2.7
+* New - Add option to disable session tracking
+* Tweak - Improve display of variable product titles
+* Tweak - Hide shipping message from carts if shipping is not required
+* Fix - Issue with strings in the 'Order Table' not being translated with WPML
+
+2017-09-10 - version 3.2.6
+* New - Add the shipping total to cart tracking and templates
+* New - Add variation meta data to cart templates
+* New - Add trigger **Subscription Before End**
+* New - Add option to link the **cart.link** variable to the checkout page instead of the cart page
+* New - Add setting to change the cart deletion date
+* New - Add settings to change the email sender name and email
+* Fix - Issue with manual order trigger when using order item data
+
+2017-08-28 - version 3.2.5
+* New - Added detailed admin view for guest data
+* New - Added sorting options to the **shop.products** variable
+* Tweaks - Improvements to background processor stability
+
+2017-08-23 - version 3.2.4.1
+* Fix - Issue with **Subscription Before Renewal** trigger since 3.2.3
+
+2017-08-21 - version 3.2.4
+* Performance - Optimized numerous database queries across in different areas of the plugin
+* Performance - Implemented new background processor for abandoned cart and queued workflow processing
+* Tweak - Improvements to abandoned cart tracking logic
+
+2017-08-14 - version 3.2.3
+* New - Added unsubscribe links to emails using the plain text template
+* New - Added variables **order.shipping_method** and **order.payment_method**
+* New - Added rules **Product** and **Product Categories**
+* Performance - Implemented new background processor for **Subscription Before Renewal** and **Wishlist Item On Sale** triggers
+* Tweak - Improvements to multilingual cart tracking for WPML
+
+2017-08-08 - version 3.2.2
+* Fix - Issue with the **Customer Win Back** trigger sending duplicate emails to guest customers
+* Tweak - Add support for cheque, bank, invoice payments to the **Order Payment Received** trigger
+* Tweak - Renamed **Order Payment Received** trigger to **Order Paid**
+
+2017-08-07 - version 3.2.1
+* Tweak - Switch to a more widely supported modulus method
+
+2017-08-01 - version 3.2.0
+* New - Implemented use of background processor to improve stability and scalability
+* New - Added support for guest customers to the **Customer Win Back** trigger
+* New - Optimized the **Customer Win Back** trigger using the background processor
+* New - Added notices / explanation for failed queued events
+* New - Added support for variables in the Google Analytics tracking workflow option
+* Tweak - Removed blocking of certain CSS properties in emails
+* Tweak - Removed the product description from the product rows template based on customer feedback
+* Fix - UI conflict with the new version of the Members plugin
+* Fix - Improved emoji support
+* Fix - Improved compatibility with WPML
+* Fix - Issue where the pending payment trigger could fire twice when using the **Change Order Status** action
+
+2017-07-21 - version 3.1.1
+* New - Guest and cart admin tables are now sortable by column
+* New - Add variable **subscription.meta**
+* Various minor tweaks
+
+2017-07-14 - version 3.1.0
+* New - Added rule **Order Coupons - Text Match**
+* New - Added rule **Review Rating**
+* New - Added rule **Customer Review Count**
+* New - Added a 'maximum days since last purchase' field to the **Customer Win Back** trigger so the trigger now supports a date range
+* Tweak - Improved license page UX and separated the page from the settings area
+* Tweak - Added support for subscription renewals events to the triggers **Order Pending Payment** and **Order Created**
+* Fix - Issue with the trigger **Subscription Before Renewal** that could potentially cause duplicate triggers to fire
+
+2017-07-10 - version 3.0.5
+* Fix - Object caching issue with W3 Total Cache that affected customer objects
+
+2017-07-02 - version 3.0.4
+* New - Added variable **customer.company**
+* Fix - Issue where fatal error was being caused by the generate coupon variable
+
+2017-06-26 - version 3.0.3
+* New - Added option to append a string to product URLs in product templates, useful for linking directly to **#tab-reviews** for example
+* New - Added a simple product template that displays products in a comma separated list
+* New - Added variable **customer.tags** which displays a list of the customers tags
+* New - Guests admin list view is now searchable
+* New - Queue admin list view now includes more info in a modal view
+* Tweak - Conversion tracking is now based on the order placed date rather than order completed date
+* Fix - Issue where guest customers were not properly converted to user customers on account creation, this was causing some issues with missing conversions
+
+2017-06-20 - version 3.0.2
+* Tweak - Improved performance and UX of **Clear Queued Events** action
+* Fix - WPML issue with customer triggers since 3.0
+
+2017-06-13 - version 3.0.1
+* Tweak - Improved compatibility with LocoTranslate plugin
+* Tweak - Update German translation and fixed some incorrect text domains
+* Fix - Issue with the **product.meta** variable not supporting product variations
+* Fix - Issue with new **Cart Abandoned** trigger, guest carts were failing in the queue
+
+2017-06-09 - version 3.0.0
+**Database Upgrade Required** - Migrates the user data type to the newly added customer data type
+
+* New - Added the **customer** data type which supports both guest and registered customers which means many triggers can now support both customer types instead of having to create duplicate workflows
+* New - Added the **review** data type to be used instead of the **comment** data type for future review based features
+* New - Added trigger **Cart Abandoned** to support both guest and registered customers
+* New - Added trigger **New Review Posted** to support both guest and registered customers
+* New - Added variables **review.content** and **review.rating**
+* New - Added trigger **Subscription Created**
+* New - Added trigger **MailChimp for WordPress - Form Submission**
+* New - Added fixed workflow timing option
+* New - German translation added
+* Tweak - The trigger **Customer Order Count Reaches** now supports guest customers
+* Tweak - The trigger **Customer Total Spend Reaches** now supports guest customers
+* Tweak - Abandoned cart triggers have been rebuilt, improved efficiency and timing functions
+
+2017-05-24 - version 2.9.17
+* New - Added variable **product.description**
+* Tweak - Improvements to abandoned cart tracking
+* Tweak - Added cart created date to cart modals
+
+2017-05-11 - version 2.9.16
+* Tweak - Added an extra check to ensure carts are cleared after order is placed
+* Fix - Potential issue where order tables in emails could appear differently in preview due to payment gateway classes not being instantiated
+* Fix - Fix a few minor WooCommerce 3.0 notices
+
+2017-04-28 - version 2.9.15
+* New - Added rules **Subscription Items** and **Subscription Item Categories**
+* Tweak - Improve efficiency of update checks
+* Tweak - Minor admin UX improvements
+
+2017-04-26 - version 2.9.14
+* Fix - Issue where generated coupons could be mistakenly cleared if running WooCommerce 3.0
+
+2017-04-21 - version 2.9.13
+* Tweak - Change license status check timeout to option instead of transient due to unexpected behaviour from some cache plugins leading to excessive API checks
+* Tweak - Improvements to cart restore process, success / errors notices are now displayed
+* Fix - Issue with some admin enhanced selects not initiating
+
+2017-04-13 - version 2.9.12
+* Tweak - Allow colons and commas in variables, disallow single quotes
+* Fix - Add support for WooCommerce Subscriptions 2.2.0 date changes
+* Fix - Potential bug with WPML integration
+* Fix - Potential URL encoding issue with guest tracking javascript
+
+2017-04-10 - version 2.9.11
+* Tweak - The trigger **Wishlist Item On Sale** now only triggers for newly on sale products and is now processed in batches
+* Fix - Tax issue when using the 'Shop base address' calculation option
+* Fix - Potential admin js conflict
+
+2017-04-04 - version 2.9.10
+* New - Improve support for WooCommerce email customizer plugins
+* Fix - Make User Tag related strings translatable
+* Fix - Minor WooCommerce 3.0 update for subscription items
+* Fix - Rare issue with generated coupons
+
+2017-04-04 - version 2.9.9
+* New - Added rule **Cart Item Categories**
+* Fix - Missing data item on the **Wishlist Item On Sale** trigger
+
+2017-04-03 - version 2.9.8
+* New - Added variables **guest.first_name** and **guest.last_name**
+* New - Added option to enable or disable auto deletion of expired coupons
+* Refactor - Namespace all variables are now, backwards compatibility maintained for all base classes
+* Tweak - A few more changes required for WooCommerce 3.0
+* Fix - Issue with the **Wishlist Item On Sale** trigger for YITH Wishlists
+
+2017-04-01 - version 2.9.7.1
+* Fix - Issue where generated coupons could be mistakenly deleted if no expiry date was set
+
+2017-03-31 - version 2.9.7
+* Data Update - Added meta table for queue data which is needed for future planned features
+* New - Scheduled day timing field now supports multiple days
+* Fix - Potential issue when scheduling the **User Win Back** trigger
+* Fix - Variable validation was missing on email body fields
+
+2017-03-27 - version 2.9.6
+* New - Added variable **subscription.items**
+* New - Added variable **subscription.billing_address**
+* New - Added variable **subscription.shipping_address**
+* New - Added variable **order.customer_details**
+* New - Added variable **user.billing_country**
+* Tweak - Run the **User Account Created** trigger action asynchronous for better compatibility with signup forms workflows
+* Tweak - Renamed the trigger **User Has Not Purchased For Period** to **User Win Back**
+* Tweak - Added workflow timing support to the **User Win Back** trigger
+* Fix - Bug in the manual order trigger tool
+* Fix - Log view button not working on the dashboard
+
+2017-03-21 - version 2.9.5
+* New - **BEHAVIOUR CHANGED** - Generate coupon variables now have a **limit** parameter (defaults to 1) that is used instead of the usage limit field on the template coupon
+* New - Added meta data rules - user meta, order meta, order item meta and subscription meta
+* New - Add two new rule string compare types - **Blank** and **Not Blank**
+* New - Added support for new date handling in WooCommerce 3.0
+* Tweak - Improved the dashboard by added a 90 day report option and added the date range to full report links
+* Tweak - Checkout capture fields are now stored on the 'change' event in addition to 'blur' due to varying behaviour from some browsers
+* Tweak - Field classes are now all namespaced for consistency, backwards compatibility has been maintained
+* Tweak - Improved logic for the **User Role** rule when given a guest customer
+* Tweak - Added support for guest customers to the **User Total Spent** rule
+* Fix - Issue that could cause rules to wrongly return true if the value of the rule was zero
+
+2017-03-13 - version 2.9.4
+* New - Added **Note Type** option to **Order Note Added** trigger
+* New - Added rule **Order Customer Provided Note**
+* New - Added variable **order_note.content**
+* New - Added support for new enhanced selects boxes in WooCommerce 3.0
+
+2017-03-10 - version 2.9.3
+* Fix - Issue with the **Order Includes Product From Category** trigger
+* New - Internal changes to support WooCommerce 3.0
+
+2017-03-08 - version 2.9.2
+* Fix - Issue with the **User Has Not Purchased For Period** trigger
+
+2017-03-03 - version 2.9.1
+* UX - Improvements to workflow edit screen
+* Fix - Potential issue with Order Pending trigger logic
+* Fix - Reduce ActiveCampaign cache timeout to prevent issues when manually creating contacts
+
+2017-02-25 - version 2.9
+* New - Added **Scheduled** workflow timing option
+* New - Auto-delete expired AutomateWoo generated coupons
+* New - Added trigger **Membership Created**
+* New - Added trigger **Order Placed - Each Line Item**
+* New - Added trigger **Order Status Change - Each Line Item**
+* New - Added trigger **Order Payment Received - Each Line Item**
+* New - Added trigger **Subscription Status Changed - Each Line Item**
+* New - Added rule **Order Item Categories**
+* New - Added rule **Order Items Names - Text Match**
+* New - Added rule **Guest Order Count**
+* New - Added rule **Order Is Subscription Renewal?**
+* New - Added variable **order.customer_note**
+* New - Added variable **comment.content**
+* New - Added action **Delete User Membership**
+* New - Added action **MailChimp - Update List Contact Field**
+* New - Added action **ActiveCampaign - Update Contact Custom Field**
+* New - Added action **Add/Update Customer Provided Note**
+* New - Added meta table for guest data, internally record more guest data
+* New - Internal changes to support WooCommerce 3.0
+* New - Internal changes to object caching
+* New - Internal changes to improve loading of triggers and actions
+* New - Plugin is now namespaced
+* Fix - Updated ActiveCampaign API library
+* Fix - Issue with subscription variations workflow logic
+* Fix - Missing user name data when using the new user account trigger at checkout
+
+2017-01-10 - version 2.8.6
+* New - Added variable order.reorder_url, when clicked it fills the cart with the items from the previous order
+* New - Record guest IP addresses
+* New - Improved support for the Ultimate Members plugin, specifically with frontend user registrations
+* New - Added action 'Add / Update Customer Shipping Note'
+* New - The trigger 'User Has Not Purchased For Period' now supports order data from the customer's most recent order
+* Tweak - Email URL endpoints have been changed e.g. **?aw-click-track=1** is now **?aw-action=click**, backwards compatibility will be maintained until the next major release
+* Tweak - Performance and security improvements and some refactoring around the AW_Mailer class
+* Fix - Issue with the trigger **Subscription Before Renewal**
+* Fix - Issue where duplicate unsubscribe notices could appear when unsubscribing
+
+2016-12-27 - version 2.8.5
+* Fix - Rare issue related to WPML integration
+* Fix - Rare plugin conflict
+
+2016-12-18 - version 2.8.4
+* New - Added separate admin tab for coupons generated by AutomateWoo
+* Tweak - Improve date display for translations
+* Fix - Date comparision issue on some server environments
+* Fix - Issue that could allow duplicate memberships for a user
+
+2016-12-13 - version 2.8.3
+* New - Added trigger: Membership Status Changed for use with the WooCommerce Memberships plugin
+* New - The Change Membership Plan action now also supports membership creation and has been renamed as such
+* Tweak - Variable has been slightly changed, parameter values now use single quote delimiters but the old style is still supported
+* Tweak - New abandoned cart workflows no longer trigger for carts that were created more than five days before the workflow was created,
+since carts are stored for 45 days this is to prevent new workflows from triggering for old carts at strange times
+* Fix - Admin area: Fix email preview error when the WordPress visual editor is disabled
+
+2016-12-05 - version 2.8.2
+* New - Added rule: User's Order Statuses
+* New - Added rule: Workflow Run Count For Order
+* Tweak - Now when a workflow is deleted all related logs, queue and unsubscribes are also deleted
+* Tweak - Improved phone number support for some countries
+* Tweak - When user name is not set fallback to subscription billing name if present
+* Security and performance improvements
+* Other minor fixes
+
+2016-11-23 - version 2.8.1
+* Fix - Potential dashboard issue
+
+2016-11-22 - version 2.8.0
+* New - Added a Dashboard page
+* New - Added action to enable changing a WooCommerce Memberships plan for a user
+
+2016-11-15 - version 2.7.8
+* New - Moved table views for queue, carts, guests and unsubscribes from reports to plugin sub-menu for quicker access
+* New - Improved UI for table views and added a short description for each view
+* New - Added filtering and bulk editing to unsubscribes table view
+* New - Added basic validation when using variables, warns if an invalid variable type is used
+* Tweak - More parameters are now passed to product display templates for greater customization
+
+2016-11-15 - version 2.7.7
+* New - Add date created columns for queue and carts tables for future reports
+* Fix - Mailer bug affecting the Refer A Friend add-on
+
+2016-11-12 - version 2.7.6.1
+* Fix - System check for database tables false positive issue
+
+2016-11-11 - version 2.7.6
+* New - Added trigger: Order Payment Complete
+* New - Unsubscribe functions have been expanded to support guest emails
+* New - Added system check for installed database tables
+* Fix - Issue where guests records were not cleared when after checkout sign up
+* Fix - PHP warning in admin reports
+
+2016-11-09 - version 2.7.5
+* New - Added unsubscribe importer tool
+* Fix - Issue where product prices would incorrectly display excluding tax for some templates and tax settings
+* Tweak - Various improvements to abandoned cart tracking logic
+
+2016-11-05 - version 2.7.4
+* Tweak - Provide more error info for email and SMS actions in the logs and from sent tests
+
+2016-11-04 - version 2.7.3
+* Fix - Issue when editing user tags in the user profile area and via bulk edit
+
+2016-11-04 - version 2.7.2
+* Tweak - Added option to trigger 'User Has Not Purchased For Period' that allows control over whether the trigger fires repeatedly or just once for each purchase
+* Tweak - Added a filter 'automatewoo/workflow/is_user_unsubscribed'
+
+2016-11-02 - version 2.7.1
+* New - Added rule 'User Is Active Subscriber?'
+* Tweak - Changed queue checking to five minute intervals and reduced default batch size
+* Tweak - Order counting functions now excludes cancelled, failed and refunded orders
+
+2016-10-28 - version 2.7
+
+**Database Upgrade Required** - Migrates the ActiveCampaign actions as required by the new action format.
+
+* New - Added detailed cart info to the active cart report, shows products, coupons and taxes
+* New - Added flexibility to ActiveCampaign actions, previously they only supported the user data type, now they can support guests and advocates.
+* New - Added the product template 'Order Table' for the 'order.items' variable which renders the same order table used in the standard WooCommerce transactional emails
+* New - Added Variable 'user.billing_phone'
+* Performance - Separated frontend and admin ajax endpoints to reduce overhead
+* Performance - Added database indexes for all custom tables
+* Performance - Removed use of Campaign Monitor and Mad Mimi PHP API wrappers as they were not PHP7 ready and majority of the code was not in use
+* Performance - Removed the original 'Add To MailChimp' action that was deprecated about a year ago and was replaced by an improved alternative
+* Tweak - Changed email preview popup JS so that the popup doesn't get blocked by browsers
+* Tweak - Trigger 'User Has Not Purchased For Period' no longer treats failed/cancelled orders as purchases
+* Tweak - Images in the Product Rows and Cart Table templates no longer get filter through frontend filters as this was causing unexpected results for some users
+* Tweak - Trigger 'Order Includes Product from a Specific Category' now supports the data types 'product' and 'order_item'
+* Fix - Trigger 'User Has Not Purchased For Period' now treats subscription renewals as purchases
+
+2016-10-14 - version 2.6.10
+* New - Added rule 'User Purchased Products'
+* New - Added order_item data to the 'User Purchases Product' trigger
+* New - Added variable order_item.meta
+* New - Improvements to queue report
+* Fix - Potential encoding issue with email click tracking URLs
+* Fix - Typo in unsubscribe form template
+* Tweak - Refactored how log data was stored and retrieved
+* A number of other minor fixes and internal improvements
+
+2016-10-07 - version 2.6.9
+* Fix - Compatibility issues with older versions of WordPress and WooCommerce
+
+2016-09-30 - version 2.6.8
+* New - Added support for subscription variations to all subscription triggers
+* Tweak - Added action 'automatewoo/email/before_send'
+
+2016-09-22 - version 2.6.7
+* New - Allow custom email templates to have a custom email 'from name' and 'from email'
+* Tweak - Rules admin box text
+* Fix - Compatibility issue with older WooCommerce versions (only affected Refer A Friend add-on)
+
+2016-09-15 - version 2.6.6
+* New - Added constant AW_PREVENT_WORKFLOWS which, if true, prevents all workflows from running and instead adds a WooCommerce log entry for each run
+* Tweak - Improve auto fixing of URLs in email content
+
+2016-09-08 - version 2.6.5
+* Tweak - Avoid conflict with YITH email customizer plugin
+* Fix - Compatibility issue with older WooCommerce versions
+
+2016-09-05 - version 2.6.4
+* Fix - Missing settings field type for the Refer A Friend add-on
+* Minor admin text tweaks and fixes
+
+2016-09-02 - version 2.6.3
+* New - Added variables order.billing_address and order.shipping_address
+* Tweak - When sending a test email coupons will now be generated and labeled as test coupons, previously coupons did not persist
+* Fix - Issue with user first and last name's not found for queued workflows based on guest orders
+* Fix - Degradation issue with unsupported PHP versions
+
+2016-08-31 - version 2.6.2.2
+* Fix - Issue with the 'Order Is Customer's First' rule
+
+2016-08-31 - version 2.6.2.1
+* Fix - Config issue with 'Abandoned Cart (Users)' trigger
+
+2016-08-29 - version 2.6.2
+* New - Added Trigger 'Subscription Before Renewal'
+* New - Support added for the plugin [Email Customizer for WooCommerce](https://codecanyon.net/item/email-customizer-for-woocommerce/8654473)
+* Tweak - Improvements to 'User Has Not Purchased For a Set Period' trigger.
+It now checks for inactive users once a day rather than once a week and the queries are far more efficient.
+* Tweak - Refactored admin settings code and abandoned cart triggers
+* Fix - Issue where the order count and total spent for the user was not correct due to event ordering
+* Fix - Rare issue where AW admin menu did not appear
+* Fix - Admin list table issue with older WP versions
+
+2016-08-23 - version 2.6.1
+* New - Improve workflow statuses - now they are either Active/Disabled rather than the standard WordPress post statuses.
+Also there is a new UI that gives admins a nice way to manage which workflows are active. Please note there is a database migration for the new statuses.
+* New - Added Rule: Order Coupons
+* New - Added Rule: Cart Coupons
+* New - Added Rule: Cart Items
+* New - Added Variable: order.date
+* New - Abandoned carts now support coupons
+* Tweak - Internal improvements to ActiveCampaign integration
+* Fix - Issue with sending test emails
+
+2016-08-18 - version 2.6
+* New - [Rules](https://automatewoo.com/version-2-6/) - Workflow trigger options have been completely rebuilt into rules with a better UI and more flexibility.
+If you are developing custom triggers please note that a number of methods have been deprecated more info can be found in the [release post](https://automatewoo.com/version-2-6/)
+* New - Add multi status support to 'Order Status Changes' trigger
+* Fix - Better tax support for the Cart Table product display template
+
+2016-08-09 - version 2.5.2
+* New - Add 'Top Selling' option for the shop.products variable
+
+2016-08-02 - version 2.5.1
+* Fix - Issue with saving settings from v2.5
+
+2016-08-01 - version 2.5
+* New - Manual Order Trigger Tool - Can be used to run a workflow on existing orders
+* New - Bulk deletion is now supported on logs, guests, conversions, carts and queued event
+* Tweak - Logs list view has been moved to its own menu item (one less click to get to)
+* Tweak - Tools also moved from settings to its own menu item
+* Tweak - Dropped support for WP shortcodes in the email body because the markup outputted by shortcodes is generally not intended for use in HTML emails
+* Fix - Issue where empty carts could stored if capturing emails from non checkout pages
+* Fix - {{ order_item.attribute }} variable was not loading correctly
+
+2016-07-28 - version 2.4.14
+* New - Add variables user.order_count user.total_spent
+* Tweak - Add filter for guest capture selectors 'automatewoo/guest_capture_fields'
+
+2016-07-27 - version 2.4.13
+* New - Add limit parameter to product display templates
+* Fix - Issue with the loading of admin wysiwyg editors
+* Fix - Issue where abandoned carts could be restored multiple times if all items were removed and the restore token was still present in the URL
+* Tweak - Tidy up admin page URLs
+
+2016-07-20 - version 2.4.12
+* Fix - Issue where the 'Cart Table' product template could display zero as the line total
+* Fix - Validation issue on subscription products field
+* Tweak - Minor improvement to abandoned cart tracking
+* Tweak - Internal changes for better add-on integration
+
+2016-07-18 - version 2.4.11
+* New - Add support for multiple categories/tags when using the {{ shop.products }} variable
+* New - Automatically add country codes for SMS recipients when using the {{ order.billing_phone }} variable
+* Tweak - Refactor how trigger options should be accessed to improve efficiency. Two methods have been deprecated
+
+2016-07-14 - version 2.4.10
+* Tweak - Add guests support for MailChimp actions
+
+2016-07-12 - version 2.4.9
+* New - Added Trigger - New Guest Captured
+* New - Added Report - Guests
+* Tweak - Add setting to enable/disable abandoned cart tracking (default is enabled)
+* Tweak - Add filter for session tracking cart cookie name
+* Tweak - Make dates inclusive for the manual subscription trigger tool
+
+2016-07-07 - version 2.4.8
+* Fix - Issue where conversion tracking logic could miss a newly registered customer's conversion
+* Fix - Issue with guest abandoned carts caused by the variable refactoring in v2.4.7
+
+2016-07-05 - version 2.4.7
+* New - User type select boxes on triggers now allow multiple selections
+* Tweak - Refactor variable filters to allow for easier integration from 3rd party developers
+* Tweak - Improve session tracking to better support varnish caching
+* Tweak - Remove short descriptions from the product grid templates
+
+2016-06-30 - version 2.4.6
+* Tweak - Improve performance by loading some classes with dependency injection
+* Tweak - Improvements to session tracking logic
+* Tweak - Automatically close variable modal after copy to clipboard action
+* Tweak - Code refactoring around variables and data types
+* Tweak - Add filters **automatewoo/mailer/from_address**, **automatewoo/mailer/from_name**
+
+2016-06-24 - version 2.4.5
+* New - Improve tools UI and add a new tool 'Manual Subscriptions Trigger'
+* Tweak - On order triggers the 'Is Users First Order?' also checks for any guest orders that match a users email
+* Tweak - Added support product variation images in product display templates
+* Tweak - Internal improvements and code refactoring
+
+2016-06-20 - version 2.4.4
+* Fix - Issue with 'Subscription Payment Failed' trigger
+
+2016-06-15 - version 2.4.3
+* New - Consolidate AutomateWoo pages under a single admin menu item. Required for when new pages will be added in the future.
+* New - Add system check for PHP version
+* New - 'User Has Not Purchased For a Set Period' trigger is now processed in batches to support huge user counts
+* New - Improvements to license page UI
+* Other minor fixes and performance improvements
+
+2016-06-10 - version 2.4.2
+* Tweak - Add a filter to allow modification of a workflow variable's value
+* Fix - Issue on some servers where variable modals did not display correctly
+
+2016-06-07 - version 2.4.1
+* Fix - Issue where pending payment triggers would not fire when 'pending' was the unchanged initial status of an order
+
+2016-06-06 - version 2.4
+* New - [New UI for workflow variables](https://automatewoo.com/introducing-new-ui-workflow-variables/)
+* Tweak - Cart restore links are now use a token rather than ID for added security
+
+2016-05-06 - version 2.3.4
+* Fix - Product images sizing issue
+
+2016-04-26 - version 2.3.3
+* Tweak - Additional check for the **New User Account Created** trigger
+
+2016-04-24 - version 2.3.2
+* New - Added template **cart-table.php** added for use with the {{ cart.items }} variable
+* Fix - Issue where product images width could overflow on some custom email templates
+
+2016-04-20 - version 2.3.1
+* Tweak - Improvements to MailChimp API Integration
+
+2016-04-13 - version 2.3
+* New - WPML Support
+* New - Upgrade MailChimp API to 3.0
+* New - WooPOS Support
+* New - Added trigger 'Wishlist - User Adds Product' (YITH only)
+* New - Added trigger 'Trigger Order Action'
+* New - Add system checker tool that can check if WP cron is functioning
+* New - Add current queue count to workflows admin column
+* Tweak - Abandoned cart data is now split into 2 tables, 1 for guests, 1 for carts
+* Tweak - Refactor and improve session tracking code
+* Fix - Gmail image aspect ratio issue
+
+2016-03-25 - version 2.2.1
+* New - Added option on abandoned cart triggers to limit send frequency for a user/guest
+* Tweak - Add fallback for user.firstname and user.lastname to order billing fields
+* Tweak - Minor improvements to Wishlist triggers, add descriptions
+* Tweak - Add new email/styles.php template, add image alignment classes
+
+2016-03-16 - version 2.2
+* New - Logs Report now has a modal which displays additional info
+* New - Added report that shows a details conversions list
+* New - Added 'Unique Clicks' dimension to click tracking report
+* New - Added action 'Resend Order Emails'
+* New - Added trigger 'Order Note Added'
+* New - Added variable {{ shop.products }} supports displaying products by category, tag or custom filter
+* New - Added variable {{ order.related_products }}
+* New - Custom email templates can have dynamic content via the new AW_Mailer_API
+* New - Added trigger 'Order Note Added'
+* New - Added tool added that lets you reset all records for a workflow
+* New - Added action 'Clear Queued Events'
+* Tweak - Email tracking click events now also count as an open if one has not already been recorded (images may be have been blocked)
+* Tweak - Email content has a new filter specifically designed for sending instead of using 'the_content'
+* Fix - Some dates we're being shown as GMT
+* Fix - Bug where Google Analytics tracking codes we're not being appended to URLs
+
+2016-02-28 - version 2.1.14
+* Tweak - Minor improvement to conversion tracking logic
+* Tweak - Improve display of date and time fields in admin area
+* Tweak - Improve 'Unsubscribe' link flexibility
+* Tweak - Add CHANGELOG.md file
+
+2016-02-20 - version 2.1.13
+* Fix – Allows plugin to continue to work as normal after license expiry
+* Tweak – Remove license email field, activation to happen via license key only
+* Tweak – Add a dismissible admin notice when license has expired
+* Tweak – Dev installs now require a valid license key
+
+2016-02-08 - version 2.1.12
+* New – Added trigger – Guest leaves review
+* Fix – Issue where reviews that were immediately approved did not get caught by user review trigger
+
+2016-02-06 - version 2.1.11
+* New – Improved UI for email preview
+* New – Ability to send an email preview as a test
+* New – Ability to define an order in which workflows will run when triggered
+* New – Trigger Order Includes a Specific Product now supports product variations
+
+2016-02-03 - version 2.1.10
+* New – Support for the [WooThemes Shipment Tracking](https://www.woothemes.com/products/shipment-tracking/) plugin with new variables
+	* {{ order.tracking_number }}
+	* {{ order.tracking_url }}
+	* {{ order.date_shipped }}
+	* {{ order.shipping_provider }}
+* New – Improved abandoned cart delay accuracy, 15 minute intervals are now possible
+* New – Support for triggers to have descriptions in the backend
+* Tweak – User type and user tag fields will be revalidated before a queued run
+* Fix – Removed the guest select option on the Abandoned Cart (Users) trigger
+
+2016-01-29 - version 2.1.9.1
+* Fix – Potential fatal error on some servers
+
+2016-01-29 - version 2.1.9
+* New – Google Analytics tracking on URLs in SMS body
+* New – Added trigger: Order Placed fires as soon as an order is created in the database regardless of status
+* New – Added variable {{ order.view_url }}
+* New – Added variable {{ order.payment_url }}
+* Fix – Issue for email tracking URLs with ampersands in them
+* Improvement to payment gateway select box stability
+* Internal improvements and code refactoring
+
+2016-01-18 - version 2.1.8
+* Fix – Bug preventing the user.meta variable from working
+* Tweak – Abandoned cart are processed every 30 mins rather than every hour to improve time accuracy
+* Tweak – Minor improvements to cron
+
+2016-01-12 - version 2.1.7
+* Fix – Issue where user tags could not be managed in WP 4.1.1
+
+2015-12-28 - version 2.1.6
+* New – Add option to delete or unsubscribe user on the Remove from MailChimp list action
+* Tweak – Improvements to abandoned cart clearing logic
+* Tweak – Improvement to automatewoo_custom_validate_workflow filter
+* Tweak – Simulate signed out user when previewing emails
+* Fix – MailChimp lists transient key was incorrect
+
+2015-12-15 - version 2.1.5
+* New action: Change Subscription Status
+* New variable: {{ subscription.view_order_url }}
+* Internationalize phone number for SMS actions
+* Cron stability improvements
+
+2015-12-05 - version 2.1.4
+* Option to add Google Analytics Campaign tracking params to links in emails
+* Fix to subscription products field logic
+* Make Times Run value a link to a filtered logs view
+
+2015-12-03 - version 2.1.3
+* Add ability to filter logs by workflow and by user
+* Logic fix for subscriptions skip first payment option
+* Fix issue with {{ shop.products_on_sale }} variable
+* Ensure WooCommerce Subscriptions is at least version 2.0
+* Fix admin display issue with product select field
+
+2015-11-28 - version 2.1.2
+* Fix issue where the reports graph dates were not being converted to the site timezone
+* Fix an issue with email preview display
+* Improvement to the User Leaves Review trigger so that doesn’t fire until the comment is approved
+* New feature allowing export of users in a tag to CSV
+* Improvement to the user tag query for the user list admin view
+
+2015-11-25 - version 2.1.1
+[Check out the version 2.1 blog post](https://automatewoo.com/version-2-1/)
+
+2015-10-27 - version 2.0.2
+* Abandoned Cart email capturing can now be enabled on any form field, not just the checkout
+* Internal improvements
+
+2015-10-17 - version 2.0.1
+* Fix an issue where Send Email actions created before 2.0 might not be styled
+
+2015-10-14 - version 2.0.0
+[Check out the version 2.0 blog post](https://automatewoo.com/version-2/)
+* New: Plain text emails and custom email templates
+* New: Conversion tracking expanded to any workflow, not just abandoned cart
+* New: Customer tags
+* New: ActiveCampaign integration
+* New: Added report for currently stored carts
+* New: Once Per User checkbox has been changed to Limit Per User number field
+* New: Added trigger Workflow Times Run Reaches
+* New: Added trigger User Order Count Reaches
+* New: Added action Change Post Status
+* New: Order Status Changes trigger now lets you select a from and to status. This trigger also has support for custom order statuses.
+* New: Added options to target orders for specific countries or orders that used a certain payment method.
+* Tweak: Refactor abandoned cart code into model
+* Fix: Issue where some fields where not cloning on coupon generation
+* Fix: Issue where visitor key sometimes wasn’t stored for abandoned carts
+
+2015-09-26 - version 1.1.10
+* New Trigger: Order Payment Pending
+* Fix issue where {{ order.total }} was blank
+
+2015-09-23 - version 1.1.9
+* SMS Integration via Twilio
+* Performance Improvements
+
+2015-09-21 - version 1.1.8
+* Performance improvements
+* Bug fixes
+
+2015-09-14 - version 1.1.7
+* New Trigger: Order Includes Product from Taxonomy Term
+* New option on order triggers to select payment method
+
+2015-09-05 - version 1.1.6
+* New Trigger: Order Includes Product Variation with Specific Attribute
+* New Text Variable: {{ order_item.attribute | slug: … }}
+* New Action: Add User to Mad Mimi List
+
+2015-09-02 - version 1.1.5
+* Fix an issue where the license check could fail if WP Cron occurred over SSL
+
+2015-09-01 - version 1.1.4
+* New Trigger:  Order Includes Product from a Specific Tag
+* New Action: Change Order Status
+* New Action: Add/Update Product Meta
+
+2015-08-27 - version 1.1.3
+* Add an additional check to ensure stored abandoned carts are cleared when an order is created
+* Fix an issue where checking ‘Once Per User’ prevents order triggers firing for guests
+* Improvements to Conversion Tracking
+
+2015-08-24 - version 1.1.2
+* New report: Conversion tracking (Only tracks Abandoned Carts for now)
+* New Trigger Option: Check Status Hasn’t Changed Before Run (useful when queuing)
+* New Text Variable Parameter: template lets you define alternative templates for:
+	* {{ cart.items }}
+	* {{ order.items }
+	* {{ order.cross_sells }}
+	* {{ wishlist.items }}
+* New Email Product List Templates:
+	* product-grid-2-col.php
+	* product-grid-3-col.php
+	* product-rows.php
+* Important: template removed product-listing.php. Instead use product-grid-2-col.php
+* Admin area: Expanded actions will now stay expanded after saving
+
+2015-08-20 - version 1.1.1
+* Add conversion tracking on abandoned carts (report coming soon)
+* Fix an issue that prevented triggers firing after guest order
+
+2015-08-19 - version 1.1.0
+* Total overhaul of the Abandoned Cart system to now use pre-submit email capturing as well as detecting registered users when they aren’t logged in. Implement with new trigger: Abandoned Cart (Guests)
+
+2015-08-16 - version 1.0.6
+* New Text Variable {{ wishlist.itemscount }}
+* New Text Variable {{ order.number }}
+* Order Queue by Run Date
+* Improve Coupon Generation
+
+2015-08-13 - version 1.0.5
+* Adds integration with the free YITH Wishlists plugin
+* Change the image size of the ‘product.featured_image’ text variable
+* Improvements to cart tracking
+* Improvements to wishlist triggers
+
+2015-08-11 - version 1.0.4
+* Improvements to Abandoned Cart
+* Allow coupon prefix to be blank
+* Minor other fixes
+
+2015-07-30 - version 1.0.3
+* New feature: Preview ability on emails!
+* Security improvements
+* Internal improvements
+
+2015-07-28 - version 1.0.2
+* Fix some license issues
+
+2015-07-26 - version 1.0.1
+* UI Improvements to Text Variables
+	* Single click to select a  Text Variable
+	* Change editor to sans serif
+* Small changes to some labels
+
+2015-07-20 - version 1.0.0
+* Launch it!

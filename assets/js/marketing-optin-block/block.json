@@ -1,0 +1,22 @@
+{
+	"apiVersion": 2,
+	"name": "automatewoo/marketing-optin",
+	"version": "0.1.0",
+	"title": "AutomateWoo Marketing opt-in",
+	"category": "woocommerce",
+	"textdomain": "automatewoo",
+	"supports": {
+		"multiple": false
+	},
+	"attributes": {
+		"lock": {
+			"type": "object",
+			"default": {
+				"remove": true
+			}
+		}
+	},
+	"parent": ["woocommerce/checkout-contact-information-block"],
+	"editorScript": "file:../build/marketing-optin-block.js",
+	"editorStyle": "file:../build/marketing-optin-block.css"
+}

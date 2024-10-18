@@ -1,0 +1,16 @@
+<wpml-config>
+    <custom-types>
+        <custom-type translate="1">aw_workflow</custom-type>
+    </custom-types>
+    <custom-fields>
+        <custom-field action="translate">workflow_options</custom-field>
+        <custom-field action="translate">trigger_name</custom-field>
+        <custom-field action="translate">trigger_options</custom-field>
+        <custom-field action="translate">actions</custom-field>
+        <custom-field action="translate">rule_options</custom-field>
+    </custom-fields>
+    <admin-texts>
+        <key name="automatewoo_optin_checkbox_text"/>
+        <key name="automatewoo_communication_page_legal_text"/>
+    </admin-texts>
+</wpml-config>

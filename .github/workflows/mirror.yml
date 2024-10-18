@@ -1,0 +1,27 @@
+name: Mirror
+
+on:
+  schedule:
+    - cron: '0 10 * * *'
+  workflow_dispatch:
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Mirror
+        uses: pronamic/woo-plugin-mirror-action@main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          woo-access-token: ${{ secrets.WOOCOMMERCE_HELPER_ACCESS_TOKEN }}
+          woo-access-token-secret: ${{ secrets.WOOCOMMERCE_HELPER_ACCESS_TOKEN_SECRET }}
+          woo-product-id: 4652610
+          plugin-basename: automatewoo/automatewoo.php

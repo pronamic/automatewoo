@@ -194,7 +194,20 @@ class Queued_Event extends Abstract_Model_With_Meta_Table {
 				foreach ( $compressed_data_layer as $data_type_id => $compressed_item ) {
 					$data_type = DataTypes::get( $data_type_id );
 					if ( $data_type ) {
-						$uncompressed_data_layer[ $data_type_id ] = $data_type->decompress( $compressed_item, $compressed_data_layer );
+						$decompressed_data = $data_type->decompress( $compressed_item, $compressed_data_layer );
+						if ( ! $decompressed_data && $this->id ) {
+							$message = sprintf(
+								'Some of the required data was not found. Queued event ID: %s. The missing "%s" data\'s ID: %d.',
+								$this->id,
+								$data_type_id,
+								Clean::id( $compressed_item )
+							);
+							if ( 'subscription' === $data_type_id ) {
+								$message .= ' For example, the order or subscription order could have been deleted. This issue may occur when a subscription order initially fails due to payment issues, but later succeeds. In such cases, the subscription order with the failed payment is deleted, but its workflow remains intact.';
+							}
+							Logger::info( 'queued-event', $message );
+						}
+						$uncompressed_data_layer[ $data_type_id ] = $decompressed_data;
 					}
 				}
 			}

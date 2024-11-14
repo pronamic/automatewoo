@@ -1,5 +1,13 @@
 *** AutomateWoo Changelog ***
 
+2024-11-14 - version 6.1.1
+* Dev - Fix missing blueprint dependency.
+* Dev - WordPress 6.7 Compatibility: Fix the issue that E2E test.
+* Tweak - WC 9.4 compatibility.
+* Tweak - WP 6.7 compatibility.
+* Tweak - WordPress 6.7 Compatibility: Avoid errors in the database where a LONGTEXT type can't have a default value.
+* Tweak - Write a log message when the required data of the queued event was not found.
+
 2024-09-05 - version 6.1.0
 * Break - Remove WooCommerce Navigation integration.
 * Tweak - WC 9.3.0 compatibility.

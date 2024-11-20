@@ -1,5 +1,8 @@
 *** AutomateWoo Changelog ***
 
+2024-11-19 - version 6.1.2
+* Fix - Default email styles for hiding screen reader text.
+
 2024-11-14 - version 6.1.1
 * Dev - Fix missing blueprint dependency.
 * Dev - WordPress 6.7 Compatibility: Fix the issue that E2E test.

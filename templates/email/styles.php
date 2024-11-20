@@ -1,17 +1,16 @@
 <?php
-// phpcs:ignoreFile
 /**
  * Additional email styles that are added to every email template.
  * Override this template by copying it to yourtheme/automatewoo/email/
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+defined( 'ABSPATH' ) || exit;
 
-$bg              = get_option( 'woocommerce_email_background_color' );
-$body            = get_option( 'woocommerce_email_body_background_color' );
-$base            = get_option( 'woocommerce_email_base_color' );
-$text            = get_option( 'woocommerce_email_text_color' );
-$base_text       = wc_light_or_dark( $base, '#202020', '#ffffff' );
+$bg        = get_option( 'woocommerce_email_background_color' );
+$body      = get_option( 'woocommerce_email_body_background_color' );
+$base      = get_option( 'woocommerce_email_base_color' );
+$text      = get_option( 'woocommerce_email_text_color' );
+$base_text = wc_light_or_dark( $base, '#202020', '#ffffff' );
 
 ?>
 
@@ -157,16 +156,20 @@ a.automatewoo-button--large {
 
 
 .automatewoo-plain-email-footer {
-    font-size: 75%;
-    color:#999999;
+	font-size: 75%;
+	color:#999999;
 }
 
 .automatewoo-plain-email-footer a {
-    color:#999999;
+	color:#999999;
 }
 
 
 .aw-reviews-grid__item h3,
 .aw-reviews-grid__item p {
 	text-align: center;
+}
+
+.screen-reader-text {
+	display: none;
 }

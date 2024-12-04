@@ -185,6 +185,10 @@ class PresetParser implements PresetParserInterface {
 				break;
 
 			case WorkflowTimingFixed::TYPE:
+				if ( empty( $timing_options['fixed_date'] ) || empty( $timing_options['fixed_time'] ) ) {
+					throw new ParserException( 'Missing date and/or time!' );
+				}
+
 				try {
 					$date_string = sprintf( '%sT%s', $timing_options['fixed_date'], $timing_options['fixed_time'] );
 					$fixed_date  = new DateTime( $date_string );

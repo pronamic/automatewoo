@@ -3,7 +3,7 @@
  * Plugin Name: AutomateWoo
  * Plugin URI: https://automatewoo.com
  * Description: Powerful marketing automation for your WooCommerce store.
- * Version: 6.1.2
+ * Version: 6.1.3
  * Author: WooCommerce
  * Author URI: https://woocommerce.com
  * License: GPLv3
@@ -37,7 +37,7 @@ use Automattic\WooCommerce\Utilities\FeaturesUtil;
 defined( 'ABSPATH' ) || exit;
 
 define( 'AUTOMATEWOO_SLUG', 'automatewoo' );
-define( 'AUTOMATEWOO_VERSION', '6.1.2' ); // WRCS: DEFINED_VERSION.
+define( 'AUTOMATEWOO_VERSION', '6.1.3' ); // WRCS: DEFINED_VERSION.
 define( 'AUTOMATEWOO_FILE', __FILE__ );
 define( 'AUTOMATEWOO_PATH', __DIR__ );
 define( 'AUTOMATEWOO_MIN_PHP_VER', '7.4.0' );
@@ -125,21 +125,34 @@ class AutomateWoo_Loader {
 	public static function check() {
 		$passed = true;
 
-		/* translators: Plugin name. */
-		$inactive_text = '<strong>' . sprintf( __( '%s is inactive.', 'automatewoo' ), __( 'AutomateWoo', 'automatewoo' ) ) . '</strong>';
-
 		if ( version_compare( phpversion(), AUTOMATEWOO_MIN_PHP_VER, '<' ) ) {
-			/* translators: %1$s inactive plugin text, %2$s minimum PHP version */
-			self::$errors[] = sprintf( __( '%1$s The plugin requires PHP version %2$s or newer.', 'automatewoo' ), $inactive_text, AUTOMATEWOO_MIN_PHP_VER );
 			$passed         = false;
-		} elseif ( ! self::is_woocommerce_version_ok() ) {
-			/* translators: %1$s inactive plugin text, %2$s minimum WooCommerce version */
-			self::$errors[] = sprintf( __( '%1$s The plugin requires WooCommerce version %2$s or newer.', 'automatewoo' ), $inactive_text, AUTOMATEWOO_MIN_WC_VER );
+			self::$errors[] = function () {
+				/* translators: Plugin name. */
+				$inactive_text = '<strong>' . sprintf( __( '%s is inactive.', 'automatewoo' ), __( 'AutomateWoo', 'automatewoo' ) ) . '</strong>';
+				/* translators: %1$s inactive plugin text, %2$s minimum PHP version */
+				return sprintf( __( '%1$s The plugin requires PHP version %2$s or newer.', 'automatewoo' ), $inactive_text, AUTOMATEWOO_MIN_PHP_VER );
+			};
+		}
+
+		if ( ! self::is_woocommerce_version_ok() ) {
 			$passed         = false;
-		} elseif ( ! self::is_wp_version_ok() ) {
-			/* translators: %1$s inactive plugin text, %2$s minimum WordPress version */
-			self::$errors[] = sprintf( __( '%1$s The plugin requires WordPress version %2$s or newer.', 'automatewoo' ), $inactive_text, AUTOMATEWOO_MIN_WP_VER );
+			self::$errors[] = function () {
+				/* translators: Plugin name. */
+				$inactive_text = '<strong>' . sprintf( __( '%s is inactive.', 'automatewoo' ), __( 'AutomateWoo', 'automatewoo' ) ) . '</strong>';
+				/* translators: %1$s inactive plugin text, %2$s minimum WooCommerce version */
+				return sprintf( __( '%1$s The plugin requires WooCommerce version %2$s or newer.', 'automatewoo' ), $inactive_text, AUTOMATEWOO_MIN_WC_VER );
+			};
+		}
+
+		if ( ! self::is_wp_version_ok() ) {
 			$passed         = false;
+			self::$errors[] = function () {
+				/* translators: Plugin name. */
+				$inactive_text = '<strong>' . sprintf( __( '%s is inactive.', 'automatewoo' ), __( 'AutomateWoo', 'automatewoo' ) ) . '</strong>';
+				/* translators: %1$s inactive plugin text, %2$s minimum WordPress version */
+				return sprintf( __( '%1$s The plugin requires WordPress version %2$s or newer.', 'automatewoo' ), $inactive_text, AUTOMATEWOO_MIN_WP_VER );
+			};
 		}
 
 		return $passed;
@@ -180,9 +193,12 @@ class AutomateWoo_Loader {
 		if ( empty( self::$errors ) ) {
 			return;
 		}
-		echo '<div class="notice notice-error"><p>';
-		echo wp_kses_post( implode( '<br>', self::$errors ) );
-		echo '</p></div>';
+
+		foreach ( self::$errors as $error ) {
+			echo '<div class="notice notice-error"><p>';
+			echo wp_kses_post( $error() );
+			echo '</p></div>';
+		}
 	}
 
 	/**

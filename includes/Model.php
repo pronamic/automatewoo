@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
@@ -32,7 +31,7 @@ abstract class Model {
 	/**
 	 * @return int
 	 */
-	function get_id() {
+	public function get_id() {
 		return $this->id ? (int) $this->id : 0;
 	}
 
@@ -40,7 +39,7 @@ abstract class Model {
 	/**
 	 * @param int $id
 	 */
-	function set_id( $id ) {
+	public function set_id( $id ) {
 		$this->id = $id;
 	}
 
@@ -50,37 +49,39 @@ abstract class Model {
 	 *
 	 * @param array $row
 	 */
-	function fill( $row ) {
+	public function fill( $row ) {
 		if ( ! is_array( $row ) ) {
 			return;
 		}
 
-		$this->data = $row;
+		$this->data          = $row;
 		$this->original_data = $row;
-		$this->exists = true;
+		$this->exists        = true;
 
 		do_action( 'automatewoo/object/load', $this );
 	}
 
 
 	/**
-	 * @param $value string|int
-	 * @param $field string
+	 * @param string     $field
+	 * @param string|int $value
 	 */
-	function get_by( $field, $value ) {
+	public function get_by( $field, $value ) {
 
 		global $wpdb;
 
 		$row = $wpdb->get_row(
-			$wpdb->prepare( "
-				SELECT * FROM {$this->get_table_name()}
-		 		WHERE $field = %s
-			", $value
-			), ARRAY_A
+			$wpdb->prepare(
+				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				"SELECT * FROM {$this->get_table_name()} WHERE $field = %s",
+				$value
+			),
+			ARRAY_A
 		);
 
-		if ( ! $row )
+		if ( ! $row ) {
 			return;
+		}
 
 		$this->fill( $row );
 	}
@@ -92,7 +93,7 @@ abstract class Model {
 	 * @param string $key
 	 * @return mixed
 	 */
-	function __get( $key ) {
+	public function __get( $key ) {
 		return $this->get_prop( $key );
 	}
 
@@ -100,48 +101,48 @@ abstract class Model {
 	/**
 	 * Magic method for setting db fields
 	 *
-	 * @param $key
-	 * @param $value
+	 * @param string $key
+	 * @param mixed  $value
 	 */
-	function __set( $key, $value ) {
+	public function __set( $key, $value ) {
 		$this->set_prop( $key, $value );
 	}
 
 
 	/**
-	 * @param $key
-	 * @param $value
+	 * @param string $key
+	 * @param mixed  $value
 	 */
-	function set_prop( $key, $value ) {
+	public function set_prop( $key, $value ) {
 
 		if ( is_array( $value ) && ! $value ) {
 			$value = ''; // convert empty arrays to blank
 		}
 
-		$this->data[$key] = $value;
+		$this->data[ $key ]     = $value;
 		$this->changed_fields[] = $key;
 	}
 
 
 	/**
-	 * @param $key
+	 * @param string $key
 	 * @return bool
 	 */
-	function has_prop( $key ) {
-		return isset( $this->data[$key] );
+	public function has_prop( $key ) {
+		return isset( $this->data[ $key ] );
 	}
 
 
 	/**
-	 * @param $key
+	 * @param string $key
 	 * @return mixed
 	 */
-	function get_prop( $key ) {
-		if ( ! isset( $this->data[$key] ) ) {
+	public function get_prop( $key ) {
+		if ( ! isset( $this->data[ $key ] ) ) {
 			return false;
 		}
 
-		$value = $this->data[$key];
+		$value = $this->data[ $key ];
 		$value = maybe_unserialize( $value );
 
 		return $value;
@@ -151,10 +152,11 @@ abstract class Model {
 	/**
 	 * @return Database_Table
 	 */
-	function get_table() {
+	public function get_table() {
 
 		if ( ! isset( $this->table_id ) ) {
-			trigger_error( sprintf( 'AutomateWoo - %s is an incompatible subclass of %s. You may need need to update your AutomateWoo add-ons.', get_called_class(), get_class()), E_USER_ERROR );
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			wp_die( sprintf( 'AutomateWoo - %s is an incompatible subclass of %s. You may need need to update your AutomateWoo add-ons.', get_called_class(), __CLASS__ ) );
 		}
 
 		return Database_Tables::get( $this->table_id );
@@ -164,7 +166,7 @@ abstract class Model {
 	/**
 	 * @return string
 	 */
-	function get_table_name() {
+	public function get_table_name() {
 		return $this->get_table()->get_name();
 	}
 
@@ -204,8 +206,7 @@ abstract class Model {
 			}
 
 			do_action( 'automatewoo/object/update', $this ); // cleans object cache
-		}
-		else {
+		} else {
 			$this->data = array_map( 'maybe_serialize', $this->data );
 
 			// insert row
@@ -216,10 +217,11 @@ abstract class Model {
 
 			if ( $wpdb->insert_id ) {
 				$this->exists = true;
-				$this->id = $wpdb->insert_id;
+				$this->id     = $wpdb->insert_id;
 			} else {
-				$aw_catch_db_error = 'Error: '.$wpdb->last_error.' (Query: '.$wpdb->last_query.')';
-				Logger::critical( 'errors', sprintf( __( 'Could not insert \'%1$s\' item to database. AutomateWoo tables may not be installed. (%2$s)', 'automatewoo' ), $this->object_type, $aw_catch_db_error) );
+				$aw_catch_db_error = 'Error: ' . $wpdb->last_error . ' (Query: ' . $wpdb->last_query . ')';
+				/* translators: %1$s object type, %2$s DB error message and query */
+				Logger::critical( 'errors', sprintf( __( 'Could not insert \'%1$s\' item to database. AutomateWoo tables may not be installed. (%2$s)', 'automatewoo' ), $this->object_type, $aw_catch_db_error ) );
 
 				// Return here to prevent cache updates on error
 				return false;
@@ -231,7 +233,7 @@ abstract class Model {
 		// reset changed data
 		// important to reset after cache hooks
 		$this->changed_fields = [];
-		$this->original_data = $this->data;
+		$this->original_data  = $this->data;
 
 		return true;
 	}
@@ -240,33 +242,42 @@ abstract class Model {
 	/**
 	 * @return void
 	 */
-	function delete() {
+	public function delete() {
 		global $wpdb;
 
 		do_action( 'automatewoo/object/delete', $this ); // cleans object cache
 
-		if ( ! $this->exists ) return;
+		if ( ! $this->exists ) {
+			return;
+		}
 
-		$wpdb->query( $wpdb->prepare( "
-                DELETE FROM {$this->get_table_name()}
-		 		WHERE id = %d
-			", $this->get_id()
-		));
+		$wpdb->query(
+			$wpdb->prepare(
+				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				"DELETE FROM {$this->get_table_name()} WHERE id = %d",
+				$this->get_id()
+			)
+		);
 
 		$this->exists = false;
 	}
 
 
 	/**
-	 * @param $column
+	 * @param string $column
 	 * @return bool|DateTime
 	 */
 	protected function get_date_column( $column ) {
-		if ( $column && $prop = $this->get_prop( $column ) ) {
-			return new DateTime( $prop );
+		if ( ! $column ) {
+			return false;
 		}
 
-		return false;
+		$prop = $this->get_prop( $column );
+		if ( ! $prop ) {
+			return false;
+		}
+
+		return new DateTime( $prop );
 	}
 
 

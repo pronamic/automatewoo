@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
@@ -68,12 +67,12 @@ abstract class Query_Abstract {
 	/**
 	 * Possible compare values: =, <, > IN, NOT IN
 	 *
-	 * @param $column string
-	 * @param $value mixed
-	 * @param $compare bool|string - defaults to '=' or 'IN' if array
+	 * @param string      $column
+	 * @param mixed       $value
+	 * @param bool|string $compare - defaults to '=' or 'IN' if array
 	 * @return $this
 	 */
-	function where( $column, $value, $compare = false ) {
+	public function where( $column, $value, $compare = false ) {
 
 		// if $column is not a column, do a meta query instead
 		if ( ! array_key_exists( $column, $this->get_table_columns() ) ) {
@@ -81,9 +80,9 @@ abstract class Query_Abstract {
 		}
 
 		$this->where[] = [
-			'column' => $column,
-			'value' => $value,
-			'compare' => $compare
+			'column'  => $column,
+			'value'   => $value,
+			'compare' => $compare,
 		];
 
 		return $this;
@@ -93,17 +92,17 @@ abstract class Query_Abstract {
 	/**
 	 * Does not support EXISTS or NOT EXISTS
 	 *
-	 * @param $key
-	 * @param $value
+	 * @param string      $key
+	 * @param mixed       $value
 	 * @param bool|string $compare - defaults to '=' or 'IN' if array
 	 * @return $this
 	 */
-	function where_meta( $key, $value, $compare = false ) {
+	public function where_meta( $key, $value, $compare = false ) {
 
 		$this->where_meta[] = [
-			'key'  => $key,
-			'value'  => $value,
-			'compare' => $compare
+			'key'     => $key,
+			'value'   => $value,
+			'compare' => $compare,
 		];
 
 		return $this;
@@ -116,19 +115,19 @@ abstract class Query_Abstract {
 	 * @param array  $valid_sortable_columns The allowed sortable columns. By default, empty array (all allowed)
 	 * @return $this
 	 */
-	function set_ordering( $column, $order = 'DESC', $valid_sortable_columns = [] ) {
+	public function set_ordering( $column, $order = 'DESC', $valid_sortable_columns = [] ) {
 		$this->orderby = Clean::order_by( $column, $valid_sortable_columns );
-		$this->order = Clean::order( $order );
+		$this->order   = Clean::order( $order );
 		return $this;
 	}
 
 
 	/**
-	 * @param $i
+	 * @param int $i
 	 * @return $this
 	 */
-	function set_limit( $i ) {
-		$this->limit = absint($i);
+	public function set_limit( $i ) {
+		$this->limit = absint( $i );
 		return $this;
 	}
 
@@ -136,18 +135,18 @@ abstract class Query_Abstract {
 	 * @param bool $calc_found_rows defaults to true now, but will change to default to false soon
 	 * @return $this
 	 */
-	function set_calc_found_rows( $calc_found_rows ) {
+	public function set_calc_found_rows( $calc_found_rows ) {
 		$this->calc_found_rows = (bool) $calc_found_rows;
 		return $this;
 	}
 
 
 	/**
-	 * @param $i
+	 * @param int $i
 	 * @return $this
 	 */
-	function set_offset( $i ) {
-		$this->offset = absint($i);
+	public function set_offset( $i ) {
+		$this->offset = absint( $i );
 		return $this;
 	}
 
@@ -155,11 +154,13 @@ abstract class Query_Abstract {
 	/**
 	 * Don't set a page if an offset is also set.
 	 * Requires a limit to be set.
+	 *
 	 * @since 4.0
+	 *
 	 * @param int $page
 	 * @return $this
 	 */
-	function set_page( $page ) {
+	public function set_page( $page ) {
 		$this->page = absint( $page );
 		return $this;
 	}
@@ -168,11 +169,10 @@ abstract class Query_Abstract {
 	/**
 	 * @deprecated in 5.1.0 use self::get_results_as_ids() instead
 	 *
-	 * @param string $return
-	 * 	'objects' (default) | 'ids'
+	 * @param string $return - 'objects' (default) | 'ids'
 	 * @return $this
 	 */
-	function set_return( $return ) {
+	public function set_return( $return ) {
 		wc_deprecated_function( __METHOD__, '5.1.0', '\AutomateWoo\Query_Abstract::get_results_as_ids' );
 		$this->return = Clean::string( $return );
 		return $this;
@@ -182,10 +182,11 @@ abstract class Query_Abstract {
 	/**
 	 * @return Database_Table
 	 */
-	function get_table() {
+	public function get_table() {
 
 		if ( ! isset( $this->table_id ) ) {
-			trigger_error( sprintf( 'AutomateWoo - %s is an incompatible subclass of %s. You need to update your AutomateWoo add-ons.', get_called_class(), get_class()), E_USER_ERROR );
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			wp_die( sprintf( 'AutomateWoo - %s is an incompatible subclass of %s. You need to update your AutomateWoo add-ons.', get_called_class(), __CLASS__ ) );
 		}
 
 		return Database_Tables::get( $this->table_id );
@@ -195,7 +196,7 @@ abstract class Query_Abstract {
 	/**
 	 * @return string
 	 */
-	function get_table_name() {
+	public function get_table_name() {
 		return $this->get_table()->get_name();
 	}
 
@@ -203,7 +204,7 @@ abstract class Query_Abstract {
 	/**
 	 * @return array
 	 */
-	function get_table_columns() {
+	public function get_table_columns() {
 		return $this->get_table()->get_columns();
 	}
 
@@ -211,8 +212,11 @@ abstract class Query_Abstract {
 	/**
 	 * @return Database_Table|false
 	 */
-	function get_meta_table() {
-		if ( ! $this->meta_table_id ) return false;
+	public function get_meta_table() {
+		if ( ! $this->meta_table_id ) {
+			return false;
+		}
+
 		return Database_Tables::get( $this->meta_table_id );
 	}
 
@@ -220,8 +224,11 @@ abstract class Query_Abstract {
 	/**
 	 * @return string
 	 */
-	function get_meta_table_name() {
-		if ( ! $this->meta_table_id ) return false;
+	public function get_meta_table_name() {
+		if ( ! $this->meta_table_id ) {
+			return false;
+		}
+
 		return $this->get_meta_table()->get_name();
 	}
 
@@ -229,8 +236,11 @@ abstract class Query_Abstract {
 	/**
 	 * @return string
 	 */
-	function get_meta_object_id_column() {
-		if ( ! $this->meta_table_id ) return false;
+	public function get_meta_object_id_column() {
+		if ( ! $this->meta_table_id ) {
+			return false;
+		}
+
 		return $this->get_meta_table()->get_object_id_column();
 	}
 
@@ -240,15 +250,14 @@ abstract class Query_Abstract {
 	 * @return string
 	 */
 	private function parse_where( $where ) {
-
 		global $wpdb;
 
 		if ( ! is_array( $where ) ) {
 			return '';
 		}
 
-		$column = $where['column'];
-		$value = $where['value'];
+		$column  = $where['column'];
+		$value   = $where['value'];
 		$compare = isset( $where['compare'] ) ? $where['compare'] : false;
 
 		// Accepts AutomateWoo\DateTime, DateTime or WC_DateTime
@@ -269,9 +278,9 @@ abstract class Query_Abstract {
 			$value = "('" . implode( "','", esc_sql( $value ) ) . "')";
 
 			return "$column $compare $value";
-		}
-		else {
+		} else {
 			return $wpdb->prepare(
+				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 				"$column $compare %s",
 				$value
 			);
@@ -283,61 +292,57 @@ abstract class Query_Abstract {
 	 * @param array $query
 	 */
 	protected function build_where_query( &$query ) {
-
-		$query_joins = [];
+		$query_joins  = [];
 		$query_wheres = [];
 
-		foreach( $this->where as $where ) {
+		foreach ( $this->where as $where ) {
 			if ( isset( $where['column'] ) ) {
 				$query_wheres[] = $this->parse_where( $where );
-			}
-			else {
-
+			} else {
 				$ors = [];
 
 				// nested OR conditions
-				foreach( $where as $where_or ) {
+				foreach ( $where as $where_or ) {
 					$ors[] = $this->parse_where( $where_or );
 				}
 
-				$query_wheres[] = '( ' . implode("\nOR ", $ors ) . ' )';
+				$query_wheres[] = '( ' . implode( "\nOR ", $ors ) . ' )';
 			}
 		}
 
 		if ( ! empty( $this->where_meta ) && $this->get_meta_table_name() ) {
 			$i = 1;
-			foreach( $this->where_meta as $where ) {
+			foreach ( $this->where_meta as $where ) {
 
 				$query_joins[] = "INNER JOIN {$this->get_meta_table_name()} AS mt$i ON ({$this->get_table_name()}.id = mt$i.{$this->get_meta_object_id_column()})";
 
 				if ( isset( $where['key'] ) ) {
 
-					$meta_key = esc_sql( $where['key'] );
+					$meta_key        = esc_sql( $where['key'] );
 					$where['column'] = "mt$i.meta_value";
 
 					$query_wheres[] = "(mt$i.meta_key = '$meta_key' AND "
 						. $this->parse_where( $where )
-						. ")";
-				}
-				else {
+						. ')';
+				} else {
 
 					$ors = [];
 
 					// nested OR conditions
-					foreach( $where as $where_or ) {
+					foreach ( $where as $where_or ) {
 
-						$meta_key = esc_sql( $where_or['key'] );
+						$meta_key           = esc_sql( $where_or['key'] );
 						$where_or['column'] = "mt$i.meta_value";
 
 						$ors[] = "(mt$i.meta_key = '$meta_key' AND "
 							. $this->parse_where( $where_or )
-							. ")";
+							. ')';
 					}
 
-					$query_wheres[] = '( ' . implode("\nOR ", $ors ) . ' )';
+					$query_wheres[] = '( ' . implode( "\nOR ", $ors ) . ' )';
 
 				}
-				$i++;
+				++$i;
 			}
 		}
 
@@ -346,8 +351,8 @@ abstract class Query_Abstract {
 		}
 
 		if ( ! empty( $query_wheres ) ) {
-			$query[] = "WHERE";
-			$query[] = implode($this->combine_wheres_with_or ? "\nOR " : "\nAND ", $query_wheres );
+			$query[] = 'WHERE';
+			$query[] = implode( $this->combine_wheres_with_or ? "\nOR " : "\nAND ", $query_wheres );
 		}
 	}
 
@@ -355,15 +360,14 @@ abstract class Query_Abstract {
 	/**
 	 * @return Model[]|array
 	 */
-	function get_results() {
-
+	public function get_results() {
 		global $wpdb;
 
 		$return_fields = $this->return === 'ids' ? 'id' : '*';
-		$found_rows = $this->calc_found_rows ? 'SQL_CALC_FOUND_ROWS ' : '';
+		$found_rows    = $this->calc_found_rows ? 'SQL_CALC_FOUND_ROWS ' : '';
 
 		$query = [
-			"SELECT {$found_rows}{$return_fields} FROM {$this->get_table_name()}"
+			"SELECT {$found_rows}{$return_fields} FROM {$this->get_table_name()}",
 		];
 
 		$this->build_where_query( $query );
@@ -380,13 +384,13 @@ abstract class Query_Abstract {
 
 		if ( $this->offset ) {
 			$query[] = "OFFSET $this->offset ";
-		}
-		elseif ( $this->page && $this->limit ) {
-			$query[] = "OFFSET " . ( $this->limit * ( $this->page - 1 ) ) . " ";
+		} elseif ( $this->page && $this->limit ) {
+			$query[] = 'OFFSET ' . ( $this->limit * ( $this->page - 1 ) ) . ' ';
 		}
 
 		$this->sql = apply_filters( 'automatewoo/query/get_results_sql', implode( "\n", $query ), $this );
 
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		$results = $wpdb->get_results( $this->sql, ARRAY_A );
 
 		if ( empty( $results ) ) {
@@ -394,13 +398,12 @@ abstract class Query_Abstract {
 		}
 
 		if ( $this->calc_found_rows ) {
-			$this->found_rows = (int) $wpdb->get_var('SELECT FOUND_ROWS()');
+			$this->found_rows = (int) $wpdb->get_var( 'SELECT FOUND_ROWS()' );
 		}
 
 		if ( $this->return === 'ids' ) {
 			return wp_list_pluck( $results, 'id' );
-		}
-		else {
+		} else {
 
 			if ( $this->model ) {
 				$modelled_results = [];
@@ -428,7 +431,7 @@ abstract class Query_Abstract {
 	 */
 	public function get_results_as_ids() {
 		$this->return = 'ids';
-		$ids = array_map( 'intval', $this->get_results() );
+		$ids          = array_map( 'intval', $this->get_results() );
 		$this->return = 'objects';
 		return $ids;
 	}
@@ -436,18 +439,18 @@ abstract class Query_Abstract {
 	/**
 	 * @return int
 	 */
-	function get_count() {
-
+	public function get_count() {
 		global $wpdb;
 
 		$query = [
-			"SELECT COUNT(id) FROM {$this->get_table_name()}"
+			"SELECT COUNT(id) FROM {$this->get_table_name()}",
 		];
 
 		$this->build_where_query( $query );
 
 		$this->sql = apply_filters( 'automatewoo/query/get_count_sql', implode( "\n", $query ), $this );
 
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		return (int) $wpdb->get_var( $this->sql );
 	}
 
@@ -459,10 +462,9 @@ abstract class Query_Abstract {
 	 * @since 3.2.4
 	 * @return bool
 	 */
-	function has_results() {
-
-		$limit = $this->limit;
-		$return = $this->return;
+	public function has_results() {
+		$limit           = $this->limit;
+		$return          = $this->return;
 		$calc_found_rows = $this->calc_found_rows;
 
 		$this->set_limit( 1 );
@@ -471,11 +473,10 @@ abstract class Query_Abstract {
 
 		$results = $this->get_results();
 
-		$this->limit = $limit;
-		$this->return = $return;
+		$this->limit           = $limit;
+		$this->return          = $return;
 		$this->calc_found_rows = $calc_found_rows;
 
 		return ! empty( $results );
 	}
-
 }

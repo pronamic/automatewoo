@@ -1,5 +1,10 @@
 *** AutomateWoo Changelog ***
 
+2024-12-25 - version 6.1.4
+* Dev - Fix PHP unit tests - install svn.
+* Fix - PHP 8.4 incompatible code.
+* Tweak - WC 9.5 compatibility.
+
 2024-12-03 - version 6.1.3
 * Fix - Prevent translations from being called early.
 

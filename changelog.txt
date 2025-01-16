@@ -1,5 +1,10 @@
 *** AutomateWoo Changelog ***
 
+2025-01-15 - version 6.1.5
+* Dev - Fix Points and rewards integration tests.
+* Dev - Improve abandoned cart E2E tests.
+* Tweak - WC 9.6 compatibility.
+
 2024-12-25 - version 6.1.4
 * Dev - Fix PHP unit tests - install svn.
 * Fix - PHP 8.4 incompatible code.

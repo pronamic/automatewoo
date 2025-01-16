@@ -339,7 +339,7 @@ class Variables {
 			}
 
 			/** @var Variable $class */
-			$class = require_once $file;
+			$class = require_once $file; // nosemgrep $file comes from a fixed list prepared by `get_list` and `automatewoo/variables` filter. No user input detected.
 
 			if ( ! $class ) {
 				return false;

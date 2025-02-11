@@ -20,7 +20,6 @@ class Variable_Subscription_View_Order_Url extends Variable {
 		$this->description = __( 'Displays a URL to the subscription page in the My Account area.', 'automatewoo' );
 	}
 
-
 	/**
 	 * @param \WC_Subscription $subscription
 	 * @param array            $parameters

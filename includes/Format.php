@@ -123,17 +123,27 @@ class Format {
 		$diff = $timestamp - $now;
 
 		if ( $diff < 55 && $diff > -55 ) {
-			$diff_string = sprintf( _n( '%d second', '%d seconds', abs( $diff ), 'automatewoo' ), abs( $diff ) );
-		}
-		else {
+			$diff_string = sprintf(
+				/* translators: %d Number of seconds. */
+				_n( '%d second', '%d seconds', abs( $diff ), 'automatewoo' ),
+				abs( $diff )
+			);
+		} else {
 			$diff_string = human_time_diff( $now, $timestamp );
 		}
 
 		if ( $diff > 0 ) {
-			return sprintf( __( '%s from now', 'automatewoo' ), $diff_string );
-		}
-		else {
-			return sprintf( __( '%s ago', 'automatewoo' ), $diff_string );
+			return sprintf(
+				/* translators: %s Relative time from now in a human readable format. */
+				__( '%s from now', 'automatewoo' ),
+				$diff_string
+			);
+		} else {
+			return sprintf(
+				/* translators: %s How long ago in a human readable format. */
+				__( '%s ago', 'automatewoo' ),
+				$diff_string
+			);
 		}
 	}
 

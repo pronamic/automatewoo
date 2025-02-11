@@ -161,12 +161,16 @@ class Frontend_Endpoints {
 
 		if ( $num_items_in_original_order > $num_items_in_cart ) {
 			wc_add_notice(
-				sprintf( _n(
-					'%d item from your previous order is currently unavailable and could not be added to your cart.',
-					'%d items from your previous order are currently unavailable and could not be added to your cart.',
-					$num_items_in_original_order - $num_items_in_cart,
-					'automatewoo'
-				), $num_items_in_original_order - $num_items_in_cart ),
+				sprintf(
+					/* translators: %d Number of unavailable items from previous order. */
+					_n(
+						'%d item from your previous order is currently unavailable and could not be added to your cart.',
+						'%d items from your previous order are currently unavailable and could not be added to your cart.',
+						$num_items_in_original_order - $num_items_in_cart,
+						'automatewoo'
+					),
+					$num_items_in_original_order - $num_items_in_cart
+				),
 				'error'
 			);
 		}

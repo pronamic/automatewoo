@@ -1,9 +1,8 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * @class Variable_Customer_Generate_Coupon
@@ -11,13 +10,12 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 class Variable_Customer_Generate_Coupon extends Variable_Abstract_Generate_Coupon {
 
 	/**
-	 * @param $customer Customer
-	 * @param $parameters array
-	 * @param $workflow Workflow
+	 * @param Customer $customer
+	 * @param array    $parameters
+	 * @param Workflow $workflow
 	 * @return string
 	 */
-	function get_value( $customer, $parameters, $workflow ) {
+	public function get_value( $customer, $parameters, $workflow ) {
 		return $this->generate_coupon( $customer->get_email(), $parameters, $workflow );
 	}
-
 }

@@ -33,11 +33,18 @@ class Reports extends Base {
 		$analytics_link = '<a href="' . esc_url( $this->get_corresponding_analytics_url() ) . '">' . __( 'Analytics', 'automatewoo' ) . '</a>';
 
 		// Show the warning.
-		echo $this->format_notice( [
-			'main' => __( 'This reports page is deprecated.', 'automatewoo' ),
-			'extra' => sprintf( __( 'All reports were migrated to %1s. This page will be removed once High Performance Order Storage is enabled in WooCommerce.', 'automatewoo' ), $analytics_link ),
-			'class' => '',
-		], 'warning' );
+		echo $this->format_notice(
+			[
+				'main'  => __( 'This reports page is deprecated.', 'automatewoo' ),
+				'extra' => sprintf(
+					/* translators: %s Analytics link, to migrated reports. */
+					__( 'All reports were migrated to %s. This page will be removed once High Performance Order Storage is enabled in WooCommerce.', 'automatewoo' ),
+					$analytics_link
+				),
+				'class' => '',
+			],
+			'warning'
+		);
 
 		// Show other messages.
 		parent::output_messages();

@@ -12,14 +12,12 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class Variable_Product_Featured_Image extends Variable {
 
-
 	/**
 	 * Load admin details
 	 */
 	public function load_admin_details() {
 		$this->description = __( "Displays the product's featured image.", 'automatewoo' );
 	}
-
 
 	/**
 	 * Get the value of this variable.

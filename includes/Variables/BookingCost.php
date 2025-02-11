@@ -2,7 +2,6 @@
 
 namespace AutomateWoo\Variables;
 
-use AutomateWoo\Variable;
 use AutomateWoo\Variable_Abstract_Price;
 use WC_Booking;
 

@@ -21,7 +21,6 @@ class Variable_Refund_Amount extends Variable_Abstract_Price {
 		$this->description = __( 'Displays the refund amount.', 'automatewoo' );
 	}
 
-
 	/**
 	 * Get Value Method.
 	 *

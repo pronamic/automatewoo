@@ -1,64 +1,93 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * @class Variable_Shop_Products
  */
 class Variable_Shop_Products extends Variable_Abstract_Product_Display {
 
+	/**
+	 * Supports limit field.
+	 *
+	 * @var boolean
+	 */
 	public $support_limit_field = true;
 
+	/**
+	 * Load admin details.
+	 */
+	public function load_admin_details() {
 
-	function load_admin_details() {
+		$this->add_parameter_select_field(
+			'type',
+			__( 'Determines which products will be displayed.', 'automatewoo' ),
+			[
+				'featured'    => __( 'Featured', 'automatewoo' ),
+				'sale'        => __( 'Sale', 'automatewoo' ),
+				'recent'      => __( 'Recent', 'automatewoo' ),
+				'top_selling' => __( 'Top Selling', 'automatewoo' ),
+				'category'    => __( 'By Product Category', 'automatewoo' ),
+				'tag'         => __( 'By Product Tag', 'automatewoo' ),
+				'ids'         => __( 'By Product IDs', 'automatewoo' ),
+				'custom'      => __( 'By Custom Filter', 'automatewoo' ),
+			],
+			true
+		);
 
-		$this->add_parameter_select_field( 'type', __( "Determines which products will be displayed.", 'automatewoo'), [
-			'featured' => __( 'Featured', 'automatewoo' ),
-			'sale' => __( 'Sale', 'automatewoo' ),
-			'recent' => __( 'Recent', 'automatewoo' ),
-			'top_selling' => __( 'Top Selling', 'automatewoo' ),
-			'category' => __( 'By Product Category', 'automatewoo' ),
-			'tag' => __( 'By Product Tag', 'automatewoo' ),
-			'ids' => __( 'By Product IDs', 'automatewoo' ),
-			'custom' => __( 'By Custom Filter', 'automatewoo' )
-		], true );
+		$this->add_parameter_text_field(
+			'ids',
+			__( "Display products by ID, use '+' as a delimiter. E.g. 34+12+5", 'automatewoo' ),
+			true,
+			'',
+			[ 'show' => 'type=ids' ]
+		);
 
-		$this->add_parameter_text_field( 'ids', __( "Display products by ID, use '+' as a delimiter. E.g. 34+12+5", 'automatewoo'), true, '', [
-			'show' => 'type=ids'
-		] );
+		$this->add_parameter_text_field(
+			'category',
+			__( 'Display products by product category slug. E.g. clothing or clothing+shoes', 'automatewoo' ),
+			true,
+			'',
+			[ 'show' => 'type=category' ]
+		);
 
-		$this->add_parameter_text_field( 'category', __( "Display products by product category slug. E.g. clothing or clothing+shoes", 'automatewoo'), true, '', [
-			'show' => 'type=category'
-		] );
+		$this->add_parameter_text_field(
+			'tag',
+			__( 'Display products by product tag slug. E.g. winter or winter+summer', 'automatewoo' ),
+			true,
+			'',
+			[ 'show' => 'type=tag' ]
+		);
 
-		$this->add_parameter_text_field( 'tag', __( "Display products by product tag slug. E.g. winter or winter+summer", 'automatewoo'), true, '', [
-			'show' => 'type=tag'
-		] );
+		$this->add_parameter_text_field(
+			'filter',
+			__( 'Display products by using a WP filter.', 'automatewoo' ),
+			true,
+			'',
+			[ 'show' => 'type=custom' ]
+		);
 
-		$this->add_parameter_text_field( 'filter', __( "Display products by using a WP filter.", 'automatewoo'), true, '', [
-			'show' => 'type=custom'
-		] );
-
-		$this->add_parameter_select_field( 'sort', __( "Set the sorting of the products.", 'automatewoo'), [
-			''                => __( 'Default', 'automatewoo' ),
-			'date-desc'       => __( 'Date added - Descending', 'automatewoo' ),
-			'date-asc'        => __( 'Date added - Ascending', 'automatewoo' ),
-			'title-desc'      => __( 'Title - Descending', 'automatewoo' ),
-			'title-asc'       => __( 'Title - Ascending', 'automatewoo' ),
-			'popularity-desc' => __( 'Popularity - Descending', 'automatewoo' ),
-			'popularity-asc'  => __( 'Popularity - Ascending', 'automatewoo' ),
-			'random'          => __( 'Random', 'automatewoo' ),
-		] );
-
+		$this->add_parameter_select_field(
+			'sort',
+			__( 'Set the sorting of the products.', 'automatewoo' ),
+			[
+				''                => __( 'Default', 'automatewoo' ),
+				'date-desc'       => __( 'Date added - Descending', 'automatewoo' ),
+				'date-asc'        => __( 'Date added - Ascending', 'automatewoo' ),
+				'title-desc'      => __( 'Title - Descending', 'automatewoo' ),
+				'title-asc'       => __( 'Title - Ascending', 'automatewoo' ),
+				'popularity-desc' => __( 'Popularity - Descending', 'automatewoo' ),
+				'popularity-asc'  => __( 'Popularity - Ascending', 'automatewoo' ),
+				'random'          => __( 'Random', 'automatewoo' ),
+			]
+		);
 
 		parent::load_admin_details();
 
-		$this->description = __( "Display your shop's products by various criteria.", 'automatewoo');
+		$this->description = __( "Display your shop's products by various criteria.", 'automatewoo' );
 	}
-
 
 	/**
 	 * Get the value of the variable.
@@ -68,7 +97,7 @@ class Variable_Shop_Products extends Variable_Abstract_Product_Display {
 	 *
 	 * @return string
 	 */
-	function get_value( $parameters, $workflow ) {
+	public function get_value( $parameters, $workflow ) {
 		$template = isset( $parameters['template'] ) ? $parameters['template'] : false;
 
 		$query_args = $this->get_product_query_args( $parameters, $workflow );
@@ -79,9 +108,10 @@ class Variable_Shop_Products extends Variable_Abstract_Product_Display {
 
 		$products = aw_get_products( $query_args );
 
-		$args = array_merge( $this->get_default_product_template_args( $workflow, $parameters ), [
-			'products' => $products
-		]);
+		$args = array_merge(
+			$this->get_default_product_template_args( $workflow, $parameters ),
+			[ 'products' => $products ]
+		);
 
 		return $this->get_product_display_html( $template, $args );
 	}
@@ -117,7 +147,7 @@ class Variable_Shop_Products extends Variable_Abstract_Product_Display {
 					return false;
 				}
 
-				$args[ 'include' ] = $this->parse_ids_param( $parameters['ids'] );
+				$args['include'] = $this->parse_ids_param( $parameters['ids'] );
 				break;
 
 			case 'category':
@@ -125,7 +155,7 @@ class Variable_Shop_Products extends Variable_Abstract_Product_Display {
 					return false;
 				}
 
-				$args[ 'category' ] = $this->parse_taxonomy_param( $parameters['category'] );
+				$args['category'] = $this->parse_taxonomy_param( $parameters['category'] );
 				break;
 
 			case 'tag':
@@ -133,11 +163,11 @@ class Variable_Shop_Products extends Variable_Abstract_Product_Display {
 					return false;
 				}
 
-				$args[ 'tag' ] = $this->parse_taxonomy_param( $parameters['tag'] );
+				$args['tag'] = $this->parse_taxonomy_param( $parameters['tag'] );
 				break;
 
 			case 'featured':
-				$args[ 'featured' ] = true;
+				$args['featured'] = true;
 				break;
 
 			case 'sale':
@@ -145,7 +175,7 @@ class Variable_Shop_Products extends Variable_Abstract_Product_Display {
 				if ( ! $on_sale ) {
 					return false;
 				}
-				$args[ 'include' ] = $on_sale;
+				$args['include'] = $on_sale;
 				break;
 
 			case 'recent':
@@ -157,7 +187,7 @@ class Variable_Shop_Products extends Variable_Abstract_Product_Display {
 					return false;
 				}
 
-				$args[ 'include' ] = $product_ids;
+				$args['include'] = $product_ids;
 				break;
 
 			case 'top_selling':
@@ -169,7 +199,7 @@ class Variable_Shop_Products extends Variable_Abstract_Product_Display {
 					return false;
 				}
 
-				$args[ 'include' ] = $product_ids;
+				$args['include'] = $product_ids;
 				break;
 
 			case 'custom':
@@ -177,8 +207,8 @@ class Variable_Shop_Products extends Variable_Abstract_Product_Display {
 					return false;
 				}
 
-				$product_ids = apply_filters( $parameters['filter'], [], $workflow, $parameters );
-				$args[ 'include' ] = $product_ids;
+				$product_ids     = apply_filters( $parameters['filter'], [], $workflow, $parameters );
+				$args['include'] = $product_ids;
 				break;
 		}
 
@@ -198,9 +228,9 @@ class Variable_Shop_Products extends Variable_Abstract_Product_Display {
 	public function parse_sort_param( $sorting ) {
 		// set default values
 		$orderby = 'include';
-		$order = false;
+		$order   = false;
 
-		$sorting = explode('-', $sorting );
+		$sorting = explode( '-', $sorting );
 
 		if ( ! empty( $sorting[0] ) ) {
 			$orderby = $sorting[0];
@@ -220,10 +250,12 @@ class Variable_Shop_Products extends Variable_Abstract_Product_Display {
 			$order   = false;
 		}
 
-		return array_filter( [
-			'orderby' => $orderby,
-			'order'   => $order
-		] );
+		return array_filter(
+			[
+				'orderby' => $orderby,
+				'order'   => $order,
+			]
+		);
 	}
 
 
@@ -265,5 +297,4 @@ class Variable_Shop_Products extends Variable_Abstract_Product_Display {
 		$ids = explode( '+', $param );
 		return array_map( 'absint', $ids );
 	}
-
 }

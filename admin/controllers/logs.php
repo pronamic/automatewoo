@@ -65,7 +65,11 @@ class Logs extends Base {
 			if ( $new_log ) {
 				$this->add_message(
 					__( 'Workflow was successfully re-run.', 'automatewoo' ),
-					sprintf( __( 'Created log #%d.', 'automatewoo' ), $new_log->get_id() )
+					sprintf(
+						/* translators: %d: Log ID. */
+						__( 'Created log #%d.', 'automatewoo' ),
+						$new_log->get_id()
+					)
 				);
 			}
 			else {

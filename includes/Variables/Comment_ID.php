@@ -1,27 +1,27 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * @class Variable_Comment_ID
  */
 class Variable_Comment_ID extends Variable {
 
-
-	function load_admin_details() {
-		$this->description = __( "Displays the ID of the comment.", 'automatewoo');
+	/**
+	 * Load admin details.
+	 */
+	public function load_admin_details() {
+		$this->description = __( 'Displays the ID of the comment.', 'automatewoo' );
 	}
 
-
 	/**
-	 * @param $comment \WP_Comment
-	 * @param $parameters array
+	 * @param \WP_Comment $comment
+	 * @param array       $parameters
 	 * @return string
 	 */
-	function get_value( $comment, $parameters ) {
+	public function get_value( $comment, $parameters ) {
 		return $comment->comment_ID;
 	}
 }

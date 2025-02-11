@@ -21,7 +21,11 @@ class Trigger_Wishlist_Reminder extends AbstractBatchedDailyTrigger {
 	const SUPPORTS_QUEUING = false;
 
 	function load_admin_details() {
-		$this->title       = sprintf( __( 'Wishlist Reminder (%s)', 'automatewoo' ), Wishlists::get_integration_title() );
+		$this->title       = sprintf(
+			/* translators: %s Wishlist reminder title. */
+			__( 'Wishlist Reminder (%s)', 'automatewoo' ),
+			Wishlists::get_integration_title()
+		);
 		$this->group       = __( 'Wishlists', 'automatewoo' );
 		$this->description = __( "Setting the 'Reminder Interval' field to 30 means this trigger will fire every 30 days for any users that have items in their wishlist. Please note this doesn't work for guests because their wishlist data only exists locally in their browser.", 'automatewoo' );
 		$this->description .= ' ' . $this->get_description_text_workflow_not_immediate();

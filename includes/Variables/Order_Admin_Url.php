@@ -13,14 +13,12 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class Variable_Order_Admin_Url extends Variable {
 
-
 	/**
 	 * Load admin details
 	 */
 	public function load_admin_details() {
 		$this->description = __( 'Displays the admin URL of the order.', 'automatewoo' );
 	}
-
 
 	/**
 	 * Get value method.

@@ -1,27 +1,27 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * @class Variable_Order_ID
  */
 class Variable_Order_ID extends Variable {
 
-
-	function load_admin_details() {
-		$this->description = __( "Displays the order's unique ID.", 'automatewoo');
+	/**
+	 * Load admin details.
+	 */
+	public function load_admin_details() {
+		$this->description = __( "Displays the order's unique ID.", 'automatewoo' );
 	}
 
-
 	/**
-	 * @param $order \WC_Order
-	 * @param $parameters array
+	 * @param \WC_Order $order
+	 * @param array     $parameters
 	 * @return string
 	 */
-	function get_value( $order, $parameters ) {
+	public function get_value( $order, $parameters ) {
 		return $order->get_id();
 	}
 }

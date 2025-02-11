@@ -21,7 +21,6 @@ class Variable_Order_Shipping_Last_Name extends Variable {
 		$this->description = __( 'Displays the shipping address last name for the order.', 'automatewoo' );
 	}
 
-
 	/**
 	 * Method: get_value() - return the order's last name variable.
 	 *

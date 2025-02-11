@@ -241,6 +241,9 @@ class Coupon_Generator {
 
 		$coupon->save();
 
+		// Clear coupon counts.
+		Cache::flush_group( 'coupons' );
+
 		return $coupon;
 	}
 }

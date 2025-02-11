@@ -2,24 +2,24 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: AutomateWoo 6.1.5\n"
+"Project-Id-Version: AutomateWoo 6.1.6\n"
 "Report-Msgid-Bugs-To: https://woocommerce.com/my-account/contact-support/\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-01-15T14:28:16+00:00\n"
+"POT-Creation-Date: 2025-02-11T03:43:54+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.7.1\n"
 "X-Domain: automatewoo\n"
 
 #. Plugin Name of the plugin
 #. translators: Plugin name.
-#: admin/admin.php:145
-#: admin/admin.php:146
-#: admin/admin.php:746
-#: admin/coupons-list.php:42
+#: admin/admin.php:149
+#: admin/admin.php:150
+#: admin/admin.php:750
+#: admin/coupons-list.php:44
 #: admin/WCAdminConnectPages.php:59
 #: automatewoo.php:132
 #: automatewoo.php:142
@@ -48,13 +48,13 @@ msgstr ""
 msgid "https://woocommerce.com"
 msgstr ""
 
-#: admin/admin.php:155
+#: admin/admin.php:159
 #: admin/views/page-dashboard.php:17
 #: admin/WCAdminConnectPages.php:60
 msgid "Dashboard"
 msgstr ""
 
-#: admin/admin.php:161
+#: admin/admin.php:165
 #: admin/Analytics.php:45
 #: admin/reports-tabs/runs-by-date.php:14
 #: admin/WCAdminConnectPages.php:72
@@ -65,104 +65,106 @@ msgstr ""
 msgid "Workflows"
 msgstr ""
 
-#: admin/admin.php:166
-#: admin/reports/email-tracking.php:341
+#: admin/admin.php:170
+#: admin/reports/email-tracking.php:361
 #: admin/reports/logs.php:19
 #: admin/WCAdminConnectPages.php:99
 msgid "Logs"
 msgstr ""
 
-#: admin/admin.php:170
+#: admin/admin.php:174
 #: admin/WCAdminConnectPages.php:100
 #: admin/assets/build/index.js:28
 msgid "Queue"
 msgstr ""
 
-#: admin/admin.php:176
+#: admin/admin.php:180
 #: admin/reports/carts.php:21
 #: admin/settings-tabs/carts.php:17
 #: admin/WCAdminConnectPages.php:101
-#: includes/Privacy_Policy_Guide.php:34
-#: includes/Triggers/Abstract_Abandoned_Cart.php:21
+#: includes/Privacy_Policy_Guide.php:69
+#: includes/Triggers/Abstract_Abandoned_Cart.php:22
 msgid "Carts"
 msgstr ""
 
-#: admin/admin.php:182
+#: admin/admin.php:186
 #: admin/reports/guests.php:23
 #: admin/WCAdminConnectPages.php:102
 #: includes/Triggers/Guest_Created.php:19
 msgid "Guests"
 msgstr ""
 
-#: admin/admin.php:187
+#: admin/admin.php:191
 #: admin/reports/opt-ins.php:33
 #: admin/WCAdminConnectPages.php:103
 msgid "Opt-ins"
 msgstr ""
 
-#: admin/admin.php:187
+#: admin/admin.php:191
 #: admin/reports/opt-ins.php:33
 #: admin/WCAdminConnectPages.php:103
 msgid "Opt-outs"
 msgstr ""
 
-#: admin/admin.php:192
+#: admin/admin.php:196
 #: admin/WCAdminConnectPages.php:166
 msgid "Reports"
 msgstr ""
 
-#: admin/admin.php:198
+#: admin/admin.php:202
 #: admin/WCAdminConnectPages.php:186
 msgid "Tools"
 msgstr ""
 
-#: admin/admin.php:203
+#: admin/admin.php:207
 #: admin/WCAdminConnectPages.php:147
 #: includes/Installer.php:272
 msgid "Settings"
 msgstr ""
 
-#: admin/admin.php:208
+#: admin/admin.php:212
 #: admin/views/action.php:30
 msgid "Preview"
 msgstr ""
 
-#: admin/admin.php:213
+#: admin/admin.php:217
 msgid "AutomateWoo Data Update"
 msgstr ""
 
-#: admin/admin.php:244
+#: admin/admin.php:248
 msgid "Manual Workflow Runner"
 msgstr ""
 
-#: admin/admin.php:363
+#: admin/admin.php:367
 msgid "This field does not support variables."
 msgstr ""
 
 #. translators: Variable name.
-#: admin/admin.php:365
+#: admin/admin.php:369
 msgid "Variable '%s' is not available with the selected trigger. Please only use variables listed in the the variables box."
 msgstr ""
 
 #. translators: Variable name.
-#: admin/admin.php:367
+#: admin/admin.php:371
 msgid "Variable '%s' is not valid. Please only use variables listed in the variables box."
 msgstr ""
 
-#: admin/admin.php:368
+#: admin/admin.php:372
 msgid "Choose a trigger before selecting a variable."
 msgstr ""
 
-#. translators: %s: Error message
 #. translators: %s: The error message.
 #: admin/ajax.php:454
 #: admin/assets/build/index.js:31
 msgid "Error: %s"
 msgstr ""
 
-#: admin/ajax.php:461
-msgid "Success! %s email%s sent."
-msgstr ""
+#. translators: %s: Number of emails sent.
+#: admin/ajax.php:462
+msgid "Success! %s email sent"
+msgid_plural "Success! %s emails sent"
+msgstr[0] ""
+msgstr[1] ""
 
 #: admin/ajax.php:489
 msgid "Message sent."
@@ -338,19 +340,20 @@ msgstr ""
 msgid "Sorry, fetching workflow runs data failed."
 msgstr ""
 
-#: admin/controllers/carts.php:44
+#. translators: %s: Amount of days after which carts will be deleted.
+#: admin/controllers/carts.php:45
 msgid "Currently active carts are shown here which includes any cart that has not been cleared at purchase or emptied by its owner. Carts are automatically deleted %s days after their last update."
 msgstr ""
 
-#: admin/controllers/carts.php:66
+#: admin/controllers/carts.php:67
 msgid "Please select some carts to bulk edit."
 msgstr ""
 
-#: admin/controllers/carts.php:89
+#: admin/controllers/carts.php:90
 #: admin/controllers/guests.php:112
-#: admin/controllers/logs.php:110
-#: admin/controllers/opt-ins.php:97
-#: admin/controllers/queue.php:121
+#: admin/controllers/logs.php:114
+#: admin/controllers/opt-ins.php:98
+#: admin/controllers/queue.php:132
 #: admin/reports-tabs/conversions-list.php:57
 msgid "Bulk edit completed."
 msgstr ""
@@ -399,19 +402,20 @@ msgstr ""
 msgid "Workflow was successfully re-run."
 msgstr ""
 
-#: admin/controllers/logs.php:68
+#. translators: %d: Log ID.
+#: admin/controllers/logs.php:70
 msgid "Created log #%d."
 msgstr ""
 
-#: admin/controllers/logs.php:72
+#: admin/controllers/logs.php:76
 msgid "Workflow could not be re-run."
 msgstr ""
 
-#: admin/controllers/logs.php:76
+#: admin/controllers/logs.php:80
 msgid "Log not found."
 msgstr ""
 
-#: admin/controllers/logs.php:93
+#: admin/controllers/logs.php:97
 msgid "Please select some logs to bulk edit."
 msgstr ""
 
@@ -427,31 +431,36 @@ msgstr ""
 msgid "Your store is set to automatically opt-in customers for workflows but they can opt-out with the unsubscribe link in emails and SMS."
 msgstr ""
 
-#: admin/controllers/opt-ins.php:56
-msgid "More information on opt-ins and opt-outs is available <%s>in the documentation.<%s>"
+#. translators: %1$s documentation link start, %2$s documentation link end.
+#: admin/controllers/opt-ins.php:57
+msgid "More information on opt-ins and opt-outs is available %1$sin the documentation%2$s."
 msgstr ""
 
-#: admin/controllers/opt-ins.php:78
+#: admin/controllers/opt-ins.php:79
 msgid "Please select some items to bulk edit."
 msgstr ""
 
-#: admin/controllers/queue.php:51
-msgid "Workflows that are not set to run immediately will be added to this queue. The queue is checked every two minutes so actual run times will vary slightly. <%s>Read more&hellip;<%s>"
+#. translators: %1$s read more link start, %2$s read more link end.
+#: admin/controllers/queue.php:52
+msgid "Workflows that are not set to run immediately will be added to this queue. The queue is checked every two minutes so actual run times will vary slightly. %1$sRead more&hellip;%2$s"
 msgstr ""
 
-#: admin/controllers/queue.php:58
-msgid "Failed queue items will be deleted after %d days"
-msgstr ""
+#. translators: %d Number of days to trigger deletion of failed queue items.
+#: admin/controllers/queue.php:62
+msgid "Failed queue items will be deleted after %d day"
+msgid_plural "Failed queue items will be deleted after %d days"
+msgstr[0] ""
+msgstr[1] ""
 
-#: admin/controllers/queue.php:84
+#: admin/controllers/queue.php:95
 msgid "Queued event run successfully."
 msgstr ""
 
-#: admin/controllers/queue.php:88
+#: admin/controllers/queue.php:99
 msgid "Queued event failed to run."
 msgstr ""
 
-#: admin/controllers/queue.php:103
+#: admin/controllers/queue.php:114
 #: admin/reports-tabs/conversions-list.php:43
 msgid "Please select some queued events to bulk edit."
 msgstr ""
@@ -460,12 +469,13 @@ msgstr ""
 msgid "Analytics"
 msgstr ""
 
-#: admin/controllers/reports.php:37
+#: admin/controllers/reports.php:38
 msgid "This reports page is deprecated."
 msgstr ""
 
-#: admin/controllers/reports.php:38
-msgid "All reports were migrated to %1s. This page will be removed once High Performance Order Storage is enabled in WooCommerce."
+#. translators: %s Analytics link, to migrated reports.
+#: admin/controllers/reports.php:41
+msgid "All reports were migrated to %s. This page will be removed once High Performance Order Storage is enabled in WooCommerce."
 msgstr ""
 
 #: admin/controllers/settings.php:20
@@ -701,7 +711,7 @@ msgstr ""
 
 #: admin/json-search.php:172
 #: admin/list-table.php:88
-#: includes/Format.php:299
+#: includes/Format.php:309
 msgid "[Guest]"
 msgstr ""
 
@@ -868,76 +878,83 @@ msgstr ""
 msgid "Order Total"
 msgstr ""
 
-#: admin/reports/conversions.php:113
+#. translators: %s Conversion total price.
+#: admin/reports/conversions.php:115
 msgid "%s converted order value"
 msgstr ""
 
-#: admin/reports/conversions.php:119
+#. translators: %s Number of converted orders.
+#: admin/reports/conversions.php:125
 msgid "%s converted orders"
 msgstr ""
 
-#: admin/reports/conversions.php:138
-#: admin/reports/email-tracking.php:194
-#: admin/reports/runs-by-date.php:93
+#: admin/reports/conversions.php:146
+#: admin/reports/email-tracking.php:214
+#: admin/reports/runs-by-date.php:97
 msgid "Showing reports for:"
 msgstr ""
 
-#: admin/reports/conversions.php:172
-#: admin/reports/email-tracking.php:228
-#: admin/reports/runs-by-date.php:127
+#: admin/reports/conversions.php:180
+#: admin/reports/email-tracking.php:248
+#: admin/reports/runs-by-date.php:131
 msgid "Reset"
 msgstr ""
 
-#: admin/reports/conversions.php:211
+#: admin/reports/conversions.php:219
 msgid "Conversion Number"
 msgstr ""
 
-#: admin/reports/conversions.php:220
+#: admin/reports/conversions.php:228
 msgid "Conversion Value"
 msgstr ""
 
-#: admin/reports/email-tracking.php:148
+#. translators: %s Amount of trackable messages sent.
+#: admin/reports/email-tracking.php:150
 msgid "%s trackable messages sent"
 msgstr ""
 
-#: admin/reports/email-tracking.php:154
+#. translators: %s Number of unique opens.
+#: admin/reports/email-tracking.php:160
 msgid "%s unique opens"
 msgstr ""
 
-#: admin/reports/email-tracking.php:156
+#: admin/reports/email-tracking.php:164
 msgid "This value represents unique opens."
 msgstr ""
 
-#: admin/reports/email-tracking.php:161
+#. translators: %s Number of unique clicks.
+#: admin/reports/email-tracking.php:171
 msgid "%s unique clicks"
 msgstr ""
 
-#: admin/reports/email-tracking.php:167
+#. translators: %s Number of clicks.
+#: admin/reports/email-tracking.php:181
 msgid "%s clicks"
 msgstr ""
 
-#: admin/reports/email-tracking.php:173
+#. translators: %s Number of unsubscribed users.
+#: admin/reports/email-tracking.php:191
 msgid "%s unsubscribes"
 msgstr ""
 
-#: admin/reports/email-tracking.php:175
+#: admin/reports/email-tracking.php:195
 msgid "Unsubscribes are recorded against each workflow so users can unsubscribe to individual workflows."
 msgstr ""
 
-#: admin/reports/email-tracking.php:332
+#: admin/reports/email-tracking.php:352
 msgid "Unsubscribes"
 msgstr ""
 
-#: admin/reports/email-tracking.php:350
+#: admin/reports/email-tracking.php:370
 msgid "Unique Clicks"
 msgstr ""
 
-#: admin/reports/email-tracking.php:359
+#: admin/reports/email-tracking.php:379
 #: admin/assets/build/analytics.js:3
 msgid "Clicks"
 msgstr ""
 
-#: admin/reports/email-tracking.php:368
+#: admin/reports/email-tracking.php:388
 #: admin/assets/build/analytics.js:3
 msgid "Opens"
 msgstr ""
@@ -1046,11 +1063,12 @@ msgstr ""
 msgid "Run Date"
 msgstr ""
 
-#: admin/reports/runs-by-date.php:72
+#. translators: %s Number of workflows that have run for the selected period.
+#: admin/reports/runs-by-date.php:74
 msgid "%s workflows have run for the selected period"
 msgstr ""
 
-#: admin/reports/runs-by-date.php:174
+#: admin/reports/runs-by-date.php:178
 #: admin/assets/build/analytics.js:3
 msgid "Runs"
 msgstr ""
@@ -1574,7 +1592,7 @@ msgstr ""
 
 #: admin/views/meta-box-save.php:60
 #: includes/Actions/Change_Workflow_Status.php:28
-#: includes/Post_Types.php:70
+#: includes/Post_Types.php:72
 msgid "Disabled"
 msgstr ""
 
@@ -1790,7 +1808,7 @@ msgstr ""
 
 #: admin/views/modal-log-info.php:38
 #: admin/views/modal-log-info.php:39
-#: includes/Format.php:325
+#: includes/Format.php:335
 #: includes/Rules/Abstract_Bool.php:21
 msgid "No"
 msgstr ""
@@ -1935,7 +1953,7 @@ msgid "or"
 msgstr ""
 
 #: admin/views/settings-form.php:19
-#: templates/communication-preferences/communication-form.php:36
+#: templates/communication-preferences/communication-form.php:43
 #: templates/communication-preferences/signup-form.php:34
 msgid "Save changes"
 msgstr ""
@@ -2292,11 +2310,12 @@ msgstr ""
 msgid "Custom Function"
 msgstr ""
 
-#: includes/Actions/Custom_Function.php:17
-msgid "This action can be used by developers to trigger custom code from a workflow. <%s>View documentation<%s>."
+#. translators: %1$s documentation link start, %2$s documentation link end.
+#: includes/Actions/Custom_Function.php:18
+msgid "This action can be used by developers to trigger custom code from a workflow. %1$sView documentation%2$s."
 msgstr ""
 
-#: includes/Actions/Custom_Function.php:26
+#: includes/Actions/Custom_Function.php:27
 msgid "Function name"
 msgstr ""
 
@@ -2735,40 +2754,42 @@ msgstr ""
 msgid "It is recommended to include an unsubscribe link by using the variable {{ customer.unsubscribe_url }} in the SMS body."
 msgstr ""
 
-#: includes/Actions/Send_SMS_Twilio.php:20
-msgid "Links in the SMS body will be shortened with the <%1$s>Bitly integration<%2$s>."
+#. translators: %1$s Bitly integration link start, %2$s Bitly integration link end.
+#: includes/Actions/Send_SMS_Twilio.php:21
+msgid "Links in the SMS body will be shortened with the %1$sBitly integration%2$s."
 msgstr ""
 
-#: includes/Actions/Send_SMS_Twilio.php:22
-msgid "To shorten links in the SMS body the <%1$s>Bitly integration<%2$s> must be enabled."
+#. translators: %1$s Bitly integration link start, %2$s Bitly integration link end.
+#: includes/Actions/Send_SMS_Twilio.php:24
+msgid "To shorten links in the SMS body the %1$sBitly integration%2$s must be enabled."
 msgstr ""
 
-#: includes/Actions/Send_SMS_Twilio.php:36
+#: includes/Actions/Send_SMS_Twilio.php:38
 msgid "SMS recipients"
 msgstr ""
 
-#: includes/Actions/Send_SMS_Twilio.php:37
+#: includes/Actions/Send_SMS_Twilio.php:39
 msgid "Multiple recipient numbers must be separated by commas. When using the {{ customer.phone }} variable the country code will be added automatically, if not already entered by the customer, by referencing the billing country."
 msgstr ""
 
-#: includes/Actions/Send_SMS_Twilio.php:43
+#: includes/Actions/Send_SMS_Twilio.php:45
 msgid "SMS body"
 msgstr ""
 
-#: includes/Actions/Send_SMS_Twilio.php:61
+#: includes/Actions/Send_SMS_Twilio.php:63
 msgid "Empty message body"
 msgstr ""
 
-#: includes/Actions/Send_SMS_Twilio.php:76
+#: includes/Actions/Send_SMS_Twilio.php:78
 msgid "No valid recipients"
 msgstr ""
 
-#: includes/Actions/Send_SMS_Twilio.php:105
+#: includes/Actions/Send_SMS_Twilio.php:107
 #: includes/Workflow_Email.php:382
 msgid "The recipient is not opted-in to this workflow."
 msgstr ""
 
-#: includes/Actions/Send_SMS_Twilio.php:120
+#: includes/Actions/Send_SMS_Twilio.php:122
 msgid "SMS successfully sent."
 msgstr ""
 
@@ -3201,7 +3222,7 @@ msgid "Abandoned"
 msgstr ""
 
 #: includes/Communication_Account_Tab.php:36
-#: includes/Privacy_Policy_Guide.php:37
+#: includes/Privacy_Policy_Guide.php:77
 msgid "Communication preferences"
 msgstr ""
 
@@ -3210,7 +3231,7 @@ msgid "Communication"
 msgstr ""
 
 #: includes/Communication_Page.php:64
-#: includes/Frontend_Form_Handler.php:89
+#: includes/Frontend_Form_Handler.php:96
 msgid "Saved successfully! You won't receive marketing communications from us."
 msgstr ""
 
@@ -3518,21 +3539,24 @@ msgstr ""
 msgid "Tags"
 msgstr ""
 
-#: includes/Format.php:126
+#. translators: %d Number of seconds.
+#: includes/Format.php:128
 msgid "%d second"
 msgid_plural "%d seconds"
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/Format.php:133
+#. translators: %s Relative time from now in a human readable format.
+#: includes/Format.php:138
 msgid "%s from now"
 msgstr ""
 
-#: includes/Format.php:136
+#. translators: %s How long ago in a human readable format.
+#: includes/Format.php:144
 msgid "%s ago"
 msgstr ""
 
-#: includes/Format.php:325
+#: includes/Format.php:335
 #: includes/Rules/Abstract_Bool.php:20
 msgid "Yes"
 msgstr ""
@@ -3549,13 +3573,14 @@ msgstr ""
 msgid "The previous order could not be found."
 msgstr ""
 
-#: includes/Frontend_Endpoints.php:164
+#. translators: %d Number of unavailable items from previous order.
+#: includes/Frontend_Endpoints.php:166
 msgid "%d item from your previous order is currently unavailable and could not be added to your cart."
 msgid_plural "%d items from your previous order are currently unavailable and could not be added to your cart."
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/Frontend_Endpoints.php:175
+#: includes/Frontend_Endpoints.php:179
 msgid "The cart has been filled with the items from your previous order."
 msgstr ""
 
@@ -3563,23 +3588,24 @@ msgstr ""
 msgid "Please login to your account."
 msgstr ""
 
-#: includes/Frontend_Form_Handler.php:37
+#. translators: %s Error code when form can not be submitted.
+#: includes/Frontend_Form_Handler.php:40
 msgid "The form could not be submitted. Error code: %s"
 msgstr ""
 
-#: includes/Frontend_Form_Handler.php:60
+#: includes/Frontend_Form_Handler.php:67
 msgid "Your communication preferences were updated."
 msgstr ""
 
-#: includes/Frontend_Form_Handler.php:72
+#: includes/Frontend_Form_Handler.php:79
 msgid "It was not possible to update communication preferences for this email."
 msgstr ""
 
-#: includes/Frontend_Form_Handler.php:79
+#: includes/Frontend_Form_Handler.php:86
 msgid "Please enter a valid email address."
 msgstr ""
 
-#: includes/Frontend_Form_Handler.php:86
+#: includes/Frontend_Form_Handler.php:93
 msgid "Thanks! Your signup was successful."
 msgstr ""
 
@@ -3778,8 +3804,8 @@ msgstr ""
 msgid "I want to receive updates about products and promotions."
 msgstr ""
 
-#: includes/Options.php:60
-msgid "You can update these options at any time by clicking the unsubscribe link in the footer of any email you receive from us, or in your account area. By clicking below, you agree that we may process your information in accordance with our %s and %s."
+#: includes/Options.php:59
+msgid "You can update these options at any time by clicking the unsubscribe link in the footer of any email you receive from us, or in your account area. By clicking below, you agree that we may process your information in accordance with our [terms] and [privacy_policy]."
 msgstr ""
 
 #. translators: Points label.
@@ -3822,85 +3848,86 @@ msgstr ""
 msgid "No Workflows found in trash"
 msgstr ""
 
-#: includes/Post_Types.php:75
+#. translators: %s Disabled count.
+#: includes/Post_Types.php:78
 msgid "Disabled <span class=\"count\">(%s)</span>"
 msgid_plural "Disabled <span class=\"count\">(%s)</span>"
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/Post_Types.php:90
-#: includes/Post_Types.php:93
-#: includes/Post_Types.php:96
+#: includes/Post_Types.php:94
+#: includes/Post_Types.php:97
+#: includes/Post_Types.php:100
 msgid "Workflow updated."
 msgstr ""
 
-#: includes/Post_Types.php:91
+#: includes/Post_Types.php:95
 msgid "Custom field updated."
 msgstr ""
 
-#: includes/Post_Types.php:92
+#: includes/Post_Types.php:96
 msgid "Custom field deleted."
 msgstr ""
 
 #. translators: placeholder is previous workflow title
-#: includes/Post_Types.php:95
+#: includes/Post_Types.php:99
 msgctxt "used in workflow updated messages"
 msgid "Workflow restored to revision from %s"
 msgstr ""
 
-#: includes/Post_Types.php:97
+#: includes/Post_Types.php:101
 msgid "Workflow saved."
 msgstr ""
 
-#: includes/Post_Types.php:98
+#: includes/Post_Types.php:102
 msgid "Workflow submitted."
 msgstr ""
 
 #. translators: php date string, see http://php.net/date
-#: includes/Post_Types.php:100
+#: includes/Post_Types.php:104
 msgid "Workflow scheduled for: %1$s."
 msgstr ""
 
 #. translators: php date string, see http://php.net/date
-#: includes/Post_Types.php:100
+#: includes/Post_Types.php:104
 msgctxt "used in \"Workflow scheduled for <date>\""
 msgid "M j, Y @ G:i"
 msgstr ""
 
-#: includes/Post_Types.php:101
+#: includes/Post_Types.php:105
 msgid "Workflow draft updated."
 msgstr ""
 
 #. translators: %s: workflow count
-#: includes/Post_Types.php:117
+#: includes/Post_Types.php:121
 msgid "%s workflow updated."
 msgid_plural "%s workflows updated."
 msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %s: workflow count
-#: includes/Post_Types.php:119
+#: includes/Post_Types.php:123
 msgid "%s workflow not updated, somebody is editing it."
 msgid_plural "%s workflows not updated, somebody is editing them."
 msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %s: workflow count
-#: includes/Post_Types.php:121
+#: includes/Post_Types.php:125
 msgid "%s workflow permanently deleted."
 msgid_plural "%s workflows permanently deleted."
 msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %s: workflow count
-#: includes/Post_Types.php:123
+#: includes/Post_Types.php:127
 msgid "%s workflow moved to the Trash."
 msgid_plural "%s workflows moved to the Trash."
 msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %s: workflow count
-#: includes/Post_Types.php:125
+#: includes/Post_Types.php:129
 msgid "%s workflow restored from the Trash."
 msgid_plural "%s workflows restored from the Trash."
 msgstr[0] ""
@@ -4111,115 +4138,124 @@ msgstr ""
 msgid "Failure code"
 msgstr ""
 
-#: includes/Privacy_Policy_Guide.php:22
+#: includes/Privacy_Policy_Guide.php:20
 msgid "How we use your data"
 msgstr ""
 
-#: includes/Privacy_Policy_Guide.php:23
+#: includes/Privacy_Policy_Guide.php:22
 msgid "AutomateWoo uses personal data in many of its features and stores personal data in your WordPress database. We do not store any personal data from your website on our servers. You may need to adjust the suggested text below based on your settings and which workflows are in use."
 msgstr ""
 
-#: includes/Privacy_Policy_Guide.php:24
+#: includes/Privacy_Policy_Guide.php:25
 msgid "If you opt-in to receive marketing updates we may use your personal information to provide you with product updates or marketing communications that we believe may be of interest to you. Personal data may also be used by our internal system to automate processes of our store."
 msgstr ""
 
-#: includes/Privacy_Policy_Guide.php:25
+#: includes/Privacy_Policy_Guide.php:28
 msgid "What we collect and store"
 msgstr ""
 
-#: includes/Privacy_Policy_Guide.php:26
+#: includes/Privacy_Policy_Guide.php:30
 msgid "Cookies"
 msgstr ""
 
-#: includes/Privacy_Policy_Guide.php:27
+#: includes/Privacy_Policy_Guide.php:32
 msgid "AutomateWoo uses three cookies to enable the session and cart tracking features of the plugin. If you have these features enabled you should include these cookies in your policy. You should also mention whether the user must give consent before these cookies are set."
 msgstr ""
 
-#: includes/Privacy_Policy_Guide.php:28
+#: includes/Privacy_Policy_Guide.php:35
 msgid "We use cookies to remember who you are when browsing our site and to store the contents of your cart for the purpose of reminding you. These cookies will only be set when you consent to allowing additional cookies on our website."
 msgstr ""
 
-#: includes/Privacy_Policy_Guide.php:30
+#. translators: %s AutomateWoo visitor cookie name.
+#: includes/Privacy_Policy_Guide.php:42
 msgid "%s - Used to store a secure key that is unique to you - Expires after 2 years"
 msgstr ""
 
-#: includes/Privacy_Policy_Guide.php:31
+#. translators: %s AutomateWoo session started cookie name.
+#: includes/Privacy_Policy_Guide.php:52
 msgid "%s - Used to flag when you begin interacting with our website - Expires when you end the browser session"
 msgstr ""
 
-#: includes/Privacy_Policy_Guide.php:32
+#. translators: %s AutomateWoo do cart update cookie name.
+#: includes/Privacy_Policy_Guide.php:62
 msgid "%s - Used to store flag when your stored cart needs to be updated - Expires when you end the browser session"
 msgstr ""
 
-#: includes/Privacy_Policy_Guide.php:35
+#: includes/Privacy_Policy_Guide.php:71
 msgid "If you are using AutomateWoo's cart tracking feature user carts will be stored for 60 days, depending on your settings."
 msgstr ""
 
-#: includes/Privacy_Policy_Guide.php:36
+#: includes/Privacy_Policy_Guide.php:74
 msgid "We store a copy of your cart in our database for 60 days for the purpose of reminding you when your cart is abandoned."
 msgstr ""
 
-#: includes/Privacy_Policy_Guide.php:38
+#: includes/Privacy_Policy_Guide.php:79
 msgid "AutomateWoo keeps a record of when a user or guest chooses to opt-in or opt-out."
 msgstr ""
 
-#: includes/Privacy_Policy_Guide.php:39
+#: includes/Privacy_Policy_Guide.php:82
 msgid "We store your communication preferences such as whether you have opted in to receive marketing communication. This data is retained until you request the removal of your data."
 msgstr ""
 
-#: includes/Privacy_Policy_Guide.php:40
+#: includes/Privacy_Policy_Guide.php:85
 msgid "Communication logs"
 msgstr ""
 
-#: includes/Privacy_Policy_Guide.php:41
+#: includes/Privacy_Policy_Guide.php:87
 msgid "AutomateWoo keeps a record of all workflow logs which includes open, click and conversion tracking."
 msgstr ""
 
-#: includes/Privacy_Policy_Guide.php:42
+#: includes/Privacy_Policy_Guide.php:90
 msgid "We keep a log of some of the communication that we have with you which may include marketing and transactional emails and/or SMS messages. These are kept for the purpose of improving our marketing and communication with you and other customers. These logs are retained until you request removal of your data."
 msgstr ""
 
-#: includes/Privacy_Policy_Guide.php:43
+#: includes/Privacy_Policy_Guide.php:93
 msgid "Pre-submit data capture"
 msgstr ""
 
-#: includes/Privacy_Policy_Guide.php:44
+#: includes/Privacy_Policy_Guide.php:95
 msgid "AutomateWoo has the option to capture customer data before forms are submitted which usually means that consent has not been given. Using this feature may not be legal in some regions depending on your legal basis for capturing that data. If you choose to use this feature we recommend including some reasoning behind it."
 msgstr ""
 
-#: includes/Privacy_Policy_Guide.php:45
+#: includes/Privacy_Policy_Guide.php:98
 msgid "What we share with others"
 msgstr ""
 
-#: includes/Privacy_Policy_Guide.php:46
+#: includes/Privacy_Policy_Guide.php:100
 msgid "AutomateWoo integrates with third party services which means personal data may be shared depending on what integrations you have enabled and which workflows you are using."
 msgstr ""
 
-#: includes/Privacy_Policy_Guide.php:47
-msgid "We use Twilio as our SMS delivery service. Your data may be transferred to Twilio for processing in accordance with their <%s>Privacy Policy<%s>."
+#. translators: %1$s Privacy policy link start, %2$s Privacy policy link end.
+#: includes/Privacy_Policy_Guide.php:107
+msgid "We use Twilio as our SMS delivery service. Your data may be transferred to Twilio for processing in accordance with their %1$sPrivacy Policy%2$s."
 msgstr ""
 
-#: includes/Privacy_Policy_Guide.php:48
-msgid "We use MailChimp for email marketing. Your data may be transferred to MailChimp for processing in accordance with their <%s>Privacy Policy<%s>."
+#. translators: %1$s Privacy policy link start, %2$s Privacy policy link end.
+#: includes/Privacy_Policy_Guide.php:119
+msgid "We use MailChimp for email marketing. Your data may be transferred to MailChimp for processing in accordance with their %1$sPrivacy Policy%2$s."
 msgstr ""
 
-#: includes/Privacy_Policy_Guide.php:49
-msgid "We use Active Campaign for email marketing. Your data may be transferred to Active Campaign for processing in accordance with their <%s>Privacy Policy<%s>."
+#. translators: %1$s Privacy policy link start, %2$s Privacy policy link end.
+#: includes/Privacy_Policy_Guide.php:131
+msgid "We use Active Campaign for email marketing. Your data may be transferred to Active Campaign for processing in accordance with their %1$sPrivacy Policy%2$s."
 msgstr ""
 
-#: includes/Privacy_Policy_Guide.php:50
-msgid "We use Campaign Monitor for email marketing. Your data may be transferred to Campaign Monitor for processing in accordance with their <%s>Privacy Policy<%s>."
+#. translators: %1$s Privacy policy link start, %2$s Privacy policy link end.
+#: includes/Privacy_Policy_Guide.php:143
+msgid "We use Campaign Monitor for email marketing. Your data may be transferred to Campaign Monitor for processing in accordance with their %1$sPrivacy Policy%2$s."
 msgstr ""
 
-#: includes/Privacy_Policy_Guide.php:51
-msgid "We use Bitly for link shortening. Your data may be transferred to Bitly for processing in accordance with their <%s>Privacy Policy<%s>."
+#. translators: %1$s Privacy policy link start, %2$s Privacy policy link end.
+#: includes/Privacy_Policy_Guide.php:155
+msgid "We use Bitly for link shortening. Your data may be transferred to Bitly for processing in accordance with their %1$sPrivacy Policy%2$s."
 msgstr ""
 
-#: includes/Privacy_Policy_Guide.php:52
-msgid "We use AgileCRM as our CRM. Your data may be transferred to AgileCRM for processing in accordance with their <%s>Privacy Policy<%s>."
+#. translators: %1$s Privacy policy link start, %2$s Privacy policy link end.
+#: includes/Privacy_Policy_Guide.php:167
+msgid "We use AgileCRM as our CRM. Your data may be transferred to AgileCRM for processing in accordance with their %1$sPrivacy Policy%2$s."
 msgstr ""
 
-#: includes/Privacy_Policy_Guide.php:61
+#: includes/Privacy_Policy_Guide.php:185
 msgid "Suggested text:"
 msgstr ""
 
@@ -5372,9 +5408,10 @@ msgstr ""
 msgid "Are you sure you want to permanently delete the guests who have not placed an order? Any workflow logs for deleted guests will be anonymized."
 msgstr ""
 
-#: includes/Tools/Guest_Eraser.php:71
-msgid "%s guest will be deleted."
-msgid_plural "%s guests will be deleted."
+#. translators: %d Number of guests that will be deleted.
+#: includes/Tools/Guest_Eraser.php:73
+msgid "%d guest will be deleted."
+msgid_plural "%d guests will be deleted."
 msgstr[0] ""
 msgstr[1] ""
 
@@ -5386,9 +5423,12 @@ msgstr ""
 msgid "Opt-in customers by importing email addresses."
 msgstr ""
 
-#: includes/Tools/Optin_Importer.php:33
-msgid "Are you sure you want to opt-in <strong>%s customers</strong>?"
-msgstr ""
+#. translators: %d Number of customers to import for opt-in.
+#: includes/Tools/Optin_Importer.php:35
+msgid "Are you sure you want to opt-in <strong>%d customer</strong>?"
+msgid_plural "Are you sure you want to opt-in <strong>%d customers</strong>?"
+msgstr[0] ""
+msgstr[1] ""
 
 #: includes/Tools/Optout_Importer.php:19
 msgid "Opt-out Importer"
@@ -5410,19 +5450,22 @@ msgstr ""
 msgid "Missing a required field."
 msgstr ""
 
-#: includes/Tools/Optout_Importer.php:70
+#. translators: %s Invalid email.
+#: includes/Tools/Optout_Importer.php:74
 msgid "%s is not a valid email."
 msgstr ""
 
-#: includes/Tools/Optout_Importer.php:87
+#: includes/Tools/Optout_Importer.php:94
 msgid "Could not process."
 msgstr ""
 
-#: includes/Tools/Optout_Importer.php:112
+#. translators: %s Number of customers to import for opt-out.
+#: includes/Tools/Optout_Importer.php:120
 msgid "Are you sure you want to opt-out <strong>%s customers</strong>?"
 msgstr ""
 
-#: includes/Tools/Optout_Importer.php:134
+#. translators: %d Count of additional items.
+#: includes/Tools/Optout_Importer.php:145
 msgid "+ %d more items..."
 msgstr ""
 
@@ -5438,7 +5481,8 @@ msgstr ""
 msgid "Please select a workflow to reset."
 msgstr ""
 
-#: includes/Tools/Reset_Workflow_Records.php:70
+#. translators: %s Workflow title.
+#: includes/Tools/Reset_Workflow_Records.php:73
 msgid "Are you sure you want to reset all records for the workflow <strong>%s</strong>? This can not be undone."
 msgstr ""
 
@@ -5477,11 +5521,12 @@ msgstr ""
 msgid "Can be used to ensure that this trigger will only send once in a set period to a user or guest."
 msgstr ""
 
-#: includes/Trigger.php:465
+#. translators: %s Object name.
+#: includes/Trigger.php:468
 msgid "This is useful for workflows that are not run immediately as it ensures the status of the %s hasn't changed since initial trigger."
 msgstr ""
 
-#: includes/Trigger.php:612
+#: includes/Trigger.php:616
 msgid "THIS TRIGGER IS DEPRECATED AND SHOULD NOT BE USED."
 msgstr ""
 
@@ -5506,8 +5551,9 @@ msgstr ""
 msgid "This trigger fires when a cart belonging to a registered customer is abandoned."
 msgstr ""
 
-#: includes/Triggers/Abstract_Abandoned_Cart.php:16
-msgid "Carts are considered abandoned if they are inactive for %d minutes. When a customer purchases or empties their abandoned cart all queued workflows will be automatically cleared. <%s>View documentation.<%s>"
+#. translators: %1$d number of minutes for cart timeout, %2$s documentation link start, %3$ss documentation link end.
+#: includes/Triggers/Abstract_Abandoned_Cart.php:17
+msgid "Carts are considered abandoned if they are inactive for %1$d minutes. When a customer purchases or empties their abandoned cart all queued workflows will be automatically cleared. %2$sView documentation.%3$s"
 msgstr ""
 
 #: includes/Triggers/Abstract_Downloadable_Content.php:28
@@ -6119,40 +6165,42 @@ msgid "Customer Adds Product (%s)"
 msgstr ""
 
 #: includes/Triggers/Wishlist_Item_Added.php:27
-#: includes/Triggers/Wishlist_Item_Goes_On_Sale.php:22
-#: includes/Triggers/Wishlist_Reminder.php:25
+#: includes/Triggers/Wishlist_Item_Goes_On_Sale.php:26
+#: includes/Triggers/Wishlist_Reminder.php:29
 msgid "Wishlists"
 msgstr ""
 
-#: includes/Triggers/Wishlist_Item_Goes_On_Sale.php:21
+#. translators: %s Wishlist item title.
+#: includes/Triggers/Wishlist_Item_Goes_On_Sale.php:23
 msgid "Wishlist Item On Sale (%s)"
 msgstr ""
 
-#: includes/Triggers/Wishlist_Item_Goes_On_Sale.php:23
+#: includes/Triggers/Wishlist_Item_Goes_On_Sale.php:27
 msgid "This trigger doesn't fire instantly when a product goes on sale. Instead, it performs a check for new on-sale products every 30 minutes. Please note this doesn't work for guests because their wishlist data only exists in their session data."
 msgstr ""
 
-#: includes/Triggers/Wishlist_Reminder.php:24
+#. translators: %s Wishlist reminder title.
+#: includes/Triggers/Wishlist_Reminder.php:26
 msgid "Wishlist Reminder (%s)"
 msgstr ""
 
-#: includes/Triggers/Wishlist_Reminder.php:26
+#: includes/Triggers/Wishlist_Reminder.php:30
 msgid "Setting the 'Reminder Interval' field to 30 means this trigger will fire every 30 days for any users that have items in their wishlist. Please note this doesn't work for guests because their wishlist data only exists locally in their browser."
 msgstr ""
 
-#: includes/Triggers/Wishlist_Reminder.php:38
+#: includes/Triggers/Wishlist_Reminder.php:42
 msgid "Reminder interval (days)"
 msgstr ""
 
-#: includes/Triggers/Wishlist_Reminder.php:39
+#: includes/Triggers/Wishlist_Reminder.php:43
 msgid "E.g. Reminder any customers with items in a Wishlist every 30 days."
 msgstr ""
 
-#: includes/Triggers/Wishlist_Reminder.php:44
+#: includes/Triggers/Wishlist_Reminder.php:48
 msgid "Once per customer"
 msgstr ""
 
-#: includes/Triggers/Wishlist_Reminder.php:45
+#: includes/Triggers/Wishlist_Reminder.php:49
 msgid "If checked the trigger will fire only once for each customer for each wishlist they create. Most customers only use the one wishlist so use with caution. Setting a high Reminder interval may be a better plan."
 msgstr ""
 
@@ -6329,7 +6377,7 @@ msgid "AutomateWoo Test Coupon"
 msgstr ""
 
 #: includes/Variables/Abstract_Meta.php:16
-#: includes/Variables/Order_Meta_Date.php:15
+#: includes/Variables/Order_Meta_Date.php:16
 msgid "The meta_key of the field you would like to display."
 msgstr ""
 
@@ -6389,7 +6437,7 @@ msgstr ""
 msgid "Set the maximum number of products that will be displayed."
 msgstr ""
 
-#: includes/Variables/BookingCost.php:23
+#: includes/Variables/BookingCost.php:22
 msgid "Displays the cost of the booking."
 msgstr ""
 
@@ -6425,19 +6473,19 @@ msgstr ""
 msgid "Displays the status of the booking."
 msgstr ""
 
-#: includes/Variables/Card_Expiry_Month.php:15
+#: includes/Variables/Card_Expiry_Month.php:16
 msgid "Displays the expiry month of the card."
 msgstr ""
 
-#: includes/Variables/Card_Expiry_Year.php:15
+#: includes/Variables/Card_Expiry_Year.php:16
 msgid "Displays the expiry year of the card."
 msgstr ""
 
-#: includes/Variables/Card_Last4.php:15
+#: includes/Variables/Card_Last4.php:16
 msgid "Displays the last 4 digits of the card."
 msgstr ""
 
-#: includes/Variables/Card_Type.php:15
+#: includes/Variables/Card_Type.php:16
 msgid "Displays the type of the card e.g. Visa, MasterCard."
 msgstr ""
 
@@ -6453,7 +6501,7 @@ msgstr ""
 msgid "{{ cart.items }} returned no products so the workflow was aborted"
 msgstr ""
 
-#: includes/Variables/Cart_Item_Count.php:16
+#: includes/Variables/Cart_Item_Count.php:17
 msgid "Displays the number of the items in cart."
 msgstr ""
 
@@ -6469,31 +6517,31 @@ msgstr ""
 msgid "Displays the total cost of the cart."
 msgstr ""
 
-#: includes/Variables/Category_ID.php:15
+#: includes/Variables/Category_ID.php:17
 msgid "Displays the ID of the category."
 msgstr ""
 
-#: includes/Variables/Category_Permalink.php:15
+#: includes/Variables/Category_Permalink.php:16
 msgid "Displays a permalink to the category page."
 msgstr ""
 
-#: includes/Variables/Category_Title.php:15
+#: includes/Variables/Category_Title.php:16
 msgid "Displays the title of the category."
 msgstr ""
 
-#: includes/Variables/CommentAuthorName.php:17
+#: includes/Variables/CommentAuthorName.php:19
 msgid "Displays the name of the comment author."
 msgstr ""
 
-#: includes/Variables/Comment_Author_IP.php:15
+#: includes/Variables/Comment_Author_IP.php:16
 msgid "Displays the IP address of the comment author."
 msgstr ""
 
-#: includes/Variables/Comment_Content.php:15
+#: includes/Variables/Comment_Content.php:16
 msgid "Displays the content of the comment."
 msgstr ""
 
-#: includes/Variables/Comment_ID.php:15
+#: includes/Variables/Comment_ID.php:16
 msgid "Displays the ID of the comment."
 msgstr ""
 
@@ -6505,43 +6553,43 @@ msgstr ""
 msgid "Displays the second line of the customer's address."
 msgstr ""
 
-#: includes/Variables/Customer_City.php:15
+#: includes/Variables/Customer_City.php:16
 msgid "Displays the customer's billing city."
 msgstr ""
 
-#: includes/Variables/Customer_Company.php:15
+#: includes/Variables/Customer_Company.php:16
 msgid "Displays the customer's billing company."
 msgstr ""
 
-#: includes/Variables/Customer_Country.php:15
+#: includes/Variables/Customer_Country.php:16
 msgid "Displays the customer's billing country."
 msgstr ""
 
-#: includes/Variables/Customer_Email.php:15
+#: includes/Variables/Customer_Email.php:16
 msgid "Displays the customer's email address. You can use this variable in the To field when sending emails."
 msgstr ""
 
-#: includes/Variables/Customer_First_Name.php:15
+#: includes/Variables/Customer_First_Name.php:16
 msgid "Displays the customer's first name."
 msgstr ""
 
-#: includes/Variables/Customer_Full_Name.php:14
+#: includes/Variables/Customer_Full_Name.php:15
 msgid "Displays the customer's full name."
 msgstr ""
 
-#: includes/Variables/Customer_Last_Name.php:15
+#: includes/Variables/Customer_Last_Name.php:16
 msgid "Displays the customer's last name."
 msgstr ""
 
-#: includes/Variables/Customer_Meta.php:15
+#: includes/Variables/Customer_Meta.php:16
 msgid "Displays the value of a customer's custom field. If the customer has an account, the value is pulled from the user meta table. If the customer is a guest, the guest meta table is used."
 msgstr ""
 
-#: includes/Variables/Customer_Order_Count.php:15
+#: includes/Variables/Customer_Order_Count.php:16
 msgid "Displays the total number of orders the customer has placed."
 msgstr ""
 
-#: includes/Variables/Customer_Phone.php:15
+#: includes/Variables/Customer_Phone.php:16
 msgid "Displays the customer's billing phone."
 msgstr ""
 
@@ -6561,29 +6609,29 @@ msgstr ""
 msgid "Point value as price"
 msgstr ""
 
-#: includes/Variables/Customer_Postcode.php:15
+#: includes/Variables/Customer_Postcode.php:16
 msgid "Displays the customer's billing postcode."
 msgstr ""
 
-#: includes/Variables/Customer_State.php:15
+#: includes/Variables/Customer_State.php:16
 msgid "Displays the customer's billing state."
 msgstr ""
 
-#: includes/Variables/Customer_State.php:17
+#: includes/Variables/Customer_State.php:20
 msgid "Choose whether to display the abbreviation or full name of the state."
 msgstr ""
 
-#: includes/Variables/Customer_State.php:18
+#: includes/Variables/Customer_State.php:22
 #: includes/Variables/Order_Shipping_Country.php:28
 msgid "Full"
 msgstr ""
 
-#: includes/Variables/Customer_State.php:19
+#: includes/Variables/Customer_State.php:23
 #: includes/Variables/Order_Shipping_Country.php:29
 msgid "Abbreviation"
 msgstr ""
 
-#: includes/Variables/Customer_Tags.php:15
+#: includes/Variables/Customer_Tags.php:16
 msgid "Displays a comma separated list of the customer's user tags."
 msgstr ""
 
@@ -6591,7 +6639,7 @@ msgstr ""
 msgid "Displays the total amount the customer has spent."
 msgstr ""
 
-#: includes/Variables/Customer_Unsubscribe_URL.php:16
+#: includes/Variables/Customer_Unsubscribe_URL.php:17
 msgid "Displays a URL that the customer can use to unsubscribe."
 msgstr ""
 
@@ -6599,7 +6647,7 @@ msgstr ""
 msgid "Displays the customer's username. This will be blank for guest customers."
 msgstr ""
 
-#: includes/Variables/Customer_User_ID.php:15
+#: includes/Variables/Customer_User_ID.php:16
 msgid "Displays the customer's user ID."
 msgstr ""
 
@@ -6611,27 +6659,27 @@ msgstr ""
 msgid "Displays the download URL."
 msgstr ""
 
-#: includes/Variables/Guest_Email.php:15
+#: includes/Variables/Guest_Email.php:16
 msgid "Displays the guest’s email address. Note: You can use this variable in the To field when sending emails."
 msgstr ""
 
-#: includes/Variables/Guest_First_Name.php:15
+#: includes/Variables/Guest_First_Name.php:16
 msgid "Displays the guest's first name. Please note that guests will not always have a first name stored."
 msgstr ""
 
-#: includes/Variables/Guest_Last_Name.php:15
+#: includes/Variables/Guest_Last_Name.php:16
 msgid "Displays the guest's last name. Please note that guests will not always have a last name stored."
 msgstr ""
 
-#: includes/Variables/Membership_Date_Expires.php:16
+#: includes/Variables/Membership_Date_Expires.php:17
 msgid "Displays the membership expiry date in your website's timezone. Not all memberships will have an expiry."
 msgstr ""
 
-#: includes/Variables/Membership_Date_Started.php:16
+#: includes/Variables/Membership_Date_Started.php:17
 msgid "Displays the membership start date in your website's timezone."
 msgstr ""
 
-#: includes/Variables/Membership_ID.php:15
+#: includes/Variables/Membership_ID.php:16
 msgid "Displays the ID of the membership."
 msgstr ""
 
@@ -6639,47 +6687,48 @@ msgstr ""
 msgid "Displays a memberships's custom field."
 msgstr ""
 
-#: includes/Variables/Membership_Plan_ID.php:15
+#: includes/Variables/Membership_Plan_ID.php:16
 msgid "Displays the plan ID of the membership."
 msgstr ""
 
-#: includes/Variables/Membership_Plan_Name.php:15
+#: includes/Variables/Membership_Plan_Name.php:16
 msgid "Displays the plan name of the membership."
 msgstr ""
 
-#: includes/Variables/Membership_Renewal_URL.php:16
+#: includes/Variables/Membership_Renewal_URL.php:17
 msgid "Displays the renewal URL for the membership."
 msgstr ""
 
-#: includes/Variables/Membership_Status.php:15
+#: includes/Variables/Membership_Status.php:16
 msgid "Displays the status of the membership."
 msgstr ""
 
-#: includes/Variables/Order_Admin_Url.php:21
+#: includes/Variables/Order_Admin_Url.php:20
 msgid "Displays the admin URL of the order."
 msgstr ""
 
-#: includes/Variables/Order_Billing_Address.php:15
+#: includes/Variables/Order_Billing_Address.php:16
 msgid "Displays the formatted billing address for the order."
 msgstr ""
 
-#: includes/Variables/Order_Billing_Phone.php:15
+#: includes/Variables/Order_Billing_Phone.php:16
 msgid "Displays the billing phone number for the order."
 msgstr ""
 
-#: includes/Variables/Order_Cross_Sells.php:20
-msgid "Displays a product listing of cross sells based on the items in an order. Be sure to <a href='%s' target='_blank'>set up cross sells</a> before using."
+#. translators: %1$s documentation link start, %2$s documentation link end.
+#: includes/Variables/Order_Cross_Sells.php:27
+msgid "Displays a product listing of cross sells based on the items in an order. Be sure to %1$sset up cross sells%2$s before using."
 msgstr ""
 
-#: includes/Variables/Order_Customer_Details.php:15
+#: includes/Variables/Order_Customer_Details.php:16
 msgid "Displays the HTML formatted customer details that are normally shown at the bottom of order transactional emails."
 msgstr ""
 
-#: includes/Variables/Order_Customer_Note.php:15
+#: includes/Variables/Order_Customer_Note.php:16
 msgid "Displays the customer provided note for the order."
 msgstr ""
 
-#: includes/Variables/Order_Date.php:16
+#: includes/Variables/Order_Date.php:17
 msgid "Displays the date the order was placed."
 msgstr ""
 
@@ -6691,15 +6740,16 @@ msgstr ""
 msgid "Displays the date the order was paid for."
 msgstr ""
 
-#: includes/Variables/Order_Date_Shipped.php:18
-msgid "Displays the shipping date as set with the <%s>WooCommerce Shipment Tracking<%s> extension."
+#. translators: %1$s shipping tracking link start, %2$s shipping tracking link end.
+#: includes/Variables/Order_Date_Shipped.php:20
+msgid "Displays the shipping date as set with the %1$sWooCommerce Shipment Tracking%2$s extension."
 msgstr ""
 
-#: includes/Variables/Order_ID.php:15
+#: includes/Variables/Order_ID.php:16
 msgid "Displays the order's unique ID."
 msgstr ""
 
-#: includes/Variables/Order_Items.php:19
+#: includes/Variables/Order_Items.php:24
 msgid "Displays the products in an order. Please note this variable returns HTML."
 msgstr ""
 
@@ -6723,74 +6773,74 @@ msgstr ""
 msgid "How to handle counting for bundle products."
 msgstr ""
 
-#: includes/Variables/Order_Item_Attribute.php:15
+#: includes/Variables/Order_Item_Attribute.php:16
 msgid "Can be used to display the attribute term name when a customer orders a variable product."
 msgstr ""
 
-#: includes/Variables/Order_Item_Attribute.php:16
+#: includes/Variables/Order_Item_Attribute.php:17
 msgid "The slug of the product attribute."
 msgstr ""
 
-#: includes/Variables/Order_Item_Meta.php:15
+#: includes/Variables/Order_Item_Meta.php:16
 msgid "Can be used to display the value of an order item meta field."
 msgstr ""
 
-#: includes/Variables/Order_Item_Meta.php:16
+#: includes/Variables/Order_Item_Meta.php:17
 msgid "The key of the order item meta field."
 msgstr ""
 
-#: includes/Variables/Order_Item_Quantity.php:15
+#: includes/Variables/Order_Item_Quantity.php:16
 msgid "Can be used to display the quantity of a product line item on an order."
 msgstr ""
 
-#: includes/Variables/Order_Meta.php:16
+#: includes/Variables/Order_Meta.php:17
 msgid "Displays the value of an order custom field."
 msgstr ""
 
-#: includes/Variables/Order_Meta_Date.php:17
+#: includes/Variables/Order_Meta_Date.php:18
 msgctxt "data type e.g. order, product"
 msgid "Displays the value of a date-based meta field in your site's timezone. The meta field must be stored in UTC time in MYSQL or UNIX timestamp format."
 msgstr ""
 
-#: includes/Variables/Order_Note_Content.php:15
+#: includes/Variables/Order_Note_Content.php:16
 msgid "Displays the content of the order note."
 msgstr ""
 
-#: includes/Variables/Order_Number.php:15
+#: includes/Variables/Order_Number.php:16
 msgid "Displays the order number."
 msgstr ""
 
-#: includes/Variables/Order_Payment_Method.php:15
+#: includes/Variables/Order_Payment_Method.php:18
 msgid "Choose whether to display the title or the ID of the payment method."
 msgstr ""
 
-#: includes/Variables/Order_Payment_Method.php:16
-#: includes/Variables/Order_Shipping_Method.php:16
+#: includes/Variables/Order_Payment_Method.php:20
+#: includes/Variables/Order_Shipping_Method.php:20
 msgid "Title"
 msgstr ""
 
-#: includes/Variables/Order_Payment_Method.php:17
-#: includes/Variables/Order_Shipping_Method.php:17
+#: includes/Variables/Order_Payment_Method.php:21
+#: includes/Variables/Order_Shipping_Method.php:21
 msgid "ID"
 msgstr ""
 
-#: includes/Variables/Order_Payment_Method.php:20
+#: includes/Variables/Order_Payment_Method.php:26
 msgid "Displays the payment method for the order."
 msgstr ""
 
-#: includes/Variables/Order_Payment_Url.php:15
+#: includes/Variables/Order_Payment_Url.php:16
 msgid "Displays a payment URL for the order."
 msgstr ""
 
-#: includes/Variables/Order_Related_Products.php:29
+#: includes/Variables/Order_Related_Products.php:27
 msgid "Displays a listing of products related to the items in an order."
 msgstr ""
 
-#: includes/Variables/Order_Reorder_Url.php:22
+#: includes/Variables/Order_Reorder_Url.php:21
 msgid "Displays a reorder URL for the order. When clicked all items from the order will be added to the user's cart."
 msgstr ""
 
-#: includes/Variables/Order_Shipping_Address.php:15
+#: includes/Variables/Order_Shipping_Address.php:16
 msgid "Displays the formatted shipping address for the order."
 msgstr ""
 
@@ -6826,11 +6876,11 @@ msgstr ""
 msgid "Displays the shipping address last name for the order."
 msgstr ""
 
-#: includes/Variables/Order_Shipping_Method.php:15
+#: includes/Variables/Order_Shipping_Method.php:18
 msgid "Choose whether to display the title or the ID of the shipping method."
 msgstr ""
 
-#: includes/Variables/Order_Shipping_Method.php:20
+#: includes/Variables/Order_Shipping_Method.php:26
 msgid "Displays the shipping method for the order."
 msgstr ""
 
@@ -6838,15 +6888,16 @@ msgstr ""
 msgid "Displays the shipping postcode for the order."
 msgstr ""
 
-#: includes/Variables/Order_Shipping_Provider.php:16
-msgid "Displays the name of shipping provider as set with the <%s>WooCommerce Shipment Tracking<%s> extension."
+#. translators: %1$s shipping tracking link start, %2$s shipping tracking link end.
+#: includes/Variables/Order_Shipping_Provider.php:18
+msgid "Displays the name of shipping provider as set with the %1$sWooCommerce Shipment Tracking%2$s extension."
 msgstr ""
 
 #: includes/Variables/Order_Shipping_State.php:23
 msgid "Displays the shipping state for the order."
 msgstr ""
 
-#: includes/Variables/Order_Status.php:19
+#: includes/Variables/Order_Status.php:18
 msgid "Displays the status of the order."
 msgstr ""
 
@@ -6858,19 +6909,21 @@ msgstr ""
 msgid "Displays the total cost of the order."
 msgstr ""
 
-#: includes/Variables/Order_Tracking_Number.php:16
-msgid "Displays the tracking number as set with the <%s>WooCommerce Shipment Tracking<%s> extension."
+#. translators: %1$s shipping tracking link start, %2$s shipping tracking link end.
+#: includes/Variables/Order_Tracking_Number.php:18
+msgid "Displays the tracking number as set with the %1$sWooCommerce Shipment Tracking%2$s extension."
 msgstr ""
 
-#: includes/Variables/Order_Tracking_Url.php:16
-msgid "Displays the shipment tracking URL as set with the <%s>WooCommerce Shipment Tracking<%s> extension."
+#. translators: %1$s shipping tracking link start, %2$s shipping tracking link end.
+#: includes/Variables/Order_Tracking_Url.php:18
+msgid "Displays the shipment tracking URL as set with the %1$sWooCommerce Shipment Tracking%2$s extension."
 msgstr ""
 
-#: includes/Variables/Order_View_Url.php:17
+#: includes/Variables/Order_View_Url.php:18
 msgid "Displays a URL to view the order in the user account area."
 msgstr ""
 
-#: includes/Variables/Product_Add_To_Cart_Url.php:15
+#: includes/Variables/Product_Add_To_Cart_Url.php:16
 msgid "Displays a link to the product that will also add the product to the users cart when clicked."
 msgstr ""
 
@@ -6878,27 +6931,27 @@ msgstr ""
 msgid "Displays the product's current price."
 msgstr ""
 
-#: includes/Variables/Product_Description.php:19
+#: includes/Variables/Product_Description.php:18
 msgid "Displays the description of the product or variation."
 msgstr ""
 
-#: includes/Variables/Product_Featured_Image.php:20
+#: includes/Variables/Product_Featured_Image.php:19
 msgid "Displays the product's featured image."
 msgstr ""
 
-#: includes/Variables/Product_ID.php:15
+#: includes/Variables/Product_ID.php:16
 msgid "Displays the product's ID."
 msgstr ""
 
-#: includes/Variables/Product_Meta.php:16
+#: includes/Variables/Product_Meta.php:17
 msgid "Displays a product's custom field."
 msgstr ""
 
-#: includes/Variables/Product_Parent_Sku.php:16
+#: includes/Variables/Product_Parent_Sku.php:17
 msgid "Displays the parent product's SKU."
 msgstr ""
 
-#: includes/Variables/Product_Permalink.php:15
+#: includes/Variables/Product_Permalink.php:16
 msgid "Displays the permalink to the product."
 msgstr ""
 
@@ -6910,11 +6963,11 @@ msgstr ""
 msgid "Displays the product's short description."
 msgstr ""
 
-#: includes/Variables/Product_Sku.php:15
+#: includes/Variables/Product_Sku.php:16
 msgid "Displays the product's SKU."
 msgstr ""
 
-#: includes/Variables/Product_Title.php:15
+#: includes/Variables/Product_Title.php:16
 msgid "Displays the product's title."
 msgstr ""
 
@@ -6926,11 +6979,11 @@ msgstr ""
 msgid "Displays the refund reason."
 msgstr ""
 
-#: includes/Variables/Review_Content.php:15
+#: includes/Variables/Review_Content.php:16
 msgid "Displays the content of the review."
 msgstr ""
 
-#: includes/Variables/Review_Rating.php:15
+#: includes/Variables/Review_Rating.php:16
 msgid "Displays the review rating as a number."
 msgstr ""
 
@@ -6955,7 +7008,7 @@ msgid "Set the sorting of the students."
 msgstr ""
 
 #: includes/Variables/Sensei_Course_Students.php:25
-#: includes/Variables/Shop_Products.php:46
+#: includes/Variables/Shop_Products.php:76
 msgid "Default"
 msgstr ""
 
@@ -7061,111 +7114,111 @@ msgstr ""
 msgid "Displays the URL to the shop section of your site."
 msgstr ""
 
-#: includes/Variables/Shop_Admin_Email.php:15
+#: includes/Variables/Shop_Admin_Email.php:16
 msgid "Display the site admin email. Note: You can use this variable in the To field when sending emails."
 msgstr ""
 
-#: includes/Variables/Shop_Current_Datetime.php:16
+#: includes/Variables/Shop_Current_Datetime.php:17
 msgid "Current datetime as per your website's specified timezone."
 msgstr ""
 
-#: includes/Variables/Shop_Products.php:18
+#: includes/Variables/Shop_Products.php:26
 msgid "Determines which products will be displayed."
 msgstr ""
 
-#: includes/Variables/Shop_Products.php:19
+#: includes/Variables/Shop_Products.php:28
 msgid "Featured"
 msgstr ""
 
-#: includes/Variables/Shop_Products.php:20
+#: includes/Variables/Shop_Products.php:29
 msgid "Sale"
 msgstr ""
 
-#: includes/Variables/Shop_Products.php:21
+#: includes/Variables/Shop_Products.php:30
 msgid "Recent"
 msgstr ""
 
-#: includes/Variables/Shop_Products.php:22
+#: includes/Variables/Shop_Products.php:31
 msgid "Top Selling"
 msgstr ""
 
-#: includes/Variables/Shop_Products.php:23
+#: includes/Variables/Shop_Products.php:32
 msgid "By Product Category"
 msgstr ""
 
-#: includes/Variables/Shop_Products.php:24
+#: includes/Variables/Shop_Products.php:33
 msgid "By Product Tag"
 msgstr ""
 
-#: includes/Variables/Shop_Products.php:25
+#: includes/Variables/Shop_Products.php:34
 msgid "By Product IDs"
 msgstr ""
 
-#: includes/Variables/Shop_Products.php:26
+#: includes/Variables/Shop_Products.php:35
 msgid "By Custom Filter"
 msgstr ""
 
-#: includes/Variables/Shop_Products.php:29
+#: includes/Variables/Shop_Products.php:42
 msgid "Display products by ID, use '+' as a delimiter. E.g. 34+12+5"
 msgstr ""
 
-#: includes/Variables/Shop_Products.php:33
+#: includes/Variables/Shop_Products.php:50
 msgid "Display products by product category slug. E.g. clothing or clothing+shoes"
 msgstr ""
 
-#: includes/Variables/Shop_Products.php:37
+#: includes/Variables/Shop_Products.php:58
 msgid "Display products by product tag slug. E.g. winter or winter+summer"
 msgstr ""
 
-#: includes/Variables/Shop_Products.php:41
+#: includes/Variables/Shop_Products.php:66
 msgid "Display products by using a WP filter."
 msgstr ""
 
-#: includes/Variables/Shop_Products.php:45
+#: includes/Variables/Shop_Products.php:74
 msgid "Set the sorting of the products."
 msgstr ""
 
-#: includes/Variables/Shop_Products.php:47
+#: includes/Variables/Shop_Products.php:77
 msgid "Date added - Descending"
 msgstr ""
 
-#: includes/Variables/Shop_Products.php:48
+#: includes/Variables/Shop_Products.php:78
 msgid "Date added - Ascending"
 msgstr ""
 
-#: includes/Variables/Shop_Products.php:49
+#: includes/Variables/Shop_Products.php:79
 msgid "Title - Descending"
 msgstr ""
 
-#: includes/Variables/Shop_Products.php:50
+#: includes/Variables/Shop_Products.php:80
 msgid "Title - Ascending"
 msgstr ""
 
-#: includes/Variables/Shop_Products.php:51
+#: includes/Variables/Shop_Products.php:81
 msgid "Popularity - Descending"
 msgstr ""
 
-#: includes/Variables/Shop_Products.php:52
+#: includes/Variables/Shop_Products.php:82
 msgid "Popularity - Ascending"
 msgstr ""
 
-#: includes/Variables/Shop_Products.php:53
+#: includes/Variables/Shop_Products.php:83
 msgid "Random"
 msgstr ""
 
-#: includes/Variables/Shop_Products.php:59
+#: includes/Variables/Shop_Products.php:89
 msgid "Display your shop's products by various criteria."
 msgstr ""
 
-#: includes/Variables/Shop_Tagline.php:15
+#: includes/Variables/Shop_Tagline.php:16
 msgid "Displays your shop's tag line."
 msgstr ""
 
-#: includes/Variables/Shop_Title.php:15
+#: includes/Variables/Shop_Title.php:16
 msgid "Displays your shop's title."
 msgstr ""
 
-#: includes/Variables/Shop_Url.php:15
+#: includes/Variables/Shop_Url.php:16
 msgid "Displays the URL to the home page of your shop."
 msgstr ""
 
@@ -7189,11 +7242,11 @@ msgstr ""
 msgid "Displays the subscription end date in your website's timezone."
 msgstr ""
 
-#: includes/Variables/Subscription_ID.php:19
+#: includes/Variables/Subscription_ID.php:18
 msgid "Displays the ID of the subscription."
 msgstr ""
 
-#: includes/Variables/Subscription_Items.php:23
+#: includes/Variables/Subscription_Items.php:22
 msgid "Displays a product listing of items in a subscription."
 msgstr ""
 
@@ -7233,7 +7286,7 @@ msgstr ""
 msgid "Displays the payment method of the subscription."
 msgstr ""
 
-#: includes/Variables/Subscription_Retry_Payment_Date.php:20
+#: includes/Variables/Subscription_Retry_Payment_Date.php:19
 msgid "Displays the subscription retry payment date in your website timezone."
 msgstr ""
 
@@ -7245,7 +7298,7 @@ msgstr ""
 msgid "Displays the subscription start date in your website's timezone."
 msgstr ""
 
-#: includes/Variables/Subscription_Status.php:19
+#: includes/Variables/Subscription_Status.php:18
 msgid "Displays the formatted status of the subscription."
 msgstr ""
 
@@ -7261,15 +7314,15 @@ msgstr ""
 msgid "Displays a URL to the subscription page in the My Account area."
 msgstr ""
 
-#: includes/Variables/Wishlist_Items.php:16
+#: includes/Variables/Wishlist_Items.php:17
 msgid "Display a product listing of the items in the wishlist."
 msgstr ""
 
-#: includes/Variables/Wishlist_Itemscount.php:15
+#: includes/Variables/Wishlist_Itemscount.php:16
 msgid "Displays the number of items in the wishlist."
 msgstr ""
 
-#: includes/Variables/Wishlist_View_Link.php:15
+#: includes/Variables/Wishlist_View_Link.php:16
 msgid "Displays a link to the wishlist."
 msgstr ""
 
@@ -7411,15 +7464,17 @@ msgstr ""
 msgid "Workflow was not defined for email."
 msgstr ""
 
-#: templates/communication-preferences/communication-form-no-customer.php:16
+#: templates/communication-preferences/communication-form-no-customer.php:15
 msgid "We couldn't find any customer data matching your request. Your account may have been deleted."
 msgstr ""
 
+#. translators: %1$s my account link start, %2$s my account link end.
 #: templates/communication-preferences/communication-form-no-customer.php:19
-msgid "<%s>Sign in to your account<%s> to manage your communication preferences."
+msgid "%1$sSign in to your account%2$s to manage your communication preferences."
 msgstr ""
 
-#: templates/communication-preferences/communication-form.php:26
+#. translators: %s Email address.
+#: templates/communication-preferences/communication-form.php:28
 msgid "You are managing preferences for %s."
 msgstr ""
 

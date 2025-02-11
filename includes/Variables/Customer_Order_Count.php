@@ -1,18 +1,19 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * @class Variable_Customer_Order_Count
  */
 class Variable_Customer_Order_Count extends Variable {
 
-
-	function load_admin_details() {
-		$this->description = __( "Displays the total number of orders the customer has placed.", 'automatewoo');
+	/**
+	 * Load admin details.
+	 */
+	public function load_admin_details() {
+		$this->description = __( 'Displays the total number of orders the customer has placed.', 'automatewoo' );
 	}
 
 	/**
@@ -26,5 +27,4 @@ class Variable_Customer_Order_Count extends Variable {
 	public function get_value( $customer, $parameters ) {
 		return $customer->get_order_count();
 	}
-
 }

@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
@@ -38,16 +37,19 @@ abstract class Variable {
 	/**
 	 * Optional method
 	 */
-	function init() {}
+	public function init() {}
 
 
 	/**
 	 * Method to set description and other admin props
 	 */
-	function load_admin_details() {}
+	public function load_admin_details() {}
 
 
-	function maybe_load_admin_details() {
+	/**
+	 * Load admin details for this variable, if available.
+	 */
+	public function maybe_load_admin_details() {
 		if ( ! $this->has_loaded_admin_details ) {
 			$this->load_admin_details();
 			$this->has_loaded_admin_details = true;
@@ -58,17 +60,18 @@ abstract class Variable {
 	/**
 	 * Constructor
 	 */
-	function __construct() {
+	public function __construct() {
 		$this->init();
 	}
 
 
 	/**
 	 * Sets the name, data_type and data_field props
-	 * @param $name
+	 *
+	 * @param string $name
 	 */
-	function setup( $name ) {
-		$this->name = $name;
+	public function setup( $name ) {
+		$this->name                                 = $name;
 		list( $this->data_type, $this->data_field ) = explode( '.', $this->name );
 	}
 
@@ -76,7 +79,7 @@ abstract class Variable {
 	/**
 	 * @return string
 	 */
-	function get_description() {
+	public function get_description() {
 		$this->maybe_load_admin_details();
 		return $this->description;
 	}
@@ -98,7 +101,7 @@ abstract class Variable {
 	/**
 	 * @return string
 	 */
-	function get_name() {
+	public function get_name() {
 		return $this->name;
 	}
 
@@ -106,7 +109,7 @@ abstract class Variable {
 	/**
 	 * @return string
 	 */
-	function get_data_type() {
+	public function get_data_type() {
 		return $this->data_type;
 	}
 
@@ -114,7 +117,7 @@ abstract class Variable {
 	/**
 	 * @return string
 	 */
-	function get_data_field() {
+	public function get_data_field() {
 		return $this->data_field;
 	}
 
@@ -168,5 +171,4 @@ abstract class Variable {
 
 		$this->add_parameter_field( $field );
 	}
-
 }

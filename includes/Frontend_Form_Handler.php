@@ -34,7 +34,14 @@ class Frontend_Form_Handler {
 		}
 
 		if ( ! empty( $_POST[ $honeypot_field_name ] ) ) {
-			wc_add_notice( sprintf( __( 'The form could not be submitted. Error code: %s', 'automatewoo' ), 1 ), 'error' );
+			wc_add_notice(
+				sprintf(
+					/* translators: %s Error code when form can not be submitted. */
+					__( 'The form could not be submitted. Error code: %s', 'automatewoo' ),
+					1
+				),
+				'error'
+			);
 			return;
 		}
 

@@ -47,6 +47,10 @@ class Admin {
 		add_action( 'current_screen', [ $self, 'screen_options' ] );
 		add_filter( 'set-screen-option', [ $self, 'handle_save_screen_option' ], 10, 3 );
 
+		add_action( 'before_delete_post', [ $self, 'flush_group_caches' ], 8 );
+		add_action( 'wp_trash_post', [ $self, 'flush_group_caches' ] );
+		add_action( 'untrash_post', [ $self, 'flush_group_caches' ] );
+
 		if ( aw_request( 'action' ) === 'automatewoo-settings' ) {
 			add_action( 'wp_loaded', [ $self, 'save_settings' ] );
 		}
@@ -1075,5 +1079,22 @@ class Admin {
 			],
 			admin_url( 'admin.php' )
 		);
+	}
+
+	/**
+	 * Flush group caches for specific post types.
+	 *
+	 * @since 6.1.6
+	 *
+	 * @param int $post_id
+	 */
+	public static function flush_group_caches( int $post_id ) {
+		$post_type = get_post_type( $post_id );
+
+		switch ( $post_type ) {
+			case 'shop_coupon':
+				Cache::flush_group( 'coupons' );
+				break;
+		}
 	}
 }

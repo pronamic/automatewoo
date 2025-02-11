@@ -462,9 +462,13 @@ abstract class Trigger {
 			->set_name( 'recheck_status_before_queued_run' )
 			->set_title( __( 'Recheck status before run', 'automatewoo') )
 			->set_default_to_checked()
-			->set_description( sprintf( __(
-				"This is useful for workflows that are not run immediately as it ensures the status of the %s hasn't "
-				. "changed since initial trigger." , 'automatewoo'  ), $object_name ) );
+			->set_description(
+				sprintf(
+					/* translators: %s Object name. */
+					__( "This is useful for workflows that are not run immediately as it ensures the status of the %s hasn't changed since initial trigger.", 'automatewoo' ),
+					$object_name
+				)
+			);
 
 		$this->add_field( $field );
 	}

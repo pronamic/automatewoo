@@ -450,7 +450,7 @@ class Admin_Ajax {
 		if ( $result instanceof WP_Error ) {
 			wp_send_json_error(
 				[
-					/* translators: %s: Error message */
+					/* translators: %s: The error message. */
 					'message' => sprintf( __( 'Error: %s', 'automatewoo' ), $result->get_error_message() ),
 				]
 			);
@@ -458,9 +458,9 @@ class Admin_Ajax {
 
 		wp_send_json_success([
 			'message' => sprintf(
-				__( 'Success! %s email%s sent.', 'automatewoo' ),
-				count($to),
-				count($to) == 1 ? '' : 's'
+				/* translators: %s: Number of emails sent. */
+				_n( 'Success! %s email sent', 'Success! %s emails sent', count( $to ), 'automatewoo' ),
+				count( $to )
 			)
 		]);
 	}

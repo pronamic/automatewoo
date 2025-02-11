@@ -49,33 +49,30 @@ class Options extends Options_API {
 
 	function __construct() {
 		$this->defaults = [
-			'optin_mode' => 'optin',
-			'enable_checkout_optin' => 'yes',
-			'enable_account_signup_optin' => 'yes',
-			'optin_checkbox_text' => __( "I want to receive updates about products and promotions.", 'automatewoo' ),
-			'session_tracking_enabled' => 'yes',
+			'optin_mode'                               => 'optin',
+			'enable_checkout_optin'                    => 'yes',
+			'enable_account_signup_optin'              => 'yes',
+			'optin_checkbox_text'                      => __( 'I want to receive updates about products and promotions.', 'automatewoo' ),
+			'session_tracking_enabled'                 => 'yes',
 			'session_tracking_requires_cookie_consent' => 'no',
-			'enable_communication_account_tab' => 'no',
-			'communication_page_legal_text' => sprintf(
-				__( 'You can update these options at any time by clicking the unsubscribe link in the footer of any email you receive from us, or in your account area. By clicking below, you agree that we may process your information in accordance with our %s and %s.', 'automatewoo' ),
-				'[terms]', '[privacy_policy]'
-			),
-			'enable_presubmit_data_capture' => 'no',
+			'enable_communication_account_tab'         => 'no',
+			'communication_page_legal_text'            => __( 'You can update these options at any time by clicking the unsubscribe link in the footer of any email you receive from us, or in your account area. By clicking below, you agree that we may process your information in accordance with our [terms] and [privacy_policy].', 'automatewoo' ),
+			'enable_presubmit_data_capture'            => 'no',
 
-			'abandoned_cart_enabled' => 'yes',
-			'abandoned_cart_timeout' => 15,
-			'clear_inactive_carts_after' => 60,
-			'guest_email_capture_scope' => 'checkout',
-			'clean_expired_coupons' => 'yes',
-			'abandoned_cart_includes_pending_orders' => 'no',
+			'abandoned_cart_enabled'                   => 'yes',
+			'abandoned_cart_timeout'                   => 15,
+			'clear_inactive_carts_after'               => 60,
+			'guest_email_capture_scope'                => 'checkout',
+			'clean_expired_coupons'                    => 'yes',
+			'abandoned_cart_includes_pending_orders'   => 'no',
 
-			'twilio_integration_enabled' => 'no',
-			'active_campaign_integration_enabled' => false,
-			'campaign_monitor_enabled' => false,
-			'mailchimp_integration_enabled' => false,
-			'conversion_window' => 14,
-			'enable_background_system_check' => true,
-			'bitly_shorten_sms_links' => 'no',
+			'twilio_integration_enabled'               => 'no',
+			'active_campaign_integration_enabled'      => false,
+			'campaign_monitor_enabled'                 => false,
+			'mailchimp_integration_enabled'            => false,
+			'conversion_window'                        => 14,
+			'enable_background_system_check'           => true,
+			'bitly_shorten_sms_links'                  => 'no',
 		];
 	}
 

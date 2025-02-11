@@ -20,7 +20,6 @@ class Variable_Subscription_Last_Payment_Date extends Variable_Abstract_Datetime
 		$this->description .= ' ' . $this->_desc_format_tip;
 	}
 
-
 	/**
 	 * @param \WC_Subscription $subscription
 	 * @param array            $parameters

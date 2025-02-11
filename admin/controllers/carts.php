@@ -41,6 +41,7 @@ class Carts extends Base {
 
 		$sidebar_content = '<p>' .
 			sprintf(
+				/* translators: %s: Amount of days after which carts will be deleted. */
 				__( 'Currently active carts are shown here which includes any cart that has not been cleared at purchase or emptied by its owner. Carts are automatically deleted %s days after their last update.', 'automatewoo' ),
 				AW()->options()->clear_inactive_carts_after
 			)

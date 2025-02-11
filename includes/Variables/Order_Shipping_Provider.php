@@ -1,21 +1,23 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * @class Variable_Order_Shipping_Provider
  */
 class Variable_Order_Shipping_Provider extends Variable {
 
-
-	function load_admin_details() {
+	/**
+	 * Load admin details.
+	 */
+	public function load_admin_details() {
 		$this->description = sprintf(
-			__( 'Displays the name of shipping provider as set with the <%s>WooCommerce Shipment Tracking<%s> extension.', 'automatewoo' ),
-			'a href="https://woocommerce.com/products/shipment-tracking/" target="_blank"',
-			'/a'
+			/* translators: %1$s shipping tracking link start, %2$s shipping tracking link end. */
+			__( 'Displays the name of shipping provider as set with the %1$sWooCommerce Shipment Tracking%2$s extension.', 'automatewoo' ),
+			'<a href="https://woocommerce.com/products/shipment-tracking/" target="_blank">',
+			'</a>'
 		);
 	}
 

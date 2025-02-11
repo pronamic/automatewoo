@@ -1,22 +1,23 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo\Variables;
 
 use AutomateWoo\Variable;
 use WP_Comment;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * CommentAuthorName class
  */
 class CommentAuthorName extends Variable {
 
-	function load_admin_details() {
-		$this->description = __( "Displays the name of the comment author.", 'automatewoo');
+	/**
+	 * Load admin details.
+	 */
+	public function load_admin_details() {
+		$this->description = __( 'Displays the name of the comment author.', 'automatewoo' );
 	}
-
 
 	/**
 	 * @param WP_Comment $comment
@@ -24,7 +25,7 @@ class CommentAuthorName extends Variable {
 	 *
 	 * @return string
 	 */
-	function get_value( $comment, $parameters ) {
+	public function get_value( $comment, $parameters ) {
 		return $comment->comment_author;
 	}
 }

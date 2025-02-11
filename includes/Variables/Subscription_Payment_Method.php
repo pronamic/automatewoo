@@ -18,7 +18,6 @@ class Variable_Subscription_Payment_Method extends Variable {
 		$this->description = __( 'Displays the payment method of the subscription.', 'automatewoo' );
 	}
 
-
 	/**
 	 * @param \WC_Subscription $subscription
 	 * @param array            $parameters

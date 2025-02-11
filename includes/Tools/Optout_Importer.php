@@ -65,9 +65,16 @@ class Tool_Optout_Importer extends Tool_Background_Processed_Abstract {
 
 		$emails = $this->parse_emails( $args['emails'] );
 
-		foreach( $emails as $email ) {
+		foreach ( $emails as $email ) {
 			if ( ! is_email( $email ) ) {
-				return new \WP_Error( 3, sprintf( __( '%s is not a valid email.', 'automatewoo' ), $email ) );
+				return new \WP_Error(
+					3,
+					sprintf(
+						/* translators: %s Invalid email. */
+						__( '%s is not a valid email.', 'automatewoo' ),
+						$email
+					)
+				);
 			}
 		}
 
@@ -107,11 +114,13 @@ class Tool_Optout_Importer extends Tool_Background_Processed_Abstract {
 		$args = $this->sanitize_args( $args );
 		$emails = $this->parse_emails( $args['emails'] );
 
-		echo '<p>' .
-			sprintf(
+		echo wp_kses_post(
+			'<p>' . sprintf(
+				/* translators: %s Number of customers to import for opt-out. */
 				__( 'Are you sure you want to opt-out <strong>%s customers</strong>?', 'automatewoo' ),
-				count( $emails ) )
-			. '</p>';
+				count( $emails )
+			) . '</p>'
+		);
 
 		$this->display_data_preview( $emails );
 	}
@@ -131,7 +140,11 @@ class Tool_Optout_Importer extends Tool_Background_Processed_Abstract {
 		}
 
 		if ( count( $items ) > $number_to_preview ) {
-			printf( __( '+ %d more items...', 'automatewoo' ), ( count( $items ) - $number_to_preview ) );
+			printf(
+				/* translators: %d Count of additional items. */
+				esc_html__( '+ %d more items...', 'automatewoo' ),
+				( count( $items ) - $number_to_preview )
+			);
 		}
 
 		echo '</p>';

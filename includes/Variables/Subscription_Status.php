@@ -11,14 +11,12 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class Variable_Subscription_Status extends Variable {
 
-
 	/**
 	 * Method to set description and other admin props
 	 */
 	public function load_admin_details() {
 		$this->description = __( 'Displays the formatted status of the subscription.', 'automatewoo' );
 	}
-
 
 	/**
 	 * @param \WC_Subscription $subscription

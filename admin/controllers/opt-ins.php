@@ -53,9 +53,10 @@ class Optins extends Base {
 		}
 
 		$sidebar_content .= ' ' . sprintf(
-			__( 'More information on opt-ins and opt-outs is available <%s>in the documentation.<%s>', 'automatewoo' ),
-			'a href="' . Admin::get_docs_link('unsubscribes', 'unsubscribes-list' ) . '" target="_blank"',
-			'/a'
+			/* translators: %1$s documentation link start, %2$s documentation link end. */
+			__( 'More information on opt-ins and opt-outs is available %1$sin the documentation%2$s.', 'automatewoo' ),
+			'<a href="' . Admin::get_docs_link( 'unsubscribes', 'unsubscribes-list' ) . '" target="_blank">',
+			'</a>'
 		);
 
 		$this->output_view( 'page-table-with-sidebar', [

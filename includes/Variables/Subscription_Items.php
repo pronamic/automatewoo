@@ -14,7 +14,6 @@ class Variable_Subscription_Items extends Variable_Abstract_Product_Display {
 	/** @var bool */
 	public $supports_order_table = true;
 
-
 	/**
 	 * Method to set description and other admin props
 	 */
@@ -22,7 +21,6 @@ class Variable_Subscription_Items extends Variable_Abstract_Product_Display {
 		parent::load_admin_details();
 		$this->description = __( 'Displays a product listing of items in a subscription.', 'automatewoo' );
 	}
-
 
 	/**
 	 * @param \WC_Subscription $subscription

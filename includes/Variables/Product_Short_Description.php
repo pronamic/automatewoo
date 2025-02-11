@@ -18,7 +18,6 @@ class Variable_Product_Short_Description extends Variable {
 		$this->description = __( "Displays the product's short description.", 'automatewoo' );
 	}
 
-
 	/**
 	 * @param WC_Product $product
 	 * @param array      $parameters

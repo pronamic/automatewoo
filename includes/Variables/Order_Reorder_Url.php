@@ -14,14 +14,12 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class Variable_Order_Reorder_Url extends Variable {
 
-
 	/**
 	 * Load admin details for this variable
 	 */
 	public function load_admin_details() {
 		$this->description = __( "Displays a reorder URL for the order. When clicked all items from the order will be added to the user's cart.", 'automatewoo' );
 	}
-
 
 	/**
 	 * Get the Order Re-Order URL

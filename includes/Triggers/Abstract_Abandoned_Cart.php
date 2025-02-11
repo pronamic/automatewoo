@@ -13,11 +13,12 @@ abstract class Trigger_Abstract_Abandoned_Cart extends Trigger {
 
 	function load_admin_details() {
 		$this->description .= ' ' . sprintf(
-			__( 'Carts are considered abandoned if they are inactive for %d minutes. When a customer purchases or empties their abandoned cart all queued workflows will be automatically cleared. <%s>View documentation.<%s>', 'automatewoo' ),
+			/* translators: %1$d number of minutes for cart timeout, %2$s documentation link start, %3$ss documentation link end. */
+			__( 'Carts are considered abandoned if they are inactive for %1$d minutes. When a customer purchases or empties their abandoned cart all queued workflows will be automatically cleared. %2$sView documentation.%3$s', 'automatewoo' ),
 			AW()->options()->abandoned_cart_timeout,
-			'a href="' . Admin::get_docs_link( 'abandoned-cart', 'trigger-description' ) . '" target="_blank" ',
-			'/a'
-			);
+			'<a href="' . Admin::get_docs_link( 'abandoned-cart', 'trigger-description' ) . '" target="_blank">',
+			'</a>'
+		);
 		$this->group = __( 'Carts', 'automatewoo' );
 	}
 

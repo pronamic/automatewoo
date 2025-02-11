@@ -22,7 +22,6 @@ class Variable_Order_Shipping_Address_Line_2 extends Variable {
 		$this->description = __( 'Displays the second line of the shipping address for the order.', 'automatewoo' );
 	}
 
-
 	/**
 	 * Method: get_value() - returns the second line of the shipping address.
 	 *

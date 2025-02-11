@@ -1,5 +1,12 @@
 *** AutomateWoo Changelog ***
 
+2025-02-11 - version 6.1.6
+* Fix - Add translator comments to assist in translations.
+* Fix - Cache coupon count and use a direct SQL query to count the totals.
+* Tweak - Add flush_group to the cache helper class.
+* Tweak - Highlight the OR condition for rule groups.
+* Tweak - PHPCS fixes for variable classes.
+
 2025-01-15 - version 6.1.5
 * Dev - Fix Points and rewards integration tests.
 * Dev - Improve abandoned cart E2E tests.

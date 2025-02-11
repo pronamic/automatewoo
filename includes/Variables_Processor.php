@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
@@ -21,22 +20,22 @@ class Variables_Processor {
 
 
 	/**
-	 * @param $workflow
+	 * @param Workflow $workflow
 	 */
-	function __construct( $workflow ) {
+	public function __construct( $workflow ) {
 		$this->workflow = $workflow;
 	}
 
 
 	/**
-	 * @param $text string
-	 * @param bool $allow_html
+	 * @param string $text
+	 * @param bool   $allow_html
 	 * @return string
 	 */
-	function process_field( $text, $allow_html = false ) {
+	public function process_field( $text, $allow_html = false ) {
 
-		$replacer = new Replace_Helper( $text, [ $this, '_callback_process_field' ], 'variables' );
-		$value = $replacer->process();
+		$replacer = new Replace_Helper( $text, [ $this, 'callback_process_field' ], 'variables' );
+		$value    = $replacer->process();
 
 		if ( ! $allow_html ) {
 			$value = html_entity_decode( wp_strip_all_tags( $value ) );
@@ -53,7 +52,7 @@ class Variables_Processor {
 	 *
 	 * @return string
 	 */
-	function _callback_process_field( $string ) {
+	public function callback_process_field( $string ) {
 		$variable = self::parse_variable( $string );
 
 		if ( $variable instanceof ExcludedParsedVariable ) {
@@ -109,11 +108,11 @@ class Variables_Processor {
 	 *
 	 * @param string $data_type
 	 * @param string $data_field
-	 * @param array $parameters
+	 * @param array  $parameters
 	 *
 	 * @return string
 	 */
-	function get_variable_value( $data_type, $data_field, $parameters = [] ) {
+	public function get_variable_value( $data_type, $data_field, $parameters = [] ) {
 
 		// Short circuit filter for the variable value
 		$short_circuit = (string) apply_filters( 'automatewoo_text_variable_value', false, $data_type, $data_field );
@@ -150,7 +149,7 @@ class Variables_Processor {
 	 *
 	 * @param string $data_type
 	 * @param string $data_field
-	 * @param array $parameters
+	 * @param array  $parameters
 	 */
 	private function convert_legacy_variables( &$data_type, &$data_field, &$parameters ) {
 		if ( $data_type === 'site' ) {
@@ -159,21 +158,19 @@ class Variables_Processor {
 
 		if ( $data_type === 'shop' ) {
 			if ( $data_field === 'products_on_sale' ) {
-				$data_field = 'products';
+				$data_field         = 'products';
 				$parameters['type'] = 'sale';
 			}
 
 			if ( $data_field === 'products_recent' ) {
-				$data_field = 'products';
+				$data_field         = 'products';
 				$parameters['type'] = 'recent';
 			}
 
 			if ( $data_field === 'products_featured' ) {
-				$data_field = 'products';
+				$data_field         = 'products';
 				$parameters['type'] = 'featured';
 			}
 		}
 	}
-
 }
-

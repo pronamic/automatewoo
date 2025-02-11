@@ -1,21 +1,21 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * @class Variable_Order_Item_Meta
  */
 class Variable_Order_Item_Meta extends Variable {
 
-
-	function load_admin_details() {
-		$this->description = __( "Can be used to display the value of an order item meta field.", 'automatewoo');
-		$this->add_parameter_text_field( 'key', __( "The key of the order item meta field.", 'automatewoo'), true );
+	/**
+	 * Load admin details.
+	 */
+	public function load_admin_details() {
+		$this->description = __( 'Can be used to display the value of an order item meta field.', 'automatewoo' );
+		$this->add_parameter_text_field( 'key', __( 'The key of the order item meta field.', 'automatewoo' ), true );
 	}
-
 
 	/**
 	 * @param \WC_Order_Item_Product $item
@@ -23,7 +23,7 @@ class Variable_Order_Item_Meta extends Variable {
 	 *
 	 * @return string
 	 */
-	function get_value( $item, $parameters ) {
+	public function get_value( $item, $parameters ) {
 
 		if ( empty( $parameters['key'] ) ) {
 			return false;

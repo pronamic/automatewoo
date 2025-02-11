@@ -3,6 +3,7 @@
 namespace AutomateWoo\Jobs;
 
 use AutomateWoo\ActionScheduler\ActionSchedulerInterface;
+use AutomateWoo\Cache;
 use AutomateWoo\Exceptions\InvalidArgument;
 use AutomateWoo\Jobs\Traits\ItemDeletionDate;
 use AutomateWoo\Jobs\Traits\ValidateItemAsIntegerId;
@@ -129,5 +130,8 @@ class DeleteExpiredCoupons extends AbstractRecurringBatchedActionSchedulerJob {
 	 */
 	protected function process_item( $coupon_id, array $args ) {
 		wp_delete_post( $coupon_id, true );
+
+		// Clear coupon counts.
+		Cache::flush_group( 'coupons' );
 	}
 }

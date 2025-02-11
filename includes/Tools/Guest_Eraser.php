@@ -67,8 +67,12 @@ class Guest_Eraser extends Tool_Background_Processed_Abstract {
 		$query->where('most_recent_order', 0 );
 		$count = $query->get_count();
 
-		$text = __( 'Are you sure you want to permanently delete the guests who have not placed an order? Any workflow logs for deleted guests will be anonymized.', 'automatewoo' );
-		$number_string = sprintf( _n( '%s guest will be deleted.', '%s guests will be deleted.', $count, 'automatewoo' ), $count );
+		$text          = __( 'Are you sure you want to permanently delete the guests who have not placed an order? Any workflow logs for deleted guests will be anonymized.', 'automatewoo' );
+		$number_string = sprintf(
+			/* translators: %d Number of guests that will be deleted. */
+			_n( '%d guest will be deleted.', '%d guests will be deleted.', $count, 'automatewoo' ),
+			$count
+		);
 
 		echo '<p>' . $text . ' ' . $number_string . '</p>';
 	}

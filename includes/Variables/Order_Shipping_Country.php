@@ -32,7 +32,6 @@ class Variable_Order_Shipping_Country extends Variable {
 		);
 	}
 
-
 	/**
 	 * Method: get_value() - returns full country name.
 	 *

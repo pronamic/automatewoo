@@ -19,7 +19,6 @@ class Variable_Refund_Reason extends Variable {
 		$this->description = __( 'Displays the refund reason.', 'automatewoo' );
 	}
 
-
 	/**
 	 * Get Value Method.
 	 *

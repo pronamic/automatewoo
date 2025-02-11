@@ -22,7 +22,6 @@ class Variable_Order_Shipping_City extends Variable {
 		$this->description = __( 'Displays the shipping city for the order.', 'automatewoo' );
 	}
 
-
 	/** Method: get_value() - returns shipping city.
 	 *
 	 * @param \WC_Order $order

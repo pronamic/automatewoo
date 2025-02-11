@@ -110,15 +110,23 @@ class Report_Conversions extends \AW_Report_Abstract_Graph {
 		$legend = [];
 
 		$legend[] = [
-			'title' => sprintf( __( '%s converted order value', 'automatewoo' ), '<strong>' . wc_price($this->conversion_total_value) . '</strong>' ),
-			'color' => $this->chart_colours['conversion_value'],
-			'highlight_series' => 1
+			'title'            => sprintf(
+				/* translators: %s Conversion total price. */
+				__( '%s converted order value', 'automatewoo' ),
+				'<strong>' . wc_price( $this->conversion_total_value ) . '</strong>'
+			),
+			'color'            => $this->chart_colours['conversion_value'],
+			'highlight_series' => 1,
 		];
 
 		$legend[] = [
-			'title' => sprintf( __( '%s converted orders', 'automatewoo' ), '<strong>' . $this->conversion_total_orders . '</strong>' ),
-			'color' => $this->chart_colours['conversion_number'],
-			'highlight_series' => 0
+			'title'            => sprintf(
+				/* translators: %s Number of converted orders. */
+				__( '%s converted orders', 'automatewoo' ),
+				'<strong>' . $this->conversion_total_orders . '</strong>'
+			),
+			'color'            => $this->chart_colours['conversion_number'],
+			'highlight_series' => 0,
 		];
 
 		return $legend;

@@ -67,7 +67,13 @@ class Tool_Reset_Workflow_Records extends Tool_Abstract {
 
 		$workflow = Factory::get( $args['workflow'] );
 
-		echo '<p>' . sprintf(__('Are you sure you want to reset all records for the workflow <strong>%s</strong>? This can not be undone.', 'automatewoo'), $workflow->title ) . '</p>';
+		echo wp_kses_post(
+			'<p>' . sprintf(
+				/* translators: %s Workflow title. */
+				__( 'Are you sure you want to reset all records for the workflow <strong>%s</strong>? This can not be undone.', 'automatewoo' ),
+				$workflow->title
+			) . '</p>'
+		);
 	}
 
 

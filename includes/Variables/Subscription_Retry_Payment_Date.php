@@ -11,7 +11,6 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class Variable_Subscription_Retry_Payment_Date extends Variable_Abstract_Datetime {
 
-
 	/**
 	 * Loads the admin details
 	 */
@@ -20,7 +19,6 @@ class Variable_Subscription_Retry_Payment_Date extends Variable_Abstract_Datetim
 		$this->description  = __( 'Displays the subscription retry payment date in your website timezone.', 'automatewoo' );
 		$this->description .= ' ' . $this->_desc_format_tip;
 	}
-
 
 	/**
 	 * @param WC_Subscription $subscription  The WC_Subscription instance.

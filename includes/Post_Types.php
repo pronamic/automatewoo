@@ -66,14 +66,18 @@ class Post_Types {
 	 *
 	 */
 	static function register_post_status() {
-		register_post_status( 'aw-disabled', [
-			'label' => __( 'Disabled', 'automatewoo' ),
-			'public' => false,
-			'exclude_from_search' => false,
-			'show_in_admin_all_list' => true,
-			'show_in_admin_status_list' => true,
-			'label_count' => _n_noop( 'Disabled <span class="count">(%s)</span>', 'Disabled <span class="count">(%s)</span>', 'automatewoo' ),
-		]);
+		register_post_status(
+			'aw-disabled',
+			[
+				'label'                     => __( 'Disabled', 'automatewoo' ),
+				'public'                    => false,
+				'exclude_from_search'       => false,
+				'show_in_admin_all_list'    => true,
+				'show_in_admin_status_list' => true,
+				/* translators: %s Disabled count. */
+				'label_count'               => _n_noop( 'Disabled <span class="count">(%s)</span>', 'Disabled <span class="count">(%s)</span>', 'automatewoo' ),
+			]
+		);
 	}
 
 	/**

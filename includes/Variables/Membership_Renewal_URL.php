@@ -1,9 +1,8 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * @class Variable_Membership_Renewal_URL
@@ -11,19 +10,19 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  */
 class Variable_Membership_Renewal_URL extends Variable {
 
-
-	function load_admin_details() {
-		$this->description = __( "Displays the renewal URL for the membership.", 'automatewoo');
+	/**
+	 * Load admin details.
+	 */
+	public function load_admin_details() {
+		$this->description = __( 'Displays the renewal URL for the membership.', 'automatewoo' );
 	}
-
 
 	/**
-	 * @param $membership \WC_Memberships_User_Membership
-	 * @param $parameters
+	 * @param \WC_Memberships_User_Membership $membership
+	 * @param array                           $parameters
 	 * @return string
 	 */
-	function get_value( $membership, $parameters ) {
+	public function get_value( $membership, $parameters ) {
 		return esc_url( $membership->get_renew_membership_url() );
 	}
-
 }

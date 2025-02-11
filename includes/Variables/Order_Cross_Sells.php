@@ -1,37 +1,43 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * @class Variable_Order_Cross_Sells
  */
 class Variable_Order_Cross_Sells extends Variable_Abstract_Product_Display {
 
+	/**
+	 * Support the limit field.
+	 *
+	 * @var bool
+	 */
 	public $support_limit_field = true;
 
-
-	function load_admin_details() {
+	/**
+	 * Load admin details.
+	 */
+	public function load_admin_details() {
 		parent::load_admin_details();
 
 		$this->description = sprintf(
-			__( "Displays a product listing of cross sells based on the items in an order. Be sure to <a href='%s' target='_blank'>set up cross sells</a> before using.", 'automatewoo'),
-			'http://docs.woothemes.com/document/related-products-up-sells-and-cross-sells/'
+			/* translators: %1$s documentation link start, %2$s documentation link end. */
+			__( 'Displays a product listing of cross sells based on the items in an order. Be sure to %1$sset up cross sells%2$s before using.', 'automatewoo' ),
+			'<a href="http://docs.woothemes.com/document/related-products-up-sells-and-cross-sells/" target="_blank">',
+			'</a>'
 		);
 	}
 
-
 	/**
-	 * @param $order \WC_Order
-	 * @param $parameters array
-	 * @param $workflow
+	 * @param \WC_Order $order
+	 * @param array     $parameters
+	 * @param Workflow  $workflow
 	 * @return string
 	 */
-	function get_value( $order, $parameters, $workflow ) {
-
-		$limit = isset( $parameters['limit'] ) ? absint( $parameters['limit'] ) : 8;
+	public function get_value( $order, $parameters, $workflow ) {
+		$limit    = isset( $parameters['limit'] ) ? absint( $parameters['limit'] ) : 8;
 		$template = isset( $parameters['template'] ) ? $parameters['template'] : false;
 
 		$cross_sells = aw_get_order_cross_sells( $order );
@@ -50,9 +56,10 @@ class Variable_Order_Cross_Sells extends Variable_Abstract_Product_Display {
 
 		$products = aw_get_products( $query_args );
 
-		$args = array_merge( $this->get_default_product_template_args( $workflow, $parameters ), [
-			'products' => $products
-		]);
+		$args = array_merge(
+			$this->get_default_product_template_args( $workflow, $parameters ),
+			[ 'products' => $products ]
+		);
 
 		return $this->get_product_display_html( $template, $args );
 	}

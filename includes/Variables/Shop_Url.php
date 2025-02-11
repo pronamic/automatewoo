@@ -1,26 +1,26 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * @class Variable_Shop_Url
  */
 class Variable_Shop_Url extends Variable {
 
-
-	function load_admin_details() {
-		$this->description = __( "Displays the URL to the home page of your shop.", 'automatewoo');
+	/**
+	 * Load admin details.
+	 */
+	public function load_admin_details() {
+		$this->description = __( 'Displays the URL to the home page of your shop.', 'automatewoo' );
 	}
 
-
 	/**
-	 * @param $parameters
+	 * @param array $parameters
 	 * @return string
 	 */
-	function get_value( $parameters ) {
+	public function get_value( $parameters ) {
 		return home_url();
 	}
 }

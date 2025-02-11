@@ -19,7 +19,6 @@ class Variable_Order_Total extends Variable_Abstract_Price {
 		$this->description = __( 'Displays the total cost of the order.', 'automatewoo' );
 	}
 
-
 	/**
 	 * Get Value Method.
 	 *

@@ -22,7 +22,6 @@ class Variable_Order_Shipping_Company_Name extends Variable {
 		$this->description = __( 'Displays the shipping company name for the order.', 'automatewoo' );
 	}
 
-
 	/**
 	 * Method: get_value() - returns the shipping company name.
 	 *

@@ -1,5 +1,7 @@
 <?php
 
+use AutomateWoo\Cache;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -74,25 +76,28 @@ class AW_Admin_Coupons_List {
 
 
 	/**
-	 * Get the post count
+	 * Get the count of published AutomateWoo generated coupons.
 	 *
-	 * @return int The post count
+	 * @return int Coupon count.
 	 */
-	public function get_count() {
-		$coupons = get_posts(
-			[
-				'post_type'      => 'shop_coupon',
-				'fields'         => 'ids',
-				'posts_per_page' => -1,
-				'meta_query'     => [
-					[
-						'key'   => '_is_aw_coupon',
-						'value' => '1',
-					],
-				],
-			]
-		);
-		return count( $coupons );
+	public function get_count(): int {
+		global $wpdb;
+
+		$count = Cache::get( 'coupon_count', 'coupons' );
+		if ( false === $count ) {
+			$count = $wpdb->get_var(
+				"SELECT DISTINCT COUNT(*) FROM `{$wpdb->posts}` AS posts
+				INNER JOIN `{$wpdb->postmeta}` AS meta ON posts.ID = meta.post_id
+				WHERE meta.meta_key = '_is_aw_coupon'
+				AND meta_value = '1'
+				AND posts.post_type = 'shop_coupon'
+				AND posts.post_status = 'publish'"
+			);
+		}
+
+		Cache::set( 'coupon_count', (int) $count, 'coupons' );
+
+		return (int) $count;
 	}
 
 

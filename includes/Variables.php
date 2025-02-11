@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
@@ -80,7 +79,7 @@ class Variables {
 			'meta_date'               => Variable_Order_Meta_Date::class,
 			'admin_url'               => Variable_Order_Admin_Url::class,
 		],
-		'refund'			=> [
+		'refund'            => [
 			'amount' => Variable_Refund_Amount::class,
 			'reason' => Variable_Refund_Reason::class,
 		],
@@ -210,7 +209,7 @@ class Variables {
 	/**
 	 * @return array
 	 */
-	static function get_list() {
+	public static function get_list() {
 		// cache the list after first generation
 		if ( isset( self::$variables_list ) ) {
 			return self::$variables_list;
@@ -234,8 +233,8 @@ class Variables {
 		 * @since 4.5.0
 		 */
 		if ( Integrations::is_subscriptions_active( '2.3' )
-		     && class_exists( 'WCS_Early_Renewal_Manager' )
-		     && \WCS_Early_Renewal_Manager::is_early_renewal_enabled()
+			&& class_exists( 'WCS_Early_Renewal_Manager' )
+			&& \WCS_Early_Renewal_Manager::is_early_renewal_enabled()
 		) {
 			$variables['subscription']['early_renewal_url'] = Variable_Subscription_Early_Renewal_Url::class;
 		}
@@ -309,8 +308,8 @@ class Variables {
 	protected static function get_variable_classname_or_file( $data_type, $data_field ) {
 		$list = self::get_list();
 
-		if ( isset( $list[$data_type][$data_field] ) ) {
-			return $list[$data_type][$data_field];
+		if ( isset( $list[ $data_type ][ $data_field ] ) ) {
+			return $list[ $data_type ][ $data_field ];
 		}
 
 		return false;
@@ -318,12 +317,12 @@ class Variables {
 
 
 	/**
-	 * @param $variable_name string
+	 * @param string $variable_name
 	 * @return Variable|false
 	 */
-	static function get_variable( $variable_name ) {
-		if ( isset( self::$loaded_variables[$variable_name] ) ) {
-			return self::$loaded_variables[$variable_name];
+	public static function get_variable( $variable_name ) {
+		if ( isset( self::$loaded_variables[ $variable_name ] ) ) {
+			return self::$loaded_variables[ $variable_name ];
 		}
 
 		list( $data_type, $data_field ) = explode( '.', $variable_name );
@@ -354,9 +353,8 @@ class Variables {
 
 		$class->setup( $variable_name );
 
-		self::$loaded_variables[$variable_name] = $class;
+		self::$loaded_variables[ $variable_name ] = $class;
 
 		return $class;
 	}
-
 }

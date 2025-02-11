@@ -18,7 +18,6 @@ class Variable_Subscription_Shipping_Address extends Variable {
 		$this->description = __( 'Displays the formatted shipping address for the subscription.', 'automatewoo' );
 	}
 
-
 	/**
 	 * @param \WC_Subscription $subscription
 	 * @param array            $parameters

@@ -12,14 +12,12 @@ use WC_Order_Item_Product;
  */
 class Variable_Order_Related_Products extends Variable_Abstract_Product_Display {
 
-
 	/**
 	 * Declare limit field support.
 	 *
 	 * @var boolean
 	 */
 	public $support_limit_field = true;
-
 
 	/**
 	 * Method to set title, group, description and other admin props
@@ -28,7 +26,6 @@ class Variable_Order_Related_Products extends Variable_Abstract_Product_Display 
 		parent::load_admin_details();
 		$this->description = __( 'Displays a listing of products related to the items in an order.', 'automatewoo' );
 	}
-
 
 	/**
 	 * @param WC_Order $order

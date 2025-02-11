@@ -1,27 +1,27 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * @class Variable_Category_Title
  */
 class Variable_Category_Title extends Variable {
 
-
-	function load_admin_details() {
-		$this->description = __( "Displays the title of the category.", 'automatewoo');
+	/**
+	 * Load admin details.
+	 */
+	public function load_admin_details() {
+		$this->description = __( 'Displays the title of the category.', 'automatewoo' );
 	}
 
-
 	/**
-	 * @param $category \WP_Term
-	 * @param $parameters array
+	 * @param \WP_Term $category
+	 * @param array    $parameters
 	 * @return string
 	 */
-	function get_value( $category, $parameters ) {
+	public function get_value( $category, $parameters ) {
 		return $category->name;
 	}
 }

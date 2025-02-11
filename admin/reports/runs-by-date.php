@@ -69,9 +69,13 @@ class Report_Runs_By_Date extends \AW_Report_Abstract_Graph {
 		$legend = [];
 
 		$legend[] = [
-			'title' => sprintf( __( '%s workflows have run for the selected period', 'automatewoo' ), '<strong>' . $this->logs_count . '</strong>' ),
-			'color' => $this->chart_colours['runs'],
-			'highlight_series' => 0
+			'title'            => sprintf(
+				/* translators: %s Number of workflows that have run for the selected period. */
+				__( '%s workflows have run for the selected period', 'automatewoo' ),
+				'<strong>' . $this->logs_count . '</strong>'
+			),
+			'color'            => $this->chart_colours['runs'],
+			'highlight_series' => 0,
 		];
 
 		return $legend;

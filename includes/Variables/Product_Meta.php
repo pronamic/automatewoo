@@ -1,28 +1,28 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * @class Variable_Product_Meta
  */
 class Variable_Product_Meta extends Variable_Abstract_Meta {
 
-
-	function load_admin_details() {
+	/**
+	 * Load admin details.
+	 */
+	public function load_admin_details() {
 		parent::load_admin_details();
-		$this->description = __( "Displays a product's custom field.", 'automatewoo');
+		$this->description = __( "Displays a product's custom field.", 'automatewoo' );
 	}
 
-
 	/**
-	 * @param $product \WC_Product
-	 * @param $parameters
+	 * @param \WC_Product $product
+	 * @param array       $parameters
 	 * @return string
 	 */
-	function get_value( $product, $parameters ) {
+	public function get_value( $product, $parameters ) {
 		if ( ! $parameters['key'] ) {
 			return '';
 		}
@@ -37,5 +37,4 @@ class Variable_Product_Meta extends Variable_Abstract_Meta {
 
 		return (string) $value;
 	}
-
 }

@@ -145,35 +145,55 @@ class Report_Email_Tracking extends \AW_Report_Abstract_Graph {
 		$legend = [];
 
 		$legend[] = array(
-			'title' => sprintf( __( '%s trackable messages sent', 'automatewoo' ), '<strong>' . $this->logs_count . '</strong>' ),
-			'color' => $this->chart_colours['runs'],
-			'highlight_series' => 1
+			'title'            => sprintf(
+				/* translators: %s Amount of trackable messages sent. */
+				__( '%s trackable messages sent', 'automatewoo' ),
+				'<strong>' . $this->logs_count . '</strong>'
+			),
+			'color'            => $this->chart_colours['runs'],
+			'highlight_series' => 1,
 		);
 
 		$legend[] = array(
-			'title' => sprintf( __( '%s unique opens', 'automatewoo' ), '<strong>' . $this->opens_count . '</strong>' ),
-			'color' => $this->chart_colours['opens'],
-			'placeholder' => __( 'This value represents unique opens.', 'automatewoo' ),
-			'highlight_series' => 4
+			'title'            => sprintf(
+				/* translators: %s Number of unique opens. */
+				__( '%s unique opens', 'automatewoo' ),
+				'<strong>' . $this->opens_count . '</strong>'
+			),
+			'color'            => $this->chart_colours['opens'],
+			'placeholder'      => __( 'This value represents unique opens.', 'automatewoo' ),
+			'highlight_series' => 4,
 		);
 
 		$legend[] = array(
-			'title' => sprintf( __( '%s unique clicks', 'automatewoo' ), '<strong>' . $this->unique_clicks_count . '</strong>' ),
-			'color' => $this->chart_colours['unique_clicks'],
-			'highlight_series' => 2
+			'title'            => sprintf(
+				/* translators: %s Number of unique clicks. */
+				__( '%s unique clicks', 'automatewoo' ),
+				'<strong>' . $this->unique_clicks_count . '</strong>'
+			),
+			'color'            => $this->chart_colours['unique_clicks'],
+			'highlight_series' => 2,
 		);
 
 		$legend[] = array(
-			'title' => sprintf( __( '%s clicks', 'automatewoo' ), '<strong>' . $this->clicks_count . '</strong>' ),
-			'color' => $this->chart_colours['clicks'],
-			'highlight_series' => 3
+			'title'            => sprintf(
+				/* translators: %s Number of clicks. */
+				__( '%s clicks', 'automatewoo' ),
+				'<strong>' . $this->clicks_count . '</strong>'
+			),
+			'color'            => $this->chart_colours['clicks'],
+			'highlight_series' => 3,
 		);
 
 		$legend[] = array(
-			'title' => sprintf( __( '%s unsubscribes', 'automatewoo' ), '<strong>' . $this->unsubscribes_count . '</strong>' ),
-			'color' => $this->chart_colours['unsubscribes'],
-			'placeholder' => __( 'Unsubscribes are recorded against each workflow so users can unsubscribe to individual workflows.', 'automatewoo' ),
-			'highlight_series' => 0
+			'title'            => sprintf(
+				/* translators: %s Number of unsubscribed users. */
+				__( '%s unsubscribes', 'automatewoo' ),
+				'<strong>' . $this->unsubscribes_count . '</strong>'
+			),
+			'color'            => $this->chart_colours['unsubscribes'],
+			'placeholder'      => __( 'Unsubscribes are recorded against each workflow so users can unsubscribe to individual workflows.', 'automatewoo' ),
+			'highlight_series' => 0,
 		);
 
 		return $legend;

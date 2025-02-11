@@ -23,7 +23,6 @@ class Variable_Order_Shipping_State extends Variable_Customer_State {
 		$this->description = __( 'Displays the shipping state for the order.', 'automatewoo' );
 	}
 
-
 	/**
 	 * Method: get_value() - returns the state name or abbreviation.
 	 *

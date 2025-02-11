@@ -1,27 +1,28 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * @class Variable_Order_Date_Shipped
  */
 class Variable_Order_Date_Shipped extends Variable_Abstract_Datetime {
 
-
-	function load_admin_details() {
+	/**
+	 * Load admin details.
+	 */
+	public function load_admin_details() {
 		parent::load_admin_details();
 
 		$this->description = sprintf(
-			__( 'Displays the shipping date as set with the <%s>WooCommerce Shipment Tracking<%s> extension.', 'automatewoo' ),
-			'a href="https://woocommerce.com/products/shipment-tracking/" target="_blank"',
-			'/a'
+			/* translators: %1$s shipping tracking link start, %2$s shipping tracking link end. */
+			__( 'Displays the shipping date as set with the %1$sWooCommerce Shipment Tracking%2$s extension.', 'automatewoo' ),
+			'<a href="https://woocommerce.com/products/shipment-tracking/" target="_blank">',
+			'</a>'
 		);
 		$this->description .= ' ' . $this->_desc_format_tip;
 	}
-
 
 	/**
 	 * Get variable value.

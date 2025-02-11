@@ -18,7 +18,11 @@ class Trigger_Wishlist_Item_Goes_On_Sale extends Trigger {
 
 
 	function load_admin_details() {
-		$this->title = sprintf( __( 'Wishlist Item On Sale (%s)', 'automatewoo' ), Wishlists::get_integration_title() );
+		$this->title = sprintf(
+			/* translators: %s Wishlist item title. */
+			__( 'Wishlist Item On Sale (%s)', 'automatewoo' ),
+			Wishlists::get_integration_title()
+		);
 		$this->group = __( 'Wishlists', 'automatewoo' );
 		$this->description = __(
 			"This trigger doesn't fire instantly when a product goes on sale. Instead, it performs a check for new on-sale products every 30 minutes. "

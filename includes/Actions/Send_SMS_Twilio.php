@@ -17,15 +17,17 @@ class Action_Send_SMS_Twilio extends Action {
 		$this->description = __( 'It is recommended to include an unsubscribe link by using the variable {{ customer.unsubscribe_url }} in the SMS body.', 'automatewoo' );
 
 		if ( AW()->options()->bitly_api && AW()->options()->bitly_shorten_sms_links ) {
-			$bitly_text = __( 'Links in the SMS body will be shortened with the <%1$s>Bitly integration<%2$s>.', 'automatewoo' );
+			/* translators: %1$s Bitly integration link start, %2$s Bitly integration link end. */
+			$bitly_text = __( 'Links in the SMS body will be shortened with the %1$sBitly integration%2$s.', 'automatewoo' );
 		} else {
-			$bitly_text = __( 'To shorten links in the SMS body the <%1$s>Bitly integration<%2$s> must be enabled.', 'automatewoo' );
+			/* translators: %1$s Bitly integration link start, %2$s Bitly integration link end. */
+			$bitly_text = __( 'To shorten links in the SMS body the %1$sBitly integration%2$s must be enabled.', 'automatewoo' );
 		}
 
 		$this->description .= sprintf(
 			' ' . $bitly_text,
-			'a href="' . Admin::page_url( 'settings-bitly' ) . '" target="_blank"',
-			'/a'
+			'<a href="' . Admin::page_url( 'settings-bitly' ) . '" target="_blank">',
+			'</a>'
 		);
 	}
 

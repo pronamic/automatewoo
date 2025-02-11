@@ -1,27 +1,27 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * @class Variable_Review_Rating
  */
 class Variable_Review_Rating extends Variable {
 
-
-	function load_admin_details() {
-		$this->description = __( "Displays the review rating as a number.", 'automatewoo');
+	/**
+	 * Load admin details.
+	 */
+	public function load_admin_details() {
+		$this->description = __( 'Displays the review rating as a number.', 'automatewoo' );
 	}
 
-
 	/**
-	 * @param $review Review
-	 * @param $parameters array
+	 * @param Review $review
+	 * @param array  $parameters
 	 * @return string
 	 */
-	function get_value( $review, $parameters ) {
+	public function get_value( $review, $parameters ) {
 		return $review->get_rating();
 	}
 }

@@ -27,13 +27,20 @@ class Tool_Optin_Importer extends Tool_Optout_Importer {
 	function display_confirmation_screen( $args ) {
 		$args = $this->sanitize_args( $args );
 		$emails = $this->parse_emails( $args['emails'] );
+		$count  = count( $emails );
 
-		echo '<p>' .
-			sprintf(
-				__( 'Are you sure you want to opt-in <strong>%s customers</strong>?', 'automatewoo' ),
-				count( $emails ) )
-			. '</p>';
-
+		echo wp_kses_post(
+			'<p>' . sprintf(
+				/* translators: %d Number of customers to import for opt-in. */
+				_n(
+					'Are you sure you want to opt-in <strong>%d customer</strong>?',
+					'Are you sure you want to opt-in <strong>%d customers</strong>?',
+					$count,
+					'automatewoo'
+				),
+				$count
+			) . '</p>'
+		);
 
 		$this->display_data_preview( $emails );
 	}

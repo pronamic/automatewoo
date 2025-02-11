@@ -1,27 +1,27 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * @class Variable_Product_Permalink
  */
 class Variable_Product_Permalink extends Variable {
 
-
-	function load_admin_details() {
-		$this->description = __( "Displays the permalink to the product.", 'automatewoo');
+	/**
+	 * Load admin details.
+	 */
+	public function load_admin_details() {
+		$this->description = __( 'Displays the permalink to the product.', 'automatewoo' );
 	}
 
-
 	/**
-	 * @param $product \WC_Product
-	 * @param $parameters
+	 * @param \WC_Product $product
+	 * @param array       $parameters
 	 * @return string
 	 */
-	function get_value( $product, $parameters ) {
+	public function get_value( $product, $parameters ) {
 		return $product->get_permalink();
 	}
 }

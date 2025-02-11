@@ -1,25 +1,30 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * @class Variable_Order_Payment_Method
  */
 class Variable_Order_Payment_Method extends Variable {
 
+	/**
+	 * Load admin details.
+	 */
+	public function load_admin_details() {
+		$this->add_parameter_select_field(
+			'format',
+			__( 'Choose whether to display the title or the ID of the payment method.', 'automatewoo' ),
+			[
+				''   => __( 'Title', 'automatewoo' ),
+				'id' => __( 'ID', 'automatewoo' ),
+			],
+			false
+		);
 
-	function load_admin_details() {
-		$this->add_parameter_select_field('format', __( "Choose whether to display the title or the ID of the payment method.", 'automatewoo'), [
-			'' => __( "Title", 'automatewoo' ),
-			'id' => __( "ID", 'automatewoo' )
-		], false );
-
-		$this->description = __( "Displays the payment method for the order.", 'automatewoo');
+		$this->description = __( 'Displays the payment method for the order.', 'automatewoo' );
 	}
-
 
 	/**
 	 * @param \WC_Order $order
@@ -27,7 +32,7 @@ class Variable_Order_Payment_Method extends Variable {
 	 *
 	 * @return string
 	 */
-	function get_value( $order, $parameters ) {
+	public function get_value( $order, $parameters ) {
 
 		$display = isset( $parameters['format'] ) ? $parameters['format'] : 'title';
 

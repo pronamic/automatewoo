@@ -48,14 +48,25 @@ class Queue extends Base {
 		$table->nonce_action = $this->get_nonce_action();
 
 		$sidebar_content = '<p>' . sprintf(
-				__( 'Workflows that are not set to run immediately will be added to this queue. The queue is checked every two minutes so actual run times will vary slightly. <%s>Read more&hellip;<%s>', 'automatewoo' ),
-				'a href="' . Admin::get_docs_link( 'queue', 'queue-list' ) . '" target="_blank"',
-				'/a'
-			) . '</p>';
+			/* translators: %1$s read more link start, %2$s read more link end. */
+			__( 'Workflows that are not set to run immediately will be added to this queue. The queue is checked every two minutes so actual run times will vary slightly. %1$sRead more&hellip;%2$s', 'automatewoo' ),
+			'<a href="' . Admin::get_docs_link( 'queue', 'queue-list' ) . '" target="_blank">',
+			'</a>'
+		) . '</p>';
 
 		try {
-			$deletion_job = AW()->job_service()->get_job( 'delete_failed_queued_workflows' );
-			$sidebar_content .= '<p>' . sprintf( __( 'Failed queue items will be deleted after %d days', 'automatewoo' ), $deletion_job->get_deletion_period() ) . '</p>';
+			$deletion_job     = AW()->job_service()->get_job( 'delete_failed_queued_workflows' );
+			$deletion_period  = $deletion_job->get_deletion_period();
+			$sidebar_content .= '<p>' . sprintf(
+				/* translators: %d Number of days to trigger deletion of failed queue items. */
+				_n(
+					'Failed queue items will be deleted after %d day',
+					'Failed queue items will be deleted after %d days',
+					$deletion_period,
+					'automatewoo'
+				),
+				$deletion_period
+			) . '</p>';
 		} catch ( JobException $e ) {
 			Logger::error( 'jobs', $e->getMessage() );
 		}

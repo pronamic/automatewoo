@@ -19,7 +19,6 @@ class Variable_Subscription_Meta extends Variable_Abstract_Meta {
 		$this->description = __( "Displays a subscription's custom field.", 'automatewoo' );
 	}
 
-
 	/**
 	 * @param \WC_Subscription $subscription
 	 * @param array            $parameters

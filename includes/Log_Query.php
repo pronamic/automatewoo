@@ -44,48 +44,6 @@ class Log_Query extends Query_Data_Layer_Abstract {
 		return $this->where( 'date', $date, $compare );
 	}
 
-
-	/**
-	 * @since 4.0
-	 * @param Customer $customer
-	 * @param bool $include_guest_matches include matching guest results
-	 * @param bool $include_advocate_matches
-	 * @return $this
-	 */
-	function where_customer_or_legacy_user( $customer, $include_guest_matches = false, $include_advocate_matches = false ) {
-		$where_meta = [];
-
-		$where_meta[] = [
-			'key' => $this->get_data_layer_meta_key( 'customer' ),
-			'value' => $customer->get_id()
-		];
-
-		if ( $customer->is_registered() ) {
-			$where_meta[] = [
-				'key' => $this->get_data_layer_meta_key( 'user' ),
-				'value' => $customer->get_user_id()
-			];
-
-			if ( $include_advocate_matches ) {
-				$where_meta[] = [
-					'key' => $this->get_data_layer_meta_key( 'advocate' ),
-					'value' => $customer->get_user_id()
-				];
-			}
-		}
-
-		if ( $include_guest_matches ) {
-			$where_meta[] = [
-				'key' => $this->get_data_layer_meta_key( 'guest' ),
-				'value' => $customer->get_email()
-			];
-		}
-
-		$this->where_meta[] = $where_meta;
-		return $this;
-	}
-
-
 	/**
 	 * @since 3.8
 	 * @param $start_date

@@ -1,5 +1,9 @@
 *** AutomateWoo Changelog ***
 
+2025-02-18 - version 6.1.7
+* Tweak - Enhance the performance of log query on the dashboard page.
+* Tweak - WC 9.7 compatibility.
+
 2025-02-11 - version 6.1.6
 * Fix - Add translator comments to assist in translations.
 * Fix - Cache coupon count and use a direct SQL query to count the totals.

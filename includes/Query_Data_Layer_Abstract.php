@@ -52,6 +52,47 @@ abstract class Query_Data_Layer_Abstract extends Query_Abstract {
 	}
 
 	/**
+	 * @since 4.0
+	 * @param Customer $customer The customer to match.
+	 * @param bool     $include_guest_matches Whether to include guest matches. Default false.
+	 * @param bool     $include_advocate_matches Whether to include advocate matches. Default false.
+	 * @return $this
+	 */
+	public function where_customer_or_legacy_user( $customer, $include_guest_matches = false, $include_advocate_matches = false ) {
+		$where_meta = [];
+
+		$where_meta[] = [
+			'key'   => $this->get_data_layer_meta_key( 'customer' ),
+			'value' => $customer->get_id(),
+		];
+
+		if ( $customer->is_registered() ) {
+			$where_meta[] = [
+				'key'   => $this->get_data_layer_meta_key( 'user' ),
+				'value' => $customer->get_user_id(),
+			];
+
+			if ( $include_advocate_matches ) {
+				$where_meta[] = [
+					'key'   => $this->get_data_layer_meta_key( 'advocate' ),
+					'value' => $customer->get_user_id(),
+				];
+			}
+		}
+
+		if ( $include_guest_matches ) {
+			$where_meta[] = [
+				'key'   => $this->get_data_layer_meta_key( 'guest' ),
+				'value' => $customer->get_email(),
+			];
+		}
+
+		// Add meta queries as nested OR conditions.
+		$this->where_meta[] = $where_meta;
+		return $this;
+	}
+
+	/**
 	 * @param int         $order_id
 	 * @param bool|string $compare
 	 * @return $this

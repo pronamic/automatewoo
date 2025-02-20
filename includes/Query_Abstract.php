@@ -372,7 +372,13 @@ abstract class Query_Abstract {
 
 		$this->build_where_query( $query );
 
-		$query[] = "GROUP BY {$this->get_table_name()}.id";
+		// When a query involves a meta-table, adding the `GROUP BY` clause
+		// may still be necessary to avoid duplicate results.
+		//
+		// See `Query_Data_Layer_Abstract::where_customer_or_legacy_user`
+		if ( ! empty( $this->where_meta ) ) {
+			$query[] = "GROUP BY {$this->get_table_name()}.id";
+		}
 
 		if ( $this->orderby ) {
 			$query[] = "ORDER BY {$this->orderby} {$this->order}";

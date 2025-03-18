@@ -481,6 +481,9 @@ class Admin_Workflow_Edit {
 
 		$workflow->update_meta( 'workflow_options', $options );
 		$workflow->update_meta( 'is_transactional', ! empty( $posted['is_transactional'] ) );
+
+		// Clear cached workflow data.
+		Cache::flush_group( 'workflows' );
 	}
 
 	/**

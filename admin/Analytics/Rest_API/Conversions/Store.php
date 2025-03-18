@@ -126,7 +126,14 @@ class Store extends ReportsDataStore implements DataStoreInterface {
 		$this->get_limit_sql_params( $query_args );
 		$this->add_order_by_sql_params( $query_args );
 
-		$this->subquery->add_sql_clause( 'join', "JOIN {$this->meta_table->name} aw_workflow ON ( {$order_stats_table_name}.order_id = aw_workflow.{$this->meta_table->id_column} AND aw_workflow.meta_key = '_aw_conversion' )" );
+		$workflows_clause = '';
+		// Filter selected workflows.
+		if ( ! empty( $query_args['workflows'] ) ) {
+			$included_workflows = implode( ',', wp_parse_id_list( $query_args['workflows'] ) );
+			$workflows_clause   = " AND aw_workflow.meta_value IN ({$included_workflows})";
+		}
+
+		$this->subquery->add_sql_clause( 'join', "JOIN {$this->meta_table->name} aw_workflow ON ( {$order_stats_table_name}.order_id = aw_workflow.{$this->meta_table->id_column} AND aw_workflow.meta_key = '_aw_conversion' {$workflows_clause} )" );
 		$this->subquery->add_sql_clause( 'join', "JOIN {$this->meta_table->name} aw_conversion ON ( {$order_stats_table_name}.order_id = aw_conversion.{$this->meta_table->id_column} AND aw_conversion.meta_key = '_aw_conversion_log' )" );
 
 		// We hardcode paid statuses only.

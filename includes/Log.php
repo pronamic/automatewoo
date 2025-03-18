@@ -500,19 +500,8 @@ class Log extends Abstract_Model_With_Meta_Table {
 			}
 		}
 
-		$this->clear_cached_data();
 		parent::delete();
 	}
-
-
-	/**
-	 *
-	 */
-	function save() {
-		$this->clear_cached_data();
-		parent::save();
-	}
-
 
 	function clear_cached_data() {
 

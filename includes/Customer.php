@@ -1,11 +1,10 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
 use Automattic\WooCommerce\Internal\DataStores\Orders\OrdersTableDataStore;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * @class Customer
@@ -24,9 +23,11 @@ class Customer extends Abstract_Model_With_Meta_Table {
 	public $object_type = 'customer';
 
 	/**
+	 * Customer constructor.
+	 *
 	 * @param bool|int $id
 	 */
-	function __construct( $id = false ) {
+	public function __construct( $id = false ) {
 		if ( $id ) {
 			$this->get_by( 'id', $id );
 		}
@@ -42,54 +43,58 @@ class Customer extends Abstract_Model_With_Meta_Table {
 	}
 
 	/**
+	 * Get the user ID.
+	 *
 	 * @return int
 	 */
-	function get_user_id() {
+	public function get_user_id() {
 		return (int) $this->get_prop( 'user_id' );
 	}
 
-
 	/**
-	 * @param $user_id
+	 * Set the user ID.
+	 *
+	 * @param mixed $user_id
 	 */
-	function set_user_id( $user_id ) {
+	public function set_user_id( $user_id ) {
 		$this->set_prop( 'user_id', (int) $user_id );
 	}
 
-
 	/**
+	 * Get the guest ID.
+	 *
 	 * @return int
 	 */
-	function get_guest_id() {
+	public function get_guest_id() {
 		return (int) $this->get_prop( 'guest_id' );
 	}
 
-
 	/**
-	 * @param $guest_id
+	 * Set the guest ID.
+	 *
+	 * @param mixed $guest_id
 	 */
-	function set_guest_id( $guest_id ) {
+	public function set_guest_id( $guest_id ) {
 		$this->set_prop( 'guest_id', (int) $guest_id );
 	}
-
 
 	/**
 	 * Returns a unique key that can ID the customer. This is added to the customer upon creation.
 	 *
 	 * @return string
 	 */
-	function get_key() {
+	public function get_key() {
 		return Clean::string( $this->get_prop( 'id_key' ) );
 	}
 
-
 	/**
+	 * Set a unique ID key.
+	 *
 	 * @param string $key
 	 */
-	function set_key( $key ) {
+	public function set_key( $key ) {
 		$this->set_prop( 'id_key', Clean::string( $key ) );
 	}
-
 
 	/**
 	 * Generates a new key for registered users that don't have one.
@@ -99,12 +104,11 @@ class Customer extends Abstract_Model_With_Meta_Table {
 	 * @since 4.0
 	 * @return string
 	 */
-	function get_tracking_key() {
+	public function get_tracking_key() {
 		wc_deprecated_function( __METHOD__, '5.2.0', 'get_key' );
 
 		return Clean::string( $this->get_linked_prop( 'tracking_key' ) );
 	}
-
 
 	/**
 	 * Get the creation date of the customer's last paid order.
@@ -115,14 +119,14 @@ class Customer extends Abstract_Model_With_Meta_Table {
 		return $this->get_date_column( 'last_purchased' );
 	}
 
-
 	/**
+	 * Set the date of the customer's last paid order.
+	 *
 	 * @param DateTime|string $date
 	 */
-	function set_date_last_purchased( $date ) {
+	public function set_date_last_purchased( $date ) {
 		$this->set_date_column( 'last_purchased', $date );
 	}
-
 
 	/**
 	 * Get the creation date of the customer's first paid order.
@@ -131,7 +135,7 @@ class Customer extends Abstract_Model_With_Meta_Table {
 	 *
 	 * @return DateTime|bool
 	 */
-	function get_date_first_purchased() {
+	public function get_date_first_purchased() {
 		if ( $this->is_registered() ) {
 			$first_order = aw_get_customer_first_order( $this->get_user_id() );
 		} else {
@@ -153,40 +157,40 @@ class Customer extends Abstract_Model_With_Meta_Table {
 	 *
 	 * @return string
 	 */
-	function is_unsubscribed() {
+	public function is_unsubscribed() {
 		do_action( 'automatewoo/customer/before_is_unsubscribed', $this );
 
 		if ( Options::optin_enabled() ) {
 			$is_unsubscribed = ! $this->get_is_subscribed();
-		}
-		else { // opt-out
+		} else { // opt-out
 			$is_unsubscribed = $this->get_is_unsubscribed();
 		}
 
 		return apply_filters( 'automatewoo/customer/is_unsubscribed', $is_unsubscribed, $this );
 	}
 
-
 	/**
+	 * Check if the customer is opted in.
+	 *
 	 * @return bool
 	 */
-	function is_opted_in() {
+	public function is_opted_in() {
 		return ! $this->is_unsubscribed();
 	}
 
-
 	/**
+	 * Check if the customer is opted out.
+	 *
 	 * @return string
 	 */
-	function is_opted_out() {
+	public function is_opted_out() {
 		return $this->is_unsubscribed();
 	}
-
 
 	/**
 	 * Mark a customer as subscribed
 	 */
-	function opt_in() {
+	public function opt_in() {
 		if ( $this->get_is_subscribed() ) {
 			return; // already subscribed
 		}
@@ -198,11 +202,10 @@ class Customer extends Abstract_Model_With_Meta_Table {
 		do_action( 'automatewoo/customer/opted_in', $this );
 	}
 
-
 	/**
 	 * Mark a customer as unsubscribed
 	 */
-	function opt_out() {
+	public function opt_out() {
 		if ( $this->get_is_unsubscribed() ) {
 			return; // already unsubscribed
 		}
@@ -214,250 +217,276 @@ class Customer extends Abstract_Model_With_Meta_Table {
 		do_action( 'automatewoo/customer/opted_out', $this );
 	}
 
-
 	/**
+	 * Set the customer as unsubscribed.
+	 *
 	 * @param bool $unsubscribed
 	 */
-	function set_is_unsubscribed( $unsubscribed ) {
+	public function set_is_unsubscribed( $unsubscribed ) {
 		$this->set_prop( 'unsubscribed', aw_bool_int( $unsubscribed ) );
 	}
 
-
 	/**
+	 * Check if the customer is unsubscribed.
+	 *
 	 * @return bool
 	 */
-	function get_is_unsubscribed() {
+	public function get_is_unsubscribed() {
 		return (bool) $this->get_prop( 'unsubscribed' );
 	}
 
-
 	/**
+	 * Get the date the customer unsubscribed.
+	 *
 	 * @return bool|DateTime
 	 */
-	function get_date_unsubscribed() {
+	public function get_date_unsubscribed() {
 		return $this->get_date_column( 'unsubscribed_date' );
 	}
 
-
 	/**
+	 * Set the date the customer unsubscribed.
+	 *
 	 * @param DateTime|string $date
 	 */
-	function set_date_unsubscribed( $date ) {
+	public function set_date_unsubscribed( $date ) {
 		$this->set_date_column( 'unsubscribed_date', $date );
 	}
 
-
 	/**
+	 * Set the customer as subscribed.
+	 *
 	 * @param bool $subscribed
 	 */
-	function set_is_subscribed( $subscribed ) {
+	public function set_is_subscribed( $subscribed ) {
 		$this->set_prop( 'subscribed', aw_bool_int( $subscribed ) );
 	}
 
-
 	/**
+	 * Check if the customer is subscribed.
+	 *
 	 * @return bool
 	 */
-	function get_is_subscribed() {
+	public function get_is_subscribed() {
 		return (bool) $this->get_prop( 'subscribed' );
 	}
 
-
 	/**
+	 * Get the date the customer subscribed.
+	 *
 	 * @return bool|DateTime
 	 */
-	function get_date_subscribed() {
+	public function get_date_subscribed() {
 		return $this->get_date_column( 'subscribed_date' );
 	}
 
-
 	/**
+	 * Set the date the customer subscribed.
+	 *
 	 * @param DateTime|string $date
 	 */
-	function set_date_subscribed( $date ) {
+	public function set_date_subscribed( $date ) {
 		$this->set_date_column( 'subscribed_date', $date );
 	}
 
-
 	/**
+	 * Get the guest object.
+	 *
 	 * @return Guest|false
 	 */
-	function get_guest() {
+	public function get_guest() {
 		if ( $this->is_registered() ) {
 			return false;
 		}
 		return Guest_Factory::get( $this->get_guest_id() );
 	}
 
-
 	/**
+	 * Get the user object.
+	 *
 	 * @return \WP_User
 	 */
-	function get_user() {
+	public function get_user() {
 		return get_userdata( $this->get_user_id() );
 	}
 
-
 	/**
+	 * Get the cart object.
+	 *
 	 * @return Cart
 	 */
-	function get_cart() {
+	public function get_cart() {
 		if ( $this->is_registered() ) {
 			return Cart_Factory::get_by_user_id( $this->get_user_id() );
-		}
-		else {
+		} else {
 			return Cart_Factory::get_by_guest_id( $this->get_guest_id() );
 		}
 	}
-
 
 	/**
 	 * Deletes the customer's stored cart.
 	 *
 	 * @since 4.3.0
 	 */
-	function delete_cart() {
-		if ( $cart = $this->get_cart() ) {
+	public function delete_cart() {
+		$cart = $this->get_cart();
+		if ( $cart ) {
 			$cart->delete();
 		}
 	}
 
-
 	/**
+	 * Check if the customer is registered.
+	 *
 	 * @return bool
 	 */
-	function is_registered() {
+	public function is_registered() {
 		return $this->get_user_id() !== 0;
 	}
 
-
 	/**
+	 * Get the customer's email.
+	 *
 	 * @return string
 	 */
-	function get_email() {
+	public function get_email() {
 		return Clean::email( $this->get_linked_prop( 'email' ) );
 	}
 
-
 	/**
+	 * Get the customer's first name.
+	 *
 	 * @return string
 	 */
-	function get_first_name() {
+	public function get_first_name() {
 		return $this->get_linked_prop( 'first_name' );
 	}
 
-
 	/**
+	 * Get the customer's last name.
+	 *
 	 * @return string
 	 */
-	function get_last_name() {
+	public function get_last_name() {
 		return $this->get_linked_prop( 'last_name' );
 	}
 
-
 	/**
+	 * Get the customer's full name.
+	 *
 	 * @return string
 	 */
-	function get_full_name() {
+	public function get_full_name() {
+		/* translators: 1: first name, 2: last name */
 		return trim( sprintf( _x( '%1$s %2$s', 'full name', 'automatewoo' ), $this->get_first_name(), $this->get_last_name() ) );
 	}
 
-
 	/**
+	 * Get the customer's billing country.
+	 *
 	 * @return string
 	 */
-	function get_billing_country() {
+	public function get_billing_country() {
 		return $this->get_linked_prop( 'billing_country' );
 	}
 
-
 	/**
+	 * Get the customer's billing state.
+	 *
 	 * @return string
 	 */
-	function get_billing_state() {
+	public function get_billing_state() {
 		return $this->get_linked_prop( 'billing_state' );
 	}
 
-
 	/**
+	 * Get the customer's billing phone.
+	 *
 	 * @return string
 	 */
-	function get_billing_phone() {
+	public function get_billing_phone() {
 		return $this->get_linked_prop( 'billing_phone' );
 	}
 
-
 	/**
+	 * Get the customer's billing postcode.
+	 *
 	 * @return string
 	 */
-	function get_billing_postcode() {
+	public function get_billing_postcode() {
 		return $this->get_linked_prop( 'billing_postcode' );
 	}
 
-
 	/**
+	 * Get the customer's billing city.
+	 *
 	 * @return string
 	 */
-	function get_billing_city() {
+	public function get_billing_city() {
 		return $this->get_linked_prop( 'billing_city' );
 	}
 
-
 	/**
+	 * Get the customer's billing address 1.
+	 *
 	 * @return string
 	 */
-	function get_billing_address_1() {
+	public function get_billing_address_1() {
 		return $this->get_linked_prop( 'billing_address_1' );
 	}
 
-
 	/**
+	 * Get the customer's billing address 2.
+	 *
 	 * @return string
 	 */
-	function get_billing_address_2() {
+	public function get_billing_address_2() {
 		return $this->get_linked_prop( 'billing_address_2' );
 	}
 
-
 	/**
+	 * Get the customer's billing company.
+	 *
 	 * @return string
 	 */
-	function get_billing_company() {
+	public function get_billing_company() {
 		return $this->get_linked_prop( 'billing_company' );
 	}
 
-
 	/**
+	 * Get the customer's billing address.
+	 *
 	 * @param bool $include_name
 	 * @return array
 	 */
-	function get_address( $include_name = true ) {
+	public function get_address( $include_name = true ) {
 		$args = [];
 
 		if ( $include_name ) {
 			$args['first_name'] = $this->get_first_name();
-			$args['last_name'] = $this->get_last_name();
+			$args['last_name']  = $this->get_last_name();
 		}
 
-		$args['company'] = $this->get_billing_company();
+		$args['company']   = $this->get_billing_company();
 		$args['address_1'] = $this->get_billing_address_1();
-		$args['address_2' ] = $this->get_billing_address_2();
-		$args['city'] = $this->get_billing_city();
-		$args['state'] = $this->get_billing_state();
-		$args['postcode'] = $this->get_billing_postcode();
-		$args['country'] = $this->get_billing_country();
+		$args['address_2'] = $this->get_billing_address_2();
+		$args['city']      = $this->get_billing_city();
+		$args['state']     = $this->get_billing_state();
+		$args['postcode']  = $this->get_billing_postcode();
+		$args['country']   = $this->get_billing_country();
 
 		return $args;
 	}
 
 	/**
+	 * Get the customer's formatted billing address.
+	 *
 	 * @param bool $include_name
 	 * @return string
 	 */
-	function get_formatted_billing_address( $include_name = true ) {
+	public function get_formatted_billing_address( $include_name = true ) {
 		return WC()->countries->get_formatted_address( $this->get_address( $include_name ) );
 	}
-
 
 	/**
 	 * Get meta value using legacy meta system.
@@ -470,16 +499,22 @@ class Customer extends Abstract_Model_With_Meta_Table {
 	 * @param string $key
 	 * @return mixed
 	 */
-	function get_legacy_meta( $key ) {
+	public function get_legacy_meta( $key ) {
 
-		if ( ! $key ) return false;
+		if ( ! $key ) {
+			return false;
+		}
 
 		if ( $this->is_registered() ) {
 			return get_user_meta( $this->get_user_id(), $key, true );
+		} else {
+			$guest = $this->get_guest();
+			if ( $guest ) {
+				return $guest->get_meta( $key );
+			}
 		}
-		elseif ( $guest = $this->get_guest() ) {
-			return $guest->get_meta( $key );
-		}
+
+		return false;
 	}
 
 	/**
@@ -488,21 +523,24 @@ class Customer extends Abstract_Model_With_Meta_Table {
 	 * @see \AutomateWoo\Customer::get_legacy_meta()
 	 *
 	 * @param string $key
-	 * @param $value
+	 * @param mixed  $value
 	 * @return mixed
 	 */
-	function update_legacy_meta( $key, $value ) {
+	public function update_legacy_meta( $key, $value ) {
 
-		if ( ! $key ) return false;
+		if ( ! $key ) {
+			return false;
+		}
 
 		if ( $this->is_registered() ) {
 			update_user_meta( $this->get_user_id(), $key, $value );
-		}
-		elseif ( $guest = $this->get_guest() ) {
-			$guest->update_meta( $key, $value );
+		} else {
+			$guest = $this->get_guest();
+			if ( $guest ) {
+				$guest->update_meta( $key, $value );
+			}
 		}
 	}
-
 
 	/**
 	 * Get count of customer's orders.
@@ -652,17 +690,20 @@ class Customer extends Abstract_Model_With_Meta_Table {
 	}
 
 	/**
+	 * Get the customer's role.
+	 *
 	 * @return string
 	 */
-	function get_role() {
-		if ( $this->is_registered() && $user = $this->get_user() ) {
-			return current( $user->roles );
+	public function get_role() {
+		if ( $this->is_registered() ) {
+			$user = $this->get_user();
+			if ( $user ) {
+				return current( $user->roles );
+			}
 		}
-		else {
-			return 'guest';
-		}
-	}
 
+		return 'guest';
+	}
 
 	/**
 	 * Get the customer's language if site is multilingual.
@@ -690,7 +731,7 @@ class Customer extends Abstract_Model_With_Meta_Table {
 	 *
 	 * @return DateTime|bool
 	 */
-	function get_date_registered() {
+	public function get_date_registered() {
 		$user = $this->get_user();
 
 		if ( $user ) {
@@ -701,12 +742,12 @@ class Customer extends Abstract_Model_With_Meta_Table {
 		return false;
 	}
 
-
 	/**
 	 * No need to save after using this method
-	 * @param $language
+	 *
+	 * @param string $language
 	 */
-	function update_language( $language ) {
+	public function update_language( $language ) {
 
 		if ( ! Language::is_multilingual() || ! $language ) {
 			return;
@@ -715,20 +756,19 @@ class Customer extends Abstract_Model_With_Meta_Table {
 		if ( $this->is_registered() ) {
 			$user_lang = get_user_meta( $this->get_user_id(), '_aw_persistent_language', true );
 
-			if ( $user_lang != $language ) {
+			if ( $user_lang !== $language ) {
 				Language::set_user_language( $this->get_user_id(), $language );
 			}
-		}
-		else {
-			if ( $guest = $this->get_guest() ) {
-				if ( $guest->get_language() != $language ) {
+		} else {
+			$guest = $this->get_guest();
+			if ( $guest ) {
+				if ( $guest->get_language() !== $language ) {
 					$guest->set_language( $language );
 					$guest->save();
 				}
 			}
 		}
 	}
-
 
 	/**
 	 * Get product and variation ids of all the customers purchased products
@@ -782,24 +822,24 @@ class Customer extends Abstract_Model_With_Meta_Table {
 		return $products;
 	}
 
-
-
 	/**
-	 * @param $prop
+	 * Get the customer's linked properties.
+	 *
+	 * @param string $prop
 	 * @return mixed
 	 */
-	function get_linked_prop( $prop ) {
-
+	public function get_linked_prop( $prop ) {
 		$guest = false;
-		$user = false;
+		$user  = false;
 
 		if ( $this->is_registered() ) {
-			if ( ! $user = $this->get_user() ) {
+			$user = $this->get_user();
+			if ( ! $user ) {
 				return false;
 			}
-		}
-		else {
-			if ( ! $guest = $this->get_guest() ) {
+		} else {
+			$guest = $this->get_guest();
+			if ( ! $guest ) {
 				return false;
 			}
 		}
@@ -807,53 +847,41 @@ class Customer extends Abstract_Model_With_Meta_Table {
 		switch ( $prop ) {
 			case 'email':
 				return $this->is_registered() ? $user->user_email : $guest->get_email();
-				break;
 			case 'first_name':
 				return $this->is_registered() ? $user->first_name : $guest->get_first_name();
-				break;
 			case 'last_name':
 				return $this->is_registered() ? $user->last_name : $guest->get_last_name();
-				break;
 			case 'billing_country':
 				return $this->is_registered() ? $user->billing_country : $guest->get_country();
-				break;
 			case 'billing_state':
 				return $this->is_registered() ? $user->billing_state : $guest->get_state();
-				break;
 			case 'billing_phone':
 				return $this->is_registered() ? $user->billing_phone : $guest->get_phone();
-				break;
 			case 'billing_company':
 				return $this->is_registered() ? $user->billing_company : $guest->get_company();
-				break;
 			case 'billing_address_1':
 				return $this->is_registered() ? $user->billing_address_1 : $guest->get_address_1();
-				break;
 			case 'billing_address_2':
 				return $this->is_registered() ? $user->billing_address_2 : $guest->get_address_2();
-				break;
 			case 'billing_postcode':
 				return $this->is_registered() ? $user->billing_postcode : $guest->get_postcode();
-				break;
 			case 'billing_city':
 				return $this->is_registered() ? $user->billing_city : $guest->get_city();
-				break;
 			case 'tracking_key':
 				if ( $this->is_registered() ) {
 					// not every registered user will have a key
-					if ( ! $key = get_user_meta( $this->get_user_id(), 'automatewoo_visitor_key', true ) ) {
+					$key = get_user_meta( $this->get_user_id(), 'automatewoo_visitor_key', true );
+					if ( ! $key ) {
 						$key = aw_generate_key( 32 );
 						update_user_meta( $this->get_user_id(), 'automatewoo_visitor_key', $key );
 					}
 					return $key;
-				}
-				else {
+				} else {
 					// guests are always created with a key
 					return $guest->get_key();
 				}
 				break;
 		}
-
 	}
 
 	/**
@@ -865,13 +893,16 @@ class Customer extends Abstract_Model_With_Meta_Table {
 	 *
 	 * @return array|int
 	 */
-	function get_reviews( $args = [] ) {
-		$query_args = wp_parse_args( $args, [
-			'status' => 'approve',
-			'count'  => false,
-			'type'   => 'review',
-			'parent' => 0,
-		] );
+	public function get_reviews( $args = [] ) {
+		$query_args = wp_parse_args(
+			$args,
+			[
+				'status' => 'approve',
+				'count'  => false,
+				'type'   => 'review',
+				'parent' => 0,
+			]
+		);
 
 		if ( $this->is_registered() ) {
 			$query_args['user_id'] = $this->get_user_id();
@@ -889,7 +920,7 @@ class Customer extends Abstract_Model_With_Meta_Table {
 	 *
 	 * @return int
 	 */
-	function get_review_count() {
+	public function get_review_count() {
 		$cache_group = 'customer_review_count';
 
 		if ( Cache::exists( $this->get_id(), $cache_group ) ) {
@@ -909,15 +940,20 @@ class Customer extends Abstract_Model_With_Meta_Table {
 	 *
 	 * @return int
 	 */
-	function calculate_unique_product_review_count() {
+	public function calculate_unique_product_review_count() {
 		global $wpdb;
-		$sql = "SELECT COUNT(DISTINCT comment_post_ID) FROM {$wpdb->comments}
+
+		return (int) $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT COUNT(DISTINCT comment_post_ID) FROM {$wpdb->comments}
 				WHERE comment_parent = 0
 				AND comment_approved = 1
 				AND comment_type = 'review'
-				AND (user_ID = %d OR comment_author_email = %s)";
-
-		return (int) $wpdb->get_var( $wpdb->prepare( $sql, [ $this->get_user_id(), $this->get_email() ] ) );
+				AND (user_ID = %d OR comment_author_email = %s)",
+				$this->get_user_id(),
+				$this->get_email()
+			)
+		);
 	}
 
 	/**
@@ -925,7 +961,7 @@ class Customer extends Abstract_Model_With_Meta_Table {
 	 *
 	 * @since 4.5
 	 */
-	function clear_review_count_cache() {
+	public function clear_review_count_cache() {
 		Cache::delete( $this->get_id(), 'customer_review_count' );
 	}
 
@@ -936,8 +972,8 @@ class Customer extends Abstract_Model_With_Meta_Table {
 	 *
 	 * @return DateTime|bool
 	 */
-	function get_last_review_date() {
-		$cache_key         = "customer_last_review_date";
+	public function get_last_review_date() {
+		$cache_key         = 'customer_last_review_date';
 		$last_comment_date = false;
 
 		if ( Temporary_Data::exists( $cache_key, $this->get_id() ) ) {
@@ -967,7 +1003,7 @@ class Customer extends Abstract_Model_With_Meta_Table {
 	 *
 	 * @return DateTime|bool
 	 */
-	function get_workflow_last_run_date( $workflow ) {
+	public function get_workflow_last_run_date( $workflow ) {
 		if ( ! $workflow ) {
 			return false;
 		}
@@ -1014,5 +1050,13 @@ class Customer extends Abstract_Model_With_Meta_Table {
 		return current( wc_get_orders( $query_args ) );
 	}
 
+	/**
+	 * Clear cached customer data.
+	 *
+	 * @since 6.1.8
+	 */
+	public function clear_cached_data() {
+		// Clear cached dashboard counts.
+		Cache::flush_group( 'dashboard' );
+	}
 }
-

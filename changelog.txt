@@ -1,5 +1,10 @@
 *** AutomateWoo Changelog ***
 
+2025-03-18 - version 6.1.8
+* Add - Object caching for key figures on dashboard.
+* Fix - Filtering workflows in Analytics > Conversions List.
+* Tweak - Cache manual workflow count.
+
 2025-02-18 - version 6.1.7
 * Tweak - Enhance the performance of log query on the dashboard page.
 * Tweak - WC 9.7 compatibility.

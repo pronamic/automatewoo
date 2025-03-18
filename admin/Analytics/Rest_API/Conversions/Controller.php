@@ -220,6 +220,15 @@ class Controller extends Generic_Controller {
 			'sanitize_callback' => 'wc_string_to_bool',
 			'validate_callback' => 'rest_validate_request_arg',
 		);
+		$params['workflows']     = array(
+			'description'       => __( 'Limit result set to specific workflow IDs.', 'automatewoo' ),
+			'type'              => 'array',
+			'sanitize_callback' => 'wp_parse_id_list',
+			'validate_callback' => 'rest_validate_request_arg',
+			'items'             => array(
+				'type' => 'integer',
+			),
+		);
 
 		return $params;
 	}

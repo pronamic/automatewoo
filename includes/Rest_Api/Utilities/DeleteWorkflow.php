@@ -2,6 +2,7 @@
 
 namespace AutomateWoo\Rest_Api\Utilities;
 
+use AutomateWoo\Cache;
 use AutomateWoo\Workflow;
 
 
@@ -77,6 +78,9 @@ trait DeleteWorkflow {
 
 		// Update status after delete.
 		$workflow->post->post_status = $force ? 'deleted' : 'trash';
+
+		// Clear cached workflow data.
+		Cache::flush_group( 'workflows' );
 
 		return $workflow;
 	}

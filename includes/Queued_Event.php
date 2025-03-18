@@ -384,6 +384,9 @@ class Queued_Event extends Abstract_Model_With_Meta_Table {
 	 * @return void
 	 */
 	public function clear_cached_data() {
+		// Clear cached dashboard counts.
+		Cache::flush_group( 'dashboard' );
+
 		if ( ! $this->get_workflow_id() ) {
 			return;
 		}
@@ -401,19 +404,7 @@ class Queued_Event extends Abstract_Model_With_Meta_Table {
 			$this->set_date_created( new DateTime() );
 		}
 
-		$this->clear_cached_data();
-
 		parent::save();
-	}
-
-	/**
-	 * Delete the current queued event
-	 *
-	 * @return void
-	 */
-	public function delete() {
-		$this->clear_cached_data();
-		parent::delete();
 	}
 
 	/**

@@ -555,11 +555,10 @@ class Cart extends Model {
 		return wc_price( $price, apply_filters( 'automatewoo/cart/price_args', [], $this ) );
 	}
 
-
 	/**
-	 * Save
+	 * Save the cart.
 	 */
-	function save() {
+	public function save() {
 
 		if ( ! $this->exists && ! $this->has_prop( 'created' ) ) {
 			$this->set_date_created( new DateTime() );
@@ -568,6 +567,13 @@ class Cart extends Model {
 		parent::save();
 	}
 
-
+	/**
+	 * Clear cached cart data.
+	 *
+	 * @since 6.1.8
+	 */
+	public function clear_cached_data() {
+		// Clear cached dashboard counts.
+		Cache::flush_group( 'dashboard' );
+	}
 }
-

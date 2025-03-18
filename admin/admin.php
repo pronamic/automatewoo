@@ -1095,6 +1095,9 @@ class Admin {
 			case 'shop_coupon':
 				Cache::flush_group( 'coupons' );
 				break;
+			case 'aw_workflow':
+				Cache::flush_group( 'workflows' );
+				break;
 		}
 	}
 }

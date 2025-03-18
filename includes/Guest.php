@@ -494,9 +494,21 @@ class Guest extends Abstract_Model_With_Meta_Table {
 	}
 
 
-	function delete() {
+	/**
+	 * Delete the guest.
+	 */
+	public function delete() {
 		$this->delete_cart();
 		parent::delete();
 	}
 
+	/**
+	 * Clear cached guest data.
+	 *
+	 * @since 6.1.8
+	 */
+	public function clear_cached_data() {
+		// Clear cached dashboard counts.
+		Cache::flush_group( 'dashboard' );
+	}
 }

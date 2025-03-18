@@ -230,6 +230,8 @@ abstract class Model {
 			do_action( 'automatewoo/object/create', $this ); // cleans object cache
 		}
 
+		$this->clear_cached_data();
+
 		// reset changed data
 		// important to reset after cache hooks
 		$this->changed_fields = [];
@@ -260,8 +262,15 @@ abstract class Model {
 		);
 
 		$this->exists = false;
+		$this->clear_cached_data();
 	}
 
+	/**
+	 * Clear cached data.
+	 *
+	 * @since 6.1.8
+	 */
+	public function clear_cached_data() {}
 
 	/**
 	 * @param string $column

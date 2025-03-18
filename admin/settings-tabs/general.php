@@ -266,6 +266,20 @@ class Settings_Tab_General extends Admin_Settings_Tab_Abstract {
 
 		$this->section_end( 'misc' );
 	}
+
+	/**
+	 * Override save function to handle clearing cache counts.
+	 *
+	 * @since 6.1.8
+	 *
+	 * @param array $fields Which fields to save. If empty, all fields will be saved.
+	 */
+	public function save( $fields = array() ): void {
+		// Clear cached dashboard counts.
+		Cache::flush_group( 'dashboard' );
+
+		parent::save( $fields );
+	}
 }
 
 return new Settings_Tab_General();

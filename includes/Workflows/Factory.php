@@ -3,6 +3,7 @@
 namespace AutomateWoo\Workflows;
 
 use AutomateWoo\Clean;
+use AutomateWoo\Cache;
 use AutomateWoo\Entity\Workflow as WorkflowEntity;
 use AutomateWoo\Exceptions\InvalidWorkflow;
 use AutomateWoo\Workflow;
@@ -109,6 +110,9 @@ class Factory {
 		$post_id  = self::create_post( $data );
 		$workflow = self::create_workflow_object_from_data( $post_id, $data );
 
+		// Clear cached workflow data.
+		Cache::flush_group( 'workflows' );
+
 		do_action( 'automatewoo/workflow/created', $workflow->get_id() );
 
 		return $workflow;
@@ -127,6 +131,9 @@ class Factory {
 	public static function update_from_array( $data = [] ) {
 		$post_id  = self::update_post( $data );
 		$workflow = self::create_workflow_object_from_data( $post_id, $data );
+
+		// Clear cached workflow data.
+		Cache::flush_group( 'workflows' );
 
 		do_action( 'automatewoo/workflow/updated', $workflow->get_id() );
 

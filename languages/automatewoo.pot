@@ -2,23 +2,23 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: AutomateWoo 6.1.8\n"
+"Project-Id-Version: AutomateWoo 6.1.9\n"
 "Report-Msgid-Bugs-To: https://woocommerce.com/my-account/contact-support/\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-03-18T05:09:01+00:00\n"
+"POT-Creation-Date: 2025-04-02T11:05:14+02:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.7.1\n"
 "X-Domain: automatewoo\n"
 
 #. Plugin Name of the plugin
 #. translators: Plugin name.
-#: admin/admin.php:149
-#: admin/admin.php:150
-#: admin/admin.php:750
+#: admin/admin.php:154
+#: admin/admin.php:155
+#: admin/admin.php:755
 #: admin/coupons-list.php:44
 #: admin/WCAdminConnectPages.php:59
 #: automatewoo.php:132
@@ -48,13 +48,13 @@ msgstr ""
 msgid "https://woocommerce.com"
 msgstr ""
 
-#: admin/admin.php:159
+#: admin/admin.php:164
 #: admin/views/page-dashboard.php:17
 #: admin/WCAdminConnectPages.php:60
 msgid "Dashboard"
 msgstr ""
 
-#: admin/admin.php:165
+#: admin/admin.php:170
 #: admin/Analytics.php:45
 #: admin/reports-tabs/runs-by-date.php:14
 #: admin/WCAdminConnectPages.php:72
@@ -65,20 +65,20 @@ msgstr ""
 msgid "Workflows"
 msgstr ""
 
-#: admin/admin.php:170
+#: admin/admin.php:175
 #: admin/reports/email-tracking.php:361
 #: admin/reports/logs.php:19
 #: admin/WCAdminConnectPages.php:99
 msgid "Logs"
 msgstr ""
 
-#: admin/admin.php:174
+#: admin/admin.php:179
 #: admin/WCAdminConnectPages.php:100
 #: admin/assets/build/index.js:28
 msgid "Queue"
 msgstr ""
 
-#: admin/admin.php:180
+#: admin/admin.php:185
 #: admin/reports/carts.php:21
 #: admin/settings-tabs/carts.php:17
 #: admin/WCAdminConnectPages.php:101
@@ -87,69 +87,69 @@ msgstr ""
 msgid "Carts"
 msgstr ""
 
-#: admin/admin.php:186
+#: admin/admin.php:191
 #: admin/reports/guests.php:23
 #: admin/WCAdminConnectPages.php:102
 #: includes/Triggers/Guest_Created.php:19
 msgid "Guests"
 msgstr ""
 
-#: admin/admin.php:191
+#: admin/admin.php:196
 #: admin/reports/opt-ins.php:33
 #: admin/WCAdminConnectPages.php:103
 msgid "Opt-ins"
 msgstr ""
 
-#: admin/admin.php:191
+#: admin/admin.php:196
 #: admin/reports/opt-ins.php:33
 #: admin/WCAdminConnectPages.php:103
 msgid "Opt-outs"
 msgstr ""
 
-#: admin/admin.php:196
+#: admin/admin.php:201
 #: admin/WCAdminConnectPages.php:166
 msgid "Reports"
 msgstr ""
 
-#: admin/admin.php:202
+#: admin/admin.php:207
 #: admin/WCAdminConnectPages.php:186
 msgid "Tools"
 msgstr ""
 
-#: admin/admin.php:207
+#: admin/admin.php:212
 #: admin/WCAdminConnectPages.php:147
 #: includes/Installer.php:272
 msgid "Settings"
 msgstr ""
 
-#: admin/admin.php:212
+#: admin/admin.php:217
 #: admin/views/action.php:30
 msgid "Preview"
 msgstr ""
 
-#: admin/admin.php:217
+#: admin/admin.php:222
 msgid "AutomateWoo Data Update"
 msgstr ""
 
-#: admin/admin.php:248
+#: admin/admin.php:253
 msgid "Manual Workflow Runner"
 msgstr ""
 
-#: admin/admin.php:367
+#: admin/admin.php:372
 msgid "This field does not support variables."
 msgstr ""
 
 #. translators: Variable name.
-#: admin/admin.php:369
+#: admin/admin.php:374
 msgid "Variable '%s' is not available with the selected trigger. Please only use variables listed in the the variables box."
 msgstr ""
 
 #. translators: Variable name.
-#: admin/admin.php:371
+#: admin/admin.php:376
 msgid "Variable '%s' is not valid. Please only use variables listed in the variables box."
 msgstr ""
 
-#: admin/admin.php:372
+#: admin/admin.php:377
 msgid "Choose a trigger before selecting a variable."
 msgstr ""
 
@@ -206,59 +206,120 @@ msgstr ""
 msgid "Conversions"
 msgstr ""
 
+#: admin/Analytics/Rest_API/Conversions/Controller.php:125
+#: admin/assets/build/analytics.js:3
+msgid "Order #"
+msgstr ""
+
+#: admin/Analytics/Rest_API/Conversions/Controller.php:126
+#: admin/data-layer-formatter.php:44
+#: admin/reports/carts.php:41
+#: admin/reports/conversions-list.php:140
+#: admin/reports/logs.php:110
+#: admin/reports/opt-ins.php:71
+#: admin/reports/queue.php:135
+#: includes/Actions/Customer_Add_Tags.php:26
+#: includes/Actions/Customer_Change_Role.php:28
+#: includes/Actions/Customer_Update_Meta.php:18
+#: includes/Actions/Order_Resend_Email.php:62
+#: includes/Actions/Points_Rewards_Edit_Points_Abstract.php:30
+#: includes/DataTypes/Customer.php:83
+#: admin/assets/build/analytics.js:3
+msgid "Customer"
+msgstr ""
+
 #: admin/Analytics/Rest_API/Conversions/Controller.php:127
+#: admin/reports/conversions-list.php:141
+#: admin/reports/logs.php:109
+#: admin/reports/queue.php:134
+#: admin/views/modal-log-info.php:27
+#: admin/views/modal-queued-event-info.php:28
+#: includes/Fields/Workflow.php:26
+#: includes/Post_Types.php:30
+#: admin/assets/build/analytics.js:3
+#: admin/assets/build/index.js:4
+msgid "Workflow"
+msgstr ""
+
+#: admin/Analytics/Rest_API/Conversions/Controller.php:128
+#: admin/reports/conversions-list.php:142
+#: admin/reports/logs.php:18
+#: admin/reports/logs.php:108
+#: admin/assets/build/analytics.js:3
+msgid "Log"
+msgstr ""
+
+#: admin/Analytics/Rest_API/Conversions/Controller.php:129
+#: admin/reports/conversions-list.php:143
+#: admin/assets/build/analytics.js:3
+msgid "First Interacted"
+msgstr ""
+
+#: admin/Analytics/Rest_API/Conversions/Controller.php:130
+#: admin/reports/conversions-list.php:144
+#: admin/assets/build/analytics.js:3
+msgid "Order Placed"
+msgstr ""
+
+#: admin/Analytics/Rest_API/Conversions/Controller.php:131
+#: admin/reports/conversions-list.php:145
+#: admin/assets/build/analytics.js:3
+msgid "Order Total"
+msgstr ""
+
+#: admin/Analytics/Rest_API/Conversions/Controller.php:185
 msgid "Order ID."
 msgstr ""
 
-#: admin/Analytics/Rest_API/Conversions/Controller.php:133
+#: admin/Analytics/Rest_API/Conversions/Controller.php:191
 msgid "Order Number."
 msgstr ""
 
-#: admin/Analytics/Rest_API/Conversions/Controller.php:139
+#: admin/Analytics/Rest_API/Conversions/Controller.php:197
 msgid "Date the order was created, in the site's timezone."
 msgstr ""
 
-#: admin/Analytics/Rest_API/Conversions/Controller.php:146
+#: admin/Analytics/Rest_API/Conversions/Controller.php:204
 msgid "Date the order was created, as GMT."
 msgstr ""
 
-#: admin/Analytics/Rest_API/Conversions/Controller.php:153
+#: admin/Analytics/Rest_API/Conversions/Controller.php:211
 msgid "Customer ID."
 msgstr ""
 
-#: admin/Analytics/Rest_API/Conversions/Controller.php:159
+#: admin/Analytics/Rest_API/Conversions/Controller.php:217
 msgid "Order total."
 msgstr ""
 
-#: admin/Analytics/Rest_API/Conversions/Controller.php:165
+#: admin/Analytics/Rest_API/Conversions/Controller.php:223
 msgid "Order total (formatted)."
 msgstr ""
 
-#: admin/Analytics/Rest_API/Conversions/Controller.php:171
+#: admin/Analytics/Rest_API/Conversions/Controller.php:229
 msgid "Workflow ID which triggered the conversion."
 msgstr ""
 
-#: admin/Analytics/Rest_API/Conversions/Controller.php:177
+#: admin/Analytics/Rest_API/Conversions/Controller.php:235
 msgid "Conversion log ID."
 msgstr ""
 
-#: admin/Analytics/Rest_API/Conversions/Controller.php:187
+#: admin/Analytics/Rest_API/Conversions/Controller.php:245
 msgid "Order customer information."
 msgstr ""
 
-#: admin/Analytics/Rest_API/Conversions/Controller.php:193
+#: admin/Analytics/Rest_API/Conversions/Controller.php:251
 msgid "Workflow information."
 msgstr ""
 
-#: admin/Analytics/Rest_API/Conversions/Controller.php:199
+#: admin/Analytics/Rest_API/Conversions/Controller.php:257
 msgid "Conversion information."
 msgstr ""
 
-#: admin/Analytics/Rest_API/Conversions/Controller.php:217
+#: admin/Analytics/Rest_API/Conversions/Controller.php:275
 msgid "Add additional info about each conversion to the report."
 msgstr ""
 
-#: admin/Analytics/Rest_API/Conversions/Controller.php:224
+#: admin/Analytics/Rest_API/Conversions/Controller.php:282
 msgid "Limit result set to specific workflow IDs."
 msgstr ""
 
@@ -362,19 +423,19 @@ msgstr ""
 msgid "Bulk edit completed."
 msgstr ""
 
-#: admin/controllers/dashboard.php:60
+#: admin/controllers/dashboard.php:68
 msgid "90 days"
 msgstr ""
 
-#: admin/controllers/dashboard.php:61
+#: admin/controllers/dashboard.php:69
 msgid "30 days"
 msgstr ""
 
-#: admin/controllers/dashboard.php:62
+#: admin/controllers/dashboard.php:70
 msgid "14 days"
 msgstr ""
 
-#: admin/controllers/dashboard.php:63
+#: admin/controllers/dashboard.php:71
 msgid "7 days"
 msgstr ""
 
@@ -596,11 +657,11 @@ msgstr ""
 msgid "There are no events currently queued&hellip;"
 msgstr ""
 
-#: admin/dashboard-widgets/workflows.php:47
+#: admin/dashboard-widgets/workflows.php:36
 msgid "most run workflow"
 msgstr ""
 
-#: admin/dashboard-widgets/workflows.php:70
+#: admin/dashboard-widgets/workflows.php:45
 msgid "highest converting workflow"
 msgstr ""
 
@@ -615,22 +676,6 @@ msgstr ""
 #: includes/DataTypes/Order.php:68
 #: includes/Privacy_Exporters.php:330
 msgid "Order"
-msgstr ""
-
-#: admin/data-layer-formatter.php:44
-#: admin/reports/carts.php:41
-#: admin/reports/conversions-list.php:140
-#: admin/reports/logs.php:110
-#: admin/reports/opt-ins.php:71
-#: admin/reports/queue.php:135
-#: includes/Actions/Customer_Add_Tags.php:26
-#: includes/Actions/Customer_Change_Role.php:28
-#: includes/Actions/Customer_Update_Meta.php:18
-#: includes/Actions/Order_Resend_Email.php:62
-#: includes/Actions/Points_Rewards_Edit_Points_Abstract.php:30
-#: includes/DataTypes/Customer.php:83
-#: admin/assets/build/analytics.js:3
-msgid "Customer"
 msgstr ""
 
 #: admin/data-layer-formatter.php:52
@@ -847,40 +892,6 @@ msgstr ""
 
 #: admin/reports/conversions-list.php:38
 msgid "Unmark As Conversion"
-msgstr ""
-
-#: admin/reports/conversions-list.php:141
-#: admin/reports/logs.php:109
-#: admin/reports/queue.php:134
-#: admin/views/modal-log-info.php:27
-#: admin/views/modal-queued-event-info.php:28
-#: includes/Fields/Workflow.php:26
-#: includes/Post_Types.php:30
-#: admin/assets/build/analytics.js:3
-#: admin/assets/build/index.js:4
-msgid "Workflow"
-msgstr ""
-
-#: admin/reports/conversions-list.php:142
-#: admin/reports/logs.php:18
-#: admin/reports/logs.php:108
-#: admin/assets/build/analytics.js:3
-msgid "Log"
-msgstr ""
-
-#: admin/reports/conversions-list.php:143
-#: admin/assets/build/analytics.js:3
-msgid "First Interacted"
-msgstr ""
-
-#: admin/reports/conversions-list.php:144
-#: admin/assets/build/analytics.js:3
-msgid "Order Placed"
-msgstr ""
-
-#: admin/reports/conversions-list.php:145
-#: admin/assets/build/analytics.js:3
-msgid "Order Total"
 msgstr ""
 
 #. translators: %s Conversion total price.
@@ -2030,6 +2041,33 @@ msgstr[1] ""
 #: includes/Triggers/AbstractManual.php:21
 #: includes/Workflows.php:46
 msgid "Manual"
+msgstr ""
+
+#: admin/Workflow_Duplicate.php:37
+msgid "Duplicate"
+msgstr ""
+
+#: admin/Workflow_Duplicate.php:48
+msgid "Invalid request."
+msgstr ""
+
+#: admin/Workflow_Duplicate.php:52
+msgid "You do not have permission to duplicate workflows."
+msgstr ""
+
+#. translators: %s: workflow ID
+#: admin/Workflow_Duplicate.php:61
+msgid "Workflow creation failed, could not find original workflow: %d"
+msgstr ""
+
+#. translators: %s: original workflow title
+#: admin/Workflow_Duplicate.php:70
+msgid "Copy of %s"
+msgstr ""
+
+#. translators: %s: error message
+#: admin/Workflow_Duplicate.php:82
+msgid "Workflow creation failed: %s"
 msgstr ""
 
 #. translators: Plugin name.
@@ -3860,6 +3898,7 @@ msgid_plural "Disabled <span class=\"count\">(%s)</span>"
 msgstr[0] ""
 msgstr[1] ""
 
+#. translators: placeholder is previous workflow title
 #: includes/Post_Types.php:94
 #: includes/Post_Types.php:97
 #: includes/Post_Types.php:100
@@ -3899,6 +3938,7 @@ msgctxt "used in \"Workflow scheduled for <date>\""
 msgid "M j, Y @ G:i"
 msgstr ""
 
+#. translators: php date string, see http://php.net/date
 #: includes/Post_Types.php:105
 msgid "Workflow draft updated."
 msgstr ""
@@ -7527,10 +7567,6 @@ msgstr ""
 
 #: admin/assets/build/analytics.js:3
 msgid "Orders successfully unmarked as conversions."
-msgstr ""
-
-#: admin/assets/build/analytics.js:3
-msgid "Order #"
 msgstr ""
 
 #: admin/assets/build/analytics.js:3

@@ -2,8 +2,6 @@
 
 namespace AutomateWoo;
 
-use AutomateWoo\Workflows\Factory;
-
 defined( 'ABSPATH' ) || exit;
 
 /**
@@ -28,19 +26,10 @@ class Dashboard_Widget_Workflows extends Dashboard_Widget {
 			return [];
 		}
 
-		$featured    = [];
-		$logs        = $this->controller->get_logs();
-		$conversions = $this->controller->get_conversions();
-		$counts      = [];
+		$featured = [];
 
-		foreach ( $logs as $log ) {
-			$counts[] = $log->get_workflow_id();
-		}
-
-		$counts = array_count_values( $counts );
-		arsort( $counts, SORT_NUMERIC );
-		$workflow = Factory::get( key( $counts ) );
-
+		// Check for the most run workflow.
+		$workflow = $this->controller->get_most_run_workflow();
 		if ( $workflow ) {
 			$featured[] = [
 				'workflow'    => $workflow,
@@ -48,28 +37,13 @@ class Dashboard_Widget_Workflows extends Dashboard_Widget {
 			];
 		}
 
-		if ( $conversions ) {
-			$totals = [];
-
-			foreach ( $conversions as $order ) {
-				$workflow_id = absint( $order->get_meta( '_aw_conversion' ) );
-
-				if ( isset( $totals[ $workflow_id ] ) ) {
-					$totals[ $workflow_id ] += $order->get_total();
-				} else {
-					$totals[ $workflow_id ] = $order->get_total();
-				}
-			}
-
-			arsort( $totals, SORT_NUMERIC );
-			$workflow = Factory::get( key( $totals ) );
-
-			if ( $workflow ) {
-				$featured[] = [
-					'workflow'    => $workflow,
-					'description' => __( 'highest converting workflow', 'automatewoo' ),
-				];
-			}
+		// Get the highest converting workflow.
+		$highest_converting_workflow = $this->controller->get_highest_converting_workflow();
+		if ( $highest_converting_workflow ) {
+			$featured[] = [
+				'workflow'    => $highest_converting_workflow,
+				'description' => __( 'highest converting workflow', 'automatewoo' ),
+			];
 		}
 
 		return $featured;

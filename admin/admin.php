@@ -65,6 +65,11 @@ class Admin {
 
 		$registry = BlocksPackage::container()->get( AssetDataRegistry::class );
 		( new AssetData( $registry ) )->add_data();
+
+		// Include workflow duplication feature.
+		if ( current_user_can( 'manage_woocommerce' ) ) {
+			new Workflow_Duplicate();
+		}
 	}
 
 	/**

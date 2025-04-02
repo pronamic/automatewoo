@@ -947,6 +947,7 @@ return array(
     'AutomateWoo\\WooCommerce_Blocks_Integration' => $baseDir . '/includes/WooCommerce_Blocks_Integration.php',
     'AutomateWoo\\WooCommerce_Payments_Integration' => $baseDir . '/includes/WooCommerce_Payments_Integration.php',
     'AutomateWoo\\Workflow' => $baseDir . '/includes/Workflow.php',
+    'AutomateWoo\\Workflow_Duplicate' => $baseDir . '/admin/Workflow_Duplicate.php',
     'AutomateWoo\\Workflow_Email' => $baseDir . '/includes/Workflow_Email.php',
     'AutomateWoo\\Workflow_Fatal_Error_Monitor' => $baseDir . '/includes/Workflow_Fatal_Error_Monitor.php',
     'AutomateWoo\\Workflow_Location' => $baseDir . '/includes/Workflow_Location.php',

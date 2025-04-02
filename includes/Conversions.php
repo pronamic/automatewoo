@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
@@ -9,20 +8,21 @@ namespace AutomateWoo;
  */
 class Conversions {
 
-
 	/**
-	 * Max number of days that a purchase to be considered a conversion
+	 * Max number of days that a purchase to be considered a conversion.
+	 *
 	 * @return int
 	 */
-	static function get_conversion_window() {
+	public static function get_conversion_window() {
 		return absint( apply_filters( 'automatewoo_conversion_window', AW()->options()->conversion_window ) );
 	}
 
-
 	/**
+	 * Check if an order is a conversion and record it.
+	 *
 	 * @param int $order_id
 	 */
-	static function check_order_for_conversion( $order_id ) {
+	public static function check_order_for_conversion( $order_id ) {
 
 		$order = wc_get_order( Clean::id( $order_id ) );
 		if ( ! $order ) {
@@ -43,7 +43,8 @@ class Conversions {
 		$conversion_window_start = clone $conversion_window_end;
 		$conversion_window_start->modify( ( -1 * self::get_conversion_window() ) . ' days' );
 
-		if ( ! $logs = self::get_logs_by_customer( $customer, $conversion_window_start, $conversion_window_end ) ) {
+		$logs = self::get_logs_by_customer( $customer, $conversion_window_start, $conversion_window_end );
+		if ( ! $logs ) {
 			return;
 		}
 
@@ -65,21 +66,32 @@ class Conversions {
 		}
 	}
 
-
 	/**
+	 * Get the logs for a customer that are within the conversion window.
+	 *
 	 * @param Customer $customer
 	 * @param DateTime $conversion_window_start
 	 * @param DateTime $conversion_window_end
 	 * @return Log[]
 	 */
-	static function get_logs_by_customer( $customer, $conversion_window_start, $conversion_window_end ) {
+	public static function get_logs_by_customer( $customer, $conversion_window_start, $conversion_window_end ) {
 		$query = new Log_Query();
 		$query->where( 'conversion_tracking_enabled', true );
 		$query->where_customer_or_legacy_user( $customer, true );
 		$query->where_date_between( $conversion_window_start, $conversion_window_end );
-		$query->set_ordering('date', 'DESC');
+		$query->set_ordering( 'date', 'DESC' );
 
 		return $query->get_results();
+	}
+
+	/**
+	 * Clear cached conversion data.
+	 *
+	 * @since 6.1.9
+	 */
+	public static function clear_cache() {
+		// Clear cached dashboard conversions.
+		Cache::flush_group( 'dashboard' );
 	}
 
 	/**
@@ -132,5 +144,4 @@ class Conversions {
 	protected static function is_order_created_via_checkout( $order ) {
 		return 'checkout' === $order->get_created_via() || $order->get_cart_hash();
 	}
-
 }

@@ -29,6 +29,9 @@ class Rest_API {
 			// REST API Controllers.
 			add_filter( 'woocommerce_admin_rest_controllers', array( __CLASS__, 'add_rest_api_controllers' ) );
 
+			// Report CSV Exporter Controllers.
+			add_filter( 'woocommerce_export_report_controller_map', array( __CLASS__, 'add_csv_export_controllers' ) );
+
 			// Register data stores.
 			add_filter( 'woocommerce_data_stores', array( __CLASS__, 'register_data_stores' ) );
 
@@ -42,6 +45,21 @@ class Rest_API {
 	 */
 	public static function is_enabled() {
 		return Analytics::is_enabled();
+	}
+
+	/**
+	 * Add controllers for CSV exports.
+	 *
+	 * @since 6.1.9
+	 *
+	 * @param array $controllers Original list of controllers for CSV exports.
+	 *
+	 * @return array Updated list of controllers.
+	 */
+	public static function add_csv_export_controllers( $controllers ) {
+		$controllers['conversions'] = 'AutomateWoo\Admin\Analytics\Rest_API\Conversions\Controller';
+
+		return $controllers;
 	}
 
 	/**

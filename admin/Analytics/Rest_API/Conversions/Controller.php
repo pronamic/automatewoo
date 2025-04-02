@@ -5,6 +5,7 @@ defined( 'ABSPATH' ) || exit;
 
 use AutomateWoo\Admin\Analytics\Rest_API\Upstream\Generic_Controller;
 use AutomateWoo\Admin\Analytics\Rest_API\Upstream\Generic_Query;
+use Automattic\WooCommerce\Admin\API\Reports\ExportableInterface;
 use Automattic\WooCommerce\Admin\API\Reports\ParameterException;
 
 
@@ -13,7 +14,7 @@ use Automattic\WooCommerce\Admin\API\Reports\ParameterException;
  *
  * @since 5.7.0
  */
-class Controller extends Generic_Controller {
+class Controller extends Generic_Controller implements ExportableInterface {
 
 	/**
 	 * Route base.
@@ -109,6 +110,63 @@ class Controller extends Generic_Controller {
 			(int) $report_data->total,
 			(int) $report_data->page_no,
 			(int) $report_data->pages
+		);
+	}
+
+	/**
+	 * Get the column names for export.
+	 *
+	 * @since 6.1.9
+	 *
+	 * @return array Key value pair of Column ID => Label.
+	 */
+	public function get_export_columns() {
+		$export_columns = array(
+			'order_number'     => __( 'Order #', 'automatewoo' ),
+			'customer'         => __( 'Customer', 'automatewoo' ),
+			'workflow'         => __( 'Workflow', 'automatewoo' ),
+			'conversion'       => __( 'Log', 'automatewoo' ),
+			'first_interacted' => __( 'First Interacted', 'automatewoo' ),
+			'order_placed'     => __( 'Order Placed', 'automatewoo' ),
+			'order_total'      => __( 'Order Total', 'automatewoo' ),
+		);
+
+		/**
+		 * Filter to add or remove column names from the conversions report for export.
+		 */
+		return apply_filters(
+			'automatewoo_report_conversions_export_columns',
+			$export_columns
+		);
+	}
+
+	/**
+	 * Get the column values for export.
+	 *
+	 * @since 6.1.9
+	 *
+	 * @param array $item Single report item/row.
+	 * @return array Key value pair of Column ID => Row Value.
+	 */
+	public function prepare_item_for_export( $item ) {
+		$user_id     = $item['extended_info']['customer']['user_id'] ?? 'guest';
+		$export_item = array(
+			'order_number'     => $item['order_number'],
+			'customer'         => "{$item['extended_info']['customer']['first_name']} {$item['extended_info']['customer']['last_name']} ({$user_id})",
+			'workflow'         => $item['workflow_id'],
+			'conversion'       => $item['conversion_id'],
+			'first_interacted' => $item['extended_info']['conversion']['date_opened'] ?? '',
+			'order_placed'     => $item['date_created'],
+			'order_total'      => $item['total_sales'],
+		);
+
+		/**
+		 * Filter to prepare extra columns in the export item for the conversions export.
+		 */
+		return apply_filters(
+			'automatewoo_report_conversions_prepare_export_item',
+			$export_item,
+			$item
 		);
 	}
 

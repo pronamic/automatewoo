@@ -32,6 +32,7 @@ class Hooks {
 
 		// conversions
 		add_action( 'automatewoo/async/order_created', [ 'AutomateWoo\Conversions', 'check_order_for_conversion' ], 20 );
+		add_action( 'automatewoo/conversion/recorded', [ 'AutomateWoo\Conversions', 'clear_cache' ], 20 );
 
 		add_action( 'get_header', [ 'AutomateWoo\Language', 'make_language_persistent' ] );
 

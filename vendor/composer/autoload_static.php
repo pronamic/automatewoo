@@ -967,6 +967,7 @@ class ComposerStaticInitb21582d5c8d1591b02e040be331e600e
         'AutomateWoo\\WooCommerce_Blocks_Integration' => __DIR__ . '/../..' . '/includes/WooCommerce_Blocks_Integration.php',
         'AutomateWoo\\WooCommerce_Payments_Integration' => __DIR__ . '/../..' . '/includes/WooCommerce_Payments_Integration.php',
         'AutomateWoo\\Workflow' => __DIR__ . '/../..' . '/includes/Workflow.php',
+        'AutomateWoo\\Workflow_Duplicate' => __DIR__ . '/../..' . '/admin/Workflow_Duplicate.php',
         'AutomateWoo\\Workflow_Email' => __DIR__ . '/../..' . '/includes/Workflow_Email.php',
         'AutomateWoo\\Workflow_Fatal_Error_Monitor' => __DIR__ . '/../..' . '/includes/Workflow_Fatal_Error_Monitor.php',
         'AutomateWoo\\Workflow_Location' => __DIR__ . '/../..' . '/includes/Workflow_Location.php',

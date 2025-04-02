@@ -8,7 +8,9 @@ use AutomateWoo\Dashboard_Widget;
 use AutomateWoo\Cache;
 use AutomateWoo\Clean;
 use AutomateWoo\DateTime;
+use AutomateWoo\HPOS_Helper;
 use AutomateWoo\Admin\Analytics\Rest_API;
+use AutomateWoo\Workflows\Factory;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -43,6 +45,12 @@ class Dashboard extends Base {
 
 	/** @var int */
 	private $queued_count;
+
+	/** @var Workflow */
+	private $most_run_workflow;
+
+	/** @var Workflow */
+	private $highest_converting_workflow;
 
 	/**
 	 * Handle the main dashboard page output.
@@ -370,6 +378,130 @@ class Dashboard extends Base {
 		}
 
 		return $this->conversions;
+	}
+
+	/**
+	 * Get the most run workflow.
+	 *
+	 * @since 6.1.9
+	 *
+	 * @return Workflow|null $workflow The most run workflow.
+	 */
+	public function get_most_run_workflow() {
+		global $wpdb;
+
+		if ( isset( $this->most_run_workflow ) ) {
+			return $this->most_run_workflow;
+		}
+
+		$cache_key   = 'most_run_workflow_' . $this->get_date_arg();
+		$workflow_id = Cache::get( $cache_key, 'dashboard' );
+		if ( false !== $workflow_id ) {
+			$this->most_run_workflow = Factory::get( $workflow_id );
+			return $this->most_run_workflow;
+		}
+
+		$date = $this->get_date_range();
+
+		$row = $wpdb->get_row(
+			$wpdb->prepare(
+				"SELECT COUNT(*) AS count, workflow_id
+					FROM `{$wpdb->prefix}automatewoo_logs`
+					WHERE date >= %s AND date <= %s
+					GROUP BY workflow_id
+					ORDER BY count DESC
+					LIMIT 1",
+				$date['from']->to_mysql_string(),
+				$date['to']->to_mysql_string()
+			)
+		);
+
+		if ( $row && $row->workflow_id ) {
+			$this->most_run_workflow = Factory::get( $row->workflow_id );
+			Cache::set( $cache_key, $row->workflow_id, 'dashboard' );
+			return $this->most_run_workflow;
+		}
+
+		return null;
+	}
+
+	/**
+	 * Get the highest converting workflow.
+	 *
+	 * @since 6.1.9
+	 *
+	 * @return Workflow|null $workflow The highest converting workflow.
+	 */
+	public function get_highest_converting_workflow() {
+		global $wpdb;
+
+		if ( isset( $this->highest_converting_workflow ) ) {
+			return $this->highest_converting_workflow;
+		}
+
+		$cache_key   = 'highest_converting_workflow_' . $this->get_date_arg();
+		$workflow_id = Cache::get( $cache_key, 'dashboard' );
+		if ( false !== $workflow_id ) {
+			$this->highest_converting_workflow = Factory::get( $workflow_id );
+			return $this->highest_converting_workflow;
+		}
+
+		if ( HPOS_Helper::is_HPOS_enabled() ) {
+			$date     = $this->get_date_range();
+			$statuses = "'" . implode( "','", array_map( 'aw_add_order_status_prefix', wc_get_is_paid_statuses() ) ) . "'";
+
+			// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			$row = $wpdb->get_row(
+				$wpdb->prepare(
+					"SELECT SUM( orders.total_amount ) AS conversion_total, meta.meta_value AS workflow_id
+						FROM {$wpdb->prefix}wc_orders AS orders
+						INNER JOIN {$wpdb->prefix}wc_orders_meta AS meta ON orders.id = meta.order_id
+						WHERE orders.status IN ( {$statuses} )
+						AND orders.type = 'shop_order'
+						AND meta.meta_key = '_aw_conversion'
+						AND ( orders.date_created_gmt >= %s AND orders.date_created_gmt <= %s )
+						GROUP BY meta.meta_value
+						ORDER BY SUM( orders.total_amount ) DESC
+						LIMIT 1",
+					$date['from']->to_mysql_string(),
+					$date['to']->to_mysql_string()
+				)
+			);
+			// phpcs:enable
+
+			if ( $row && $row->workflow_id ) {
+				$this->highest_converting_workflow = Factory::get( $row->workflow_id );
+				Cache::set( $cache_key, $row->workflow_id, 'dashboard' );
+				return $this->highest_converting_workflow;
+			}
+
+			return null;
+		}
+
+		// Fallback for when HPOS is not enabled.
+		$conversions = $this->get_conversions();
+		$totals      = [];
+
+		foreach ( $conversions as $order ) {
+			$workflow_id = absint( $order->get_meta( '_aw_conversion' ) );
+
+			if ( isset( $totals[ $workflow_id ] ) ) {
+				$totals[ $workflow_id ] += $order->get_total();
+			} else {
+				$totals[ $workflow_id ] = $order->get_total();
+			}
+		}
+
+		arsort( $totals, SORT_NUMERIC );
+		$workflow_id = key( $totals );
+
+		if ( $workflow_id ) {
+			$this->highest_converting_workflow = Factory::get( $workflow_id );
+			Cache::set( $cache_key, $workflow_id, 'dashboard' );
+			return $this->highest_converting_workflow;
+		}
+
+		return null;
 	}
 }
 

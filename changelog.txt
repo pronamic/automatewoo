@@ -1,5 +1,10 @@
 *** AutomateWoo Changelog ***
 
+2025-04-15 - version 6.1.10
+* Fix - Some variables like "order.date" can't be copied to clipboard.
+* Tweak - WC 9.8 compatibility.
+* Tweak - WP 6.8 compatibility.
+
 2025-04-02 - version 6.1.9
 * Add - option to duplicate workflows.
 * Fix - Scheduled CSV export for conversion reports (after WC 9.8).

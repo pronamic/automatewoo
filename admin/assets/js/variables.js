@@ -90,9 +90,11 @@ jQuery( function ( $ ) {
 			const parameters = [];
 
 			$( '.aw-workflow-variable-parameter' ).each( function () {
-				const $paramRow = $( this ).parents(
+				const $paramField = $( this );
+				const $paramRow = $paramField.parents(
 					'.aw-workflow-variables-parameter-row:first'
 				);
+				const required = Boolean( $paramRow.data( 'is-required' ) );
 
 				// Check 'show' logic
 				if ( $paramRow.data( 'parameter-show' ) ) {
@@ -110,17 +112,19 @@ jQuery( function ( $ ) {
 						$conditionField.length &&
 						$conditionField.val() === showLogic[ 1 ]
 					) {
+						$paramField.prop( 'required', required );
 						$paramRow.show();
 					} else {
+						$paramField.prop( 'required', false );
 						$paramRow.hide();
 						return; // don't add parameter to preview
 					}
 				}
 
 				const param = {
-					name: $( this ).attr( 'name' ),
-					required: $paramRow.data( 'is-required' ),
-					value: $( this ).val(),
+					name: $paramField.attr( 'name' ),
+					required,
+					value: $paramField.val(),
 				};
 
 				parameters.push( param );

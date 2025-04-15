@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: AutomateWoo 6.1.9\n"
+"Project-Id-Version: AutomateWoo 6.1.10\n"
 "Report-Msgid-Bugs-To: https://woocommerce.com/my-account/contact-support/\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-04-02T11:05:14+02:00\n"
+"POT-Creation-Date: 2025-04-15T04:52:38+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.7.1\n"
 "X-Domain: automatewoo\n"
@@ -3898,7 +3898,6 @@ msgid_plural "Disabled <span class=\"count\">(%s)</span>"
 msgstr[0] ""
 msgstr[1] ""
 
-#. translators: placeholder is previous workflow title
 #: includes/Post_Types.php:94
 #: includes/Post_Types.php:97
 #: includes/Post_Types.php:100
@@ -3938,7 +3937,6 @@ msgctxt "used in \"Workflow scheduled for <date>\""
 msgid "M j, Y @ G:i"
 msgstr ""
 
-#. translators: php date string, see http://php.net/date
 #: includes/Post_Types.php:105
 msgid "Workflow draft updated."
 msgstr ""

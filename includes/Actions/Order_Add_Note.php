@@ -20,6 +20,13 @@ class Action_Order_Add_Note extends Action {
 	public $required_data_items = [ 'order' ];
 
 	/**
+	 * The filter for replacing the order note author.
+	 *
+	 * @var callable
+	 */
+	private $filter_order_note_author = null;
+
+	/**
 	 * Method to set title, group, description and other admin props.
 	 */
 	public function load_admin_details() {
@@ -69,11 +76,17 @@ class Action_Order_Add_Note extends Action {
 			return;
 		}
 
-		if ( ! empty( $author ) && is_string( $author ) ) {
+		$should_set_custom_author = ! empty( $author ) && is_string( $author );
+
+		if ( $should_set_custom_author ) {
 			$this->add_custom_author( $author );
 		}
 
 		$order->add_order_note( $note, 'customer' === $note_type, false );
+
+		if ( $should_set_custom_author ) {
+			$this->remove_custom_author();
+		}
 	}
 
 	/**
@@ -85,13 +98,24 @@ class Action_Order_Add_Note extends Action {
 	 */
 	protected function add_custom_author( string $note_author ) {
 		if ( 'WooCommerce' !== $note_author ) {
-			add_filter(
-				'woocommerce_new_order_note_data',
-				function ( $note ) use ( $note_author ) {
-					$note['comment_author'] = $note_author;
-					return $note;
-				}
-			);
+			$this->filter_order_note_author = function ( $note ) use ( $note_author ) {
+				$note['comment_author'] = $note_author;
+				return $note;
+			};
+
+			add_filter( 'woocommerce_new_order_note_data', $this->filter_order_note_author );
+		}
+	}
+
+	/**
+	 * Method to remove custom note author set for the Action.
+	 * This method is expected to be called in pair with `add_custom_author`,
+	 * and its call time is after calling `$order->add_order_note`.
+	 */
+	protected function remove_custom_author() {
+		if ( $this->filter_order_note_author ) {
+			remove_filter( 'woocommerce_new_order_note_data', $this->filter_order_note_author );
+			$this->filter_order_note_author = null;
 		}
 	}
 }

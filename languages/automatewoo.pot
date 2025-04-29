@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: AutomateWoo 6.1.10\n"
+"Project-Id-Version: AutomateWoo 6.1.11\n"
 "Report-Msgid-Bugs-To: https://woocommerce.com/my-account/contact-support/\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-04-15T04:52:38+00:00\n"
+"POT-Creation-Date: 2025-04-29T04:23:27+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.7.1\n"
 "X-Domain: automatewoo\n"
@@ -667,7 +667,7 @@ msgstr ""
 
 #: admin/data-layer-formatter.php:34
 #: admin/reports/conversions-list.php:139
-#: includes/Actions/Order_Add_Note.php:27
+#: includes/Actions/Order_Add_Note.php:34
 #: includes/Actions/Order_Change_Status.php:30
 #: includes/Actions/Order_Resend_Email.php:30
 #: includes/Actions/Order_Trigger_Action.php:31
@@ -2534,7 +2534,7 @@ msgid "New Status"
 msgstr ""
 
 #: includes/Actions/Memberships_Change_Status.php:58
-#: includes/Actions/Order_Add_Note.php:48
+#: includes/Actions/Order_Add_Note.php:55
 #: includes/Actions/Order_Update_Customer_Shipping_Note.php:39
 msgid "Note"
 msgstr ""
@@ -2573,16 +2573,16 @@ msgstr ""
 msgid "Failed deleting membership #%s"
 msgstr ""
 
-#: includes/Actions/Order_Add_Note.php:26
+#: includes/Actions/Order_Add_Note.php:33
 #: includes/Actions/Subscription_Add_Note.php:28
 msgid "Add Note"
 msgstr ""
 
-#: includes/Actions/Order_Add_Note.php:39
+#: includes/Actions/Order_Add_Note.php:46
 msgid "Note author"
 msgstr ""
 
-#: includes/Actions/Order_Add_Note.php:42
+#: includes/Actions/Order_Add_Note.php:49
 msgid "Author of the Note. If not set, will default to 'WooCommerce'"
 msgstr ""
 

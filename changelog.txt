@@ -1,5 +1,9 @@
 *** AutomateWoo Changelog ***
 
+2025-04-29 - version 6.1.11
+* Fix - Compatibility issue with WordPress 6.8 and WooCommerce 9.8, which may cause the Manual Runner page not to display properly.
+* Fix - Custom note author may overwrite to unrelated notes.
+
 2025-04-15 - version 6.1.10
 * Fix - Some variables like "order.date" can't be copied to clipboard.
 * Tweak - WC 9.8 compatibility.

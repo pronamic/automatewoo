@@ -3,7 +3,7 @@
  * Plugin Name: AutomateWoo
  * Plugin URI: https://automatewoo.com
  * Description: Powerful marketing automation for your WooCommerce store.
- * Version: 6.1.11
+ * Version: 6.1.13
  * Author: WooCommerce
  * Author URI: https://woocommerce.com
  * License: GPLv3
@@ -12,7 +12,7 @@
  * Domain Path: /languages
  * Tested up to: 6.8
  * Requires Plugins: woocommerce
- * WC requires at least: 7.9
+ * WC requires at least: 8.3
  * WC tested up to: 9.8
  * Woo: 4652610:f6f1f8a56a16a3715b30b21fb557e78f
  *
@@ -37,12 +37,12 @@ use Automattic\WooCommerce\Utilities\FeaturesUtil;
 defined( 'ABSPATH' ) || exit;
 
 define( 'AUTOMATEWOO_SLUG', 'automatewoo' );
-define( 'AUTOMATEWOO_VERSION', '6.1.11' ); // WRCS: DEFINED_VERSION.
+define( 'AUTOMATEWOO_VERSION', '6.1.13' ); // WRCS: DEFINED_VERSION.
 define( 'AUTOMATEWOO_FILE', __FILE__ );
 define( 'AUTOMATEWOO_PATH', __DIR__ );
 define( 'AUTOMATEWOO_MIN_PHP_VER', '7.4.0' );
-define( 'AUTOMATEWOO_MIN_WP_VER', '5.9' );
-define( 'AUTOMATEWOO_MIN_WC_VER', '7.9.0' );
+define( 'AUTOMATEWOO_MIN_WP_VER', '6.3' );
+define( 'AUTOMATEWOO_MIN_WC_VER', '8.3.0' );
 
 /**
  * AutomateWoo loader.

@@ -788,6 +788,7 @@ function aw_get_full_name( $user ) {
 		return '';
 	}
 
+	/* translators: 1: User First name, 2: User Last name */
 	return trim( sprintf( _x( '%1$s %2$s', 'full name', 'automatewoo' ), $user->first_name, $user->last_name ) );
 }
 

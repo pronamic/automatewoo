@@ -81,7 +81,7 @@ class Variable_Sensei_Course_Students extends Variable {
 			}
 
 			if ( $billing_first_name || $billing_last_name ) {
-				/* translators: %1$s: first name, %2$s: last name */
+				/* translators: 1: User First name, 2: User Last name */
 				$user_name = trim( sprintf( _x( '%1$s %2$s', 'Student full name', 'automatewoo' ), $billing_first_name, $billing_last_name ) );
 			}
 

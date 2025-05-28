@@ -212,7 +212,7 @@ class Coupon_Generator {
 		}
 
 		// support for subscription recurring coupons
-		if ( Integrations::is_subscriptions_active() && \WC_Subscriptions_Coupon::coupon_is_limited( $this->get_template_coupon_id() ) ) {
+		if ( Integrations::is_subscriptions_active() && \WCS_Limited_Recurring_Coupon_Manager::coupon_is_limited( $template_coupon ) ) {
 			$coupon->update_meta_data( '_wcs_number_payments', $template_coupon->get_meta( '_wcs_number_payments' ) );
 		}
 

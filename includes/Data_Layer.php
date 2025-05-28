@@ -437,6 +437,7 @@ class Data_Layer {
 	 * @return string
 	 */
 	function get_customer_full_name() {
+		/* translators: 1: User First name, 2: User Last name */
 		return trim( sprintf( _x( '%1$s %2$s', 'full name', 'automatewoo' ), $this->get_customer_first_name(), $this->get_customer_last_name() ) );
 	}
 

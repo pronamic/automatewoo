@@ -197,6 +197,7 @@ class Guest extends Abstract_Model_With_Meta_Table {
 	 * @return string
 	 */
 	function get_full_name() {
+		/* translators: 1: User First name, 2: User Last name */
 		return trim( sprintf( _x( '%1$s %2$s', 'full name', 'automatewoo' ), $this->get_first_name(), $this->get_last_name() ) );
 	}
 

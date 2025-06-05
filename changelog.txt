@@ -1,5 +1,8 @@
 *** AutomateWoo Changelog ***
 
+2025-06-03 - version 6.1.14
+* Update - Bump the tested WooCommerce version to 9.9.
+
 2025-05-27 - version 6.1.13
 * Fix - Coupon generator not copying "Active for x payments" setting from template coupons.
 * Update - Bump the minimum support WooCommerce version to 8.3.

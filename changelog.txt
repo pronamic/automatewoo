@@ -1,5 +1,10 @@
 *** AutomateWoo Changelog ***
 
+2025-07-01 - version 6.1.15
+* Tweak - WC 10.0 compatibility.
+* Update - Require WooCommerce 9.5+.
+* Update - Require WordPress 6.6+.
+
 2025-06-03 - version 6.1.14
 * Update - Bump the tested WooCommerce version to 9.9.
 

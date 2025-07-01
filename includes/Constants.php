@@ -62,15 +62,15 @@ class Constants {
 		 */
 		// The AutomateWoo release that will implement the indicated changes.
 		if ( ! defined( 'AUTOMATEWOO_NOTICE_AW_VER' ) ) {
-			define( 'AUTOMATEWOO_NOTICE_AW_VER', '5.6.0' );
+			define( 'AUTOMATEWOO_NOTICE_AW_VER', '6.2.0' );
 		}
 		// The new WordPress minimum required version after the changes.
 		if ( ! defined( 'AUTOMATEWOO_NOTICE_WP_VER' ) ) {
-			define( 'AUTOMATEWOO_NOTICE_WP_VER', '5.8.0' );
+			define( 'AUTOMATEWOO_NOTICE_WP_VER', '6.7' );
 		}
 		// The new WooCommerce require version after the changes.
 		if ( ! defined( 'AUTOMATEWOO_NOTICE_WC_VER' ) ) {
-			define( 'AUTOMATEWOO_NOTICE_WC_VER', '6.7.0' );
+			define( 'AUTOMATEWOO_NOTICE_WC_VER', '9.9' );
 		}
 	}
 }

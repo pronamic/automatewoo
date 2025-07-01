@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: AutomateWoo 6.1.14\n"
+"Project-Id-Version: AutomateWoo 6.1.15\n"
 "Report-Msgid-Bugs-To: https://woocommerce.com/my-account/contact-support/\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-06-03T12:29:54+00:00\n"
+"POT-Creation-Date: 2025-07-01T06:49:42+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.7.1\n"
 "X-Domain: automatewoo\n"
@@ -21,9 +21,9 @@ msgstr ""
 #: admin/admin.php:755
 #: admin/coupons-list.php:44
 #: admin/WCAdminConnectPages.php:59
-#: automatewoo.php:132
-#: automatewoo.php:142
-#: automatewoo.php:152
+#: automatewoo.php:133
+#: automatewoo.php:143
+#: automatewoo.php:153
 #: includes/Actions/Change_Workflow_Status.php:18
 #: includes/Actions/Clear_Queued_Events.php:17
 #: includes/Installer.php:248
@@ -2070,24 +2070,24 @@ msgid "Workflow creation failed: %s"
 msgstr ""
 
 #. translators: Plugin name.
-#: automatewoo.php:132
-#: automatewoo.php:142
-#: automatewoo.php:152
+#: automatewoo.php:133
+#: automatewoo.php:143
+#: automatewoo.php:153
 msgid "%s is inactive."
 msgstr ""
 
 #. translators: %1$s inactive plugin text, %2$s minimum PHP version
-#: automatewoo.php:134
+#: automatewoo.php:135
 msgid "%1$s The plugin requires PHP version %2$s or newer."
 msgstr ""
 
 #. translators: %1$s inactive plugin text, %2$s minimum WooCommerce version
-#: automatewoo.php:144
+#: automatewoo.php:145
 msgid "%1$s The plugin requires WooCommerce version %2$s or newer."
 msgstr ""
 
 #. translators: %1$s inactive plugin text, %2$s minimum WordPress version
-#: automatewoo.php:154
+#: automatewoo.php:155
 msgid "%1$s The plugin requires WordPress version %2$s or newer."
 msgstr ""
 
@@ -3897,6 +3897,7 @@ msgid_plural "Disabled <span class=\"count\">(%s)</span>"
 msgstr[0] ""
 msgstr[1] ""
 
+#. translators: placeholder is previous workflow title
 #: includes/Post_Types.php:94
 #: includes/Post_Types.php:97
 #: includes/Post_Types.php:100
@@ -3936,6 +3937,7 @@ msgctxt "used in \"Workflow scheduled for <date>\""
 msgid "M j, Y @ G:i"
 msgstr ""
 
+#. translators: php date string, see http://php.net/date
 #: includes/Post_Types.php:105
 msgid "Workflow draft updated."
 msgstr ""

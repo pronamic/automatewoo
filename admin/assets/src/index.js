@@ -11,7 +11,6 @@ import ManualWorkflowRunner from './manual-workflow-runner';
 import './workflow-tab-handler';
 import './workflow-tinymce';
 import './notice-tracking';
-import './index.scss';
 import './data';
 
 // Refer to https://github.com/woocommerce/woocommerce/blob/9.8.0/plugins/woocommerce/client/admin/client/layout/controller.js#L82

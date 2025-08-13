@@ -34,7 +34,12 @@ class WooCommerce_Blocks_Integration {
 		$asset_file_path = AUTOMATEWOO_PATH . '/assets/js/build/marketing-optin-block.asset.php';
 
 		if ( file_exists( $asset_file_path ) && false === \WP_Block_Type_Registry::get_instance()->is_registered( 'automatewoo/marketing-optin' ) ) {
-			register_block_type( AUTOMATEWOO_PATH . '/assets/js/marketing-optin-block' );
+			$block = register_block_type( AUTOMATEWOO_PATH . '/assets/js/marketing-optin-block' );
+			// Setup the block script to be loaded in the footer.
+			if ( $block instanceof \WP_Block_Type && $block->editor_script ) {
+				$wp_scripts = wp_scripts();
+				$wp_scripts->add_data( $block->editor_script, 'group', 1 );
+			}
 		}
 	}
 

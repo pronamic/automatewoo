@@ -1,5 +1,9 @@
 *** AutomateWoo Changelog ***
 
+2025-09-30 - version 6.1.17
+* Tweak - WC 10.2 compatibility.
+* Update - Require WooCommerce 10.1+.
+
 2025-08-12 - version 6.1.16
 * Fix - Warning about a script loaded in header.
 * Tweak - WC 10.1 compatibility.

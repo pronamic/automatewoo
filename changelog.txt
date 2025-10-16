@@ -1,5 +1,8 @@
 *** AutomateWoo Changelog ***
 
+2025-10-15 - version 6.1.18
+* Fix - Fixed loading the frontend script in WooCommerce 10.3.
+
 2025-09-30 - version 6.1.17
 * Tweak - WC 10.2 compatibility.
 * Update - Require WooCommerce 10.1+.

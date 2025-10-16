@@ -346,9 +346,13 @@ class Admin {
 			$suffix = '.min';
 		}
 
-		wp_register_script( 'js-cookie', WC()->plugin_url() . "/assets/js/js-cookie/js.cookie{$suffix}.js", [], '2.1.4', true );
+		$is_wc_10_3_plus  = version_compare( WC()->version, '10.3.0', '>=' );
+		$js_cookie_handle = $is_wc_10_3_plus ? 'wc-js-cookie' : 'js-cookie';
+		$tiptip_handle    = $is_wc_10_3_plus ? 'wc-jquery-tiptip' : 'jquery-tiptip';
 
-		wp_register_script( 'automatewoo', "{$url}/automatewoo{$suffix}.js", [ 'jquery', 'jquery-ui-datepicker', 'jquery-tiptip', 'backbone', 'underscore' ], AW()->version, false );
+		wp_register_script( $js_cookie_handle, WC()->plugin_url() . "/assets/js/js-cookie/js.cookie{$suffix}.js", [], '2.1.4', true );
+
+		wp_register_script( 'automatewoo', "{$url}/automatewoo{$suffix}.js", [ 'jquery', 'jquery-ui-datepicker', $tiptip_handle, 'backbone', 'underscore' ], AW()->version, false );
 		wp_register_script( 'automatewoo-validate', "{$url}/validate{$suffix}.js", [ 'automatewoo' ], AW()->version, false );
 		wp_register_script( 'automatewoo-tracks', "{$url}/tracks{$suffix}.js", [ 'automatewoo' ], AW()->version, false );
 		wp_register_script( 'automatewoo-workflows', "{$url}/workflows{$suffix}.js", [ 'automatewoo', 'automatewoo-validate', 'automatewoo-modal', 'automatewoo-tracks', 'wp-util' ], AW()->version, false );
@@ -458,12 +462,16 @@ class Admin {
 		}
 
 		if ( $is_aw_screen ) {
+			$is_wc_10_3_plus  = version_compare( WC()->version, '10.3.0', '>=' );
+			$js_cookie_handle = $is_wc_10_3_plus ? 'wc-js-cookie' : 'js-cookie';
+			$tiptip_handle    = $is_wc_10_3_plus ? 'wc-jquery-tiptip' : 'jquery-tiptip';
+
 			wp_enqueue_script( 'woocommerce_admin' );
 			wp_enqueue_script( 'wc-enhanced-select' );
-			wp_enqueue_script( 'jquery-tiptip' );
+			wp_enqueue_script( $tiptip_handle );
 			wp_enqueue_script( 'jquery-ui-sortable' );
 			wp_enqueue_script( 'jquery-ui-autocomplete' );
-			wp_enqueue_script( 'js-cookie' );
+			wp_enqueue_script( $js_cookie_handle );
 
 			wp_enqueue_style( 'woocommerce_admin_styles' );
 			wp_enqueue_style( 'jquery-ui-style' );

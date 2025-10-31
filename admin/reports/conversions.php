@@ -199,7 +199,7 @@ class Report_Conversions extends \AW_Report_Abstract_Graph {
 		$chart_data = wp_json_encode( [
 			'conversion_value' => array_values( $conversion_value ),
 			'conversion_number' => array_values( $conversion_number ),
-		] );
+		], JSON_HEX_TAG | JSON_UNESCAPED_SLASHES );
 
 		?>
 		<div class="chart-container">
@@ -267,7 +267,7 @@ class Report_Conversions extends \AW_Report_Abstract_Graph {
 						tickColor: 'transparent',
 						mode: "time",
 						timeformat: "<?php if ( $this->chart_groupby == 'day' ) echo '%d %b'; else echo '%b'; ?>",
-						monthNames: JSON.parse( decodeURIComponent( '<?php echo rawurlencode( wp_json_encode( array_values( $wp_locale->month_abbrev ) ) ); ?>' ) ),
+						monthNames: JSON.parse( decodeURIComponent( '<?php echo rawurlencode( wp_json_encode( array_values( $wp_locale->month_abbrev ), JSON_HEX_TAG | JSON_UNESCAPED_SLASHES ) ); ?>' ) ),
 						tickLength: 1,
 						minTickSize: [1, "<?php echo $this->chart_groupby; ?>"],
 						font: {

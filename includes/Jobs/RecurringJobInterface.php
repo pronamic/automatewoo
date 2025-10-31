@@ -38,9 +38,16 @@ interface RecurringJobInterface extends JobInterface {
 	public function cancel_recurring();
 
 	/**
-	 * Get the next scheduled job
+	 * Get the next scheduled job timestamp.
 	 */
 	public function get_schedule();
+
+	/**
+	 * Get whether the job is currently scheduled.
+	 *
+	 * @return bool True if the job is currently scheduled.
+	 */
+	public function is_scheduled();
 
 	/**
 	 * Determine if the job is enabled

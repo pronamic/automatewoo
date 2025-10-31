@@ -64,8 +64,8 @@ abstract class Dashboard_Widget_Chart extends Dashboard_Widget_Analytics {
 		?>
 		<script type="text/javascript">
 			jQuery(function(){
-				var data = JSON.parse( decodeURIComponent( '<?php echo rawurlencode( wp_json_encode( $this->get_data() ) ); ?>' ) );
-				var params = JSON.parse( decodeURIComponent( '<?php echo rawurlencode( wp_json_encode( $this->get_params() ) ); ?>' ) );
+				var data = JSON.parse( decodeURIComponent( '<?php echo rawurlencode( wp_json_encode( $this->get_data(), JSON_HEX_TAG | JSON_UNESCAPED_SLASHES ) ); ?>' ) );
+				var params = JSON.parse( decodeURIComponent( '<?php echo rawurlencode( wp_json_encode( $this->get_params(), JSON_HEX_TAG | JSON_UNESCAPED_SLASHES ) ); ?>' ) );
 				AW.Dashboard.drawGraph( 'automatewoo-dashboard-<?php echo esc_js( $this->get_id() ); ?>', data, params );
 			});
 		</script>

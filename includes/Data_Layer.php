@@ -704,8 +704,12 @@ class Data_Layer {
 	 */
 	public function is_missing_data() {
 		$is_missing = false;
+		$raw_data = $this->get_raw_data();
 
-		foreach ( $this->get_raw_data() as $data_item ) {
+		// Remove customer from the data to check
+		unset($raw_data['customer']);
+
+		foreach ( $raw_data as $data_item ) {
 			if ( ! $data_item ) {
 				$is_missing = true;
 			}

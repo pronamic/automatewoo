@@ -155,11 +155,11 @@ class Report_Runs_By_Date extends \AW_Report_Abstract_Graph {
 		$log  = $this->prepare_chart_data( $logs, '_date_site_time', false, $this->chart_interval, $this->start_date, $this->chart_groupby );
 
 		// Encode in json format
-		$chart_data = wp_json_encode(
+		$chart_data = wp_json_encode( 
 			[
 				'logs' => array_values( $log ),
 			]
-		);
+		, JSON_HEX_TAG | JSON_UNESCAPED_SLASHES );
 
 		?>
 		<div class="chart-container">
@@ -217,7 +217,7 @@ class Report_Runs_By_Date extends \AW_Report_Abstract_Graph {
 						tickColor: 'transparent',
 						mode: "time",
 						timeformat: "<?php if ( $this->chart_groupby == 'day' ) echo '%d %b'; else echo '%b'; ?>",
-						monthNames: JSON.parse( decodeURIComponent( '<?php echo rawurlencode( wp_json_encode( array_values( $wp_locale->month_abbrev ) ) ); ?>' ) ),
+						monthNames: JSON.parse( decodeURIComponent( '<?php echo rawurlencode( wp_json_encode(  array_values( $wp_locale->month_abbrev ), JSON_HEX_TAG | JSON_UNESCAPED_SLASHES ) ); ?>' ) ),
 						tickLength: 1,
 						minTickSize: [1, "<?php echo $this->chart_groupby; ?>"],
 						font: {

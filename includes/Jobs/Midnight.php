@@ -78,7 +78,7 @@ class Midnight extends AbstractRecurringOneTimeActionSchedulerJob {
 	 * @param DateTime $date The start date for the Midnight Job
 	 */
 	public function schedule_midnight_job( DateTime $date ) {
-		if ( ! $this->get_schedule() ) {
+		if ( ! $this->is_scheduled() ) {
 			$this->action_scheduler->schedule_recurring_action(
 				$date->getTimestamp(),
 				$this->get_interval(),

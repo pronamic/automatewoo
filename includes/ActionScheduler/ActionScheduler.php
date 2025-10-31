@@ -120,7 +120,7 @@ class ActionScheduler implements ActionSchedulerInterface {
 	}
 
 	/**
-	 * Check if there is an existing action in the queue with a given hook, args and group combination.
+	 * Get the timestamp of the next scheduled action in the queue with a given hook, args and group combination.
 	 *
 	 * An action in the queue could be pending, in-progress or async. If the is pending for a time in
 	 * future, its scheduled date will be returned as a timestamp. If it is currently being run, or an
@@ -136,6 +136,25 @@ class ActionScheduler implements ActionSchedulerInterface {
 	 */
 	public function next_scheduled_action( $hook, $args = null, $group = 'automatewoo' ) {
 		return as_next_scheduled_action( $hook, $args, $group );
+	}
+
+	/**
+	 * Check if there is a scheduled action in the queue - more efficient than as_next_scheduled_action() if the ID is not needed.
+	 *
+	 * @since 6.1.19
+	 *
+	 * @param string $hook  The hook of the action.
+	 * @param array  $args  Args that have been passed to the action. Null will matches any args.
+	 * @param string $group The group the job is assigned to.
+	 *
+	 * @return bool True if a matching action is pending or in-progress, false otherwise.
+	 */
+	public function has_scheduled_action( $hook, $args = null, $group = 'automatewoo' ) {
+		if ( function_exists( 'as_has_scheduled_action' ) ) {
+			return as_has_scheduled_action( $hook, $args, $group );
+		}
+
+		return (bool) as_next_scheduled_action( $hook, $args, $group );
 	}
 
 	/**

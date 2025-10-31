@@ -73,7 +73,7 @@ abstract class AbstractActionSchedulerJob implements ActionSchedulerJobInterface
 			return;
 		}
 
-		if ( ! $this->get_schedule() ) {
+		if ( ! $this->is_scheduled() ) {
 			$this->action_scheduler->schedule_recurring_action(
 				time() + $interval,
 				$interval,
@@ -88,7 +88,7 @@ abstract class AbstractActionSchedulerJob implements ActionSchedulerJobInterface
 	 * @since 6.0.0
 	 */
 	public function cancel_recurring() {
-		if ( $this->get_schedule() ) {
+		if ( $this->is_scheduled() ) {
 			$this->action_scheduler->cancel( $this->get_schedule_hook() );
 		}
 	}
@@ -101,6 +101,16 @@ abstract class AbstractActionSchedulerJob implements ActionSchedulerJobInterface
 	 */
 	public function get_schedule() {
 		return $this->action_scheduler->next_scheduled_action( $this->get_schedule_hook() );
+	}
+
+	/**
+	 * Check if the Job is scheduled
+	 *
+	 * @since 6.1.19
+	 * @return bool Whether a scheduled action for this job is scheduled, true if scheduled or false if there is no scheduled action.
+	 */
+	public function is_scheduled() {
+		return $this->action_scheduler->has_scheduled_action( $this->get_schedule_hook() );
 	}
 
 	/**

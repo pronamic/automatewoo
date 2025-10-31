@@ -46,10 +46,9 @@ class ActionSchedulerJobsRunning extends AbstractSystemCheck {
 				continue;
 			}
 
-			$is_scheduled = as_has_scheduled_action( $job->get_schedule_hook() );
-
-			if ( ! $is_scheduled ) {
+			if ( ! $job->is_scheduled() ) {
 				$failed = true;
+				break;
 			}
 		}
 

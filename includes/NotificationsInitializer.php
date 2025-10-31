@@ -147,7 +147,7 @@ class NotificationsInitializer {
 	 * @return void
 	 */
 	public function schedule_activate_or_update_notifications(): void {
-		if ( ! $this->action_scheduler->next_scheduled_action( self::ACTION_SCHEDULER_SINGLE_HOOK ) ) {
+		if ( ! $this->action_scheduler->has_scheduled_action( self::ACTION_SCHEDULER_SINGLE_HOOK ) ) {
 			AW()->action_scheduler()->enqueue_async_action( self::ACTION_SCHEDULER_SINGLE_HOOK );
 		}
 	}
@@ -158,7 +158,7 @@ class NotificationsInitializer {
 	 * @return void
 	 */
 	public function maybe_add_scheduled_action(): void {
-		if ( ! $this->action_scheduler->next_scheduled_action( self::ACTION_SCHEDULER_HOOK ) ) {
+		if ( ! $this->action_scheduler->has_scheduled_action( self::ACTION_SCHEDULER_HOOK ) ) {
 			$this->action_scheduler->schedule_recurring_action( time(), self::ACTION_SCHEDULER_INTERVAL, self::ACTION_SCHEDULER_HOOK );
 		}
 	}

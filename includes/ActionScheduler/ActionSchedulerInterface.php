@@ -89,7 +89,7 @@ interface ActionSchedulerInterface {
 	public function enqueue_async_action_on_shutdown( $hook, $args = [], $group = 'automatewoo' );
 
 	/**
-	 * Check if there is an existing action in the queue with a given hook, args and group combination.
+	 * Get the timestamp of the next scheduled action in the queue with a given hook, args and group combination.
 	 *
 	 * An action in the queue could be pending, in-progress or async. If the is pending for a time in
 	 * future, its scheduled date will be returned as a timestamp. If it is currently being run, or an
@@ -104,6 +104,17 @@ interface ActionSchedulerInterface {
 	 * @return int|bool The timestamp for the next occurrence of a pending scheduled action, true for an async or in-progress action or false if there is no matching action.
 	 */
 	public function next_scheduled_action( $hook, $args = null, $group = 'automatewoo' );
+
+	/**
+	 * Check if there is a scheduled action in the queue - more efficient than as_next_scheduled_action() if the ID is not needed.
+	 *
+	 * @param string $hook  The hook of the action.
+	 * @param array  $args  Args that have been passed to the action. Null will matches any args.
+	 * @param string $group The group the job is assigned to.
+	 *
+	 * @return bool True if a matching action is pending or in-progress, false otherwise.
+	 */
+	public function has_scheduled_action( $hook, $args = null, $group = 'automatewoo' );
 
 	/**
 	 * Search for scheduled actions.

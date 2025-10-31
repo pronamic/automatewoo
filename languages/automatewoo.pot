@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: AutomateWoo 6.1.18\n"
+"Project-Id-Version: AutomateWoo 6.1.19\n"
 "Report-Msgid-Bugs-To: https://woocommerce.com/my-account/contact-support/\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-10-15T12:51:32+00:00\n"
+"POT-Creation-Date: 2025-10-30T09:57:28+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.7.1\n"
 "X-Domain: automatewoo\n"
@@ -4949,7 +4949,7 @@ msgstr ""
 msgid "Order - Has Cross-Sells Available"
 msgstr ""
 
-#: includes/Rules/OrderIsCustomersFirst.php:19
+#: includes/Rules/OrderIsCustomersFirst.php:22
 msgid "Order - Is Customer's First"
 msgstr ""
 
@@ -5404,7 +5404,7 @@ msgstr ""
 msgid "Checks the dates of Scheduled Jobs to see if they are correctly setup."
 msgstr ""
 
-#: includes/SystemChecks/ActionSchedulerJobsRunning.php:57
+#: includes/SystemChecks/ActionSchedulerJobsRunning.php:56
 msgid "Some Scheduled Jobs are not correctly setup. Action Scheduled Jobs are heavily relied upon by AutomateWoo. It might be that WP Cron is not running. Please contact your hosting provider to resolve the issue."
 msgstr ""
 

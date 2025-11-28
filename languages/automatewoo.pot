@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: AutomateWoo 6.1.19\n"
+"Project-Id-Version: AutomateWoo 6.1.20\n"
 "Report-Msgid-Bugs-To: https://woocommerce.com/my-account/contact-support/\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-10-30T09:57:28+00:00\n"
+"POT-Creation-Date: 2025-11-27T15:58:36+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.7.1\n"
 "X-Domain: automatewoo\n"
@@ -1557,7 +1557,7 @@ msgid "Enable tracking"
 msgstr ""
 
 #: admin/views/meta-box-options.php:64
-msgid "Enables open and click tracking on emails sent from this workflow. SMS messages will also have click tracking but open tracking is not possible with SMS."
+msgid "Enables open and click tracking for this workflow. Note that SMS messages only track clicks and not opens, and plain text emails do not track anything."
 msgstr ""
 
 #: admin/views/meta-box-options.php:74

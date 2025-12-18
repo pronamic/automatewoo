@@ -6,6 +6,7 @@ defined( 'ABSPATH' ) || exit;
 
 use Pelago\Emogrifier;
 use Pelago\Emogrifier\CssInliner;
+use Automattic\WooCommerce\Vendor\Pelago\Emogrifier\CssInliner as WC_CssInliner;
 
 /**
  * Mailer class for HTML emails that use a template.
@@ -437,8 +438,11 @@ class Mailer extends Mailer_Abstract {
 			return $html;
 		}
 
-		// First check if CssInliner can be used since the Emogrifier class is deprecated.
-		if ( class_exists( CssInliner::class ) ) {
+		// WooCommerce 10.4+ uses a namespaced WC_CssInliner to prevent conflicts with other plugins.
+		// Fall back to CssInliner, then the deprecated Emogrifier class for older WooCommerce versions.
+		if ( class_exists( WC_CssInliner::class ) ) {
+			$emogrifier = WC_CssInliner::fromHtml( $html );
+		} elseif ( class_exists( CssInliner::class ) ) {
 			$emogrifier = CssInliner::fromHtml( $html );
 		} elseif ( class_exists( Emogrifier::class ) ) {
 			$emogrifier = new Emogrifier( $html, $css );
@@ -461,7 +465,7 @@ class Mailer extends Mailer_Abstract {
 				$emogrifier->disableInvisibleNodeRemoval();
 			}
 
-			if ( $emogrifier instanceof CssInliner ) {
+			if ( $emogrifier instanceof WC_CssInliner || $emogrifier instanceof CssInliner ) {
 				$html = $emogrifier->inlineCss( $css )->render();
 			} else {
 				$html = $emogrifier->emogrify();

@@ -46,6 +46,20 @@ abstract class Action_Send_Email_Abstract extends Action implements PreviewableI
 		$to->set_variable_validation();
 		$to->set_required();
 
+		$cc = new Fields\Text();
+		$cc->set_name( 'cc' );
+		$cc->set_title( __( 'CC', 'automatewoo' ) );
+		$cc->set_description( __( 'Enter CC email addresses here or use variables. Multiple emails can be separated by commas. Please note that CC recipients share the same tracking link as the "To" recipient. Tracking activity from CC will be recorded as activity from the main recipient.', 'automatewoo' ) );
+		$cc->set_placeholder( __( 'E.g. {{ customer.email }}, admin@example.org', 'automatewoo' ) );
+		$cc->set_variable_validation();
+
+		$bcc = new Fields\Text();
+		$bcc->set_name( 'bcc' );
+		$bcc->set_title( __( 'BCC', 'automatewoo' ) );
+		$bcc->set_description( __( 'Enter BCC email addresses here or use variables. Multiple emails can be separated by commas. Please note that BCC recipients share the same tracking link as the "To" recipient. Tracking activity from BCC will be recorded as activity from the main recipient.', 'automatewoo' ) );
+		$bcc->set_placeholder( __( 'E.g. {{ customer.email }}, admin@example.org', 'automatewoo' ) );
+		$bcc->set_variable_validation();
+
 		$subject = new Fields\Text();
 		$subject->set_name( 'subject' );
 		$subject->set_title( __( 'Email subject', 'automatewoo' ) );
@@ -60,6 +74,8 @@ abstract class Action_Send_Email_Abstract extends Action implements PreviewableI
 			);
 
 		$this->add_field( $to );
+		$this->add_field( $cc );
+		$this->add_field( $bcc );
 		$this->add_field( $reply_to );
 		$this->add_field( $subject );
 	}

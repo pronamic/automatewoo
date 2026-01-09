@@ -46,6 +46,12 @@ class Workflow_Email {
 	 */
 	private $reply_to = '';
 
+	/** @var array */
+	private $cc = [];
+
+	/** @var array */
+	private $bcc = [];
+
 	/** @var string */
 	public $template;
 
@@ -228,6 +234,55 @@ class Workflow_Email {
 		return $this;
 	}
 
+	/**
+	 * Set CC recipients for the email.
+	 *
+	 * @since 6.2.1
+	 *
+	 * @param array $cc Array of email addresses.
+	 *
+	 * @return $this
+	 */
+	public function set_cc( array $cc ) {
+		$this->cc = $cc;
+		return $this;
+	}
+
+	/**
+	 * Set BCC recipients for the email.
+	 *
+	 * @since 6.2.1
+	 *
+	 * @param array $bcc Array of email addresses.
+	 *
+	 * @return $this
+	 */
+	public function set_bcc( array $bcc ) {
+		$this->bcc = $bcc;
+		return $this;
+	}
+
+	/**
+	 * Get CC recipients for the email.
+	 *
+	 * @since 6.2.1
+	 *
+	 * @return array
+	 */
+	public function get_cc() {
+		return $this->cc;
+	}
+
+	/**
+	 * Get BCC recipients for the email.
+	 *
+	 * @since 6.2.1
+	 *
+	 * @return array
+	 */
+	public function get_bcc() {
+		return $this->bcc;
+	}
 
 	/**
 	 * @return Mailer|Mailer_Raw_HTML|Mailer_Plain_Text
@@ -260,9 +315,20 @@ class Workflow_Email {
 			}
 		}
 
-		$mailer->set_subject( $this->subject );
 		$mailer->set_email( $this->recipient );
-		$mailer->reply_to = $this->reply_to;
+		$mailer->set_subject( $this->subject );
+
+		if ( $this->reply_to ) {
+			$mailer->set_reply_to( $this->reply_to );
+		}
+
+		if ( ! empty( $this->cc ) ) {
+			$mailer->set_cc( $this->cc );
+		}
+
+		if ( ! empty( $this->bcc ) ) {
+			$mailer->set_bcc( $this->bcc );
+		}
 
 		return apply_filters( 'automatewoo/workflow/mailer', $mailer, $this );
 	}

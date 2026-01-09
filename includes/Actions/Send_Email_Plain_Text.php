@@ -102,30 +102,32 @@ class Action_Send_Email_Plain_Text extends Action_Send_Email_Abstract {
 	public function run() {
 		$content    = $this->get_option( 'email_content', true );
 		$recipients = $this->get_option( 'to', true );
-		$recipients = Emails::parse_recipients_string( $recipients );
+		$cc         = $this->get_option( 'cc', true );
+		$bcc        = $this->get_option( 'bcc', true );
+
+		$recipients     = Emails::parse_recipients_string( $recipients );
+		$cc_recipients  = Emails::parse_recipients_string( $cc );
+		$bcc_recipients = Emails::parse_recipients_string( $bcc );
 
 		foreach ( $recipients as $recipient_email => $recipient_args ) {
-			$sent = $this->send_email( $recipient_email, $content, $recipient_args );
+			$email = $this->get_workflow_email_object( $recipient_email, $content );
+
+			if ( ! empty( $recipient_args['notracking'] ) ) {
+				$email->set_tracking_enabled( false );
+			}
+
+			// Add CC recipients
+			if ( ! empty( $cc_recipients ) ) {
+				$email->set_cc( array_keys( $cc_recipients ) );
+			}
+
+			// Add BCC recipients
+			if ( ! empty( $bcc_recipients ) ) {
+				$email->set_bcc( array_keys( $bcc_recipients ) );
+			}
+
+			$sent = $email->send();
 			$this->add_send_email_result_to_workflow_log( $sent );
 		}
-	}
-
-	/**
-	 * Send an email to a single recipient.
-	 *
-	 * @param string $recipient_email
-	 * @param string $content
-	 * @param array  $recipient_args
-	 *
-	 * @return bool|\WP_Error
-	 */
-	protected function send_email( $recipient_email, $content, $recipient_args = [] ) {
-		$email = $this->get_workflow_email_object( $recipient_email, $content );
-
-		if ( ! empty( $recipient_args['notracking'] ) ) {
-			$email->set_tracking_enabled( false );
-		}
-
-		return $email->send();
 	}
 }

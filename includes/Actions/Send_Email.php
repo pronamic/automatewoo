@@ -134,12 +134,16 @@ class Action_Send_Email extends Action_Send_Email_Abstract {
 	 */
 	public function run() {
 		$recipients = $this->get_option( 'to', true );
+		$cc         = $this->get_option( 'cc', true );
+		$bcc        = $this->get_option( 'bcc', true );
 		$heading    = $this->get_option( 'email_heading', true );
 		$content    = $this->get_option( 'email_content', true, true );
 		$preheader  = $this->get_option( 'preheader', true );
 		$template   = $this->get_option( 'template' );
 
-		$recipients = Emails::parse_recipients_string( $recipients );
+		$recipients     = Emails::parse_recipients_string( $recipients );
+		$cc_recipients  = Emails::parse_recipients_string( $cc );
+		$bcc_recipients = Emails::parse_recipients_string( $bcc );
 
 		foreach ( $recipients as $recipient_email => $recipient_args ) {
 			$email = $this->get_workflow_email_object( $recipient_email, $content )
@@ -149,6 +153,16 @@ class Action_Send_Email extends Action_Send_Email_Abstract {
 
 			if ( $recipient_args['notracking'] ) {
 				$email->set_tracking_enabled( false );
+			}
+
+			// Add CC recipients
+			if ( ! empty( $cc_recipients ) ) {
+				$email->set_cc( array_keys( $cc_recipients ) );
+			}
+
+			// Add BCC recipients
+			if ( ! empty( $bcc_recipients ) ) {
+				$email->set_bcc( array_keys( $bcc_recipients ) );
 			}
 
 			$sent = $email->send();

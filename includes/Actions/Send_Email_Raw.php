@@ -114,18 +114,31 @@ class Action_Send_Email_Raw extends Action_Send_Email_Abstract {
 	 */
 	public function run() {
 		$recipients     = $this->get_option( 'to', true );
+		$cc             = $this->get_option( 'cc', true );
+		$bcc            = $this->get_option( 'bcc', true );
 		$html           = $this->get_option( 'email_html', true, true );
 		$include_aw_css = $this->get_option( 'include_aw_css' );
 
-		$recipients = Emails::parse_recipients_string( $recipients );
+		$recipients     = Emails::parse_recipients_string( $recipients );
+		$cc_recipients  = Emails::parse_recipients_string( $cc );
+		$bcc_recipients = Emails::parse_recipients_string( $bcc );
 
 		foreach ( $recipients as $recipient_email => $recipient_args ) {
-
 			$email = $this->get_workflow_email_object( $recipient_email, $html )
 				->set_include_automatewoo_styles( $include_aw_css );
 
 			if ( $recipient_args['notracking'] ) {
 				$email->set_tracking_enabled( false );
+			}
+
+			// Add CC recipients
+			if ( ! empty( $cc_recipients ) ) {
+				$email->set_cc( array_keys( $cc_recipients ) );
+			}
+
+			// Add BCC recipients
+			if ( ! empty( $bcc_recipients ) ) {
+				$email->set_bcc( array_keys( $bcc_recipients ) );
 			}
 
 			$sent = $email->send();

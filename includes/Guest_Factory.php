@@ -46,6 +46,22 @@ class Guest_Factory extends Factory {
 		return $guest;
 	}
 
+	/**
+	 * @param int $order_id
+	 * @return Guest|bool
+	 */
+	static public function get_by_most_recent_order_id( $order_id ) {
+		if ( is_int( $order_id ) ) {
+			$guest = new Guest();
+			$guest->get_by( 'most_recent_order', $order_id );
+
+			if ( $guest->exists ) {
+				return $guest;
+			}
+		}
+
+		return false;
+	}
 
 	/**
 	 * @deprecated

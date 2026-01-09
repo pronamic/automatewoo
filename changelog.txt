@@ -1,5 +1,9 @@
 *** AutomateWoo Changelog ***
 
+2026-01-07 - version 6.2.1
+* Add - CC and BCC fields on Email Actions.
+* Fix - Attempt to synchronize the corresponding AutomateWoo guest email to maintain data consistency when an order's billing email is updated.
+
 2025-12-17 - version 6.2.0
 * Dev - updated vulnerable packages.
 * Fix - Add compatibility with WooCommerce 10.4.0+ namespaced CssInliner for email CSS inlining.

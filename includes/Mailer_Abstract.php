@@ -52,11 +52,25 @@ abstract class Mailer_Abstract {
 	public $attachments = [];
 
 	/**
-	 * The email reply to value e.g. 'John Smith <email@example.org>'.
+	 * The reply-to email address.
 	 *
 	 * @var string
 	 */
-	public $reply_to = '';
+	public $reply_to;
+
+	/**
+	 * The email CC recipients.
+	 *
+	 * @var array
+	 */
+	public $cc = [];
+
+	/**
+	 * The email BCC recipients.
+	 *
+	 * @var array
+	 */
+	public $bcc = [];
 
 	/**
 	 * The email type.
@@ -122,6 +136,15 @@ abstract class Mailer_Abstract {
 	}
 
 	/**
+	 * Set the reply-to email address.
+	 *
+	 * @param string $reply_to The reply-to email address.
+	 */
+	public function set_reply_to( $reply_to ) {
+		$this->reply_to = $reply_to;
+	}
+
+	/**
 	 * Get email sender email address.
 	 *
 	 * @return string
@@ -146,6 +169,14 @@ abstract class Mailer_Abstract {
 		return $this->from_name;
 	}
 
+	/**
+	 * Get the reply-to email address.
+	 *
+	 * @return string
+	 */
+	public function get_reply_to() {
+		return $this->reply_to;
+	}
 
 	/**
 	 * Validate the recipient's email address.
@@ -209,6 +240,14 @@ abstract class Mailer_Abstract {
 
 		if ( $this->reply_to ) {
 			$headers[] = 'Reply-To: ' . $this->reply_to;
+		}
+
+		if ( ! empty( $this->cc ) ) {
+			$headers[] = 'Cc: ' . implode( ', ', $this->cc );
+		}
+
+		if ( ! empty( $this->bcc ) ) {
+			$headers[] = 'Bcc: ' . implode( ', ', $this->bcc );
 		}
 
 		if ( $this->one_click_unsubscribe ) {
@@ -330,5 +369,49 @@ abstract class Mailer_Abstract {
 			return $phpmailer->ErrorInfo;
 		}
 		return '';
+	}
+
+	/**
+	 * Set CC recipients for the email.
+	 *
+	 * @since 6.2.1
+	 *
+	 * @param array $cc Array of email addresses.
+	 */
+	public function set_cc( array $cc ) {
+		$this->cc = $cc;
+	}
+
+	/**
+	 * Set BCC recipients for the email.
+	 *
+	 * @since 6.2.1
+	 *
+	 * @param array $bcc Array of email addresses.
+	 */
+	public function set_bcc( array $bcc ) {
+		$this->bcc = $bcc;
+	}
+
+	/**
+	 * Get CC recipients for the email.
+	 *
+	 * @since 6.2.1
+	 *
+	 * @return array
+	 */
+	public function get_cc() {
+		return $this->cc;
+	}
+
+	/**
+	 * Get BCC recipients for the email.
+	 *
+	 * @since 6.2.1
+	 *
+	 * @return array
+	 */
+	public function get_bcc() {
+		return $this->bcc;
 	}
 }

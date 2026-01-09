@@ -62,6 +62,9 @@ class Hooks {
 		add_action( 'woocommerce_register_form', [ 'AutomateWoo\Frontend', 'output_signup_optin_checkbox' ], 20 );
 		add_action( 'woocommerce_checkout_order_processed', [ 'AutomateWoo\Frontend', 'process_checkout_optin' ], 20 );
 
+		// order
+		add_action( 'woocommerce_before_order_object_save', [ $self, 'sync_guest_email' ] );
+
 		if ( Integrations::is_woocommerce_blocks_active( '7.2.0' ) ) {
 			add_action( 'woocommerce_store_api_checkout_update_order_from_request', [ 'AutomateWoo\Frontend', 'process_checkout_block_optin' ], 10, 2 );
 		} else {
@@ -88,6 +91,30 @@ class Hooks {
 	public static function init_shortcodes() {
 		add_shortcode( 'automatewoo_communication_preferences', [ 'AutomateWoo\Communication_Page', 'output_preferences_shortcode' ] );
 		add_shortcode( 'automatewoo_communication_signup', [ 'AutomateWoo\Communication_Page', 'output_signup_form' ] );
+	}
+
+	/**
+	 * When an order is updated, try to sync the guest's email to maintain data
+	 * consistency.
+	 *
+	 * @param \WC_Order $order
+	 */
+	public static function sync_guest_email( $order ) {
+		try {
+			$order_id = $order->get_id();
+			$changes  = $order->get_changes();
+
+			if ( $order_id && isset( $changes['billing_email'] ) ) {
+				$guest = Guest_Factory::get_by_most_recent_order_id( $order_id );
+
+				if ( $guest ) {
+					$guest->set_email( $changes['billing_email'] );
+					$guest->save();
+				}
+			}
+		} catch ( \Throwable $e ) {
+			Logger::error( 'customer', "Unable to sync guest email: {$e->getMessage()}" );
+		}
 	}
 
 	/**

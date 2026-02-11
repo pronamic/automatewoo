@@ -42,6 +42,16 @@ class SetupGuestCustomers extends AbstractRecurringBatchedActionSchedulerJob {
 	}
 
 	/**
+	 * Disable the recurring schedule once the job is complete.
+	 *
+	 * @since 6.2.2
+	 * @return bool
+	 */
+	public function is_enabled(): bool {
+		return ! get_option( $this->complete_option );
+	}
+
+	/**
 	 * Process a single item.
 	 *
 	 * @param int   $order_id

@@ -1,5 +1,10 @@
 *** AutomateWoo Changelog ***
 
+2026-02-09 - version 6.2.2
+* Dev - Add AI assistant documentation and configuration for Claude Code and Cursor.
+* Fix - Prevent SetupGuestCustomers job from restarting indefinitely on high-traffic shops.
+* Update - Require WooCommerce 10.4+.
+
 2026-01-07 - version 6.2.1
 * Add - CC and BCC fields on Email Actions.
 * Fix - Attempt to synchronize the corresponding AutomateWoo guest email to maintain data consistency when an order's billing email is updated.

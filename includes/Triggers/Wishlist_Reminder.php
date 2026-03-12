@@ -58,15 +58,15 @@ class Trigger_Wishlist_Reminder extends AbstractBatchedDailyTrigger {
 	 * Get a batch of items to process for given workflow.
 	 *
 	 * @param Workflow $workflow
-	 * @param int      $offset The batch query offset.
-	 * @param int      $limit  The max items for the query.
+	 * @param int      $after_id Items with ID greater than this value (cursor for pagination).
+	 * @param int      $limit    The max items for the query.
 	 *
 	 * @return array[] Array of items in array format. Items will be stored in the database so they should be IDs not objects.
 	 */
-	public function get_batch_for_workflow( Workflow $workflow, int $offset, int $limit ): array {
+	public function get_batch_for_workflow( Workflow $workflow, int $after_id, int $limit ): array {
 		$tasks = [];
 
-		foreach ( Wishlists::get_wishlist_ids( $limit, $offset ) as $wishlist_id ) {
+		foreach ( Wishlists::get_wishlist_ids( $limit, 0, $after_id ) as $wishlist_id ) {
 			$tasks[] = [
 				'wishlist' => $wishlist_id
 			];

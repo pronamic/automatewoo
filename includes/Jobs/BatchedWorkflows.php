@@ -6,6 +6,7 @@ use AutomateWoo\ActionScheduler\ActionSchedulerInterface;
 use AutomateWoo\Exceptions\InvalidArgument;
 use AutomateWoo\Traits\ArrayValidator;
 use AutomateWoo\Traits\IntegerValidator;
+use AutomateWoo\Triggers\AbstractBatchedDailyTrigger;
 use AutomateWoo\Triggers\BatchedWorkflowInterface;
 use AutomateWoo\Workflow;
 use Exception;
@@ -61,7 +62,58 @@ class BatchedWorkflows extends AbstractBatchedActionSchedulerJob {
 	}
 
 	/**
+	 * Handles batch creation with cursor-based pagination for built-in daily triggers.
+	 *
+	 * For triggers extending AbstractBatchedDailyTrigger, cursor is passed via args['_aw_cursor']
+	 * to avoid offset-based pagination drift when the dataset changes between async batch runs.
+	 *
+	 * @since 6.2.3
+	 *
+	 * @param int   $batch_number The batch number increments for each new batch in the job cycle.
+	 * @param array $args         The args for this instance of the job.
+	 *
+	 * @throws Exception If an error occurs.
+	 */
+	public function handle_create_batch_action( int $batch_number, array $args ) {
+		$this->monitor->validate_failure_rate( $this );
+		$this->validate_args( $args );
+
+		$items = $this->get_batch( $batch_number, $args );
+
+		$process_args = $args;
+		unset( $process_args['_aw_cursor'] );
+
+		foreach ( $items as $item ) {
+			$this->validate_item( $item );
+			$this->action_scheduler->schedule_immediate( $this->get_process_item_hook(), [ $item, $process_args ] );
+		}
+
+		if ( empty( $items ) ) {
+			$this->handle_complete( $batch_number, $args );
+		} else {
+			$next_args = $args;
+
+			// Only attach cursor for built-in daily triggers. Third-party triggers
+			// implementing BatchedWorkflowInterface use offset-based pagination.
+			$workflow = ( $this->get_workflow_callable )( $args['workflow'] );
+			if ( $workflow && $workflow->get_trigger() instanceof AbstractBatchedDailyTrigger ) {
+				$cursor = $this->get_cursor_from_items( $items );
+				if ( $cursor > 0 ) {
+					$next_args['_aw_cursor'] = $cursor;
+				}
+			}
+
+			$this->schedule_create_batch_action( $batch_number + 1, $next_args );
+		}
+	}
+
+	/**
 	 * Get a new batch of items.
+	 *
+	 * Uses cursor-based pagination for built-in batched daily triggers to avoid
+	 * offset drift. Falls back to offset-based pagination for third-party triggers.
+	 *
+	 * @since 6.2.3
 	 *
 	 * @param int   $batch_number The batch number increments for each new batch in the a job cycle.
 	 * @param array $args         The args for this instance of the job. Args are already validated.
@@ -77,11 +129,40 @@ class BatchedWorkflows extends AbstractBatchedActionSchedulerJob {
 		/** @var BatchedWorkflowInterface $trigger */
 		$trigger = $workflow->get_trigger();
 
+		if ( $trigger instanceof AbstractBatchedDailyTrigger && ! empty( $args['_aw_cursor'] ) ) {
+			$after_id = (int) $args['_aw_cursor'];
+		} else {
+			$after_id = $this->get_query_offset( $batch_number );
+		}
+
 		return $trigger->get_batch_for_workflow(
 			$workflow,
-			$this->get_query_offset( $batch_number ),
+			$after_id,
 			$this->get_batch_size()
 		);
+	}
+
+	/**
+	 * Extract cursor value from the last item in a batch.
+	 *
+	 * Assumes items are single-key associative arrays where the value is a numeric ID
+	 * (e.g. ['subscription' => 123], ['customer' => 45], ['token' => 7]).
+	 * This holds for all built-in AbstractBatchedDailyTrigger implementations.
+	 * If a future trigger returns multi-key items, this method should be updated
+	 * or the trigger should override cursor derivation.
+	 *
+	 * @since 6.2.3
+	 *
+	 * @param array $items The batch items.
+	 *
+	 * @return int The cursor value (last item's ID), or 0 if it cannot be derived.
+	 */
+	protected function get_cursor_from_items( array $items ): int {
+		$last_item = end( $items );
+		if ( is_array( $last_item ) ) {
+			return (int) reset( $last_item );
+		}
+		return 0;
 	}
 
 	/**

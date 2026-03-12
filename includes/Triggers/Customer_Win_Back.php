@@ -58,15 +58,15 @@ class Trigger_Customer_Win_Back extends AbstractBatchedDailyTrigger {
 	 * Get a batch of items to process for given workflow.
 	 *
 	 * @param Workflow $workflow
-	 * @param int      $offset The batch query offset.
-	 * @param int      $limit  The max items for the query.
+	 * @param int      $after_id Items with ID greater than this value (cursor for pagination).
+	 * @param int      $limit    The max items for the query.
 	 *
 	 * @return array[] Array of items in array format. Items will be stored in the database so they should be IDs not objects.
 	 */
-	public function get_batch_for_workflow( Workflow $workflow, int $offset, int $limit ): array {
+	public function get_batch_for_workflow( Workflow $workflow, int $after_id, int $limit ): array {
 		$tasks = [];
 
-		foreach ( $this->get_customers_matching_last_purchase_range( $workflow, $limit, $offset ) as $customer ) {
+		foreach ( $this->get_customers_matching_last_purchase_range( $workflow, $limit, $after_id ) as $customer ) {
 			$tasks[] = [
 				'customer' => $customer->get_id(),
 			];
@@ -110,13 +110,18 @@ class Trigger_Customer_Win_Back extends AbstractBatchedDailyTrigger {
 	/**
 	 * Fetch users by date using the last order meta field.
 	 *
+	 * Uses cursor-based pagination (ID > $after_id) to prevent skipping items
+	 * when the dataset changes between async batch runs.
+	 *
+	 * @since 6.2.3 Updated to use cursor-based pagination.
+	 *
 	 * @param Workflow $workflow
 	 * @param int      $limit
-	 * @param int      $offset
+	 * @param int      $after_id Return customers with ID greater than this value.
 	 *
 	 * @return Customer[]
 	 */
-	protected function get_customers_matching_last_purchase_range( $workflow, $limit, $offset ) {
+	protected function get_customers_matching_last_purchase_range( $workflow, $limit, $after_id ) {
 		$min_date = $this->get_min_last_order_date( $workflow );
 		$max_date = $this->get_max_last_order_date( $workflow );
 
@@ -127,9 +132,13 @@ class Trigger_Customer_Win_Back extends AbstractBatchedDailyTrigger {
 
 		$query = new Customer_Query();
 		$query->set_limit( $limit );
-		$query->set_offset( $offset );
+
+		if ( $after_id > 0 ) {
+			$query->where( 'id', $after_id, '>' );
+		}
+
 		$query->where( 'last_purchased', $min_date, '<' );
-		$query->set_ordering( 'last_purchased' );
+		$query->set_ordering( 'id', 'ASC' );
 
 		if ( $max_date ) {
 			$query->where( 'last_purchased', $max_date, '>' );

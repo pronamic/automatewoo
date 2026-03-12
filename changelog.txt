@@ -1,5 +1,10 @@
 *** AutomateWoo Changelog ***
 
+2026-03-10 - version 6.2.3
+* Dev - Add critical workflow E2E tests with Mailpit email capture for WooCommerce beta compatibility testing.
+* Dev - Bump webpack and add npm overrides for security fixes.
+* Fix - Fixed duplicate batch scheduling and offset-based pagination drift that could cause eligible items to be silently skipped in high-volume stores.
+
 2026-02-09 - version 6.2.2
 * Dev - Add AI assistant documentation and configuration for Claude Code and Cursor.
 * Fix - Prevent SetupGuestCustomers job from restarting indefinitely on high-traffic shops.

@@ -128,47 +128,111 @@ class Wishlists {
 	/**
 	 * Get wishlist IDs.
 	 *
+	 * Uses cursor-based pagination (ID > $after_id) when $after_id is provided
+	 * to prevent skipping items when the dataset changes between async batch runs.
+	 *
 	 * @since 4.5
+	 * @since 6.2.3 Added $after_id parameter for cursor-based pagination.
 	 *
 	 * @param int|bool $limit
-	 * @param int      $offset
+	 * @param int      $offset    Legacy offset parameter. Prefer $after_id for cursor-based pagination.
+	 * @param int      $after_id  Return wishlists with ID greater than this value.
 	 *
 	 * @return array
 	 */
-	public static function get_wishlist_ids( $limit = false, $offset = 0 ) {
+	public static function get_wishlist_ids( $limit = false, $offset = 0, $after_id = 0 ) {
 		$integration = self::get_integration();
 		$ids         = [];
 
 		if ( $integration === 'woothemes' ) {
-			$query = new \WP_Query(
-				[
-					'post_type'      => 'wishlist',
-					'posts_per_page' => $limit === false ? -1 : $limit,
-					'offset'         => $offset,
-					'fields'         => 'ids',
-				]
-			);
-			$ids   = $query->posts;
-		} elseif ( $integration === 'yith' ) {
-			$wishlists = YITH_WCWL()->get_wishlists(
-				[
-					// The query defaults to the current session and user IDs
-					'user_id'    => false,
-					'session_id' => false,
-					'show_empty' => false,
-					'limit'      => $limit === false ? false : $limit,
-					'offset'     => $offset,
-				]
-			);
+			$query_args = [
+				'post_type'      => 'wishlist',
+				'posts_per_page' => $limit === false ? -1 : $limit,
+				'fields'         => 'ids',
+				'orderby'        => 'ID',
+				'order'          => 'ASC',
+			];
 
-			foreach ( $wishlists as $wishlist ) {
-				// Before v3.0 wishlists were arrays
-				if ( is_array( $wishlist ) ) {
-					$ids[] = $wishlist['ID'];
-				} elseif ( $wishlist instanceof YITH_WCWL_Wishlist ) {
-					$ids[] = $wishlist->get_id();
+			$where_filter = null;
+
+			if ( $after_id > 0 ) {
+				$where_filter = function ( $where ) use ( $after_id ) {
+					global $wpdb;
+					$where .= $wpdb->prepare( " AND {$wpdb->posts}.ID > %d", $after_id );
+					return $where;
+				};
+				add_filter( 'posts_where', $where_filter );
+			} else {
+				$query_args['offset'] = $offset;
+			}
+
+			try {
+				$query = new \WP_Query( $query_args );
+				$ids   = $query->posts;
+			} finally {
+				if ( $where_filter ) {
+					remove_filter( 'posts_where', $where_filter );
 				}
 			}
+		} elseif ( $integration === 'yith' ) {
+			if ( $after_id > 0 ) {
+				// Cursor mode: fetch all, filter by ID > $after_id, sort, apply limit.
+				// YITH's API doesn't support cursor-based querying natively.
+				$wishlists = YITH_WCWL()->get_wishlists(
+					[
+						'user_id'    => false,
+						'session_id' => false,
+						'show_empty' => false,
+						'limit'      => false,
+						'offset'     => 0,
+					]
+				);
+
+				foreach ( $wishlists as $wishlist ) {
+					if ( is_array( $wishlist ) ) {
+						$ids[] = $wishlist['ID'];
+					} elseif ( $wishlist instanceof YITH_WCWL_Wishlist ) {
+						$ids[] = $wishlist->get_id();
+					}
+				}
+
+				$ids = array_map( 'absint', $ids );
+				$ids = array_filter(
+					$ids,
+					function ( $id ) use ( $after_id ) {
+						return $id > $after_id;
+					}
+				);
+				sort( $ids );
+
+				if ( $limit !== false ) {
+					$ids = array_slice( $ids, 0, $limit );
+				}
+			} else {
+				// Offset mode: use YITH's native limit/offset (preserves WishlistItemOnSale behavior).
+				$wishlists = YITH_WCWL()->get_wishlists(
+					[
+						'user_id'    => false,
+						'session_id' => false,
+						'show_empty' => false,
+						'limit'      => $limit === false ? false : $limit,
+						'offset'     => $offset,
+					]
+				);
+
+				foreach ( $wishlists as $wishlist ) {
+					// Before v3.0 wishlists were arrays
+					if ( is_array( $wishlist ) ) {
+						$ids[] = $wishlist['ID'];
+					} elseif ( $wishlist instanceof YITH_WCWL_Wishlist ) {
+						$ids[] = $wishlist->get_id();
+					}
+				}
+
+				$ids = array_map( 'absint', $ids );
+			}
+
+			return $ids;
 		}
 
 		$ids = array_map( 'absint', $ids );

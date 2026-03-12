@@ -45,14 +45,14 @@ class Trigger_Subscription_Before_End extends Trigger_Subscription_Before_Renewa
 	 * Get subscriptions that match the workflow's date params.
 	 *
 	 * @param Workflow $workflow
-	 * @param int      $offset
+	 * @param int      $after_id
 	 * @param int      $limit
 	 *
 	 * @return int[] Array of subscription IDs.
 	 *
 	 * @throws InvalidArgument If workflow 'days before' option is not valid.
 	 */
-	protected function get_subscriptions_for_workflow( Workflow $workflow, int $offset, int $limit ) {
+	protected function get_subscriptions_for_workflow( Workflow $workflow, int $after_id, int $limit ) {
 		$days_before_end = (int) $workflow->get_trigger_option( 'days_before' );
 		$this->validate_positive_integer( $days_before_end );
 
@@ -62,7 +62,7 @@ class Trigger_Subscription_Before_End extends Trigger_Subscription_Before_Renewa
 			$date,
 			'_schedule_end',
 			[ 'wc-active', 'wc-pending-cancel' ],
-			$offset,
+			$after_id,
 			$limit
 		);
 	}

@@ -55,13 +55,18 @@ class Trigger_Customer_Before_Saved_Card_Expiry extends AbstractBatchedDailyTrig
 	/**
 	 * Get credit cards based on the specified days before expiry field.
 	 *
+	 * Uses cursor-based pagination (token_id > $after_id) to prevent skipping items
+	 * when the dataset changes between async batch runs.
+	 *
+	 * @since 6.2.3 Updated to use cursor-based pagination.
+	 *
 	 * @param Workflow $workflow
 	 * @param int      $limit
-	 * @param int      $offset
+	 * @param int      $after_id Return tokens with ID greater than this value.
 	 *
 	 * @return array
 	 */
-	protected function get_cards_by_expiry( $workflow, $limit, $offset ) {
+	protected function get_cards_by_expiry( $workflow, $limit, $after_id ) {
 		global $wpdb;
 
 		$days_before = absint( $workflow->get_trigger_option( 'days_before_expiry' ) );
@@ -91,13 +96,15 @@ class Trigger_Customer_Before_Saved_Card_Expiry extends AbstractBatchedDailyTrig
 				AND m1.meta_value = %s
 				AND m2.meta_key = 'expiry_month'
 				AND m2.meta_value = %s
-				LIMIT %d OFFSET %d
+				AND tokens.token_id > %d
+				ORDER BY tokens.token_id ASC
+				LIMIT %d
 				",
 				[
 					$date->format( 'Y' ),
 					$date->format( 'm' ),
+					$after_id,
 					$limit,
-					$offset,
 				]
 			),
 			OBJECT_K
@@ -110,15 +117,15 @@ class Trigger_Customer_Before_Saved_Card_Expiry extends AbstractBatchedDailyTrig
 	 * Get a batch of items to process for given workflow.
 	 *
 	 * @param Workflow $workflow
-	 * @param int      $offset The batch query offset.
-	 * @param int      $limit  The max items for the query.
+	 * @param int      $after_id Items with ID greater than this value (cursor for pagination).
+	 * @param int      $limit    The max items for the query.
 	 *
 	 * @return array[] Array of items in array format. Items will be stored in the database so they should be IDs not objects.
 	 */
-	public function get_batch_for_workflow( Workflow $workflow, int $offset, int $limit ): array {
+	public function get_batch_for_workflow( Workflow $workflow, int $after_id, int $limit ): array {
 		$items = [];
 
-		foreach ( $this->get_cards_by_expiry( $workflow, $limit, $offset ) as $token_id ) {
+		foreach ( $this->get_cards_by_expiry( $workflow, $limit, $after_id ) as $token_id ) {
 			$items[] = [
 				'token' => $token_id,
 			];

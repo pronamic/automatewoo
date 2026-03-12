@@ -18,7 +18,7 @@ trait CustomTimeOfDay {
 	 */
 	public function register_hooks() {
 		// This action only needs to be added once for all custom time of day triggers
-		if ( ! has_action( 'automatewoo/custom_time_of_day_workflow', [ $this, 'start_batched_workflow_job' ] ) ) {
+		if ( ! has_action( 'automatewoo/custom_time_of_day_workflow' ) ) {
 			add_action( 'automatewoo/custom_time_of_day_workflow', [ $this, 'start_batched_workflow_job' ] );
 		}
 	}

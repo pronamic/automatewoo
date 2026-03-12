@@ -55,17 +55,17 @@ class Trigger_Subscription_Before_Renewal extends AbstractBatchedDailyTrigger {
 	 * Get a batch of items to process for given workflow.
 	 *
 	 * @param Workflow $workflow
-	 * @param int      $offset The batch query offset.
-	 * @param int      $limit  The max items for the query.
+	 * @param int      $after_id Items with ID greater than this value (cursor for pagination).
+	 * @param int      $limit    The max items for the query.
 	 *
 	 * @return array[] Array of items in array format. Items will be stored in the database so they should be IDs not objects.
 	 *
 	 * @throws InvalidArgument If workflow 'days before' option is not valid.
 	 */
-	public function get_batch_for_workflow( Workflow $workflow, int $offset, int $limit ): array {
+	public function get_batch_for_workflow( Workflow $workflow, int $after_id, int $limit ): array {
 		$items = [];
 
-		foreach ( $this->get_subscriptions_for_workflow( $workflow, $offset, $limit ) as $subscription_id ) {
+		foreach ( $this->get_subscriptions_for_workflow( $workflow, $after_id, $limit ) as $subscription_id ) {
 			$items[] = [
 				'subscription' => $subscription_id,
 			];
@@ -98,34 +98,39 @@ class Trigger_Subscription_Before_Renewal extends AbstractBatchedDailyTrigger {
 	 * Get subscriptions that match the workflow's date params.
 	 *
 	 * @param Workflow $workflow
-	 * @param int      $offset
+	 * @param int      $after_id
 	 * @param int      $limit
 	 *
 	 * @return int[] Array of subscription IDs.
 	 *
 	 * @throws InvalidArgument If workflow 'days before' option is not valid.
 	 */
-	protected function get_subscriptions_for_workflow( Workflow $workflow, int $offset, int $limit ) {
+	protected function get_subscriptions_for_workflow( Workflow $workflow, int $after_id, int $limit ) {
 		$days_before_renewal = (int) $workflow->get_trigger_option( 'days_before_renewal' );
 		$this->validate_positive_integer( $days_before_renewal );
 
 		$date = ( new DateTime() )->add( new \DateInterval( "P{$days_before_renewal}D" ) );
 
-		return $this->query_subscriptions_for_day( $date, '_schedule_next_payment', [ 'wc-active' ], $offset, $limit );
+		return $this->query_subscriptions_for_day( $date, '_schedule_next_payment', [ 'wc-active' ], $after_id, $limit );
 	}
 
 	/**
 	 * Query subscriptions for a specific day.
 	 *
+	 * Uses cursor-based pagination (ID > $after_id) instead of offset to prevent
+	 * skipping items when the dataset changes between async batch runs.
+	 *
+	 * @since 6.2.3 Updated to use cursor-based pagination.
+	 *
 	 * @param DateTime $date          The target date in UTC timezone.
 	 * @param string   $date_meta_key The subscription date meta key to query.
-	 * @param array    $statuses      The subscription statues to query.
-	 * @param int      $offset
+	 * @param array    $statuses      The subscription statuses to query.
+	 * @param int      $after_id      Return subscriptions with ID greater than this value.
 	 * @param int      $limit
 	 *
 	 * @return int[] Array of subscription IDs.
 	 */
-	protected function query_subscriptions_for_day( DateTime $date, string $date_meta_key, array $statuses, int $offset, int $limit ) {
+	protected function query_subscriptions_for_day( DateTime $date, string $date_meta_key, array $statuses, int $after_id, int $limit ) {
 		$date->convert_to_site_time();
 		$day_start = clone $date;
 		$day_end   = clone $date;
@@ -135,50 +140,95 @@ class Trigger_Subscription_Before_Renewal extends AbstractBatchedDailyTrigger {
 		$day_end->convert_to_utc_time();
 
 		if ( function_exists( 'wcs_get_orders_with_meta_query' ) ) {
-			return wcs_get_orders_with_meta_query(
-				[
-					'type'          => 'shop_subscription',
-					'status'        => $statuses,
-					'return'        => 'ids',
-					'limit'         => $limit,
-					'offset'        => $offset,
-					'no_found_rows' => true,
-					'meta_query'    => [
-						[
-							'key'     => $date_meta_key,
-							'compare' => 'BETWEEN',
-							'value'   => [ $day_start->to_mysql_string(), $day_end->to_mysql_string() ],
-						],
+			$args = [
+				'type'          => 'shop_subscription',
+				'status'        => $statuses,
+				'return'        => 'ids',
+				'limit'         => $limit,
+				'orderby'       => 'ID',
+				'order'         => 'ASC',
+				'no_found_rows' => true,
+				'meta_query'    => [
+					[
+						'key'     => $date_meta_key,
+						'compare' => 'BETWEEN',
+						'value'   => [ $day_start->to_mysql_string(), $day_end->to_mysql_string() ],
 					],
-				]
-			);
+				],
+			];
+
+			$where_filter = null;
+
+			if ( $after_id > 0 ) {
+				if ( function_exists( 'wcs_is_custom_order_tables_usage_enabled' ) && wcs_is_custom_order_tables_usage_enabled() ) {
+					$args['field_query'] = [
+						[
+							'field'   => 'id',
+							'value'   => $after_id,
+							'compare' => '>',
+						],
+					];
+				} else {
+					$where_filter = function ( $where ) use ( $after_id ) {
+						global $wpdb;
+						$where .= $wpdb->prepare( " AND {$wpdb->posts}.ID > %d", $after_id );
+						return $where;
+					};
+					add_filter( 'posts_where', $where_filter );
+				}
+			}
+
+			try {
+				return wcs_get_orders_with_meta_query( $args );
+			} finally {
+				if ( $where_filter ) {
+					remove_filter( 'posts_where', $where_filter );
+				}
+			}
 		}
 
 		// Fallback for querying subscriptions before HPOS compatibility was added.
-		$query = new WP_Query(
-			[
-				'post_type'      => 'shop_subscription',
-				'post_status'    => $statuses,
-				'fields'         => 'ids',
-				'posts_per_page' => $limit,
-				'offset'         => $offset,
-				'no_found_rows'  => true,
-				'meta_query'     => [
-					[
-						'key'     => $date_meta_key,
-						'compare' => '>=',
-						'value'   => $day_start->to_mysql_string(),
-					],
-					[
-						'key'     => $date_meta_key,
-						'compare' => '<=',
-						'value'   => $day_end->to_mysql_string(),
-					],
+		$query_args = [
+			'post_type'      => 'shop_subscription',
+			'post_status'    => $statuses,
+			'fields'         => 'ids',
+			'posts_per_page' => $limit,
+			'orderby'        => 'ID',
+			'order'          => 'ASC',
+			'no_found_rows'  => true,
+			'meta_query'     => [
+				[
+					'key'     => $date_meta_key,
+					'compare' => '>=',
+					'value'   => $day_start->to_mysql_string(),
 				],
-			]
-		);
+				[
+					'key'     => $date_meta_key,
+					'compare' => '<=',
+					'value'   => $day_end->to_mysql_string(),
+				],
+			],
+		];
 
-		return $query->posts;
+		$where_filter = null;
+
+		if ( $after_id > 0 ) {
+			$where_filter = function ( $where ) use ( $after_id ) {
+				global $wpdb;
+				$where .= $wpdb->prepare( " AND {$wpdb->posts}.ID > %d", $after_id );
+				return $where;
+			};
+			add_filter( 'posts_where', $where_filter );
+		}
+
+		try {
+			$query = new WP_Query( $query_args );
+			return $query->posts;
+		} finally {
+			if ( $where_filter ) {
+				remove_filter( 'posts_where', $where_filter );
+			}
+		}
 	}
 
 

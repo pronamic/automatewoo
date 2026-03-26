@@ -106,7 +106,7 @@ class Trigger_Order_Note_Added extends Trigger {
 		}
 
 		if ( $note_contains ) {
-			if ( ! stristr( $order_note->content, $note_contains ) ) {
+			if ( ! stristr( wp_specialchars_decode( $order_note->content, ENT_QUOTES ), $note_contains ) ) {
 				return false;
 			}
 		}

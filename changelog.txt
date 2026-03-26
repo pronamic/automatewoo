@@ -1,5 +1,10 @@
 *** AutomateWoo Changelog ***
 
+2026-03-25 - version 6.2.4
+* Dev - Add PHP version input to E2E tests workflow for flexible PHP version testing.
+* Fix order note trigger not matching HTML-encoded content in automatic notes.
+* Update - Require WooCommerce 10.5+.
+
 2026-03-10 - version 6.2.3
 * Dev - Add critical workflow E2E tests with Mailpit email capture for WooCommerce beta compatibility testing.
 * Dev - Bump webpack and add npm overrides for security fixes.

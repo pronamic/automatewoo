@@ -40,6 +40,18 @@ class Remote_Request {
 			'user-agent' => 'AutomateWoo ' . AW()->version . ' - ' . $domain
 		]);
 
+		/**
+		 * Filter the arguments passed to wp_remote_request() for all AutomateWoo remote requests.
+		 *
+		 * This can be used to adjust the timeout or other request arguments per integration.
+		 *
+		 * @since 6.3.0
+		 *
+		 * @param array  $args The request arguments.
+		 * @param string $url  The request URL.
+		 */
+		$args = apply_filters( 'automatewoo/remote_request/args', $args, $url );
+
 		$this->url = $url;
 		$this->method = $args['method'];
 

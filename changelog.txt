@@ -1,5 +1,16 @@
 *** AutomateWoo Changelog ***
 
+2026-04-15 - version 6.3.1
+* Dev - Add min-release-age to .npmrc for supply chain protection.
+* Update - Require WooCommerce 10.6+.
+
+2026-04-14 - version 6.3.0
+* Add - Filter automatewoo/remote_request/args to allow customizing remote request arguments such as timeout per integration.
+* Dev - Add .wp-env.override.json and .artifacts to .gitignore.
+* Dev - Update npm dependencies.
+* Fix - Email templates now display the order/subscription line item price instead of the current product price when an order context is available.
+* Fix - Prevent stale guest entries from stopping the Win Back trigger batch job by skipping customers whose last paid order can't be found instead of throwing an exception.
+
 2026-03-25 - version 6.2.4
 * Dev - Add PHP version input to E2E tests workflow for flexible PHP version testing.
 * Fix order note trigger not matching HTML-encoded content in automatic notes.

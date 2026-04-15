@@ -41,6 +41,7 @@ $n = 1;
 				<?php endif; ?>
 
 				<?php foreach ( $products as $product ): ?>
+					<?php $order_item                 = ( isset( $order ) && is_a( $product, 'WC_Order_Item_Product' ) ) ? $product : null; ?>
 					<?php $filtered_permalink_data    = automatewoo_email_template_product_permalink( $product ) ?>
 					<?php $permalink                  = $filtered_permalink_data['permalink']; ?>
 					<?php $filtered_product_name_data = automatewoo_email_template_product_name( $product ) ?>
@@ -51,7 +52,11 @@ $n = 1;
 
 						<a href="<?php echo esc_url( $permalink ); ?>"><?php echo \AW_Mailer_API::get_product_image( $product ) ?></a>
 						<h3><a href="<?php echo esc_url( $permalink ); ?>"><?php echo esc_html( $product_name ); ?></a></h3>
-						<p class="price"><strong><?php echo $product->get_price_html(); ?></strong></p>
+						<?php if ( isset( $order ) && $order_item ) : ?>
+							<p class="price"><strong><?php echo wp_kses_post( $order->get_formatted_line_subtotal( $order_item ) ); ?></strong></p>
+						<?php else : ?>
+							<p class="price"><strong><?php echo wp_kses_post( $product->get_price_html() ); ?></strong></p>
+						<?php endif; ?>
 
 					</div>
 

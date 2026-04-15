@@ -96,7 +96,8 @@ class Trigger_Customer_Win_Back extends AbstractBatchedDailyTrigger {
 
 		$last_paid_order = $customer->get_nth_last_paid_order( 1 );
 		if ( ! $last_paid_order ) {
-			throw new RuntimeException( 'The customer has no paid orders. An order may have been edited or deleted since starting the job.' );
+			Logger::info( 'trigger', sprintf( 'Win Back trigger: skipping customer %d — no paid orders found. Order may have been edited or deleted since the job started.', $customer->get_id() ) );
+			return;
 		}
 
 		$workflow->maybe_run(

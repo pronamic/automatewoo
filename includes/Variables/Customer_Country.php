@@ -14,6 +14,16 @@ class Variable_Customer_Country extends Variable {
 	 */
 	public function load_admin_details() {
 		$this->description = __( "Displays the customer's billing country.", 'automatewoo' );
+
+		$this->add_parameter_select_field(
+			'format',
+			__( 'Choose whether to display the abbreviation or full name of the country.', 'automatewoo' ),
+			[
+				''             => __( 'Full', 'automatewoo' ),
+				'abbreviation' => __( 'Abbreviation', 'automatewoo' ),
+			],
+			false
+		);
 	}
 
 	/**
@@ -29,6 +39,14 @@ class Variable_Customer_Country extends Variable {
 			return false;
 		}
 
-		return aw_get_country_name( $country );
+		$format = isset( $parameters['format'] ) ? $parameters['format'] : 'full';
+
+		switch ( $format ) {
+			case 'abbreviation':
+				return $country;
+			case 'full':
+			default:
+				return aw_get_country_name( $country );
+		}
 	}
 }

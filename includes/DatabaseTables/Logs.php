@@ -53,7 +53,9 @@ class Logs extends Database_Table {
 			PRIMARY KEY  (id),
 			KEY workflow_id (workflow_id),
 			KEY date (date),
-			KEY workflow_id_date (workflow_id, date)
+			KEY workflow_id_date (workflow_id, date),
+			KEY tracking_blocked_date (tracking_enabled, date),
+			KEY conversion_tracking_date (conversion_tracking_enabled, date)
 			) {$this->get_collate()};";
 	}
 }

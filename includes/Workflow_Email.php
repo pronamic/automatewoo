@@ -310,8 +310,9 @@ class Workflow_Email {
 			$mailer->set_include_automatewoo_styles( $this->include_automatewoo_styles );
 
 			if ( $this->tracking_enabled ) {
-				$mailer->tracking_pixel_url            = Tracking::get_open_tracking_url( $this->workflow );
-				$mailer->replace_content_urls_callback = [ $this, 'replace_content_urls_callback' ];
+				$mailer->tracking_pixel_url                 = Tracking::get_open_tracking_url( $this->workflow );
+				$mailer->replace_content_urls_callback      = [ $this, 'replace_content_urls_callback' ];
+				$mailer->replace_content_text_urls_callback = [ $this, 'replace_content_text_urls_callback' ];
 			}
 		}
 
@@ -421,6 +422,26 @@ class Workflow_Email {
 		}
 
 		return 'href="' . esc_url( $url ) . '"';
+	}
+
+	/**
+	 * Callback for replacing plain text URLs in email content with tracked URLs.
+	 *
+	 * Unlike replace_content_urls_callback(), this returns just the URL (not
+	 * wrapped in href="...") since it targets bare URLs in body text.
+	 *
+	 * @since 6.4.0
+	 * @param string $url
+	 * @return string
+	 */
+	public function replace_content_text_urls_callback( string $url ): string {
+		if ( ! strstr( $url, 'aw-action=unsubscribe' ) ) {
+			$url = html_entity_decode( $url );
+			$url = $this->workflow->append_ga_tracking_to_url( $url );
+			$url = Tracking::get_click_tracking_url( $this->workflow, $url );
+		}
+
+		return esc_url( $url );
 	}
 
 

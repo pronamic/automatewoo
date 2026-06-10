@@ -109,6 +109,8 @@ abstract class AbstractPostDatastoreType implements DatastoreTypeInterface {
 			'offset'         => $offset,
 			'no_found_rows'  => true,
 			'meta_query'     => [],
+			'orderby'        => 'ID',
+			'order'          => 'ASC',
 		];
 	}
 

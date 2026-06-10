@@ -52,6 +52,8 @@ class ToolsService {
 
 		$class_names = apply_filters( 'automatewoo/tools', $class_names );
 
+		$this->tools = [];
+
 		foreach ( $class_names as $tool_class ) {
 			/** @var Tool_Abstract $class */
 			$class                           = new $tool_class();

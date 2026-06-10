@@ -47,7 +47,8 @@ class LogMeta extends Database_Table {
 			meta_value longtext NULL,
 			PRIMARY KEY  (meta_id),
 			KEY log_id (log_id),
-			KEY meta_key (meta_key({$this->max_index_length}))
+			KEY meta_key (meta_key({$this->max_index_length})),
+			KEY log_id_meta_key (log_id, meta_key({$this->max_index_length}))
 			) {$this->get_collate()};";
 	}
 

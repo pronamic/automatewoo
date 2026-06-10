@@ -55,7 +55,36 @@ const CES_STORE_KEY = 'wc/customer-effort-score';
 
 const TABLE_FILTER = 'woocommerce_admin_report_table';
 
+const EMPTY_ARRAY = [];
+const EMPTY_OBJECT = {};
+const DEFAULT_TABLE_DATA = {
+	items: {
+		data: EMPTY_ARRAY,
+		totalResults: 0,
+	},
+	query: EMPTY_OBJECT,
+};
 const ReportTable = ( props ) => {
+	const {
+		primaryData: defaultedPrimaryData = EMPTY_OBJECT,
+		tableData: defaultedTableData = DEFAULT_TABLE_DATA,
+		tableQuery: defaultedTableQuery = EMPTY_OBJECT,
+		compareParam: defaultedCompareParam = 'filter',
+		downloadable: defaultedDownloadable = false,
+		onSearch: defaultedOnSearch = noop,
+		baseSearchQuery: defaultedBaseSearchQuery = EMPTY_OBJECT,
+		...restProps
+	} = props;
+	const propsWithDefaults = {
+		...restProps,
+		primaryData: defaultedPrimaryData,
+		tableData: defaultedTableData,
+		tableQuery: defaultedTableQuery,
+		compareParam: defaultedCompareParam,
+		downloadable: defaultedDownloadable,
+		onSearch: defaultedOnSearch,
+		baseSearchQuery: defaultedBaseSearchQuery,
+	};
 	const {
 		className,
 		getHeadersContent,
@@ -78,10 +107,10 @@ const ReportTable = ( props ) => {
 		checkboxes,
 		renderActionButton,
 		...tableProps
-	} = props;
+	} = propsWithDefaults;
 
 	// Pull these props out separately because they need to be included in tableProps.
-	const { query, columnPrefsKey } = props;
+	const { query, columnPrefsKey } = propsWithDefaults;
 
 	const { items, query: reportQuery } = tableData;
 
@@ -195,7 +224,7 @@ const ReportTable = ( props ) => {
 	};
 
 	const onClickDownload = () => {
-		const { createNotice, startExport, title } = props;
+		const { createNotice, startExport, title } = propsWithDefaults;
 		const params = Object.assign( {}, query );
 		const { data, totalResults } = items;
 		let downloadType = 'browser';
@@ -263,7 +292,8 @@ const ReportTable = ( props ) => {
 	};
 
 	const onSearchChange = ( values ) => {
-		const { baseSearchQuery, addCesSurveyForCustomerSearch } = props;
+		const { baseSearchQuery, addCesSurveyForCustomerSearch } =
+			propsWithDefaults;
 		// A comma is used as a separator between search terms, so we want to escape
 		// any comma they contain.
 		const searchTerms = values.map( ( v ) =>
@@ -290,12 +320,12 @@ const ReportTable = ( props ) => {
 	};
 
 	const selectAllRows = ( checked ) => {
-		const { ids } = props;
+		const { ids } = propsWithDefaults;
 		setSelectedRows( checked ? ids : [] );
 	};
 
 	const selectRow = ( i, checked ) => {
-		const { ids } = props;
+		const { ids } = propsWithDefaults;
 		if ( checked ) {
 			setSelectedRows( uniq( [ ids[ i ], ...selectedRows ] ) );
 		} else {
@@ -308,7 +338,7 @@ const ReportTable = ( props ) => {
 	};
 
 	const getCheckbox = ( i ) => {
-		const { ids = [] } = props;
+		const { ids = [] } = propsWithDefaults;
 		const isChecked = selectedRows.indexOf( ids[ i ] ) !== -1;
 		return {
 			display: (
@@ -322,7 +352,7 @@ const ReportTable = ( props ) => {
 	};
 
 	const getAllCheckbox = () => {
-		const { ids = [] } = props;
+		const { ids = [] } = propsWithDefaults;
 		const hasData = ids.length > 0;
 		const isAllChecked = hasData && ids.length === selectedRows.length;
 		return {
@@ -566,7 +596,7 @@ ReportTable.propTypes = {
 	 * Table data of that report. If it's not provided, it will be automatically
 	 * loaded via the provided `endpoint`.
 	 */
-	tableData: PropTypes.object.isRequired,
+	tableData: PropTypes.object,
 	/**
 	 * Properties to be added to the query sent to the report table endpoint.
 	 */
@@ -584,25 +614,6 @@ ReportTable.propTypes = {
 	 */
 	renderActionButton: PropTypes.func,
 };
-
-ReportTable.defaultProps = {
-	primaryData: {},
-	tableData: {
-		items: {
-			data: [],
-			totalResults: 0,
-		},
-		query: {},
-	},
-	tableQuery: {},
-	compareParam: 'filter',
-	downloadable: false,
-	onSearch: noop,
-	baseSearchQuery: {},
-};
-
-const EMPTY_ARRAY = [];
-const EMPTY_OBJECT = {};
 
 export default compose(
 	withSelect( ( select, props ) => {

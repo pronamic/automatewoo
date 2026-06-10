@@ -35,6 +35,17 @@ abstract class AbstractBatchedActionSchedulerJob extends AbstractActionScheduler
 	protected $allow_concurrent = false;
 
 	/**
+	 * Whether to check for an already-scheduled `process_item` action before scheduling a new one.
+	 *
+	 * Opt-in per job, since the check costs one AS table query per item. Only useful for jobs
+	 * where a duplicate `process_item` action would throw (e.g. when `process_item` looks up a
+	 * row that the first action already deleted) and thus trip the failure-rate guard.
+	 *
+	 * @var bool
+	 */
+	protected $require_idempotent_scheduling = false;
+
+	/**
 	 * Get a new batch of items.
 	 *
 	 * If no items are returned the job will stop.
@@ -134,6 +145,10 @@ abstract class AbstractBatchedActionSchedulerJob extends AbstractActionScheduler
 	 * @hooked automatewoo/jobs/{$job_name}/create_batch
 	 *
 	 * Schedules an action to run immediately for each item in the batch.
+	 * When `$require_idempotent_scheduling` is enabled the scheduler checks for
+	 * an existing `process_item` action first, to prevent duplicate scheduling.
+	 *
+	 * @since 6.3.2 Added opt-in idempotent scheduling to prevent duplicate process_item actions.
 	 *
 	 * @param int   $batch_number The batch number increments for each new batch in the job cycle.
 	 * @param array $args         The args for this instance of the job.
@@ -146,15 +161,27 @@ abstract class AbstractBatchedActionSchedulerJob extends AbstractActionScheduler
 		$this->monitor->validate_failure_rate( $this );
 		$this->validate_args( $args );
 
-		$items = $this->get_batch( $batch_number, $args );
+		$items             = $this->get_batch( $batch_number, $args );
+		$already_scheduled = 0;
 
 		foreach ( $items as $item ) {
 			$this->validate_item( $item );
+
+			if ( $this->require_idempotent_scheduling
+				&& $this->action_scheduler->has_scheduled_action( $this->get_process_item_hook(), [ $item, $args ] )
+			) {
+				++$already_scheduled;
+				continue;
+			}
+
 			$this->action_scheduler->schedule_immediate( $this->get_process_item_hook(), [ $item, $args ] );
 		}
 
 		if ( empty( $items ) ) {
 			// If no more items the job is complete
+			$this->handle_complete( $batch_number, $args );
+		} elseif ( $this->require_idempotent_scheduling && $already_scheduled === count( $items ) ) {
+			// All items in this batch are already scheduled, treat as complete to avoid infinite loops.
 			$this->handle_complete( $batch_number, $args );
 		} else {
 			// If items, schedule another "create_batch" action to handle remaining items

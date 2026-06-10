@@ -159,6 +159,7 @@ final class AutomateWoo extends AutomateWoo_Legacy {
 			AutomateWoo\AdminNotices\WelcomeNoticeManager::init();
 			AutomateWoo\AdminNotices\UpdateNoticeManager::init();
 			AutomateWoo\AdminNotices\NewWorkflowHelperManager::init();
+			( new AutomateWoo\AdminNotices\LogRetentionWorkflowNotice() )->init();
 			( new AutomateWoo\AdminNotices\WcAdminDisabled() )->init();
 
 			foreach ( Addons::get_all() as $addon ) {
@@ -205,6 +206,10 @@ final class AutomateWoo extends AutomateWoo_Legacy {
 			$this->job_service()->init_jobs();
 		}
 
+		if ( defined( 'WP_CLI' ) && WP_CLI ) {
+			\WP_CLI::add_hook( 'after_wp_load', [ AutomateWoo\CLI\CLIService::class, 'register' ] );
+		}
+
 		if ( $this->is_request( 'frontend' ) ) {
 			( new Login_Redirect() )->init();
 		}
@@ -218,6 +223,7 @@ final class AutomateWoo extends AutomateWoo_Legacy {
 
 		AutomateWoo\Communication_Account_Tab::init();
 		AutomateWoo\Workflows::init();
+		AutomateWoo\Abilities::init();
 
 		if ( $this->is_installed() ) {
 			AutomateWoo\Hooks::init();

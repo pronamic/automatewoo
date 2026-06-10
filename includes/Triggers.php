@@ -78,7 +78,8 @@ class Triggers extends Registry {
 			$includes[ 'subscription_order_created' ] = 'AutomateWoo\Triggers\Subscription_Order_Created';
 			$includes[ 'subscription_order_paid' ] = 'AutomateWoo\Triggers\Subscription_Order_Paid';
 			$includes[ 'subscription_order_status_changes' ] = 'AutomateWoo\Triggers\Subscription_Order_Status_Changes';
-			$includes[ 'subscription_manual' ] = Triggers\SubscriptionManual::class;
+			$includes[ 'subscription_manual' ]   = Triggers\SubscriptionManual::class;
+			$includes[ 'subscription_switched' ] = 'AutomateWoo\Trigger_Subscription_Switched';
 		}
 
 		if ( Integrations::is_bookings_active() ) {

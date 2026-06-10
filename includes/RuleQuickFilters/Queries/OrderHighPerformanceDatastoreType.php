@@ -157,11 +157,13 @@ class OrderHighPerformanceDatastoreType implements DatastoreTypeInterface {
 	 */
 	protected function get_default_query_args( $number, $offset = 0 ) {
 		return [
-			'type'   => 'shop_order',
-			'return' => 'ids',
-			'limit'  => $number,
-			'offset' => $offset,
-			'status' => array_keys( wc_get_order_statuses() ),
+			'type'    => 'shop_order',
+			'return'  => 'ids',
+			'limit'   => $number,
+			'offset'  => $offset,
+			'status'  => array_keys( wc_get_order_statuses() ),
+			'orderby' => 'id',
+			'order'   => 'ASC',
 		];
 	}
 

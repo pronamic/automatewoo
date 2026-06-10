@@ -21,6 +21,17 @@ class RunQueuedWorkflows extends AbstractRecurringBatchedActionSchedulerJob {
 	use ValidateItemAsIntegerId;
 
 	/**
+	 * Check for existing `process_item` actions before scheduling new ones.
+	 *
+	 * A duplicate `process_item` fails once the first action deletes the queue row,
+	 * and those failures count toward the failure-rate guard which stalls the whole
+	 * queue. The per-item AS lookup is cheap insurance against that.
+	 *
+	 * @var bool
+	 */
+	protected $require_idempotent_scheduling = true;
+
+	/**
 	 * Get the name of the job.
 	 *
 	 * @return string

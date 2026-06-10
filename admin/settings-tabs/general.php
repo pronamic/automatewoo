@@ -264,6 +264,20 @@ class Settings_Tab_General extends Admin_Settings_Tab_Abstract {
 			]
 		);
 
+		$this->add_setting(
+			'log_retention_months',
+			[
+				'title'             => __( 'Log retention period (months)', 'automatewoo' ),
+				'desc_tip'          => __( 'Automatically delete workflow logs older than this many months. Set to 0 to keep logs indefinitely.', 'automatewoo' ),
+				'type'              => 'number',
+				'default'           => 0,
+				'custom_attributes' => [
+					'min'  => '0',
+					'step' => '1',
+				],
+			]
+		);
+
 		$this->section_end( 'misc' );
 	}
 

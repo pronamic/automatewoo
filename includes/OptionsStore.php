@@ -81,4 +81,17 @@ class OptionsStore extends AbstractOptionsStore {
 	public function get_optin_enabled() {
 		return $this->get_option( 'optin_mode' ) === 'optin';
 	}
+
+	/**
+	 * Get the log retention period in months.
+	 *
+	 * Returns 0 when log retention is disabled.
+	 *
+	 * @since 6.3.2
+	 *
+	 * @return int
+	 */
+	public function get_log_retention_months(): int {
+		return absint( $this->get_option( 'log_retention_months' ) );
+	}
 }

@@ -31,6 +31,9 @@ class Mailer extends Mailer_Abstract {
 	/** @var callable - use to replace URLs in content e.g. for click tracking */
 	public $replace_content_urls_callback;
 
+	/** @var callable - use to replace plain text URLs in content e.g. for click tracking */
+	public $replace_content_text_urls_callback;
+
 	/** @var bool */
 	public $include_automatewoo_styles = true;
 
@@ -366,12 +369,17 @@ class Mailer extends Mailer_Abstract {
 	 * @return string
 	 */
 	public function replace_urls_in_content( $content ) {
-		if ( ! $this->replace_content_urls_callback ) {
-			return $content;
+		if ( $this->replace_content_urls_callback ) {
+			$replacer = new Replace_Helper( $content, $this->replace_content_urls_callback, 'href_urls' );
+			$content  = $replacer->process();
 		}
 
-		$replacer = new Replace_Helper( $content, $this->replace_content_urls_callback, 'href_urls' );
-		return $replacer->process();
+		if ( $this->replace_content_text_urls_callback ) {
+			$replacer = new Replace_Helper( $content, $this->replace_content_text_urls_callback, 'text_urls' );
+			$content  = $replacer->process();
+		}
+
+		return $content;
 	}
 
 

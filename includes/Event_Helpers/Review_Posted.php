@@ -21,10 +21,14 @@ class Review_Posted {
 	/**
 	 * Catch any comments approved on creation
 	 *
-	 * @param int        $comment_id
-	 * @param WP_Comment $comment
+	 * @param int             $comment_id
+	 * @param WP_Comment|null $comment
 	 */
-	public static function catch_new_comments( int $comment_id, WP_Comment $comment ) {
+	public static function catch_new_comments( int $comment_id, ?WP_Comment $comment ) {
+		if ( ! $comment instanceof WP_Comment ) {
+			return;
+		}
+
 		if ( $comment->comment_approved ) {
 			self::maybe_dispatch_event( $comment );
 		}
@@ -33,11 +37,15 @@ class Review_Posted {
 	/**
 	 * Catch any comments that were approved after creation
 	 *
-	 * @param int|string $new_status
-	 * @param int|string $old_status
-	 * @param WP_Comment $comment
+	 * @param int|string      $new_status
+	 * @param int|string      $old_status
+	 * @param WP_Comment|null $comment
 	 */
-	public static function catch_comment_approval( $new_status, $old_status, WP_Comment $comment ) {
+	public static function catch_comment_approval( $new_status, $old_status, ?WP_Comment $comment ) {
+		if ( ! $comment instanceof WP_Comment ) {
+			return;
+		}
+
 		if ( $new_status === 'approved' ) {
 			self::maybe_dispatch_event( $comment );
 		}

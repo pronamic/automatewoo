@@ -51,6 +51,7 @@ final class Async_Events extends Registry {
 			$includes['subscription_status_changed']           = 'AutomateWoo\Async_Events\Subscription_Status_Changed';
 			$includes['subscription_renewal_payment_complete'] = 'AutomateWoo\Async_Events\Subscription_Renewal_Payment_Complete';
 			$includes['subscription_renewal_payment_failed']   = 'AutomateWoo\Async_Events\Subscription_Renewal_Payment_Failed';
+			$includes['subscription_switched']                 = 'AutomateWoo\Async_Events\Subscription_Switched';
 		}
 
 		if ( Integrations::is_memberships_enabled() ) {

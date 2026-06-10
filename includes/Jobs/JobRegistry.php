@@ -5,6 +5,7 @@ namespace AutomateWoo\Jobs;
 use AutomateWoo\ActionScheduler\ActionSchedulerInterface;
 use AutomateWoo\Exceptions\InvalidArgument;
 use AutomateWoo\Exceptions\InvalidClass;
+use AutomateWoo\LogCleanupService;
 use AutomateWoo\OptionsStore;
 use AutomateWoo\Tools\ToolsService;
 use AutomateWoo\Traits\ArrayValidator;
@@ -126,6 +127,7 @@ class JobRegistry implements JobRegistryInterface {
 			new CheckGmtOffsetChange( $this->action_scheduler, $batched_job_monitor ),
 			new ProductGoesOnSale( $this->action_scheduler, $batched_job_monitor ),
 			new CleanInactiveCarts( $this->action_scheduler, $batched_job_monitor ),
+			new DeleteOldLogs( $this->action_scheduler, $batched_job_monitor, $this->options_store, new LogCleanupService() ),
 		];
 
 		/**

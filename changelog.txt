@@ -1,5 +1,27 @@
 *** AutomateWoo Changelog ***
 
+2026-06-09 - version 6.4.0
+* Add - Abbreviation/full "format" parameter to the customer.country variable.
+* Add - Add read-only AutomateWoo workflow abilities.
+* Add - Database indexes on log tables to improve analytics query performance. Large stores (1M+ rows) should run `wp automatewoo add-log-indexes` before upgrading to avoid prolonged table locks.
+* Add - Log retention setting and scheduled cleanup job to prevent unbounded log table growth.
+* Add - Order billing address variables: order.billing_first_name, order.billing_last_name, order.billing_address_line_1, order.billing_address_line_2, order.billing_city, order.billing_country, order.billing_state, order.billing_postcode, order.billing_company_name, order.billing_email.
+* Add - Subscription Switched trigger.
+* Add - `wp automatewoo delete-old-logs` CLI command for bulk cleanup of old workflow logs.
+* Add - subscription.billing_email variable.
+* Dev - Add focused unit coverage for ToolsService and login redirect behavior.
+* Dev - Patch transitive npm dependency security vulnerabilities.
+* Dev - Refresh npm transitive dependencies to resolve security advisories.
+* Dev - Update AutomateWoo admin React usage for React 19 compatibility.
+* Dev - Update transitive `uuid` dependency to a patched version.
+* Fix - Apply Google Analytics and click tracking parameters to plain-text URLs in email content, not just URLs already wrapped in links.
+* Fix - Prevent duplicate Action Scheduler actions from being scheduled for the same queued workflow item.
+* Fix - Prevent manual workflow runs from skipping or duplicating orders and subscriptions that share an identical timestamp by using stable ID ordering for batch pagination.
+* Fix - Prevent review events from crashing when comment data is missing.
+* Tweak - Remove the compatibility declaration for the product editor beta, which is being retired in WooCommerce 11.0.
+* Update - Declare compatibility with WordPress 7.0 while requiring WordPress 6.9 or newer.
+* Update - Require WooCommerce 10.7+.
+
 2026-04-15 - version 6.3.1
 * Dev - Add min-release-age to .npmrc for supply chain protection.
 * Update - Require WooCommerce 10.6+.

@@ -73,6 +73,7 @@ class Options extends Options_API {
 			'conversion_window'                        => 14,
 			'enable_background_system_check'           => true,
 			'bitly_shorten_sms_links'                  => 'no',
+			'log_retention_months'                     => 0,
 		];
 	}
 

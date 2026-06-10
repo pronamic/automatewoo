@@ -3,7 +3,7 @@
  */
 import { __ } from '@wordpress/i18n';
 import { recordEvent } from '@woocommerce/tracks';
-import { createRoot, render, unmountComponentAtNode } from '@wordpress/element';
+import { createRoot } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -104,14 +104,10 @@ const loadTabHandler = ( defaultTabName, tabs ) => {
 			</PageTabs>
 		);
 
-		if ( typeof createRoot !== 'undefined' ) {
-			// compatibility-code "WP >= 6.2" -- React >= 18
+		if ( ! reactTabsRoot ) {
 			reactTabsRoot = createRoot( tabsRootEl );
-			reactTabsRoot.render( pageTabs );
-		} else {
-			// compatibility-code "WP < 6.2" -- React < 18
-			render( pageTabs, tabsRootEl );
 		}
+		reactTabsRoot.render( pageTabs );
 
 		recordTracksTabViewEvent( tabName );
 		hackyUpdateAllWorkflowsTabVisibility( tabName );
@@ -126,15 +122,9 @@ const loadTabHandler = ( defaultTabName, tabs ) => {
 		}
 
 		// Hack: Unmount and rerender tabs because we can't programmatically change the current tab
-		if ( typeof createRoot !== 'undefined' ) {
-			// compatibility-code "WP >= 6.2" -- React >= 18
-			if ( reactTabsRoot ) {
-				reactTabsRoot.unmount();
-				reactTabsRoot = null;
-			}
-		} else {
-			// compatibility-code "WP < 6.2" -- React < 18
-			unmountComponentAtNode( tabsRootEl );
+		if ( reactTabsRoot ) {
+			reactTabsRoot.unmount();
+			reactTabsRoot = null;
 		}
 
 		renderPageTabs( tabName );

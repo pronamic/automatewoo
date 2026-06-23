@@ -67,7 +67,7 @@ trait MailServiceAction {
 			return false;
 		}
 
-		return $customer->get_email();
+		return $this->workflow->data_layer()->get_customer_email();
 	}
 
 	/**

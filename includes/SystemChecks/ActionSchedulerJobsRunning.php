@@ -46,6 +46,12 @@ class ActionSchedulerJobsRunning extends AbstractSystemCheck {
 				continue;
 			}
 
+			if ( $job->is_scheduled() ) {
+				continue;
+			}
+
+			$job->schedule_recurring();
+
 			if ( ! $job->is_scheduled() ) {
 				$failed = true;
 				break;
@@ -53,7 +59,7 @@ class ActionSchedulerJobsRunning extends AbstractSystemCheck {
 		}
 
 		if ( $failed ) {
-			return $this->error( __( 'Some Scheduled Jobs are not correctly setup. Action Scheduled Jobs are heavily relied upon by AutomateWoo. It might be that WP Cron is not running. Please contact your hosting provider to resolve the issue.', 'automatewoo' ) );
+			return $this->error( __( 'Some Scheduled Jobs are not correctly setup. Action Scheduler jobs are heavily relied upon by AutomateWoo. Please check that Action Scheduler and cron are running correctly, or contact your hosting provider to resolve the issue.', 'automatewoo' ) );
 		}
 
 		return $this->success();

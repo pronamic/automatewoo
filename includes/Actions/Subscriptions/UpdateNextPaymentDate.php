@@ -51,14 +51,14 @@ class UpdateNextPaymentDate extends AbstractEditDateItem {
 	/**
 	 * Get the note on the subscription to record the next payment date change.
 	 *
-	 * @param string $new_next_payment_date Next payment date. The return value of @see $this->get_object_for_edit().
+	 * @param string $new_next_payment_date Next payment date in UTC MySQL format. The return value of @see $this->get_object_for_edit().
 	 */
 	protected function get_note( $new_next_payment_date ) {
 		return sprintf(
 			/* translators: %1$s: workflow name, %2$s: new next payment date, %3$s: workflow ID */
 			__( '%1$s workflow run: updated next payment date to %2$s.  (Workflow ID: %3$d)', 'automatewoo' ),
 			$this->workflow->get_title(),
-			$new_next_payment_date,
+			$this->format_date_for_note( $new_next_payment_date ),
 			$this->workflow->get_id()
 		);
 	}

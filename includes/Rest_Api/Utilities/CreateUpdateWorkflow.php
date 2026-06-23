@@ -18,6 +18,7 @@ use AutomateWoo\Entity\WorkflowTimingVariable;
 use AutomateWoo\Format;
 use AutomateWoo\Rules;
 use AutomateWoo\Triggers;
+use AutomateWoo\Triggers\ManualInterface;
 use AutomateWoo\Workflow;
 use AutomateWoo\Workflows;
 use AutomateWoo\Workflows\Factory;
@@ -44,9 +45,11 @@ trait CreateUpdateWorkflow {
 	 * @throws RestException When the workflow creation fails.
 	 */
 	protected function create_workflow( $request ) {
+		$type = $request->get_param( 'type' ) ?? array_key_first( Workflows::get_types() );
+
 		$workflow_entity = new WorkflowEntity(
-			$this->get_trigger( $request->get_param( 'trigger' ) ),
-			$request->get_param( 'type' ) ?? array_key_first( Workflows::get_types() ),
+			$this->get_trigger( $request->get_param( 'trigger' ), $type ),
+			$type,
 			$this->get_timing_from_data( $request->get_param( 'timing' ) )
 		);
 
@@ -100,9 +103,11 @@ trait CreateUpdateWorkflow {
 			$timing = $this->get_timing_from_workflow( $workflow );
 		}
 
+		$type = $request->get_param( 'type' ) ?? $workflow->get_type();
+
 		$workflow_entity = new WorkflowEntity(
-			$this->get_trigger( $trigger ),
-			$request->get_param( 'type' ) ?? $workflow->get_type(),
+			$this->get_trigger( $trigger, $type ),
+			$type,
 			$timing
 		);
 
@@ -133,17 +138,20 @@ trait CreateUpdateWorkflow {
 	/**
 	 * Get and sanitize trigger data from the request.
 	 *
-	 * @param array $trigger_data
+	 * @param array       $trigger_data
+	 * @param string|null $workflow_type Workflow type.
 	 *
 	 * @return Trigger
 	 *
 	 * @throws RestException If an invalid or non-existing trigger is specified.
 	 */
-	protected function get_trigger( $trigger_data ) {
+	protected function get_trigger( $trigger_data, $workflow_type = null ) {
 		$trigger = Triggers::get( $trigger_data['name'] );
 		if ( ! $trigger ) {
 			throw new RestException( 'rest_invalid_trigger', esc_html__( 'Invalid trigger!', 'automatewoo' ) );
 		}
+
+		$this->validate_trigger_matches_workflow_type( $trigger, $trigger_data['name'], $workflow_type );
 
 		// Sanitize trigger options.
 		$trigger_options = $trigger_data['options'] ?? [];
@@ -182,6 +190,49 @@ trait CreateUpdateWorkflow {
 		}
 
 		return new Trigger( $trigger_data['name'], $trigger_options );
+	}
+
+	/**
+	 * Validate that the trigger can be used with the workflow type.
+	 *
+	 * @param \AutomateWoo\Trigger $trigger       Trigger object.
+	 * @param string               $trigger_name  Trigger name.
+	 * @param string|null          $workflow_type Workflow type.
+	 *
+	 * @throws RestException If the trigger is not compatible with the workflow type.
+	 */
+	protected function validate_trigger_matches_workflow_type( $trigger, $trigger_name, $workflow_type ) {
+		if ( ! $workflow_type ) {
+			return;
+		}
+
+		$is_manual_trigger = $trigger instanceof ManualInterface;
+
+		if ( WorkflowEntity::TYPE_MANUAL === $workflow_type && ! $is_manual_trigger ) {
+			throw new RestException(
+				'rest_invalid_workflow_type',
+				esc_html(
+					sprintf(
+						/* translators: %s trigger name */
+						__( 'Trigger %s can only be used with automatic workflows.', 'automatewoo' ),
+						$trigger_name
+					)
+				)
+			);
+		}
+
+		if ( WorkflowEntity::TYPE_AUTOMATIC === $workflow_type && $is_manual_trigger ) {
+			throw new RestException(
+				'rest_invalid_workflow_type',
+				esc_html(
+					sprintf(
+						/* translators: %s trigger name */
+						__( 'Trigger %s can only be used with manual workflows.', 'automatewoo' ),
+						$trigger_name
+					)
+				)
+			);
+		}
 	}
 
 	/**

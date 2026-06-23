@@ -131,6 +131,7 @@ class Variables {
 		'product'           => [
 			'id'                => Variable_Product_ID::class,
 			'title'             => Variable_Product_Title::class,
+			'categories'        => Variable_Product_Categories::class,
 			'current_price'     => Variable_Product_Current_Price::class,
 			'regular_price'     => Variable_Product_Regular_Price::class,
 			'featured_image'    => Variable_Product_Featured_Image::class,
@@ -243,10 +244,7 @@ class Variables {
 		/**
 		 * @since 4.5.0
 		 */
-		if ( Integrations::is_subscriptions_active( '2.3' )
-			&& class_exists( 'WCS_Early_Renewal_Manager' )
-			&& \WCS_Early_Renewal_Manager::is_early_renewal_enabled()
-		) {
+		if ( Integrations::is_subscriptions_early_renewal_enabled() ) {
 			$variables['subscription']['early_renewal_url'] = Variable_Subscription_Early_Renewal_Url::class;
 		}
 
@@ -264,6 +262,8 @@ class Variables {
 				'start_date'         => Variable_Sensei_Course_Start_Date::class,
 				'students'           => Variable_Sensei_Course_Students::class,
 				'students_admin_url' => Variable_Sensei_Course_Students_Admin_URL::class,
+				'teacher_emails'     => Variable_Sensei_Course_Teacher_Emails::class,
+				'teacher_full_names' => Variable_Sensei_Course_Teacher_Full_Names::class,
 			];
 
 			if ( Integrations::is_sensei_certificates_active() ) {
@@ -301,9 +301,40 @@ class Variables {
 			}
 		}
 
-		self::$variables_list = apply_filters( 'automatewoo/variables', $variables );
+		self::$variables_list = self::add_link_variables( apply_filters( 'automatewoo/variables', $variables ) );
 		self::$variables_list = aw_array_move_to_end( self::$variables_list, 'shop' );
 		return self::$variables_list;
+	}
+
+	/**
+	 * Add HTML link variants for URL variables.
+	 *
+	 * @param array $variables
+	 * @return array
+	 */
+	private static function add_link_variables( array $variables ) {
+		foreach ( $variables as $data_type => $fields ) {
+			if ( ! is_array( $fields ) ) {
+				continue;
+			}
+
+			if ( isset( $fields['url'] ) && ! isset( $fields['link'] ) ) {
+				$variables[ $data_type ]['link'] = Variables\Link::class;
+			}
+
+			foreach ( $fields as $field => $class ) {
+				if ( '_url' !== substr( $field, -4 ) ) {
+					continue;
+				}
+
+				$link_field = substr( $field, 0, -4 ) . '_link';
+				if ( ! isset( $variables[ $data_type ][ $link_field ] ) ) {
+					$variables[ $data_type ][ $link_field ] = Variables\Link::class;
+				}
+			}
+		}
+
+		return $variables;
 	}
 
 

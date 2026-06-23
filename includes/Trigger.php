@@ -391,7 +391,7 @@ abstract class Trigger {
 	 */
 	function validate_workflow_language( $workflow ) {
 
-		if ( ! Integrations::is_wpml() ) {
+		if ( ! Language::is_multilingual() ) {
 			return true;
 		}
 

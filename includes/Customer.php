@@ -16,6 +16,15 @@ defined( 'ABSPATH' ) || exit;
  */
 class Customer extends Abstract_Model_With_Meta_Table {
 
+	/**
+	 * Meta key storing the workflow that caused the latest opt-out.
+	 *
+	 * @since 6.5.0
+	 *
+	 * @var string
+	 */
+	const UNSUBSCRIBED_WORKFLOW_META_KEY = 'unsubscribed_workflow_id';
+
 	/** @var string */
 	public $table_id = 'customers';
 
@@ -199,13 +208,18 @@ class Customer extends Abstract_Model_With_Meta_Table {
 		$this->set_date_subscribed( new DateTime() );
 		$this->set_is_unsubscribed( false );
 		$this->save();
+		$this->delete_meta( self::UNSUBSCRIBED_WORKFLOW_META_KEY );
 		do_action( 'automatewoo/customer/opted_in', $this );
 	}
 
 	/**
 	 * Mark a customer as unsubscribed
+	 *
+	 * @since 6.5.0 Added the $workflow_id parameter.
+	 *
+	 * @param int $workflow_id Workflow that caused the opt-out.
 	 */
-	public function opt_out() {
+	public function opt_out( $workflow_id = 0 ) {
 		if ( $this->get_is_unsubscribed() ) {
 			return; // already unsubscribed
 		}
@@ -214,7 +228,24 @@ class Customer extends Abstract_Model_With_Meta_Table {
 		$this->set_date_unsubscribed( new DateTime() );
 		$this->set_is_subscribed( false );
 		$this->save();
-		do_action( 'automatewoo/customer/opted_out', $this );
+
+		$workflow_id = Clean::id( $workflow_id );
+		if ( $workflow_id ) {
+			$this->update_meta( self::UNSUBSCRIBED_WORKFLOW_META_KEY, $workflow_id );
+		}
+
+		do_action( 'automatewoo/customer/opted_out', $this, $workflow_id );
+	}
+
+	/**
+	 * Get the workflow that caused the opt-out.
+	 *
+	 * @since 6.5.0
+	 *
+	 * @return int
+	 */
+	public function get_unsubscribed_workflow_id() {
+		return Clean::id( $this->get_meta( self::UNSUBSCRIBED_WORKFLOW_META_KEY ) );
 	}
 
 	/**

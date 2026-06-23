@@ -176,7 +176,7 @@ class Hooks {
 				break;
 		}
 
-		wp_localize_script( 'automatewoo-presubmit', 'automatewoo_presubmit_params', PreSubmit::get_js_params() );
+		wp_add_inline_script( 'automatewoo-presubmit', 'var automatewoo_presubmit_params = ' . wp_json_encode( PreSubmit::get_js_params() ) . ';', 'before' );
 
 		wp_enqueue_script( 'automatewoo-presubmit' );
 	}

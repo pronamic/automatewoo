@@ -423,6 +423,52 @@ abstract class Action implements ActionInterface {
 
 
 	/**
+	 * Tracks how many order notes are currently being added by AW actions.
+	 * Used to prevent Note Added triggers from re-firing on AW-added notes.
+	 *
+	 * @var int
+	 */
+	private static int $adding_order_notes = 0;
+
+	/**
+	 * Add a note to an order or subscription from within an AW action.
+	 *
+	 * Using this method instead of calling $order->add_order_note() directly prevents
+	 * the Order/Subscription Note Added triggers from re-firing on the note.
+	 *
+	 * @since 6.5.0
+	 *
+	 * @param \WC_Abstract_Order $order            The order or subscription to add the note to.
+	 * @param string             $note             The note content.
+	 * @param bool               $is_customer_note Whether the note is visible to the customer.
+	 * @param bool               $added_by_user    Whether the note was added by a user.
+	 *
+	 * @return int The new comment ID, or 0 on failure.
+	 */
+	protected function add_order_note( \WC_Abstract_Order $order, string $note, bool $is_customer_note = false, bool $added_by_user = false ): int {
+		++self::$adding_order_notes;
+
+		try {
+			return $order->add_order_note( $note, $is_customer_note, $added_by_user );
+		} finally {
+			--self::$adding_order_notes;
+		}
+	}
+
+	/**
+	 * Check whether an AW action is currently in the process of adding an order note.
+	 *
+	 * Used by the Order/Subscription Note Added triggers to avoid re-firing on AW-added notes.
+	 *
+	 * @since 6.5.0
+	 *
+	 * @return bool
+	 */
+	public static function is_adding_order_note(): bool {
+		return self::$adding_order_notes > 0;
+	}
+
+	/**
 	 * Validates the required fields in the action.
 	 *
 	 * @throws \Exception When there are required fields not present.

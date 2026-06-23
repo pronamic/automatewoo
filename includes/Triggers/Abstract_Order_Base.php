@@ -10,6 +10,8 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  */
 abstract class Trigger_Abstract_Order_Base extends Trigger {
 
+	const OPTION_ONLY_RUN_FOR_CHECKOUT_ORDERS = 'only_run_for_checkout_orders';
+
 	/** @var bool - define if the trigger runs per order or per line item, used by the manual order trigger */
 	public $is_run_for_each_line_item = false;
 
@@ -33,6 +35,24 @@ abstract class Trigger_Abstract_Order_Base extends Trigger {
 
 
 	/**
+	 * @param Workflow $workflow
+	 * @return bool
+	 */
+	function validate_workflow( $workflow ) {
+		return $this->validate_checkout_order_source( $workflow );
+	}
+
+
+	/**
+	 * @param Workflow $workflow
+	 * @return bool
+	 */
+	function validate_before_queued_event( $workflow ) {
+		return $this->validate_checkout_order_source( $workflow );
+	}
+
+
+	/**
 	 * @param int|\WC_Order $order
 	 * @return \WC_Order|false
 	 */
@@ -45,6 +65,50 @@ abstract class Trigger_Abstract_Order_Base extends Trigger {
 			return wc_get_order( $order );
 		}
 		return false;
+	}
+
+
+	/**
+	 * Adds an option to ignore orders created outside frontend checkout.
+	 */
+	protected function add_field_only_run_for_checkout_orders() {
+		$field = ( new Fields\Checkbox() )
+			->set_name( self::OPTION_ONLY_RUN_FOR_CHECKOUT_ORDERS )
+			->set_title( __( 'Only run for checkout orders', 'automatewoo' ) )
+			->set_description( __( 'Skips orders created by admin, REST API, import tools, and other non-checkout sources.', 'automatewoo' ) );
+
+		$this->add_field( $field );
+	}
+
+
+	/**
+	 * @param Workflow $workflow
+	 * @return bool
+	 */
+	protected function validate_checkout_order_source( $workflow ) {
+		// Only honor the option on triggers that actually offer the field, so stored
+		// option values can never block orders on triggers that hide the checkbox
+		// (e.g. subscription order triggers, where renewals are never checkout-created).
+		if ( ! $this->get_field( self::OPTION_ONLY_RUN_FOR_CHECKOUT_ORDERS ) ) {
+			return true;
+		}
+
+		if ( ! $workflow->get_trigger_option( self::OPTION_ONLY_RUN_FOR_CHECKOUT_ORDERS ) ) {
+			return true;
+		}
+
+		$order = $workflow->data_layer()->get_order();
+
+		return $order && $this->is_order_created_via_checkout( $order );
+	}
+
+
+	/**
+	 * @param \WC_Order $order
+	 * @return bool
+	 */
+	protected function is_order_created_via_checkout( $order ) {
+		return in_array( $order->get_created_via(), [ 'checkout', 'store-api' ], true ) || (bool) $order->get_cart_hash();
 	}
 
 

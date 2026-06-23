@@ -38,7 +38,26 @@ final class QueryLoader {
 						return new SubscriptionQuery( $clauses );
 					}
 			}
-		} catch ( Exception $e ) {
+
+			/**
+			 * Filters custom quick filter query classes keyed by data type.
+			 *
+			 * @since 6.5.0
+			 *
+			 * @param array  $query_classes Query classes keyed by data type.
+			 * @param string $data_type     The data type to query for.
+			 * @param array  $rule_data     Rule data from a workflow.
+			 */
+			$query_classes = apply_filters( 'automatewoo/rule_quick_filters/query_classes', [], $data_type, $rule_data );
+
+			if ( is_array( $query_classes ) && isset( $query_classes[ $data_type ] ) ) {
+				$query_class = $query_classes[ $data_type ];
+
+				if ( is_string( $query_class ) && class_exists( $query_class ) && is_subclass_of( $query_class, QueryInterface::class ) ) {
+					return new $query_class( $clauses );
+				}
+			}
+		} catch ( \Throwable $e ) {
 			throw new Exception( esc_html__( 'There was an error loading the quick filter query.', 'automatewoo' ), 0, $e ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
 		}
 

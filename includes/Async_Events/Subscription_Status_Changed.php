@@ -12,6 +12,8 @@ defined( 'ABSPATH' ) || exit;
  */
 class Subscription_Status_Changed extends Abstract_Async_Event {
 
+	const STATUS_CHANGE_ARG_ORDER = 'old-new';
+
 	/**
 	 * Init the event.
 	 */
@@ -41,8 +43,9 @@ class Subscription_Status_Changed extends Abstract_Async_Event {
 		$this->create_async_event(
 			[
 				$subscription_id,
-				$new_status,
 				$old_status,
+				$new_status,
+				self::STATUS_CHANGE_ARG_ORDER,
 			]
 		);
 	}

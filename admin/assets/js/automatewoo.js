@@ -24,6 +24,8 @@ window.AutomateWoo = AutomateWoo;
 			AW.initEnhancedSelects();
 		} );
 
+		AW.initEnhancedSelectA11y();
+
 		$( document.body ).on(
 			'automatewoo_trigger_changed',
 			AW.initBeforeAfterDayField
@@ -97,6 +99,66 @@ window.AutomateWoo = AutomateWoo;
 
 				$( this ).select2( select2Args ).addClass( 'enhanced' );
 			} );
+	};
+
+	/**
+	 * Keep select2-enhanced selects accessible.
+	 *
+	 * Enhanced selects are built by both AutomateWoo and WooCommerce at different
+	 * times, and select2 rebuilds its rendered markup on interaction, so a one-off
+	 * pass is unreliable. Run an initial pass then observe the DOM and re-apply
+	 * whenever select2 markup is (re)inserted.
+	 */
+	AW.initEnhancedSelectA11y = function () {
+		AW.fixEnhancedSelectA11y();
+
+		if ( ! window.MutationObserver ) {
+			return;
+		}
+
+		// Only watches childList changes; fixEnhancedSelectA11y sets attributes
+		// (not nodes), so this cannot trigger an observer feedback loop.
+		new window.MutationObserver( function () {
+			AW.fixEnhancedSelectA11y();
+		} ).observe( document.body, { childList: true, subtree: true } );
+	};
+
+	/**
+	 * Give select2-enhanced selects an accessible name.
+	 *
+	 * select2 builds its own combobox/textbox markup and references an empty
+	 * rendered span via aria-labelledby, so the original select's aria-label or
+	 * associated <label> never reaches assistive tech. Copy that name onto the
+	 * generated widget.
+	 */
+	AW.fixEnhancedSelectA11y = function () {
+		$( 'select.select2-hidden-accessible' ).each( function () {
+			const $select = $( this );
+			let label = $select.attr( 'aria-label' );
+
+			if ( ! label && this.id ) {
+				label = $( 'label[for="' + this.id + '"]' )
+					.text()
+					.trim();
+			}
+
+			if ( ! label ) {
+				label = $select.data( 'placeholder' );
+			}
+
+			if ( ! label ) {
+				return;
+			}
+
+			const $container = $select.next( '.select2-container' );
+
+			$container.find( '.select2-selection' ).attr( 'aria-label', label );
+
+			$container
+				.find( '.select2-selection__rendered' )
+				.attr( 'aria-label', label )
+				.removeAttr( 'aria-labelledby' );
+		} );
 	};
 
 	AW.initBeforeAfterDayField = function () {

@@ -28,6 +28,6 @@ class Variable_Order_Subtotal extends Variable_Abstract_Price {
 	 * @return string
 	 */
 	public function get_value( $order, $parameters ) {
-		return parent::format_amount( $order->get_subtotal(), $parameters );
+		return parent::format_amount( $order->get_subtotal(), $parameters, $order->get_currency() );
 	}
 }

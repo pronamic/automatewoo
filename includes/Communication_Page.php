@@ -60,7 +60,7 @@ class Communication_Page {
 			$data['customer'] = $customer;
 
 			if ( self::$using_customer_key && 'unsubscribe' === $data['intent'] && ! aw_request( 'automatewoo_save_changes' ) ) {
-				$customer->opt_out();
+				$customer->opt_out( Clean::id( aw_request( 'workflow' ) ) );
 				wc_add_notice( __( "Saved successfully! You won't receive marketing communications from us.", 'automatewoo' ) );
 			}
 

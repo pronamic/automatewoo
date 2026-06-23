@@ -14,7 +14,7 @@ defined( 'ABSPATH' ) || exit;
 <table class="automatewoo-table">
 	<tr class="automatewoo-table__row">
 		<td class="automatewoo-table__col automatewoo-table__col--label">
-			<label><?php esc_html_e( 'Data type', 'automatewoo' ); ?> <span class="required">*</span></label>
+			<label for="aw-workflow-manual-trigger-name"><?php esc_html_e( 'Data type', 'automatewoo' ); ?> <span class="required">*</span></label>
 			<?php Admin::help_tip( __( 'The data type determines which data the workflow can run for and which rules and actions you can use.', 'automatewoo' ) ); ?>
 		</td>
 		<td class="automatewoo-table__col automatewoo-table__col--field">
@@ -30,6 +30,7 @@ defined( 'ABSPATH' ) || exit;
 				->set_options( $options )
 				->set_name( 'aw_workflow_data[manual_trigger_name]' )
 				->add_classes( 'js-manual-trigger-select' )
+				->add_extra_attr( 'id', 'aw-workflow-manual-trigger-name' )
 				->render( $current_trigger ? $current_trigger->get_name() : '' );
 			?>
 		</td>

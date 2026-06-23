@@ -54,7 +54,7 @@ class Admin_Workflow_Edit {
 	public function enqueue_scripts() {
 		wp_dequeue_script( 'autosave' );
 
-		wp_localize_script( 'automatewoo-workflows', 'automatewooWorkflowLocalizeScript', $this->get_js_data() );
+		wp_add_inline_script( 'automatewoo-workflows', 'var automatewooWorkflowLocalizeScript = ' . wp_json_encode( $this->get_js_data() ) . ';', 'before' );
 
 		wp_enqueue_script( 'automatewoo-workflows' );
 		wp_enqueue_script( 'automatewoo-variables' );
@@ -131,6 +131,14 @@ class Admin_Workflow_Edit {
 			];
 		}
 
+		$triggers_data = [];
+		foreach ( Triggers::get_all() as $trigger ) {
+			$triggers_data[ $trigger->get_name() ] = [
+				'supplied_data_items' => array_values( $trigger->get_supplied_data_items() ),
+				'is_manual'           => $trigger instanceof ManualInterface,
+			];
+		}
+
 		// variables data
 		$variables_data = [];
 
@@ -157,6 +165,7 @@ class Admin_Workflow_Edit {
 			'id'              => $post->ID,
 			'isNew'           => 'auto-draft' === $post->post_status,
 			'trigger'         => $this->workflow ? self::get_trigger_data( $this->workflow->get_trigger() ) : false,
+			'triggers'        => $triggers_data,
 			'ruleOptions'     => $rule_options,
 			'allRules'        => self::get_rules_data(),
 			'actions'         => $actions_data,

@@ -44,9 +44,23 @@ class Customer_Role extends Preloaded_Select_Rule_Abstract {
 	 * @param $compare
 	 * @param $value
 	 * @return bool
+	 *
+	 * @since 6.5.0
 	 */
 	function validate( $customer, $compare, $value ) {
-		return $this->validate_select( $customer->get_role(), $compare, $value );
+		if ( $customer->is_registered() ) {
+			$user = $customer->get_user();
+			if ( $user ) {
+				foreach ( $user->roles as $role ) {
+					if ( $this->validate_select( $role, 'is', $value ) ) {
+						return 'is' === $compare;
+					}
+				}
+				return 'is_not' === $compare;
+			}
+		}
+
+		return $this->validate_select( 'guest', $compare, $value );
 	}
 
 }

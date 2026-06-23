@@ -871,3 +871,52 @@ function automatewoo_email_template_product_name( $product ) {
 		'product_name' => $product_name,
 	];
 }
+
+/**
+ * Format an order line item's price as the customer-facing post-discount amount
+ * (line total), rather than the pre-discount line subtotal.
+ *
+ * Used by the product display templates for the `order.items` variable so emails
+ * show the price the customer actually paid for each line — including any
+ * coupon discounts and snapshotted at order time (so grandfathered subscription
+ * renewal prices keep working too).
+ *
+ * @param \WC_Order              $order The order containing the line item.
+ * @param \WC_Order_Item_Product $item  The line item to format.
+ *
+ * @since 6.5.0
+ *
+ * @return string Formatted price HTML, suitable for echoing through wp_kses_post().
+ */
+function automatewoo_email_template_line_total_html( $order, $item ) {
+	// Match WC_Order::get_formatted_line_subtotal(): the *display* preference
+	// is the store-wide `woocommerce_tax_display_cart` option, NOT the order's
+	// price-storage flag. Stores can enter prices inclusive of tax but display
+	// them exclusive (or vice versa) — using the storage flag here would show
+	// the wrong amount in those configurations. Default (empty option value)
+	// is treated as 'incl', matching WC core's branch structure exactly.
+	$tax_display   = get_option( 'woocommerce_tax_display_cart' );
+	$wc_price_args = [ 'currency' => $order->get_currency() ];
+
+	if ( 'excl' === $tax_display ) {
+		$line_total                    = $order->get_line_total( $item );
+		$wc_price_args['ex_tax_label'] = $order->get_prices_include_tax() ? 1 : 0;
+	} else {
+		$line_total = $order->get_line_total( $item, true );
+	}
+
+	$formatted = wc_price( $line_total, $wc_price_args );
+
+	/**
+	 * Filter the formatted line total HTML rendered by the order.items product
+	 * display templates.
+	 *
+	 * @since 6.5.0
+	 *
+	 * @param string                 $formatted   Formatted price HTML.
+	 * @param \WC_Order              $order       Order being rendered.
+	 * @param \WC_Order_Item_Product $item        Line item being formatted.
+	 * @param float                  $line_total  Resolved line total (incl/excl tax per the store's `woocommerce_tax_display_cart` display setting).
+	 */
+	return apply_filters( 'automatewoo/email_template/line_total_html', $formatted, $order, $item, $line_total );
+}

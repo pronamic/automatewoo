@@ -3,6 +3,7 @@
 namespace AutomateWoo\Rules;
 
 use AutomateWoo\DataTypes\DataTypes;
+use AutomateWoo\Integrations;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -40,7 +41,7 @@ class Subscription_Can_Renew_Early extends Abstract_Bool {
 	 */
 	public function validate( $subscription, $compare, $value ) {
 
-		if ( ! \WCS_Early_Renewal_Manager::is_early_renewal_enabled() ) {
+		if ( ! Integrations::is_subscriptions_early_renewal_enabled() || ! function_exists( 'wcs_can_user_renew_early' ) ) {
 			return false;
 		}
 

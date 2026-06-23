@@ -2,6 +2,7 @@
 
 namespace AutomateWoo\Jobs;
 
+use AutomateWoo\AdminNotices\NonProductionEnvironment;
 use AutomateWoo\Cron;
 use AutomateWoo\DateTime;
 use AutomateWoo\Jobs\Traits\ValidateItemAsIntegerId;
@@ -59,6 +60,14 @@ class RunQueuedWorkflows extends AbstractRecurringBatchedActionSchedulerJob {
 	 * @return bool Returns true if the job can start.
 	 */
 	protected function can_start(): bool {
+		// While the non-production environment lock is active, queued events are
+		// preserved by Queued_Event::run() instead of being deleted or failed.
+		// Without this guard the job would re-fetch the same due events every
+		// cycle and schedule no-op actions indefinitely.
+		if ( NonProductionEnvironment::is_environment_locked() ) {
+			return false;
+		}
+
 		$query = ( new Queue_Query() )
 			->set_ordering( 'date', 'ASC' )
 			->where_date_due( new DateTime(), '<' )
@@ -83,6 +92,11 @@ class RunQueuedWorkflows extends AbstractRecurringBatchedActionSchedulerJob {
 	 * @throws Exception If an error occurs. The exception will be logged by ActionScheduler.
 	 */
 	protected function get_batch( int $batch_number, array $args ) {
+		// See can_start() — covers the lock activating mid-cycle.
+		if ( NonProductionEnvironment::is_environment_locked() ) {
+			return [];
+		}
+
 		$query = ( new Queue_Query() )
 			->set_limit( $this->get_batch_size() )
 			->set_ordering( 'date', 'ASC' )

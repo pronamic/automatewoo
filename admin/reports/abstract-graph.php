@@ -86,7 +86,7 @@ class AW_Report_Abstract_Graph extends WC_Admin_Report {
 		<div class="section">
 			<form method="GET">
 				<div>
-					<select class="wc-product-search" style="width:203px;" name="workflow_ids[]" data-placeholder="<?php _e( 'Search for a workflow&hellip;', 'automatewoo' ); ?>" data-action="aw_json_search_workflows"></select>
+					<select class="wc-product-search" style="width:203px;" name="workflow_ids[]" aria-label="<?php esc_attr_e( 'Filter by workflow', 'automatewoo' ); ?>" data-placeholder="<?php esc_attr_e( 'Search for a workflow&hellip;', 'automatewoo' ); ?>" data-action="aw_json_search_workflows"></select>
 					<input type="submit" class="submit button" value="<?php _e( 'Show', 'automatewoo' ); ?>" />
 					<?php AutomateWoo\Admin::get_hidden_form_inputs_from_query( ['range', 'start_date', 'end_date', 'page', 'tab' ] ) ?>
 				</div>

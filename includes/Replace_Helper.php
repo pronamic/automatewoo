@@ -29,6 +29,9 @@ class Replace_Helper {
 	public $selected_pattern;
 
 	/** @var string */
+	public $selected_pattern_name;
+
+	/** @var string */
 	public $string;
 
 	/** @var callable */
@@ -47,6 +50,7 @@ class Replace_Helper {
 
 		if ( $pattern_name && isset( $this->patterns[$pattern_name] ) ) {
 			$this->selected_pattern = $this->patterns[$pattern_name];
+			$this->selected_pattern_name = $pattern_name;
 		}
 	}
 
@@ -72,7 +76,52 @@ class Replace_Helper {
 		if ( is_array( $match ) ) {
 			$match = $match[ $this->selected_pattern['match'] ];
 		}
-		return call_user_func( $this->callback, $match );
+
+		$trailing_punctuation = '';
+
+		if ( $this->selected_pattern_name === 'text_urls' ) {
+			list( $match, $trailing_punctuation ) = $this->split_trailing_text_url_punctuation( $match );
+		}
+
+		return call_user_func( $this->callback, $match ) . $trailing_punctuation;
+	}
+
+
+	/**
+	 * Split sentence punctuation from the end of a plain-text URL match.
+	 *
+	 * @param string $url
+	 * @return array
+	 */
+	function split_trailing_text_url_punctuation( $url ) {
+		$trailing_punctuation = '';
+		$sentence_punctuation = [ '.', ',', '!', '?', ';', ':' ];
+
+		while ( $url !== '' ) {
+			$last_character = substr( $url, -1 );
+
+			if ( in_array( $last_character, $sentence_punctuation, true ) ) {
+				$trailing_punctuation = $last_character . $trailing_punctuation;
+				$url = substr( $url, 0, -1 );
+				continue;
+			}
+
+			if ( ')' === $last_character && substr_count( $url, ')' ) > substr_count( $url, '(' ) ) {
+				$trailing_punctuation = $last_character . $trailing_punctuation;
+				$url = substr( $url, 0, -1 );
+				continue;
+			}
+
+			if ( ']' === $last_character && substr_count( $url, ']' ) > substr_count( $url, '[' ) ) {
+				$trailing_punctuation = $last_character . $trailing_punctuation;
+				$url = substr( $url, 0, -1 );
+				continue;
+			}
+
+			break;
+		}
+
+		return [ $url, $trailing_punctuation ];
 	}
 
 }

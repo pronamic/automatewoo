@@ -3,7 +3,7 @@
  */
 import { __, sprintf } from '@wordpress/i18n';
 import { Card, CardBody, Dashicon, Button } from '@wordpress/components';
-import { useEffect } from '@wordpress/element';
+import { useEffect, useRef } from '@wordpress/element';
 import { PropTypes } from 'prop-types';
 import { omit } from 'lodash';
 import { recordEvent } from '@woocommerce/tracks';
@@ -35,6 +35,7 @@ const QueueStep = ( {
 } ) => {
 	const [ queueItemsState, queueItemsDispatch ] =
 		useQueueItemsReducer( items );
+	const activeBatchRequest = useRef( null );
 	useWarnBeforeUnloadWhileRequesting( queueItemsState.status );
 	const itemCount = Object.keys( items ).length;
 
@@ -45,13 +46,20 @@ const QueueStep = ( {
 		}
 
 		const addItemsBatch = async () => {
-			queueItemsDispatch( { type: 'ADD_ITEMS_REQUEST' } );
-
 			// Extract a batch of items from the remaining items
 			const batch = Object.keys( queueItemsState.itemsRemaining ).splice(
 				0,
 				MANUAL_WORKFLOWS_BATCH_SIZE
 			);
+			const requestKey = batch.join( ',' );
+
+			if ( activeBatchRequest.current === requestKey ) {
+				return;
+			}
+
+			activeBatchRequest.current = requestKey;
+			queueItemsDispatch( { type: 'ADD_ITEMS_REQUEST' } );
+
 			const newItemsRemaining = omit(
 				queueItemsState.itemsRemaining,
 				batch
@@ -66,6 +74,8 @@ const QueueStep = ( {
 			} catch ( error ) {
 				queueItemsDispatch( { type: 'ADD_ITEMS_ERROR' } );
 				handleFetchError( 'Error adding items to queue.', error );
+			} finally {
+				activeBatchRequest.current = null;
 			}
 		};
 

@@ -31,9 +31,6 @@ class Mailer extends Mailer_Abstract {
 	/** @var callable - use to replace URLs in content e.g. for click tracking */
 	public $replace_content_urls_callback;
 
-	/** @var callable - use to replace plain text URLs in content e.g. for click tracking */
-	public $replace_content_text_urls_callback;
-
 	/** @var bool */
 	public $include_automatewoo_styles = true;
 
@@ -201,7 +198,7 @@ class Mailer extends Mailer_Abstract {
 		$html = $this->process_email_variables( $html );
 		$html = $this->fix_links_with_double_http( $html );
 		$html = $this->replace_urls_in_content( $html );
-		$html = wptexturize( $html );
+		$html = $this->wptexturize_preserve_urls( $html );
 
 		// If MailPoet is active and customizing WooCommerce emails then the container ID needs to be updated for compatibility
 		if ( Integrations::is_mailpoet_overriding_styles() ) {
@@ -213,6 +210,51 @@ class Mailer extends Mailer_Abstract {
 
 		if ( $this->tracking_pixel_url ) {
 			$html = $this->inject_tracking_pixel( $html ); // add tracking pixel after CSS inline
+		}
+
+		return $html;
+	}
+
+	/**
+	 * Run wptexturize() on HTML while preserving URLs in text nodes.
+	 *
+	 * WordPress's wptexturize() converts character sequences like '--' to typographic
+	 * equivalents (e.g. en-dash '–'). While it correctly skips HTML tag attributes,
+	 * it still processes text nodes which may contain bare URLs. This is problematic
+	 * for WooCommerce HPOS admin URLs that contain '--' (e.g. 'wc-orders--shop_subscription').
+	 *
+	 * @param string $html
+	 * @return string
+	 */
+	private function wptexturize_preserve_urls( $html ) {
+		$placeholders = [];
+		$counter      = 0;
+
+		// Replace URLs in text nodes (not inside HTML tags) with placeholders.
+		$html = preg_replace_callback(
+			// Match URLs that are NOT inside HTML tag attributes.
+			// This regex splits the HTML into tags and text, and only processes text portions.
+			'/(<[^>]*>)|(\bhttps?:\/\/[^\s<>"\']+)/i',
+			function ( $matches ) use ( &$placeholders, &$counter ) {
+				// If this is an HTML tag, leave it unchanged.
+				if ( ! empty( $matches[1] ) ) {
+					return $matches[0];
+				}
+
+				// This is a URL in a text node — replace with placeholder.
+				$placeholder                  = '{{AW_URL_PLACEHOLDER_' . $counter . '}}';
+				$placeholders[ $placeholder ] = $matches[0];
+				++$counter;
+				return $placeholder;
+			},
+			$html
+		);
+
+		$html = wptexturize( $html );
+
+		// Restore original URLs.
+		if ( $placeholders ) {
+			$html = str_replace( array_keys( $placeholders ), array_values( $placeholders ), $html );
 		}
 
 		return $html;
@@ -369,17 +411,12 @@ class Mailer extends Mailer_Abstract {
 	 * @return string
 	 */
 	public function replace_urls_in_content( $content ) {
-		if ( $this->replace_content_urls_callback ) {
-			$replacer = new Replace_Helper( $content, $this->replace_content_urls_callback, 'href_urls' );
-			$content  = $replacer->process();
+		if ( ! $this->replace_content_urls_callback ) {
+			return $content;
 		}
 
-		if ( $this->replace_content_text_urls_callback ) {
-			$replacer = new Replace_Helper( $content, $this->replace_content_text_urls_callback, 'text_urls' );
-			$content  = $replacer->process();
-		}
-
-		return $content;
+		$replacer = new Replace_Helper( $content, $this->replace_content_urls_callback, 'href_urls' );
+		return $replacer->process();
 	}
 
 

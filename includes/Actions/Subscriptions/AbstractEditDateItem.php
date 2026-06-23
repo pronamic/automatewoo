@@ -70,6 +70,19 @@ abstract class AbstractEditDateItem extends AbstractEditItem {
 	 * @return bool True if the subscription was edited, false if no change was made.
 	 */
 	public function edit_subscription( $new_date, $subscription ) {
+		if ( ! $subscription->payment_method_supports( 'subscription_date_changes' ) ) {
+			$this->add_order_note(
+				$subscription,
+				sprintf(
+					/* translators: %1$s: workflow title, %2$d: workflow ID */
+					__( '%1$s workflow run: subscription date was not updated because the payment gateway does not support subscription date changes. (Workflow ID: %2$d)', 'automatewoo' ),
+					$this->workflow->get_title(),
+					$this->workflow->get_id()
+				)
+			);
+			return false;
+		}
+
 		$subscription->update_dates( array( $this->subscription_date => $new_date ) );
 
 		return true;

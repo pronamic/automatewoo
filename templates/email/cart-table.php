@@ -43,6 +43,11 @@ $tax_display = get_option( 'woocommerce_tax_display_cart' );
 				continue; // don't show items if there is no product
 			}
 
+			// Skip bundled items hidden from the cart by the Product Bundles plugin.
+			if ( aw_is_hidden_bundled_cart_item( $item ) ) {
+				continue;
+			}
+
 			$line_total = $tax_display === 'excl' ? $item->get_line_subtotal() : $item->get_line_subtotal() + $item->get_line_subtotal_tax();
 
 			?>

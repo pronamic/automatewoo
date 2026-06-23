@@ -12,7 +12,8 @@ $notes = $log->get_notes();
 
 $data_layer = $log->get_data_layer( 'object' );
 
-$formatted_data = Admin_Data_Layer_Formatter::format( $data_layer );
+$formatted_data     = Admin_Data_Layer_Formatter::format( $data_layer );
+$missing_data_types = $data_layer->get_missing_data_types();
 
 ?>
 
@@ -30,6 +31,10 @@ $formatted_data = Admin_Data_Layer_Formatter::format( $data_layer );
 				<?php foreach ( $formatted_data as $item ) : ?>
 					<li><strong><?php echo wp_kses_post( $item['title'] ); ?>:</strong> <?php echo wp_kses_post( $item['value'] ); ?></li>
 				<?php endforeach; ?>
+
+				<?php if ( $missing_data_types ) : ?>
+					<li><strong><?php esc_html_e( 'Missing data type(s)', 'automatewoo' ); ?>:</strong> <?php echo esc_html( implode( ', ', $missing_data_types ) ); ?></li>
+				<?php endif; ?>
 
 				<li><strong><?php esc_html_e( 'Tracking enabled', 'automatewoo' ); ?>:</strong> <?php echo wp_kses_post( Format::bool( $log->is_tracking_enabled() ) ); ?></li>
 				<li><strong><?php esc_html_e( 'Conversion tracking enabled', 'automatewoo' ); ?>:</strong> <?php echo wp_kses_post( Format::bool( $log->is_conversion_tracking_enabled() ) ); ?></li>

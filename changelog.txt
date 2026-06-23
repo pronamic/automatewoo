@@ -1,5 +1,99 @@
 *** AutomateWoo Changelog ***
 
+2026-06-22 - version 6.5.0
+* Add - Add a product categories variable.
+* Add - Add an action to stagger subscription renewal payment times.
+* Add - Allow admins to hide optional AutomateWoo dashboard widgets via Screen Options.
+* Add - Allow order workflows to opt into running only for checkout-created orders.
+* Add - Automatically pause workflows on non-production environments (staging, development, local), with an admin notice and an option to enable workflows anyway.
+* Add - Confirmation prompt before bulk-deleting workflow logs.
+* Add - Failed-status filter and failed-last ordering on the Queue list.
+* Add - Filter the unsubscribers report by workflow.
+* Add - Format option (slug or label) for the order, subscription and booking status variables.
+* Add - Indicate which action and trigger fields support variables.
+* Add - Inline warning when an internal WooCommerce order meta key is used in the Order Custom Field rule or variable.
+* Add - Link variable variants that render HTML anchors for URL variables.
+* Add - New "Customer - Shipping State" and "Customer - Shipping State - Text Match" workflow rules.
+* Add - Opt-in constant/filter to use the order or subscription billing email for the customer email variable and email actions.
+* Add - Opt-outs view on the Opt-ins report so opt-in stores can see customers who opted out.
+* Add - Option on the Mailchimp Update Contact Tags action to tag contacts that are not subscribed.
+* Add - Option on the Subscription Payment Count rule to count payments cumulatively across previous resubscriptions.
+* Add - Optional time-of-day value for the Shop Current Date/Time rule.
+* Add - Quick filter support for the Customer City rule for faster bulk audience selection.
+* Add - Show missing data types in queued event and log modal data summaries.
+* Add - Show whether each email matches an existing customer on the Opt-out Importer confirmation screen.
+* Add - Subscription Table display template option for the subscription.items variable.
+* Add - Support Polylang for multilingual AutomateWoo workflow language matching.
+* Add - Tool to delete all AutomateWoo data + a settings to remove all AutomateWoo data when the plugin is uninstalled.
+* Add - Track and display which workflow triggered each opt-out.
+* Add - Validate integration credentials when saving settings.
+* Add - `course.teacher_emails` and `course.teacher_full_names` that include Sensei Pro co-teachers.
+* Add - include_refunded parameter to the order.items variable to optionally show fully refunded line items, e.g. in refund confirmation emails.
+* Dev - Add regression test for Update Product action with product add-on line items.
+* Dev - Add the `automatewoo/rule_quick_filters/query_classes` filter to register custom quick filter query classes for custom manual-workflow data types.
+* Dev - Add unit tests for rules implementing NonPrimaryDataTypeQuickFilterable.
+* Dev - Add unit tests for the WishlistItemOnSale job.
+* Dev - Fix flaky recurring job timestamp assertions.
+* Dev - Make subscription async event arguments consistent with other event types.
+* Dev - Refactor quick rule unit tests into per-rule test classes.
+* Dev - Replace wp_localize_script with wp_add_inline_script for passing data to JavaScript.
+* Doc - Document AutomateWoo Tracks events and their properties.
+* Fix - Align AutomateWoo conversion report order statuses with WooCommerce Analytics instead of a hardcoded paid-statuses list.
+* Fix - Align the marketing opt-in block checkbox preview in the block editor with the front-end rendering.
+* Fix - AutomateWoo icon rendering in the WooCommerce Analytics submenu.
+* Fix - Booking start/end date variables now use the store timezone so variable-timed workflows (e.g. booking reminders) are scheduled correctly for cross-timezone bookings.
+* Fix - Broken links when click tracking is enabled (regression from 6.4.0).
+* Fix - Consider customers with active subscriptions in the Customer Win Back trigger.
+* Fix - Correct manual order quick filtering for repeated customer last paid order date rules.
+* Fix - Customer - User Role rule now checks all of a user's roles instead of only the primary role.
+* Fix - Customer Email rule quick filter not finding orders placed by registered customers whose billing email differs from their account email.
+* Fix - Deduplicate stored abandoned carts per customer to prevent duplicate abandoned-cart emails.
+* Fix - Display subscription date changes in notes using the site's timezone and date format instead of raw UTC.
+* Fix - Exclude trailing punctuation from text URL replacement so shortened links are not broken.
+* Fix - Guard the manual workflow runner against duplicate find and queue requests under React StrictMode.
+* Fix - Harden the Subscription Can Renew Early rule and early-renewal URL variable against missing or disabled WooCommerce Subscriptions early-renewal support.
+* Fix - Hide bundled items marked as hidden by WooCommerce Product Bundles from the {{ cart.items }} and {{ order.items }} variables.
+* Fix - Hide fully refunded line items from order item variable output (order.items) and product display email templates.
+* Fix - MailChimp interest groups no longer remain empty for up to 9 minutes after a transient API failure.
+* Fix - Marketing opt-in checkbox alignment and color in the checkout block editor.
+* Fix - Match the email editor typography to the styling of the sent email.
+* Fix - Only capture guest email from the billing email field on classic checkout.
+* Fix - Payment gateway rule dropdowns now include disabled gateways, labeled with a "(disabled)" suffix.
+* Fix - Preserve HTML tags in the email heading field when saving a workflow, and render heading HTML in sent emails.
+* Fix - Preserve configured rules, actions and variables when switching a workflow between automatic and manual type by auto-selecting a compatible trigger.
+* Fix - Preserve restore-cart error notices when abandoned cart items cannot be added.
+* Fix - Prevent Order/Subscription Note Added triggers from re-firing when AW actions add order notes.
+* Fix - Prevent Subscription Status Changed workflows firing during early renewal payments.
+* Fix - Prevent URLs already shortened by Bit.ly from being removed from SMS messages.
+* Fix - Prevent potential fatal errors by guarding WooCommerce Subscriptions static calls with class and method existence checks.
+* Fix - Prevent subscription schedule and date update actions from changing a subscription when its payment gateway does not support subscription date changes.
+* Fix - Prevent trashed workflows from appearing as links on the AutomateWoo dashboard.
+* Fix - Prevent wptexturize from corrupting URLs containing double hyphens in email content, such as HPOS subscription admin URLs.
+* Fix - Queue fixed-timing workflows immediately when the scheduled date/time has already passed.
+* Fix - Re-create missing recurring job schedules before reporting a failure, removing a false WP Cron warning.
+* Fix - Reduce duplicate database queries when processing inbox notifications on admin pages.
+* Fix - Refresh WooCommerce Analytics and dashboard conversion stats immediately when an order is unmarked as a conversion.
+* Fix - Reload the subscription before the Recalculate Taxes action so it does not overwrite changes made since the workflow ran.
+* Fix - Remove the "AutomateWoo is ready" welcome admin note when a workflow is created.
+* Fix - Selectively load AutomateWoo scripts and styles only on AutomateWoo admin screens.
+* Fix - Show "Calculated at checkout" instead of "Free!" for abandoned carts where shipping has not been calculated.
+* Fix - Show booking details in the workflow log modal.
+* Fix - Show the post-discount price the customer actually paid for each line item in the `{{ order.items }}` and `{{ subscription.items }}` product display templates, instead of the pre-coupon line subtotal.
+* Fix - Stop rescheduling the unused automatewoo_events_worker cron event that spammed the debug log.
+* Fix - Subscription - Last Payment Date rule now uses the most recent successfully paid order when the latest renewal is failed or cancelled.
+* Fix - Surface partial failures in the conversions bulk-unmark endpoint and admin UI instead of failing the whole batch.
+* Fix - The `{{ order.reorder_url }}` variable no longer double-adds chained products. The reorder endpoint now mirrors WooCommerce core's modern order-again flow (`WC_Cart_Session::populate_cart_from_order()`) by writing directly to the cart contents instead of firing `woocommerce_add_to_cart` per item.
+* Fix - Treat date rule day intervals as calendar days instead of 24-hour periods.
+* Fix - Use the order currency when formatting order total and subtotal variables.
+* Fix - Validate workflow type and trigger compatibility when creating or updating workflows via the REST API.
+* Fix - WP-Cron events not cleared on plugin deactivation.
+* Fix - Workflow list table status view counts now reflect search results instead of showing total counts.
+* Tweak - Add accessible names to workflow admin controls for screen reader users.
+* Tweak - Improve AutomateWoo queue customer column performance by storing customer identifiers in queued event meta.
+* Tweak - Skip the redundant last paid order lookup on paid order status transitions to reduce database load.
+* Update - Reduce async runner lock duration to 5 seconds.
+* Update - Show which data types are missing in log and queued event modals.
+
 2026-06-09 - version 6.4.0
 * Add - Abbreviation/full "format" parameter to the customer.country variable.
 * Add - Add read-only AutomateWoo workflow abilities.

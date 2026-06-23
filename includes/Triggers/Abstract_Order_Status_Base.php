@@ -29,6 +29,7 @@ abstract class Trigger_Abstract_Order_Status_Base extends Trigger_Abstract_Order
 	 * Registers fields used for this trigger.
 	 */
 	public function load_fields() {
+		$this->add_field_only_run_for_checkout_orders();
 		$this->add_field_validate_queued_order_status();
 	}
 
@@ -101,6 +102,9 @@ abstract class Trigger_Abstract_Order_Status_Base extends Trigger_Abstract_Order
 	 * @return bool
 	 */
 	public function validate_before_queued_event( $workflow ) {
+		if ( ! parent::validate_before_queued_event( $workflow ) ) {
+			return false;
+		}
 
 		$order = $workflow->data_layer()->get_order();
 

@@ -93,6 +93,11 @@ class System_Checks {
 		/* translators: Status page URL. */
 		$more = sprintf( __( '<a href="%s">View details</a>', 'automatewoo' ), Admin::page_url( 'status' ) );
 
+		// The notice is displayed on every admin page but the script containing its AJAX
+		// dismiss handler only loads on AutomateWoo screens, so enqueue it (printed in the
+		// footer) wherever the notice is output.
+		wp_enqueue_script( 'automatewoo' );
+
 		Admin::notice( 'error is-dismissible', $strong, $more, 'aw-notice-system-error' );
 	}
 }

@@ -15,6 +15,7 @@ defined( 'ABSPATH' ) || exit;
  * Add the Welcome note immediately when AutomateWoo is installed
  *
  * @since 5.8.5
+ * @version 6.5.0
  *
  * @package AutomateWoo\Notifications
  */
@@ -93,6 +94,23 @@ class WelcomeNotification extends AbstractNotification {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Delete the welcome note when the first workflow is created.
+	 *
+	 * @since 6.5.0
+	 *
+	 * @return void
+	 */
+	public function maybe_delete_on_workflow_created(): void {
+		try {
+			if ( static::note_exists() ) {
+				$this->delete_existing_note();
+			}
+		} catch ( \Automattic\WooCommerce\Admin\Notes\NotesUnavailableException $e ) {
+			return;
+		}
 	}
 
 	/**

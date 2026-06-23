@@ -306,7 +306,10 @@ class Format {
 			$link = Admin::page_url('guest', $customer->get_guest_id() );
 		}
 
-		return "<a href='$link'>$name</a>" . ( $customer->is_registered() ? '' : ' ' . __( '[Guest]', 'automatewoo' ) ) . " <a href='mailto:$email'>$email</a>";
+		// Fall back to the email address for the accessible name when the customer has no name set.
+		$link_label = '' !== $name ? $name : $email;
+
+		return "<a href='$link' aria-label='$link_label'>$name</a>" . ( $customer->is_registered() ? '' : ' ' . __( '[Guest]', 'automatewoo' ) ) . " <a href='mailto:$email'>$email</a>";
 	}
 
 

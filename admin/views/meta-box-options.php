@@ -40,6 +40,7 @@ $ga_link_tracking
 
 $workflow_order = new Number();
 $workflow_order->set_name( 'menu_order' );
+$workflow_order->add_extra_attr( 'id', 'aw-workflow-menu-order' );
 
 ?>
 <table class="automatewoo-table">
@@ -93,7 +94,7 @@ $workflow_order->set_name( 'menu_order' );
 
 	<tr class="automatewoo-table__row">
 		<td class="automatewoo-table__col">
-			<label class="automatewoo-label">
+			<label class="automatewoo-label" for="aw-workflow-menu-order">
 				<?php
 				esc_html_e( 'Workflow order', 'automatewoo' );
 				Admin::help_tip( __( 'The order that workflows will run.', 'automatewoo' ) );

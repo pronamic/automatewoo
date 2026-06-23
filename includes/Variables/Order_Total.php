@@ -28,6 +28,6 @@ class Variable_Order_Total extends Variable_Abstract_Price {
 	 * @return string
 	 */
 	public function get_value( $order, $parameters ) {
-		return parent::format_amount( $order->get_total(), $parameters );
+		return parent::format_amount( $order->get_total(), $parameters, $order->get_currency() );
 	}
 }

@@ -14,6 +14,9 @@ class Customer_Query extends Query_Abstract {
 	/** @var string */
 	public $table_id = 'customers';
 
+	/** @var string */
+	public $meta_table_id = 'customer-meta';
+
 	protected $model = 'AutomateWoo\Customer';
 
 

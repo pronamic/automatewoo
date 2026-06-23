@@ -37,6 +37,13 @@ class ShopCurrentDateTime extends Abstract_Date {
 	public $has_is_not_set = false;
 
 	/**
+	 * Show an optional time field for specific date comparisons.
+	 *
+	 * @var bool
+	 */
+	public $has_time_of_day = true;
+
+	/**
 	 * Init.
 	 */
 	public function init() {

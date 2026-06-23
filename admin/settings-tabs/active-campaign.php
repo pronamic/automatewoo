@@ -65,14 +65,12 @@ class Settings_Tab_Active_Campaign extends Admin_Settings_Tab_Abstract {
 	 * @return void
 	 */
 	public function save( $fields = array() ): void {
-		Integrations::activecampaign()->clear_cache_data();
 		parent::save();
 
 		$activecampaign = Integrations::activecampaign();
-		if ( $activecampaign && $activecampaign->test_integration() ) {
-			// If a notification exists relating to a ActiveCampaign integration error, delete it.
-			ActiveCampaignCheck::possibly_delete_note();
-		}
+		$activecampaign->clear_cache_data();
+
+		$this->validate_integration_on_save( $activecampaign, __( 'ActiveCampaign', 'automatewoo' ), ActiveCampaignCheck::class );
 	}
 }
 

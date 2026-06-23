@@ -57,4 +57,25 @@ class Stats_Controller extends Generic_Stats_Controller {
 
 		return $this->add_additional_fields_schema( $schema );
 	}
+
+	/**
+	 * Get the query params for collections.
+	 *
+	 * @return array
+	 */
+	public function get_collection_params() {
+		$params = parent::get_collection_params();
+
+		$params['workflows'] = array(
+			'description'       => __( 'Limit result set to unsubscribes from specific workflow IDs.', 'automatewoo' ),
+			'type'              => 'array',
+			'sanitize_callback' => 'wp_parse_id_list',
+			'validate_callback' => 'rest_validate_request_arg',
+			'items'             => array(
+				'type' => 'integer',
+			),
+		);
+
+		return $params;
+	}
 }

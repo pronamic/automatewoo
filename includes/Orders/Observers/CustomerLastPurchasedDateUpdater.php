@@ -58,7 +58,9 @@ class CustomerLastPurchasedDateUpdater {
 			return;
 		}
 
-		if ( $transition->is_becoming_paid() || $transition->is_becoming_unpaid() ) {
+		if ( $transition->is_becoming_paid() ) {
+			$this->process_paid_order_update( $customer, $order );
+		} elseif ( $transition->is_becoming_unpaid() ) {
 			$this->process_update( $customer );
 		}
 	}
@@ -87,6 +89,36 @@ class CustomerLastPurchasedDateUpdater {
 		if ( $customer ) {
 			$this->process_update( $customer );
 		}
+	}
+
+	/**
+	 * Update last_purchased date for a newly paid order.
+	 *
+	 * @since 6.5.0
+	 *
+	 * @param Customer $customer
+	 * @param WC_Order $order
+	 */
+	protected function process_paid_order_update( Customer $customer, WC_Order $order ) {
+		$order_created = $order->get_date_created();
+		if ( ! $order_created ) {
+			$this->process_update( $customer );
+			return;
+		}
+
+		$last_purchased = $customer->get_date_last_purchased();
+		if ( $last_purchased && $last_purchased->getTimestamp() >= $order_created->getTimestamp() ) {
+			return;
+		}
+
+		// Without a known last purchase date, older status changes still need a full recalculation.
+		if ( ! $last_purchased && $order_created->getTimestamp() < time() - MINUTE_IN_SECONDS ) {
+			$this->process_update( $customer );
+			return;
+		}
+
+		$customer->set_date_last_purchased( $order_created );
+		$customer->save();
 	}
 
 	/**

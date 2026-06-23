@@ -20,6 +20,10 @@ class Admin_Data_Layer_Formatter {
 		foreach ( $data as $data_type => $data_item ) {
 
 			if ( ! $data_item ) {
+				$formatted_data[] = [
+					'title' => self::get_data_type_title( $data_type ),
+					'value' => __( 'Missing', 'automatewoo' ),
+				];
 				continue;
 			}
 
@@ -95,6 +99,17 @@ class Admin_Data_Layer_Formatter {
 					];
 					break;
 
+				case 'booking':
+					/** @var $data_item \WC_Booking */
+					$formatted_data[] = [
+						'title' => __( 'Booking', 'automatewoo' ),
+						'value' => Format::html_id_link(
+							(string) get_edit_post_link( $data_item->get_id() ),
+							$data_item->get_id()
+						),
+					];
+					break;
+
 				case 'membership':
 					/** @var $data_item \WC_Memberships_User_Membership */
 					$formatted_data[] = [
@@ -159,5 +174,37 @@ class Admin_Data_Layer_Formatter {
 		}
 
 		return apply_filters( 'automatewoo/formatted_data_layer', $formatted_data, $data_layer );
+	}
+
+	/**
+	 * Get a display title for a data type.
+	 *
+	 * @param string $data_type Data type ID.
+	 *
+	 * @return string
+	 */
+	private static function get_data_type_title( $data_type ) {
+		$titles = [
+			'booking'      => __( 'Booking', 'automatewoo' ),
+			'cart'         => __( 'Cart', 'automatewoo' ),
+			'course'       => __( 'Course', 'automatewoo' ),
+			'customer'     => __( 'Customer', 'automatewoo' ),
+			'group'        => __( 'Group', 'automatewoo' ),
+			'guest'        => __( 'Guest', 'automatewoo' ),
+			'lesson'       => __( 'Lesson', 'automatewoo' ),
+			'membership'   => __( 'Membership', 'automatewoo' ),
+			'order'        => __( 'Order', 'automatewoo' ),
+			'product'      => __( 'Product', 'automatewoo' ),
+			'review'       => __( 'Review', 'automatewoo' ),
+			'subscription' => __( 'Subscription', 'automatewoo' ),
+			'teacher'      => __( 'Teacher', 'automatewoo' ),
+			'wishlist'     => __( 'Wishlist', 'automatewoo' ),
+		];
+
+		if ( isset( $titles[ $data_type ] ) ) {
+			return $titles[ $data_type ];
+		}
+
+		return ucwords( str_replace( [ '-', '_' ], ' ', $data_type ) );
 	}
 }

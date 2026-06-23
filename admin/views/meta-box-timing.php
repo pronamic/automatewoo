@@ -27,7 +27,8 @@ $when_to_run
 			]
 		)
 	)
-	->add_data_attr( 'automatewoo-bind', 'timing' );
+	->add_data_attr( 'automatewoo-bind', 'timing' )
+	->add_extra_attr( 'id', 'aw-workflow-when-to-run' );
 
 // Queue date time field.
 $queue_datetime = new Fields\Text_Area();
@@ -106,7 +107,7 @@ $fixed_time->set_name_base( $option_base )
 <table class="automatewoo-table">
 	<tr class="automatewoo-table__row">
 		<td class="automatewoo-table__col">
-			<label class="automatewoo-label">
+			<label class="automatewoo-label" for="aw-workflow-when-to-run">
 				<?php
 				esc_html_e( 'Timing', 'automatewoo' );
 				echo Admin::help_link( Admin::get_docs_link( 'timing', 'workflow-edit' ) ); // phpcs:ignore WordPress.Security.EscapeOutput

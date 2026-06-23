@@ -42,23 +42,48 @@ class Analytics {
 
 		$report_pages[] = array(
 			'id'     => 'automatewoo-analytics-runs-by-date',
-			'title'  => '<automatewoo-icon aria-label="AutomateWoo"></automatewoo-icon>' . __( 'Workflows', 'automatewoo' ),
+			'title'  => self::get_report_menu_title( __( 'Workflows', 'automatewoo' ) ),
 			'parent' => 'woocommerce-analytics',
 			'path'   => '/analytics/automatewoo-runs-by-date',
 		);
 		$report_pages[] = array(
 			'id'     => 'automatewoo-analytics-email-tracking',
-			'title'  => '<automatewoo-icon aria-label="AutomateWoo"></automatewoo-icon>' . __( 'Email & SMS Tracking', 'automatewoo' ),
+			'title'  => self::get_report_menu_title( __( 'Email & SMS Tracking', 'automatewoo' ) ),
 			'parent' => 'woocommerce-analytics',
 			'path'   => '/analytics/automatewoo-email-tracking',
 		);
 		$report_pages[] = array(
 			'id'     => 'automatewoo-analytics-conversions',
-			'title'  => '<automatewoo-icon aria-label="AutomateWoo"></automatewoo-icon>' . __( 'Conversions', 'automatewoo' ),
+			'title'  => self::get_report_menu_title( __( 'Conversions', 'automatewoo' ) ),
 			'parent' => 'woocommerce-analytics',
 			'path'   => '/analytics/automatewoo-conversions',
 		);
 		return $report_pages;
+	}
+
+	/**
+	 * Get an Analytics menu title with a self-contained AutomateWoo icon.
+	 *
+	 * @since 6.5.0
+	 *
+	 * @param string $title Menu title.
+	 *
+	 * @return string
+	 */
+	private static function get_report_menu_title( string $title ): string {
+		$icon = '<svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="10.575 193.737 611 439" style="display:inline-block;height:1em;width:1.3918em;margin-right:.5em;vertical-align:text-bottom;fill:currentColor">'
+			. '<g>'
+			. '<polygon points="149.569,432.962 208.498,432.962 179.093,352.517"/>'
+			. '<path d="M570.625,197.025H63.375c-27.373,0-49.725,22.353-49.725,49.725v333.5'
+			. 'c0,27.373,22.353,49.725,49.725,49.725h507.25c27.373,0,49.725-22.352,49.725-49.725'
+			. 'v-333.5C620.35,219.377,597.998,197.025,570.625,197.025z M240.054,519.502l-17.81-48.648'
+			. 'h-86.541l-17.69,48.648H74.264l81.759-213.004h48.052l81.042,213.004H240.054z M496.807,519.502'
+			. 'h-42.672l-48.649-151.685l-48.649,151.685h-43.271l-59.168-213.004h43.868l39.087,146.545'
+			. 'l47.215-146.545h42.911l47.574,147.143l38.369-147.143h42.314L496.807,519.502z"/>'
+			. '</g>'
+			. '</svg>';
+
+		return $icon . esc_html( $title );
 	}
 
 	/**

@@ -69,7 +69,7 @@ class Admin_Ajax {
 
 		$trigger_name = Clean::string( aw_request('trigger_name') );
 		$workflow_id = absint( aw_request('workflow_id') );
-		$is_new_workflow = aw_request('is_new_workflow');
+		$is_new_workflow = filter_var( aw_request( 'is_new_workflow' ), FILTER_VALIDATE_BOOLEAN );
 
 		$workflow = false;
 		$trigger = Triggers::get( $trigger_name );

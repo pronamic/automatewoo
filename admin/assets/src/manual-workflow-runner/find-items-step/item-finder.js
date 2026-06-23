@@ -1,7 +1,7 @@
 /**
  * External dependencies
  */
-import { useEffect } from '@wordpress/element';
+import { useEffect, useRef } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import PropTypes from 'prop-types';
 import { Button } from '@wordpress/components';
@@ -31,6 +31,7 @@ const ItemFinder = ( {
 } ) => {
 	const { primaryDataTypePluralName } = workflowQuickFilterData;
 	const itemCount = Object.keys( state.items ).length;
+	const activeFindRequest = useRef( null );
 	useWarnBeforeUnloadWhileRequesting( state.status );
 
 	useEffect( () => {
@@ -45,6 +46,14 @@ const ItemFinder = ( {
 				return;
 			}
 			const progressGroup = state.progress[ groupNumber ];
+			const requestKey = `${ workflow.id }:${ groupNumber }:${ progressGroup.offset }`;
+
+			if ( activeFindRequest.current === requestKey ) {
+				return;
+			}
+
+			activeFindRequest.current = requestKey;
+
 			dispatch( { type: 'FIND_ITEMS_REQUEST' } );
 
 			try {
@@ -64,6 +73,8 @@ const ItemFinder = ( {
 			} catch ( error ) {
 				dispatch( { type: 'FIND_ITEMS_ERROR' } );
 				handleFetchError( 'Error finding items.', error );
+			} finally {
+				activeFindRequest.current = null;
 			}
 		};
 		fetchItemsBatch();

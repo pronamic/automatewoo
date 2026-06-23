@@ -58,7 +58,7 @@ class UpdateTrialEndDate extends AbstractEditDateItem {
 			/* translators: %1$s: workflow name, %2$s: new trial end date, %3$s: workflow ID */
 			__( '%1$s workflow run: updated trial end date to %2$s.  (Workflow ID: %3$d)', 'automatewoo' ),
 			$this->workflow->get_title(),
-			$new_trial_end_date,
+			$this->format_date_for_note( $new_trial_end_date ),
 			$this->workflow->get_id()
 		);
 	}

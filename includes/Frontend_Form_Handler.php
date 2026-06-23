@@ -107,7 +107,7 @@ class Frontend_Form_Handler {
 			$customer->opt_in();
 		}
 		else {
-			$customer->opt_out();
+			$customer->opt_out( Clean::id( aw_request( 'workflow' ) ) );
 		}
 
 		// try and start session tracking the customer

@@ -67,6 +67,10 @@ $fields = $trigger->get_fields();
 
 				<?php AutomateWoo\Admin::help_tip( $field->get_description() ); ?>
 
+				<?php if ( $field->supports_variables() ) : ?>
+					<span class="automatewoo-field-variable-support automatewoo-tiptip" data-tip="<?php echo esc_attr__( 'Supports variables', 'automatewoo' ); ?>"><span class="screen-reader-text"><?php esc_html_e( 'Supports variables', 'automatewoo' ); ?></span></span>
+				<?php endif; ?>
+
 			</td>
 
 			<td class="automatewoo-table__col automatewoo-table__col--field automatewoo-field-wrap">

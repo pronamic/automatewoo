@@ -354,8 +354,16 @@ abstract class Admin_Settings_Tab_Abstract {
 				class="aw-settings-row aw-settings-row--type-<?php echo esc_attr( $field['type'] ); ?> <?php echo esc_attr( $field['wrapper_class'] ); ?>"
 				valign="top" <?php $this->output_attributes_array( $field, 'wrapper_attributes' ); ?>>
 				<th scope="row" class="titledesc">
-					<label for="<?php echo esc_attr( $field['id'] ); ?>"><?php echo esc_html( $field['title'] ); ?>
-						<?php echo $field['required'] ? '<span class="aw-required-asterisk"></span>' : ''; ?>
+					<label for="<?php echo esc_attr( $field['id'] ); ?>">
+						<?php
+						if ( '' !== (string) $field['title'] ) {
+							echo esc_html( $field['title'] );
+						} elseif ( ! empty( $field['desc'] ) ) {
+							// No visible title (e.g. grouped checkboxes): expose the description to assistive tech as the field's accessible name.
+							printf( '<span class="screen-reader-text">%s</span>', esc_html( $field['desc'] ) );
+						}
+						echo $field['required'] ? '<span class="aw-required-asterisk"></span>' : '';
+						?>
 					</label>
 				</th>
 				<td class="forminp forminp-<?php echo sanitize_html_class( $field['type'] ); ?>">
@@ -496,6 +504,50 @@ abstract class Admin_Settings_Tab_Abstract {
 		if ( $saved ) {
 			$this->add_message( __( 'Your settings have been saved.', 'automatewoo' ) );
 		}
+	}
+
+	/**
+	 * Test an enabled integration and show immediate feedback when credentials fail.
+	 *
+	 * @param Integration|bool $integration        Integration instance or false.
+	 * @param string           $integration_name   Integration display name.
+	 * @param string           $notification_class Optional notification class to clear on success.
+	 *
+	 * @return bool
+	 */
+	protected function validate_integration_on_save( $integration, string $integration_name, string $notification_class = '' ): bool {
+		if ( ! $integration instanceof Integration || ! $integration->is_enabled() ) {
+			return true;
+		}
+
+		if ( $integration->test_integration() ) {
+			if ( $notification_class && is_callable( [ $notification_class, 'possibly_delete_note' ] ) ) {
+				call_user_func( [ $notification_class, 'possibly_delete_note' ] );
+			}
+
+			return true;
+		}
+
+		$this->add_integration_validation_error( $integration_name );
+
+		return false;
+	}
+
+	/**
+	 * Show immediate feedback when integration credentials are missing or invalid.
+	 *
+	 * @param string $integration_name Integration display name.
+	 *
+	 * @return void
+	 */
+	protected function add_integration_validation_error( string $integration_name ): void {
+		$this->add_error(
+			sprintf(
+				/* translators: %1$s: Integration name. */
+				__( 'Unable to communicate with the %1$s API. Please check your %1$s settings.', 'automatewoo' ),
+				$integration_name
+			)
+		);
 	}
 
 

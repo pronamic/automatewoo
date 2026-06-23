@@ -13,6 +13,9 @@ defined( 'ABSPATH' ) || exit;
  */
 class AsyncActionRunner {
 
+	const LOCK_NAME             = 'async-request-runner';
+	const DEFAULT_LOCK_DURATION = 5;
+
 	/**
 	 * Whether the shutdown hook has been attached.
 	 *
@@ -75,12 +78,56 @@ class AsyncActionRunner {
 			return;
 		}
 
-		if ( $this->locker->is_locked( 'async-request-runner' ) ) {
-			// An async runner request has already occurred in the last 60 seconds.
+		if ( $this->locker->is_locked( self::LOCK_NAME ) ) {
+			// An async runner request has already occurred within the lock duration.
 			return;
 		}
 
-		$this->locker->set( 'async-request-runner' );
+		$this->set_lock();
 		$this->async_request->maybe_dispatch();
+	}
+
+	/**
+	 * Set the async runner lock with AutomateWoo's shorter frontend duration.
+	 *
+	 * @since 6.5.0
+	 *
+	 * @return void
+	 */
+	protected function set_lock(): void {
+		add_filter( 'action_scheduler_lock_duration', [ $this, 'filter_lock_duration' ], 10, 2 );
+
+		try {
+			$this->locker->set( self::LOCK_NAME );
+		} finally {
+			remove_filter( 'action_scheduler_lock_duration', [ $this, 'filter_lock_duration' ], 10 );
+		}
+	}
+
+	/**
+	 * Filter the Action Scheduler lock duration while AutomateWoo sets its async runner lock.
+	 *
+	 * @since 6.5.0
+	 *
+	 * @param int    $duration  Lock duration in seconds.
+	 * @param string $lock_type Lock type.
+	 *
+	 * @return int
+	 */
+	public function filter_lock_duration( $duration, $lock_type ): int {
+		if ( self::LOCK_NAME !== $lock_type ) {
+			return (int) $duration;
+		}
+
+		/**
+		 * Filters AutomateWoo's async runner lock duration.
+		 *
+		 * @since 6.5.0
+		 *
+		 * @param int $duration Lock duration in seconds.
+		 */
+		$duration = (int) apply_filters( 'automatewoo/action_scheduler/async_runner_lock_duration', self::DEFAULT_LOCK_DURATION );
+
+		return max( 1, $duration );
 	}
 }

@@ -9,6 +9,96 @@ class Order_Helper {
 
 
 	/**
+	 * Get internal WooCommerce order meta keys.
+	 *
+	 * @param \WC_Order|null $order Optional order object.
+	 *
+	 * @return array
+	 */
+	public static function get_internal_meta_keys( $order = null ) {
+		$data_store = null;
+
+		if ( $order instanceof \WC_Order ) {
+			$data_store = $order->get_data_store();
+		} elseif ( class_exists( '\WC_Data_Store' ) ) {
+			try {
+				$data_store = \WC_Data_Store::load( 'order' );
+			} catch ( \Exception $e ) {
+				$data_store = null;
+			}
+		}
+
+		if ( ! $data_store || ! is_callable( [ $data_store, 'get_internal_meta_keys' ] ) ) {
+			return [];
+		}
+
+		return array_values( array_filter( $data_store->get_internal_meta_keys() ) );
+	}
+
+	/**
+	 * Check if an order meta key is internal to WooCommerce.
+	 *
+	 * @param string         $key   Meta key.
+	 * @param \WC_Order|null $order Optional order object.
+	 *
+	 * @return bool
+	 */
+	public static function is_internal_meta_key( $key, $order = null ) {
+		return '' !== (string) $key && in_array( $key, self::get_internal_meta_keys( $order ), true );
+	}
+
+	/**
+	 * Get the admin warning shown when an internal order meta key is entered.
+	 *
+	 * @return string
+	 */
+	public static function get_internal_meta_key_warning() {
+		return __( 'This is an internal WooCommerce order meta key. Use the matching AutomateWoo order field when available, because internal keys are not stored as custom fields.', 'automatewoo' );
+	}
+
+	/**
+	 * Get a parameterless getter for an internal order meta key.
+	 *
+	 * @param \WC_Order $order Order to check.
+	 * @param string    $key   Meta key.
+	 *
+	 * @return string|false
+	 */
+	public static function get_parameterless_internal_meta_key_getter( $order, $key ) {
+		if ( ! self::is_internal_meta_key( $key, $order ) ) {
+			return false;
+		}
+
+		$method     = 'get_' . ltrim( $key, '_' );
+		$has_getter = is_callable( [ $order, $method ] );
+
+		if ( $has_getter ) {
+			$reflection_method     = new \ReflectionMethod( $order, $method );
+			$required_params_count = $reflection_method->getNumberOfRequiredParameters();
+
+			if ( $required_params_count === 0 ) {
+				return $method;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Get an order meta value, using a safe getter for internal order meta keys when available.
+	 *
+	 * @param \WC_Order $order Order object.
+	 * @param string    $key   Meta key.
+	 *
+	 * @return mixed
+	 */
+	public static function get_order_meta_value( $order, $key ) {
+		$method = self::get_parameterless_internal_meta_key_getter( $order, $key );
+		return $method ? $order->$method() : $order->get_meta( $key );
+	}
+
+
+	/**
 	 * Default constructor.
 	 */
 	public function __construct() {

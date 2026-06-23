@@ -68,7 +68,11 @@ class Trigger_Subscription_Status_Changed extends Trigger {
 	 * Register trigger hooks.
 	 */
 	public function register_hooks() {
-		add_action( $this->get_hook_subscription_status_changed(), [ $this, 'handle_status_changed' ], 10, 3 );
+		if ( AUTOMATEWOO_DISABLE_ASYNC_SUBSCRIPTION_STATUS_CHANGED ) {
+			add_action( 'automatewoo/subscription/status_changed', [ $this, 'handle_status_changed' ], 10, 3 );
+		} else {
+			add_action( 'automatewoo/subscription/status_changed_async', [ $this, 'handle_async_status_changed' ], 10, 4 );
+		}
 	}
 
 
@@ -78,6 +82,38 @@ class Trigger_Subscription_Status_Changed extends Trigger {
 	 * @param string $old_status
 	 */
 	public function handle_status_changed( $subscription_id, $new_status, $old_status ) {
+		$this->handle_normalized_status_changed( $subscription_id, $old_status, $new_status );
+	}
+
+	/**
+	 * Handle async status changed events.
+	 *
+	 * @param int    $subscription_id
+	 * @param string $old_status
+	 * @param string $new_status
+	 * @param string $status_order
+	 */
+	public function handle_async_status_changed( $subscription_id, $old_status, $new_status, $status_order = '' ) {
+		if ( \AutomateWoo\Async_Events\Subscription_Status_Changed::STATUS_CHANGE_ARG_ORDER !== $status_order ) {
+			$legacy_new_status = $old_status;
+			$legacy_old_status = $new_status;
+			$old_status        = $legacy_old_status;
+			$new_status        = $legacy_new_status;
+		}
+
+		// Route through handle_status_changed() to preserve backwards compatibility for
+		// any subclass that overrides it. Its signature is ( id, new_status, old_status ).
+		$this->handle_status_changed( $subscription_id, $new_status, $old_status );
+	}
+
+	/**
+	 * Handle status changed after status arguments have been normalized.
+	 *
+	 * @param int    $subscription_id
+	 * @param string $old_status
+	 * @param string $new_status
+	 */
+	protected function handle_normalized_status_changed( $subscription_id, $old_status, $new_status ) {
 		// use temp data to store the real status changed, status of sub may have already changed if using async
 		Temporary_Data::set( 'subscription_old_status', $subscription_id, $old_status );
 		Temporary_Data::set( 'subscription_new_status', $subscription_id, $new_status );

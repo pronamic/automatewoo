@@ -2,6 +2,7 @@
 
 namespace AutomateWoo\Triggers\Utilities;
 
+use AutomateWoo\Action;
 use AutomateWoo\Order_Note;
 use WC_Order;
 
@@ -41,6 +42,10 @@ trait HandleOrderNoteAdded {
 	 * @param WC_Order  $order
 	 */
 	public function handle_initial_order_note_added_action( $comment_id, WC_Order $order ) {
+		if ( Action::is_adding_order_note() ) {
+			return;
+		}
+
 		if ( ! $comment_id ) {
 			return;
 		}

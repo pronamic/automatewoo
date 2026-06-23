@@ -6,6 +6,7 @@ use AutomateWoo\DateTime;
 use AutomateWoo\RuleQuickFilters\Clauses\ClauseInterface;
 use AutomateWoo\RuleQuickFilters\Clauses\DateTimeClause;
 use AutomateWoo\RuleQuickFilters\Clauses\NumericClause;
+use AutomateWoo\RuleQuickFilters\Clauses\OrClause;
 use AutomateWoo\RuleQuickFilters\Clauses\SetClause;
 use AutomateWoo\RuleQuickFilters\Clauses\StringClause;
 use AutomateWoo\Rules\Order_Meta;
@@ -95,6 +96,12 @@ class OrderHighPerformanceDatastoreType implements DatastoreTypeInterface {
 	 * @throws UnexpectedValueException When there is an error mapping a query arg.
 	 */
 	protected function map_clause_to_query_arg( $clause ) {
+		// Handle compound OR clauses by building a field_query group with OR relation.
+		if ( $clause instanceof OrClause ) {
+			$this->add_or_clause_query_arg( $clause );
+			return;
+		}
+
 		$property = $clause->get_property();
 
 		// Address custom fields (flagged using the $property_prefix)
@@ -118,6 +125,7 @@ class OrderHighPerformanceDatastoreType implements DatastoreTypeInterface {
 			case 'created_via':
 			case 'payment_method':
 			case 'shipping_country':
+			case 'shipping_state':
 				$this->add_field_query_arg( $property, $clause );
 				break;
 			case 'customer_note':
@@ -502,5 +510,44 @@ class OrderHighPerformanceDatastoreType implements DatastoreTypeInterface {
 			'value'   => $clause->get_value(),
 			'type'    => 'DECIMAL(24,8)',
 		];
+	}
+
+	/**
+	 * Add an OR clause to the field_query args.
+	 *
+	 * Maps each sub-clause through the regular clause mapper and wraps supported
+	 * field_query entries in an OR group.
+	 *
+	 * @since 6.5.0
+	 *
+	 * @param OrClause $clause The compound OR clause.
+	 *
+	 * @throws UnexpectedValueException When a sub-clause cannot be mapped to one field_query entry.
+	 */
+	protected function add_or_clause_query_arg( OrClause $clause ) {
+		$or_group = [ 'relation' => 'OR' ];
+
+		foreach ( $clause->get_clauses() as $sub_clause ) {
+			$original_query_args = $this->query_args;
+			$this->query_args    = [];
+
+			try {
+				$this->map_clause_to_query_arg( $sub_clause );
+				$sub_query_args = $this->query_args;
+			} finally {
+				$this->query_args = $original_query_args;
+			}
+
+			if (
+				array_keys( $sub_query_args ) !== [ 'field_query' ] ||
+				count( $sub_query_args['field_query'] ) !== 1
+			) {
+				throw new UnexpectedValueException( 'OrClause only supports HPOS order clauses that map to one field_query entry.' );
+			}
+
+			$or_group[] = $sub_query_args['field_query'][0];
+		}
+
+		$this->query_args['field_query'][] = $or_group;
 	}
 }

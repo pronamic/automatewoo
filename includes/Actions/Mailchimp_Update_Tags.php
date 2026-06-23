@@ -29,6 +29,12 @@ class Mailchimp_Update_Tags extends Action_Mailchimp_Abstract {
 	public function load_fields() {
 		$this->add_list_field();
 		$this->add_field( $this->get_contact_email_field() );
+		$this->add_field(
+			( new Checkbox() )
+				->set_name( 'allow_not_subscribed' )
+				->set_title( __( 'Update contacts who are not subscribed', 'automatewoo' ) )
+				->set_description( __( 'If checked, tags can be updated for existing Mailchimp contacts with unsubscribed, non-subscribed, cleaned, or pending statuses. Contacts must still exist in the selected list.', 'automatewoo' ) )
+		);
 		$this->add_tags_field( 'add_tags', __( 'Tags to add', 'automatewoo' ) );
 		$this->add_field(
 			( new Checkbox() )
@@ -48,18 +54,19 @@ class Mailchimp_Update_Tags extends Action_Mailchimp_Abstract {
 	public function run() {
 		$this->validate_required_fields();
 
-		$email       = $this->get_contact_email_option();
-		$list        = $this->get_option( 'list' );
-		$add_tags    = $this->parse_tags_field_keys( $this->get_option( 'add_tags', true ) );
-		$remove_tags = $this->parse_tags_field_keys( $this->get_option( 'remove_tags', true ) );
-		$remove      = $this->get_option( 'remove_others' );
+		$email                = $this->get_contact_email_option();
+		$list                 = $this->get_option( 'list' );
+		$add_tags             = $this->parse_tags_field_keys( $this->get_option( 'add_tags', true ) );
+		$remove_tags          = $this->parse_tags_field_keys( $this->get_option( 'remove_tags', true ) );
+		$remove               = $this->get_option( 'remove_others' );
+		$allow_not_subscribed = $this->get_option( 'allow_not_subscribed' );
 
 		// Validate tag handling can proceed.
 		if ( empty( $add_tags ) && empty( $remove_tags ) && false === $remove ) {
 			throw new \Exception( esc_html__( 'Tags should not be empty.', 'automatewoo' ) );
 		}
 
-		$this->validate_contact( $email, $list );
+		$this->validate_contact_for_tag_update( $email, $list, $allow_not_subscribed );
 
 		$existing_tags = $remove ? Integrations::mailchimp()->get_member_tags( $email, $list ) : [];
 		$tag_updates   = [];
@@ -89,5 +96,28 @@ class Mailchimp_Update_Tags extends Action_Mailchimp_Abstract {
 		}
 
 		$this->maybe_log_action( Integrations::mailchimp()->update_member_tags( $email, $list, $tag_updates ) );
+	}
+
+	/**
+	 * Validate that Mailchimp tags can be updated for the contact.
+	 *
+	 * @since 6.5.0
+	 *
+	 * @param string $email
+	 * @param string $list
+	 * @param bool   $allow_not_subscribed
+	 *
+	 * @throws \Exception When the contact isn't valid for tag updates.
+	 */
+	private function validate_contact_for_tag_update( $email, $list, $allow_not_subscribed ) {
+		if ( $allow_not_subscribed ) {
+			if ( ! Integrations::mailchimp()->is_contact( $email, $list ) ) {
+				throw new \Exception( esc_html__( 'Failed because contact is not in the list.', 'automatewoo' ) );
+			}
+
+			return;
+		}
+
+		$this->validate_contact( $email, $list );
 	}
 }

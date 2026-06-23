@@ -2,6 +2,7 @@
 
 namespace AutomateWoo\Rules;
 
+use AutomateWoo\Order_Helper;
 use AutomateWoo\RuleQuickFilters\Clauses\ClauseInterface;
 use AutomateWoo\Rules\Interfaces\QuickFilterable;
 use AutomateWoo\Rules\Utilities\NumericQuickFilter;
@@ -24,50 +25,19 @@ class Order_Meta extends Abstract_Meta implements QuickFilterable {
 	/** @var string the prefix of the property name for Quick Filter clauses */
 	public static $property_prefix = 'meta.';
 
+	/** @var array */
+	public $internal_meta_keys = [];
+
+	/** @var string */
+	public $internal_meta_key_warning = '';
+
 	/**
 	 * Init the rule
 	 */
 	public function init() {
-		$this->title = __( 'Order - Custom Field', 'automatewoo' );
-	}
-
-	/**
-	 * Check if the key is an internal meta key, has a getter method, and the
-	 * getter has no required parameters.
-	 *
-	 * Referring to the implementation of the order method `is_internal_meta_key`
-	 * in WooCommerce Core, it's crucial to understand why it might inadvertently
-	 * trigger PHP notices due to the call of `wc_doing_it_wrong`, Consequently,
-	 * relying solely on that method to check if a meta key is internal can be
-	 * problematic.
-	 *
-	 * Ref: https://github.com/woocommerce/woocommerce/blob/9.8.4/plugins/woocommerce/includes/abstracts/abstract-wc-data.php#L324-L345
-	 *
-	 * @param \WC_Order $order Order to check.
-	 * @param string    $key Key to check.
-	 * @return string|bool The getter method name if all conditions are met, otherwise false.
-	 */
-	protected function get_parameterless_internal_meta_key_getter( $order, $key ) {
-		$data_store        = $order->get_data_store();
-		$internal_meta_key = ! empty( $key ) && $data_store && in_array( $key, $data_store->get_internal_meta_keys(), true );
-
-		if ( ! $internal_meta_key ) {
-			return false;
-		}
-
-		$method     = 'get_' . ltrim( $key, '_' );
-		$has_getter = is_callable( array( $order, $method ) );
-
-		if ( $has_getter ) {
-			$reflection_method     = new \ReflectionMethod( $order, $method );
-			$required_params_count = $reflection_method->getNumberOfRequiredParameters();
-
-			if ( $required_params_count === 0 ) {
-				return $method;
-			}
-		}
-
-		return false;
+		$this->title                     = __( 'Order - Custom Field', 'automatewoo' );
+		$this->internal_meta_keys        = Order_Helper::get_internal_meta_keys();
+		$this->internal_meta_key_warning = Order_Helper::get_internal_meta_key_warning();
 	}
 
 	/**
@@ -87,10 +57,8 @@ class Order_Meta extends Abstract_Meta implements QuickFilterable {
 			return false;
 		}
 
-		// Call getter method if it exists, to avoid warnings from `is_internal_meta_key` when calling for internal meta keys.
-		$key        = $value_data['key'];
-		$method     = $this->get_parameterless_internal_meta_key_getter( $order, $key );
-		$meta_value = $method ? $order->$method() : $order->get_meta( $key );
+		// Call a getter method if it exists, to avoid warnings from `is_internal_meta_key` when calling for internal meta keys.
+		$meta_value = Order_Helper::get_order_meta_value( $order, $value_data['key'] );
 
 		return $this->validate_meta( $meta_value, $compare_type, $value_data['value'] );
 	}

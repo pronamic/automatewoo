@@ -19,6 +19,13 @@ defined( 'ABSPATH' ) || exit;
  */
 class Dashboard extends Base {
 
+	const HIDDEN_WIDGETS_USER_OPTION = 'automatewoo_dashboard_hidden_widgets';
+	const SCREEN_OPTIONS_ACTION      = 'automatewoo_dashboard_screen_options';
+	const SCREEN_OPTIONS_NONCE       = 'automatewoo_dashboard_screen_options_nonce';
+	const SCREEN_OPTIONS_SUBMITTED   = 'automatewoo_dashboard_screen_options_submitted';
+	const SCREEN_OPTIONS_WIDGETS     = 'automatewoo_dashboard_widgets';
+	const VISIBLE_WIDGETS            = 'automatewoo_dashboard_visible_widgets';
+
 	/** @var array */
 	private $widgets;
 
@@ -61,7 +68,7 @@ class Dashboard extends Base {
 
 		$this->maybe_set_date_cookie();
 
-		$widgets    = $this->get_widgets();
+		$widgets    = $this->get_visible_widgets( $this->get_widgets() );
 		$date_arg   = $this->get_date_arg();
 		$date_range = $this->get_date_range();
 		$date_tabs  = [
@@ -130,6 +137,195 @@ class Dashboard extends Base {
 		}
 
 		return $this->widgets;
+	}
+
+	/**
+	 * Add dashboard Screen Options.
+	 */
+	public function screen_options() {
+		$this->maybe_save_screen_options();
+
+		add_filter( 'screen_options_show_screen', '__return_true' );
+		add_filter( 'screen_options_show_submit', '__return_true' );
+		add_filter( 'screen_settings', [ $this, 'render_screen_options' ], 10, 2 );
+	}
+
+	/**
+	 * Render dashboard Screen Options.
+	 *
+	 * @param string     $settings Current screen settings HTML.
+	 * @param \WP_Screen $screen Current screen.
+	 *
+	 * @return string
+	 */
+	public function render_screen_options( $settings, $screen ) {
+		$widgets            = $this->get_widgets();
+		$hidden_widget_ids  = $this->get_hidden_widget_ids();
+		$default_label_map  = $this->get_default_widget_label_map();
+		$screen_options_key = self::SCREEN_OPTIONS_WIDGETS . '[]';
+		$visible_key        = self::VISIBLE_WIDGETS . '[]';
+
+		ob_start();
+		?>
+		<fieldset class="metabox-prefs automatewoo-dashboard-screen-options">
+			<legend><?php esc_html_e( 'Dashboard widgets', 'automatewoo' ); ?></legend>
+			<input type="hidden" name="<?php echo esc_attr( self::SCREEN_OPTIONS_SUBMITTED ); ?>" value="1" />
+			<input type="hidden" name="<?php echo esc_attr( self::SCREEN_OPTIONS_NONCE ); ?>" value="<?php echo esc_attr( wp_create_nonce( self::SCREEN_OPTIONS_ACTION ) ); ?>" />
+			<?php foreach ( $widgets as $widget ) : ?>
+				<?php
+				$widget_id = $widget->get_id();
+				$field_id  = 'automatewoo-dashboard-widget-' . $widget_id;
+				?>
+				<input type="hidden" name="<?php echo esc_attr( $screen_options_key ); ?>" value="<?php echo esc_attr( $widget_id ); ?>" />
+				<label for="<?php echo esc_attr( $field_id ); ?>">
+					<input type="checkbox" id="<?php echo esc_attr( $field_id ); ?>" name="<?php echo esc_attr( $visible_key ); ?>" value="<?php echo esc_attr( $widget_id ); ?>" <?php checked( ! in_array( $widget_id, $hidden_widget_ids, true ) ); ?> />
+					<?php echo esc_html( $this->get_widget_label( $widget, $default_label_map ) ); ?>
+				</label>
+			<?php endforeach; ?>
+		</fieldset>
+		<?php
+
+		return $settings . ob_get_clean();
+	}
+
+	/**
+	 * Remove dashboard widgets hidden by the current user.
+	 *
+	 * @param Dashboard_Widget[] $widgets Dashboard widgets.
+	 *
+	 * @return Dashboard_Widget[]
+	 */
+	public function get_visible_widgets( $widgets ) {
+		foreach ( $this->get_hidden_widget_ids() as $widget_id ) {
+			unset( $widgets[ $widget_id ] );
+		}
+
+		return $widgets;
+	}
+
+	/**
+	 * Get dashboard widgets hidden by the current user.
+	 *
+	 * @return string[]
+	 */
+	public function get_hidden_widget_ids() {
+		$hidden_widget_ids = get_user_option( self::HIDDEN_WIDGETS_USER_OPTION );
+
+		if ( ! is_array( $hidden_widget_ids ) ) {
+			return [];
+		}
+
+		return array_values( array_filter( array_map( 'sanitize_key', $hidden_widget_ids ) ) );
+	}
+
+	/**
+	 * Save dashboard Screen Options.
+	 */
+	private function maybe_save_screen_options() {
+		if ( empty( $_POST[ self::SCREEN_OPTIONS_SUBMITTED ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			return;
+		}
+
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+			return;
+		}
+
+		$nonce = isset( $_POST[ self::SCREEN_OPTIONS_NONCE ] ) ? sanitize_text_field( wp_unslash( $_POST[ self::SCREEN_OPTIONS_NONCE ] ) ) : '';
+		if ( ! wp_verify_nonce( $nonce, self::SCREEN_OPTIONS_ACTION ) ) {
+			return;
+		}
+
+		$widget_ids = $this->get_posted_widget_ids();
+		if ( empty( $widget_ids ) ) {
+			return;
+		}
+
+		$visible_widget_ids = $this->get_posted_visible_widget_ids();
+		$hidden_widget_ids  = array_values( array_diff( $widget_ids, $visible_widget_ids ) );
+
+		update_user_option( get_current_user_id(), self::HIDDEN_WIDGETS_USER_OPTION, $hidden_widget_ids );
+	}
+
+	/**
+	 * Get posted dashboard widget IDs.
+	 *
+	 * @return string[]
+	 */
+	private function get_posted_widget_ids() {
+		if ( empty( $_POST[ self::SCREEN_OPTIONS_WIDGETS ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			return [];
+		}
+
+		return $this->sanitize_widget_ids( (array) wp_unslash( $_POST[ self::SCREEN_OPTIONS_WIDGETS ] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+	}
+
+	/**
+	 * Get posted visible dashboard widget IDs.
+	 *
+	 * @return string[]
+	 */
+	private function get_posted_visible_widget_ids() {
+		if ( empty( $_POST[ self::VISIBLE_WIDGETS ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			return [];
+		}
+
+		return $this->sanitize_widget_ids( (array) wp_unslash( $_POST[ self::VISIBLE_WIDGETS ] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+	}
+
+	/**
+	 * Sanitize widget IDs.
+	 *
+	 * @param array $widget_ids Widget IDs.
+	 *
+	 * @return string[]
+	 */
+	private function sanitize_widget_ids( $widget_ids ) {
+		return array_values( array_unique( array_filter( array_map( 'sanitize_key', $widget_ids ) ) ) );
+	}
+
+	/**
+	 * Get default widget labels.
+	 *
+	 * @return string[]
+	 */
+	private function get_default_widget_label_map() {
+		return apply_filters(
+			'automatewoo/dashboard/widget_labels',
+			[
+				'analytics-workflows-run' => __( 'Workflows run', 'automatewoo' ),
+				'chart-workflows-run'     => __( 'Workflows run', 'automatewoo' ),
+				'analytics-conversions'   => __( 'Conversion revenue', 'automatewoo' ),
+				'chart-conversions'       => __( 'Conversion revenue', 'automatewoo' ),
+				'analytics-email'         => __( 'Messages sent', 'automatewoo' ),
+				'chart-email'             => __( 'Messages sent', 'automatewoo' ),
+				'key-figures'             => __( 'Key figures', 'automatewoo' ),
+				'workflows'               => __( 'Featured workflows', 'automatewoo' ),
+				'logs'                    => __( 'Recent logs', 'automatewoo' ),
+				'queue'                   => __( 'Upcoming queued events', 'automatewoo' ),
+			]
+		);
+	}
+
+	/**
+	 * Get the display label for a widget.
+	 *
+	 * @param Dashboard_Widget $widget Widget.
+	 * @param string[]         $default_label_map Default labels keyed by widget ID.
+	 *
+	 * @return string
+	 */
+	private function get_widget_label( $widget, $default_label_map ) {
+		$widget_id = $widget->get_id();
+
+		if ( isset( $default_label_map[ $widget_id ] ) ) {
+			return $default_label_map[ $widget_id ];
+		}
+
+		if ( ! empty( $widget->title ) ) {
+			return $widget->title;
+		}
+
+		return ucwords( str_replace( [ '-', '_' ], ' ', $widget_id ) );
 	}
 
 	/**
@@ -397,18 +593,26 @@ class Dashboard extends Base {
 		$cache_key   = 'most_run_workflow_' . $this->get_date_arg();
 		$workflow_id = Cache::get( $cache_key, 'dashboard' );
 		if ( false !== $workflow_id ) {
-			$this->most_run_workflow = Factory::get( $workflow_id );
-			return $this->most_run_workflow;
+			$workflow = Factory::get( $workflow_id );
+			if ( $workflow && get_post_status( $workflow_id ) !== 'trash' ) {
+				$this->most_run_workflow = $workflow;
+				return $this->most_run_workflow;
+			}
+
+			// The cached workflow was trashed or deleted after being cached; fall through to the query.
+			Cache::delete( $cache_key, 'dashboard' );
 		}
 
 		$date = $this->get_date_range();
 
 		$row = $wpdb->get_row(
 			$wpdb->prepare(
-				"SELECT COUNT(*) AS count, workflow_id
-					FROM `{$wpdb->prefix}automatewoo_logs`
-					WHERE date >= %s AND date <= %s
-					GROUP BY workflow_id
+				"SELECT COUNT(*) AS count, l.workflow_id
+					FROM `{$wpdb->prefix}automatewoo_logs` AS l
+					INNER JOIN `{$wpdb->posts}` AS p ON p.ID = l.workflow_id
+					WHERE l.date >= %s AND l.date <= %s
+					AND p.post_status != 'trash'
+					GROUP BY l.workflow_id
 					ORDER BY count DESC
 					LIMIT 1",
 				$date['from']->to_mysql_string(),
@@ -442,8 +646,14 @@ class Dashboard extends Base {
 		$cache_key   = 'highest_converting_workflow_' . $this->get_date_arg();
 		$workflow_id = Cache::get( $cache_key, 'dashboard' );
 		if ( false !== $workflow_id ) {
-			$this->highest_converting_workflow = Factory::get( $workflow_id );
-			return $this->highest_converting_workflow;
+			$workflow = Factory::get( $workflow_id );
+			if ( $workflow && get_post_status( $workflow_id ) !== 'trash' ) {
+				$this->highest_converting_workflow = $workflow;
+				return $this->highest_converting_workflow;
+			}
+
+			// The cached workflow was trashed or deleted after being cached; fall through to the query.
+			Cache::delete( $cache_key, 'dashboard' );
 		}
 
 		if ( HPOS_Helper::is_HPOS_enabled() ) {
@@ -456,9 +666,11 @@ class Dashboard extends Base {
 					"SELECT SUM( orders.total_amount ) AS conversion_total, meta.meta_value AS workflow_id
 						FROM {$wpdb->prefix}wc_orders AS orders
 						INNER JOIN {$wpdb->prefix}wc_orders_meta AS meta ON orders.id = meta.order_id
+						INNER JOIN {$wpdb->posts} AS posts ON posts.ID = meta.meta_value
 						WHERE orders.status IN ( {$statuses} )
 						AND orders.type = 'shop_order'
 						AND meta.meta_key = '_aw_conversion'
+						AND posts.post_status != 'trash'
 						AND ( orders.date_created_gmt >= %s AND orders.date_created_gmt <= %s )
 						GROUP BY meta.meta_value
 						ORDER BY SUM( orders.total_amount ) DESC
@@ -493,12 +705,18 @@ class Dashboard extends Base {
 		}
 
 		arsort( $totals, SORT_NUMERIC );
-		$workflow_id = key( $totals );
 
-		if ( $workflow_id ) {
-			$this->highest_converting_workflow = Factory::get( $workflow_id );
-			Cache::set( $cache_key, $workflow_id, 'dashboard' );
-			return $this->highest_converting_workflow;
+		// The HPOS path above filters out trashed workflows via SQL. This PHP check
+		// is the equivalent filter for this non-HPOS fallback, which has no SQL filter.
+		// Note: the raw post status is checked because Workflow::get_status() reports
+		// manual-type workflows as 'active' regardless of their post status.
+		foreach ( array_keys( $totals ) as $workflow_id ) {
+			$workflow = Factory::get( $workflow_id );
+			if ( $workflow && get_post_status( $workflow_id ) !== 'trash' ) {
+				$this->highest_converting_workflow = $workflow;
+				Cache::set( $cache_key, $workflow_id, 'dashboard' );
+				return $this->highest_converting_workflow;
+			}
 		}
 
 		return null;

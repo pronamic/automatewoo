@@ -37,7 +37,7 @@ $n = 1;
 			<tbody><tr><td style="padding: 0;"><div class="aw-product-grid-container">
 
 				<?php if ( isset( $order ) ): ?>
-					<?php $products = $order->get_items(); ?>
+					<?php $products = aw_filter_hidden_bundled_order_items( empty( $include_refunded ) ? aw_filter_refunded_order_items( $order->get_items(), $order ) : $order->get_items() ); ?>
 				<?php endif; ?>
 
 				<?php foreach ( $products as $product ): ?>
@@ -53,7 +53,7 @@ $n = 1;
 						<a href="<?php echo esc_url( $permalink ); ?>"><?php echo \AW_Mailer_API::get_product_image( $product ) ?></a>
 						<h3><a href="<?php echo esc_url( $permalink ); ?>"><?php echo esc_html( $product_name ); ?></a></h3>
 						<?php if ( isset( $order ) && $order_item ) : ?>
-							<p class="price"><strong><?php echo wp_kses_post( $order->get_formatted_line_subtotal( $order_item ) ); ?></strong></p>
+							<p class="price"><strong><?php echo wp_kses_post( automatewoo_email_template_line_total_html( $order, $order_item ) ); ?></strong></p>
 						<?php else : ?>
 							<p class="price"><strong><?php echo wp_kses_post( $product->get_price_html() ); ?></strong></p>
 						<?php endif; ?>

@@ -6,6 +6,8 @@ namespace AutomateWoo\Rules;
 use AutomateWoo\DataTypes\DataTypes;
 use AutomateWoo\RuleQuickFilters\Clauses\ClauseInterface;
 use AutomateWoo\RuleQuickFilters\Clauses\NoOpClause;
+use AutomateWoo\RuleQuickFilters\Clauses\NumericClause;
+use AutomateWoo\RuleQuickFilters\Clauses\OrClause;
 use AutomateWoo\Rules\Interfaces\NonPrimaryDataTypeQuickFilterable;
 use AutomateWoo\Rules\Utilities\DataTypeConditions;
 use AutomateWoo\Rules\Utilities\StringQuickFilter;
@@ -55,7 +57,26 @@ class Customer_Email extends Abstract_String implements NonPrimaryDataTypeQuickF
 	public function get_non_primary_quick_filter_clause( $data_type, $compare_type, $value ) {
 		// Get clauses for order and subscription queries
 		if ( $this->is_data_type_order_or_subscription( $data_type ) ) {
-			return $this->generate_string_quick_filter_clause( 'billing_email', $compare_type, $value );
+			$billing_email_clause = $this->generate_string_quick_filter_clause( 'billing_email', $compare_type, $value );
+
+			// For exact match, also search by customer user ID so that orders belonging
+			// to a registered customer are found even when the billing email differs from
+			// the customer's account email. This aligns the quick filter with the
+			// validation logic in Data_Layer::get_customer_email(), which resolves
+			// registered customers by their account email rather than billing email.
+			if ( 'is' === $compare_type ) {
+				$user = get_user_by( 'email', $value );
+				if ( $user ) {
+					return new OrClause(
+						[
+							$billing_email_clause,
+							new NumericClause( 'customer_user', '=', $user->ID ),
+						]
+					);
+				}
+			}
+
+			return $billing_email_clause;
 		}
 
 		return new NoOpClause();

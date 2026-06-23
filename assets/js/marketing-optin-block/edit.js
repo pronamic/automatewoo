@@ -53,7 +53,7 @@ export const Edit = ( { attributes: { text }, setAttributes } ) => {
 				<CheckboxControl
 					id="automatewoo-marketing-optin"
 					checked={ false }
-					disabled={ true }
+					onChange={ () => {} }
 				>
 					<RichText
 						className="wc-block-components-checkbox__label"

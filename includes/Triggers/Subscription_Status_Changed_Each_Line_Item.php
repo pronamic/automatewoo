@@ -36,6 +36,17 @@ class Trigger_Subscription_Status_Changed_Each_Line_Item extends Trigger_Subscri
 	 * @param string $old_status
 	 */
 	public function handle_status_changed( $subscription_id, $new_status, $old_status ) {
+		$this->handle_normalized_status_changed( $subscription_id, $old_status, $new_status );
+	}
+
+	/**
+	 * Handle status changed after status arguments have been normalized.
+	 *
+	 * @param int    $subscription_id
+	 * @param string $old_status
+	 * @param string $new_status
+	 */
+	protected function handle_normalized_status_changed( $subscription_id, $old_status, $new_status ) {
 		Temporary_Data::set( 'subscription_old_status', $subscription_id, $old_status );
 		Temporary_Data::set( 'subscription_new_status', $subscription_id, $new_status );
 		Subscription_Workflow_Helper::trigger_for_each_subscription_line_item( $this, $subscription_id );

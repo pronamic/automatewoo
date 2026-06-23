@@ -278,6 +278,15 @@ class Settings_Tab_General extends Admin_Settings_Tab_Abstract {
 			]
 		);
 
+		$this->add_setting(
+			'delete_data_on_uninstall',
+			[
+				'title' => __( 'Remove data on uninstall', 'automatewoo' ),
+				'desc'  => __( 'Delete all AutomateWoo data when the plugin is deleted. This includes workflows, logs, carts, customers, guests, queued events, and settings. To delete this data immediately instead, use the "Delete all data" tool under AutomateWoo > Tools.', 'automatewoo' ),
+				'type'  => 'checkbox',
+			]
+		);
+
 		$this->section_end( 'misc' );
 	}
 

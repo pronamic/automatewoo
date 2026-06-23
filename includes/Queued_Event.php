@@ -14,6 +14,9 @@ defined( 'ABSPATH' ) || exit;
  */
 class Queued_Event extends Abstract_Model_With_Meta_Table {
 
+	const CUSTOMER_ID_META_KEY = 'customer_id';
+	const GUEST_ID_META_KEY    = 'guest_id';
+
 	/** @var string */
 	public $table_id = 'queue';
 
@@ -155,6 +158,109 @@ class Queued_Event extends Abstract_Model_With_Meta_Table {
 		foreach ( $this->uncompressed_data_layer as $data_type_id => $data_item ) {
 			$this->store_data_item( $data_type_id, $data_item );
 		}
+
+		$this->store_customer_ids( $data_layer );
+	}
+
+	/**
+	 * Store customer identifiers for lightweight admin queue display.
+	 *
+	 * @param Data_Layer $data_layer The data layer for the queued event.
+	 */
+	private function store_customer_ids( $data_layer ) {
+		$data     = $data_layer->get_raw_data();
+		$customer = isset( $data['customer'] ) ? aw_validate_data_item( 'customer', $data['customer'] ) : false;
+
+		if ( $customer ) {
+			$this->update_meta( self::CUSTOMER_ID_META_KEY, $customer->get_id() );
+
+			if ( $customer->get_guest_id() ) {
+				$this->update_meta( self::GUEST_ID_META_KEY, $customer->get_guest_id() );
+			}
+
+			return;
+		}
+
+		$guest = isset( $data['guest'] ) ? aw_validate_data_item( 'guest', $data['guest'] ) : false;
+		if ( $guest && $guest->get_id() ) {
+			$this->update_meta( self::GUEST_ID_META_KEY, $guest->get_id() );
+			return;
+		}
+
+		$customer = $this->get_customer_from_data_layer( $data_layer );
+		if ( $customer ) {
+			$this->update_meta( self::CUSTOMER_ID_META_KEY, $customer->get_id() );
+
+			if ( $customer->get_guest_id() ) {
+				$this->update_meta( self::GUEST_ID_META_KEY, $customer->get_guest_id() );
+			}
+		}
+	}
+
+	/**
+	 * Resolve a customer from the available data layer items.
+	 *
+	 * @param Data_Layer $data_layer The data layer for the queued event.
+	 *
+	 * @return Customer|false
+	 */
+	private function get_customer_from_data_layer( $data_layer ) {
+		$user = $data_layer->get_user();
+		if ( $user ) {
+			return Customer_Factory::get_by_user_data_item( $user );
+		}
+
+		$order = $data_layer->get_order();
+		if ( $order ) {
+			return Customer_Factory::get_by_order( $order );
+		}
+
+		$subscription = $data_layer->get_subscription();
+		if ( $subscription ) {
+			return Customer_Factory::get_by_user_id( $subscription->get_user_id() );
+		}
+
+		return false;
+	}
+
+	/**
+	 * Get the stored customer ID for this queued event.
+	 *
+	 * @return int
+	 */
+	public function get_customer_id() {
+		return absint( $this->get_meta( self::CUSTOMER_ID_META_KEY ) );
+	}
+
+	/**
+	 * Get the stored guest ID for this queued event.
+	 *
+	 * @return int
+	 */
+	public function get_guest_id() {
+		return absint( $this->get_meta( self::GUEST_ID_META_KEY ) );
+	}
+
+	/**
+	 * Get the customer from lightweight stored queue metadata.
+	 *
+	 * @return Customer|false
+	 */
+	public function get_stored_customer() {
+		$customer_id = $this->get_customer_id();
+		if ( $customer_id ) {
+			$customer = Customer_Factory::get( $customer_id );
+			if ( $customer ) {
+				return $customer;
+			}
+		}
+
+		$guest_id = $this->get_guest_id();
+		if ( $guest_id ) {
+			return Customer_Factory::get_by_guest_id( $guest_id );
+		}
+
+		return false;
 	}
 
 	/**
@@ -292,6 +398,12 @@ class Queued_Event extends Abstract_Model_With_Meta_Table {
 	 */
 	public function run() {
 		if ( ! $this->exists ) {
+			return false;
+		}
+
+		// Preserve queued events while the non-production environment lock is active,
+		// so they are not failed or deleted and can run once workflows are re-enabled.
+		if ( AdminNotices\NonProductionEnvironment::is_environment_locked() ) {
 			return false;
 		}
 

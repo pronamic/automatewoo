@@ -48,7 +48,7 @@ class Action_Subscription_Add_Note extends Action_Order_Add_Note {
 			$this->add_custom_author( $author );
 		}
 
-		$subscription->add_order_note( $note, 'customer' === $note_type, false );
+		$this->add_order_note( $subscription, $note, 'customer' === $note_type, false );
 
 		if ( $should_set_custom_author ) {
 			$this->remove_custom_author();

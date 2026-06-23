@@ -22,8 +22,9 @@ import './conversions-table.scss';
 
 const requestUnmark = async function ( orderIds ) {
 	const { createNotice } = dispatch( 'core/notices' );
+	let response;
 	try {
-		await apiFetch( {
+		response = await apiFetch( {
 			path: `/automatewoo/conversions/batch/`,
 			method: 'DELETE',
 			body: JSON.stringify( {
@@ -34,6 +35,16 @@ const requestUnmark = async function ( orderIds ) {
 		createNotice(
 			'error',
 			__( 'There was an error unmarking conversions.', 'automatewoo' )
+		);
+		return;
+	}
+	if ( response?.failed?.length ) {
+		createNotice(
+			'error',
+			__(
+				'Some orders could not be unmarked as conversions.',
+				'automatewoo'
+			)
 		);
 		return;
 	}

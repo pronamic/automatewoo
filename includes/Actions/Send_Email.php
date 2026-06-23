@@ -48,6 +48,7 @@ class Action_Send_Email extends Action_Send_Email_Abstract {
 			->set_name( 'email_heading' )
 			->set_title( __( 'Email heading', 'automatewoo' ) )
 			->set_variable_validation()
+			->set_allow_html()
 			->set_description( __( 'The appearance will depend on your email template. Not all templates support this field.', 'automatewoo' ) );
 
 		$preheader = ( new Fields\Text() )
@@ -62,7 +63,9 @@ class Action_Send_Email extends Action_Send_Email_Abstract {
 			->set_description( __( 'Select which template to use when formatting the email. If you select \'None\', the email will have no template but the email will still be sent as an HTML email.', 'automatewoo' ) )
 			->set_options( Emails::get_email_templates() );
 
-		$email_content = ( new Fields\Email_Content() ); // no easy way to define data attributes
+		// The data attribute can't be rendered on the wp_editor field, but flagging it lets the
+		// variable indicator show in the label column and keeps it consistent with the other content fields.
+		$email_content = ( new Fields\Email_Content() )->set_variable_validation();
 
 		$this->add_field( $heading );
 		$this->add_field( $preheader );
@@ -89,7 +92,7 @@ class Action_Send_Email extends Action_Send_Email_Abstract {
 			$current_user->get( 'user_email' ),
 			$this->get_option( 'email_content', true, true )
 		)
-			->set_heading( $this->get_option( 'email_heading', true ) )
+			->set_heading( $this->get_option( 'email_heading', true, true ) )
 			->set_preheader( trim( $this->get_option( 'preheader', true ) ) )
 			->set_template( $this->get_option( 'template' ) )
 			->get_email_body();
@@ -106,7 +109,7 @@ class Action_Send_Email extends Action_Send_Email_Abstract {
 		try {
 			$this->validate_test_args( $args );
 
-			$heading   = $this->get_option( 'email_heading', true );
+			$heading   = $this->get_option( 'email_heading', true, true );
 			$content   = $this->get_option( 'email_content', true, true );
 			$preheader = trim( $this->get_option( 'preheader', true ) );
 			$template  = $this->get_option( 'template' );
@@ -136,7 +139,7 @@ class Action_Send_Email extends Action_Send_Email_Abstract {
 		$recipients = $this->get_option( 'to', true );
 		$cc         = $this->get_option( 'cc', true );
 		$bcc        = $this->get_option( 'bcc', true );
-		$heading    = $this->get_option( 'email_heading', true );
+		$heading    = $this->get_option( 'email_heading', true, true );
 		$content    = $this->get_option( 'email_content', true, true );
 		$preheader  = $this->get_option( 'preheader', true );
 		$template   = $this->get_option( 'template' );

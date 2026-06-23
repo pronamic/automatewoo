@@ -45,7 +45,7 @@ class Admin_Workflow_List {
 		$columns['timing']           = __( 'Timing', 'automatewoo' );
 		$columns['times_run']        = __( 'Run Count', 'automatewoo' );
 		$columns['queued']           = __( 'Queue Count', 'automatewoo' );
-		$columns['aw_status_toggle'] = '';
+		$columns['aw_status_toggle'] = '<span class="screen-reader-text">' . esc_html__( 'Status', 'automatewoo' ) . '</span>';
 
 		return $columns;
 	}
@@ -215,12 +215,17 @@ class Admin_Workflow_List {
 		$url = remove_query_arg( 'post_status', add_query_arg( 'filter_manual', 1 ) );
 
 		$views['manual'] = sprintf(
-			'<a href="%s" class="%s">%s <span class="count">(%s)</a>',
+			'<a href="%s" class="%s">%s <span class="count">(%s)</span></a>',
 			esc_url( $url ),
 			$this->is_manual_view() ? esc_attr( 'current' ) : '',
 			esc_html__( 'Manual', 'automatewoo' ),
-			Workflows::get_manual_workflows_count()
+			number_format_i18n( Workflows::get_manual_workflows_count() )
 		);
+
+		$search_term = (string) get_query_var( 's' );
+		if ( '' !== $search_term ) {
+			$views = $this->update_view_counts_for_search( $views, $search_term );
+		}
 
 		$trash = aw_array_extract( $views, 'trash' );
 		if ( $trash ) {
@@ -228,5 +233,90 @@ class Admin_Workflow_List {
 		}
 
 		return $views;
+	}
+
+	/**
+	 * Update view counts to reflect the current search query.
+	 *
+	 * @since 6.5.0
+	 *
+	 * @param array  $views       The view links.
+	 * @param string $search_term The search term from the main query.
+	 *
+	 * @return array The updated view links.
+	 */
+	private function update_view_counts_for_search( array $views, string $search_term ): array {
+		$status_map = [
+			'all'         => [ 'publish', 'aw-disabled' ],
+			'publish'     => [ 'publish' ],
+			'aw-disabled' => [ 'aw-disabled' ],
+			'trash'       => [ 'trash' ],
+		];
+
+		foreach ( $status_map as $view_key => $post_statuses ) {
+			if ( ! isset( $views[ $view_key ] ) ) {
+				continue;
+			}
+
+			$count = $this->get_workflow_search_count( $search_term, $post_statuses );
+
+			$views[ $view_key ] = preg_replace(
+				'/(<span class="count">\()[^)]+(\)<\/span>)/',
+				'${1}' . number_format_i18n( $count ) . '${2}',
+				$views[ $view_key ]
+			);
+		}
+
+		if ( isset( $views['manual'] ) ) {
+			$count = $this->get_workflow_search_count(
+				$search_term,
+				[ 'publish', 'aw-disabled' ],
+				[
+					[
+						'key'   => 'type',
+						'value' => 'manual',
+					],
+				]
+			);
+
+			$views['manual'] = preg_replace(
+				'/(<span class="count">\()[^)]+(\)<\/span>)/',
+				'${1}' . number_format_i18n( $count ) . '${2}',
+				$views['manual']
+			);
+		}
+
+		return $views;
+	}
+
+	/**
+	 * Get the count of workflows matching a search term and status.
+	 *
+	 * @since 6.5.0
+	 *
+	 * @param string $search_term  The search term.
+	 * @param array  $post_statuses The post statuses to query.
+	 * @param array  $meta_query   Optional meta query arguments.
+	 *
+	 * @return int The number of matching workflows.
+	 */
+	private function get_workflow_search_count( string $search_term, array $post_statuses, array $meta_query = [] ): int {
+		$query_args = [
+			'post_type'              => 'aw_workflow',
+			'post_status'            => $post_statuses,
+			's'                      => $search_term,
+			'posts_per_page'         => 1,
+			'fields'                 => 'ids',
+			'update_post_meta_cache' => false,
+			'update_post_term_cache' => false,
+		];
+
+		if ( ! empty( $meta_query ) ) {
+			$query_args['meta_query'] = $meta_query; // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
+		}
+
+		$query = new \WP_Query( $query_args );
+
+		return $query->found_posts;
 	}
 }

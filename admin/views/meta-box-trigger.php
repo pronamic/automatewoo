@@ -28,10 +28,10 @@ $current_description = $current_trigger && $current_trigger->get_description()
 <table class="automatewoo-table">
 	<tr class="automatewoo-table__row" data-name="trigger_name" data-type="select" data-required="1">
 		<td class="automatewoo-table__col automatewoo-table__col--label">
-			<label><?php esc_html_e( 'Trigger', 'automatewoo' ); ?> <span class="required">*</span></label>
+			<label for="aw-workflow-trigger-name"><?php esc_html_e( 'Trigger', 'automatewoo' ); ?> <span class="required">*</span></label>
 		</td>
 		<td class="automatewoo-table__col automatewoo-table__col--field">
-			<select name="aw_workflow_data[trigger_name]" class="automatewoo-field js-trigger-select">
+			<select id="aw-workflow-trigger-name" name="aw_workflow_data[trigger_name]" class="automatewoo-field js-trigger-select">
 				<option value=""><?php esc_html_e( '[Select]', 'automatewoo' ); ?></option>
 				<?php foreach ( $trigger_list as $trigger_group => $triggers ) : ?>
 					<optgroup label="<?php echo esc_attr( $trigger_group ); ?>">

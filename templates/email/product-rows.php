@@ -27,7 +27,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 	<table cellspacing="0" cellpadding="0" style="width: 100%;" class="aw-product-rows"><tbody>
 
 		<?php if ( isset( $order ) ): ?>
-			<?php $products = $order->get_items(); ?>
+			<?php $products = aw_filter_hidden_bundled_order_items( empty( $include_refunded ) ? aw_filter_refunded_order_items( $order->get_items(), $order ) : $order->get_items() ); ?>
 		<?php endif; ?>
 
 		<?php foreach ( $products as $product ): ?>
@@ -49,7 +49,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 				<td align="right" class="last" width="35%">
 					<?php if ( isset( $order ) && $order_item ) : ?>
-						<p class="price"><?php echo wp_kses_post( $order->get_formatted_line_subtotal( $order_item ) ); ?></p>
+						<p class="price"><?php echo wp_kses_post( automatewoo_email_template_line_total_html( $order, $order_item ) ); ?></p>
 					<?php else : ?>
 						<p class="price"><?php echo wp_kses_post( $product->get_price_html() ); ?></p>
 					<?php endif; ?>

@@ -51,6 +51,12 @@ class Integration_Bitly extends Integration {
 	 * @return string|false
 	 */
 	public function shorten_url( $long_url, $ignore_cache = false ) {
+		// If the URL is already a Bitly link, return it as-is to avoid a wasted API call and a 400 error.
+		$host = strtolower( (string) wp_parse_url( $long_url, PHP_URL_HOST ) );
+		if ( in_array( $host, [ 'bit.ly', 'j.mp' ], true ) ) {
+			return $long_url;
+		}
+
 		$cache_key = md5( $long_url );
 		$cache     = Cache::get( $cache_key, 'bitly' );
 		if ( ! $ignore_cache && $cache ) {
@@ -82,7 +88,15 @@ class Integration_Bitly extends Integration {
 	 * @return string
 	 */
 	public function shorten_urls_in_text( $text ) {
-		$replacer = new Replace_Helper( $text, [ $this, 'shorten_url' ], 'text_urls' );
+		$replacer = new Replace_Helper(
+			$text,
+			function ( $url ) {
+				// Keep the original URL if shortening fails.
+				$short = $this->shorten_url( $url );
+				return $short ? $short : $url;
+			},
+			'text_urls'
+		);
 		return $replacer->process();
 	}
 

@@ -463,6 +463,10 @@ jQuery( function ( $ ) {
 		$trigger_select: $( '.js-trigger-select' ).first(),
 		$manual_trigger_select: $( '.js-manual-trigger-select' ).first(),
 
+		// Incrementing ids used to discard stale trigger field ajax responses.
+		trigger_fields_request: 0,
+		manual_trigger_fields_request: 0,
+
 		init() {
 			AutomateWoo.Workflows.init_triggers_box();
 			AutomateWoo.Workflows.init_actions_box();
@@ -602,11 +606,21 @@ jQuery( function ( $ ) {
 				.find( 'tr.aw-trigger-option' )
 				.remove();
 
+			const requestId = ++AutomateWoo.Workflows.trigger_fields_request;
+
 			if ( triggerName ) {
 				AutomateWoo.Workflows.$triggers_box.addClass( 'aw-loading' );
 
 				this.fetch_trigger_data( triggerName ).done(
 					function ( response ) {
+						if (
+							requestId !==
+							AutomateWoo.Workflows.trigger_fields_request
+						) {
+							// A newer request supersedes this response.
+							return;
+						}
+
 						if ( ! response.success ) {
 							return;
 						}
@@ -659,6 +673,7 @@ jQuery( function ( $ ) {
 					}
 				);
 			} else {
+				AutomateWoo.Workflows.$triggers_box.removeClass( 'aw-loading' );
 				AW.workflow.set( 'trigger', false );
 			}
 		},
@@ -677,6 +692,64 @@ jQuery( function ( $ ) {
 			} );
 		},
 
+		get_trigger_data( triggerName ) {
+			const triggers = AW.workflow.get( 'triggers' ) || {};
+			return triggers[ triggerName ] || false;
+		},
+
+		get_trigger_select_for_type( type ) {
+			return type === 'manual'
+				? AutomateWoo.Workflows.$manual_trigger_select
+				: AutomateWoo.Workflows.$trigger_select;
+		},
+
+		get_first_trigger_name_for_type( type ) {
+			return (
+				this.get_trigger_select_for_type( type )
+					.find( 'option[value!=""]' )
+					.first()
+					.val() || ''
+			);
+		},
+
+		get_matching_trigger_name_for_type( type ) {
+			const currentTrigger = AW.workflow.get( 'trigger' );
+			const currentDataItems = currentTrigger
+				? currentTrigger.supplied_data_items || []
+				: [];
+			const isManual = type === 'manual';
+			const $select = this.get_trigger_select_for_type( type );
+			let matchedTriggerName =
+				this.get_first_trigger_name_for_type( type );
+			let matchedScore = -1;
+
+			$select.find( 'option[value!=""]' ).each( ( index, option ) => {
+				const triggerName = $( option ).val();
+				const trigger = this.get_trigger_data( triggerName );
+
+				if ( ! trigger || trigger.is_manual !== isManual ) {
+					return;
+				}
+
+				const triggerDataItems = trigger.supplied_data_items || [];
+				const score = currentDataItems.reduce(
+					( total, dataItem ) =>
+						total +
+						( $.inArray( dataItem, triggerDataItems ) === -1
+							? 0
+							: 1 ),
+					0
+				);
+
+				if ( score > matchedScore ) {
+					matchedTriggerName = triggerName;
+					matchedScore = score;
+				}
+			} );
+
+			return matchedTriggerName;
+		},
+
 		/**
 		 * @param {*} triggerName
 		 */
@@ -686,11 +759,22 @@ jQuery( function ( $ ) {
 			// Remove existing fields
 			$metabox.find( 'tr.aw-trigger-option' ).remove();
 
+			const requestId = ++AutomateWoo.Workflows
+				.manual_trigger_fields_request;
+
 			if ( triggerName ) {
 				$metabox.addClass( 'aw-loading' );
 
 				this.fetch_trigger_data( triggerName ).done(
 					function ( response ) {
+						if (
+							requestId !==
+							AutomateWoo.Workflows.manual_trigger_fields_request
+						) {
+							// A newer request supersedes this response.
+							return;
+						}
+
 						if ( ! response.success ) {
 							return;
 						}
@@ -702,6 +786,7 @@ jQuery( function ( $ ) {
 					}
 				);
 			} else {
+				$metabox.removeClass( 'aw-loading' );
 				AW.workflow.set( 'trigger', false );
 			}
 		},
@@ -1250,15 +1335,34 @@ jQuery( function ( $ ) {
 			}
 
 			if ( doReset ) {
-				// Reset select box to first option on type change
-				AutomateWoo.Workflows.$manual_trigger_select[ 0 ].selectedIndex = 0;
-				AutomateWoo.Workflows.$trigger_select[ 0 ].selectedIndex = 0;
+				const triggerName =
+					AutomateWoo.Workflows.get_matching_trigger_name_for_type(
+						type
+					);
 
-				AutomateWoo.Workflows.$triggers_box
-					.find( 'tr.aw-trigger-option' )
-					.remove();
-
-				AW.workflow.set( 'trigger', false );
+				if ( type === 'manual' ) {
+					// Invalidate any in-flight automatic-trigger fields request.
+					++AutomateWoo.Workflows.trigger_fields_request;
+					AutomateWoo.Workflows.$trigger_select[ 0 ].selectedIndex = 0;
+					AutomateWoo.Workflows.$triggers_box
+						.find( 'tr.aw-trigger-option' )
+						.remove();
+					AutomateWoo.Workflows.$manual_trigger_select.val(
+						triggerName
+					);
+					AutomateWoo.Workflows.fill_manual_workflow_trigger_fields(
+						triggerName
+					);
+				} else {
+					// Invalidate any in-flight manual-trigger fields request.
+					++AutomateWoo.Workflows.manual_trigger_fields_request;
+					AutomateWoo.Workflows.$manual_trigger_select[ 0 ].selectedIndex = 0;
+					AutomateWoo.Workflows.$manual_workflow_box
+						.find( 'tr.aw-trigger-option' )
+						.remove();
+					AutomateWoo.Workflows.$trigger_select.val( triggerName );
+					AutomateWoo.Workflows.fill_trigger_fields( triggerName );
+				}
 			}
 		}
 

@@ -83,11 +83,7 @@ class Settings_Tab_Twilio extends Admin_Settings_Tab_Abstract {
 	public function save( $fields = array() ): void {
 		parent::save( $fields );
 
-		$twilio = Integrations::get_twilio();
-		if ( $twilio && $twilio->test_integration() ) {
-			// If a notification exists relating to a Twilio integration error, delete it.
-			TwilioCheck::possibly_delete_note();
-		}
+		$this->validate_integration_on_save( Integrations::get_twilio(), __( 'Twilio', 'automatewoo' ), TwilioCheck::class );
 	}
 }
 

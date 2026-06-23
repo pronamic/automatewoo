@@ -27,10 +27,12 @@ class Report_Optins extends Admin_List_Table {
 	 * Default constructor
 	 */
 	public function __construct() {
+		$showing_optouts = $this->is_showing_optouts();
+
 		parent::__construct(
 			[
-				'singular' => Options::optin_enabled() ? __( 'Opt-in', 'automatewoo' ) : __( 'Opt-out', 'automatewoo' ),
-				'plural'   => Options::optin_enabled() ? __( 'Opt-ins', 'automatewoo' ) : __( 'Opt-outs', 'automatewoo' ),
+				'singular' => $showing_optouts ? __( 'Opt-out', 'automatewoo' ) : __( 'Opt-in', 'automatewoo' ),
+				'plural'   => $showing_optouts ? __( 'Opt-outs', 'automatewoo' ) : __( 'Opt-ins', 'automatewoo' ),
 				'ajax'     => false,
 			]
 		);
@@ -38,11 +40,67 @@ class Report_Optins extends Admin_List_Table {
 	}
 
 	/**
+	 * Is the table showing opt-outs?
+	 *
+	 * @return bool
+	 */
+	protected function is_showing_optouts() {
+		return ! Options::optin_enabled() || 'optouts' === aw_request( 'optin_status' );
+	}
+
+	/**
+	 * Preserve the selected opt-in status view in list table forms.
+	 *
+	 * @return void
+	 */
+	public function output_form_open() {
+		parent::output_form_open();
+
+		if ( Options::optin_enabled() && $this->is_showing_optouts() ) {
+			echo '<input type="hidden" name="optin_status" value="optouts" />';
+		}
+	}
+
+	/**
+	 * Get status views for opt-in mode.
+	 *
+	 * @return array
+	 */
+	protected function get_views() {
+		if ( ! Options::optin_enabled() ) {
+			return [];
+		}
+
+		$showing_optouts = $this->is_showing_optouts();
+
+		return [
+			'optins'  => sprintf(
+				'<a href="%1$s" class="%2$s">%3$s</a>',
+				esc_url( Admin::page_url( 'opt-ins' ) ),
+				$showing_optouts ? '' : 'current',
+				esc_html__( 'Opt-ins', 'automatewoo' )
+			),
+			'optouts' => sprintf(
+				'<a href="%1$s" class="%2$s">%3$s</a>',
+				esc_url( add_query_arg( 'optin_status', 'optouts', Admin::page_url( 'opt-ins' ) ) ),
+				$showing_optouts ? 'current' : '',
+				esc_html__( 'Opt-outs', 'automatewoo' )
+			),
+		];
+	}
+
+	/**
 	 * @param Customer $customer
 	 * @return string
 	 */
 	public function column_cb( $customer ) {
-		return '<input type="checkbox" name="customer_ids[]" value="' . absint( $customer->get_id() ) . '" />';
+		$id = absint( $customer->get_id() );
+		return sprintf(
+			'<label class="screen-reader-text" for="cb-select-%1$d">%2$s</label><input id="cb-select-%1$d" type="checkbox" name="customer_ids[]" value="%1$d" />',
+			$id,
+			/* translators: %d: customer ID */
+			esc_html( sprintf( __( 'Select customer %d', 'automatewoo' ), $id ) )
+		);
 	}
 
 	/**
@@ -56,8 +114,38 @@ class Report_Optins extends Admin_List_Table {
 				return Format::customer( $customer );
 
 			case 'time':
-				return $this->format_date( Options::optin_enabled() ? $customer->get_date_subscribed() : $customer->get_date_unsubscribed() );
+				return $this->format_date( $this->is_showing_optouts() ? $customer->get_date_unsubscribed() : $customer->get_date_subscribed() );
+
+			case 'workflow':
+				return $this->format_workflow( $customer->get_unsubscribed_workflow_id() );
 		}
+	}
+
+	/**
+	 * Format workflow column.
+	 *
+	 * @param int $workflow_id
+	 * @return string
+	 */
+	protected function format_workflow( $workflow_id ) {
+		$workflow_id = Clean::id( $workflow_id );
+		if ( ! $workflow_id ) {
+			return '&mdash;';
+		}
+
+		$title = get_the_title( $workflow_id );
+		$text  = $title ? $title : sprintf(
+			/* translators: %d Workflow ID. */
+			__( 'Workflow #%d', 'automatewoo' ),
+			$workflow_id
+		);
+		$url = get_edit_post_link( $workflow_id, 'raw' );
+
+		if ( ! $url ) {
+			return esc_html( $text );
+		}
+
+		return sprintf( '<a href="%s">%s</a>', esc_url( $url ), esc_html( $text ) );
 	}
 
 	/**
@@ -72,6 +160,10 @@ class Report_Optins extends Admin_List_Table {
 			'time'  => __( 'Date', 'automatewoo' ),
 		];
 
+		if ( $this->is_showing_optouts() ) {
+			$columns['workflow'] = __( 'Workflow', 'automatewoo' );
+		}
+
 		return $columns;
 	}
 
@@ -81,10 +173,10 @@ class Report_Optins extends Admin_List_Table {
 	public function get_bulk_actions() {
 		$actions = [];
 
-		if ( Options::optin_enabled() ) {
-			$actions['bulk_optout'] = __( 'Set as opted-out', 'automatewoo' );
-		} else {
+		if ( $this->is_showing_optouts() ) {
 			$actions['bulk_optin'] = __( 'Set as opted-in', 'automatewoo' );
+		} else {
+			$actions['bulk_optout'] = __( 'Set as opted-out', 'automatewoo' );
 		}
 
 		return $actions;
@@ -120,12 +212,12 @@ class Report_Optins extends Admin_List_Table {
 	public function get_items( $current_page, $per_page ) {
 		$query = new Customer_Query();
 
-		if ( Options::optin_enabled() ) {
-			$query->where( 'subscribed', true );
-			$query->set_ordering( 'subscribed_date' );
-		} else {
+		if ( $this->is_showing_optouts() ) {
 			$query->where( 'unsubscribed', true );
 			$query->set_ordering( 'unsubscribed_date' );
+		} else {
+			$query->where( 'subscribed', true );
+			$query->set_ordering( 'subscribed_date' );
 		}
 
 		$has_no_valid_search_matches = false;

@@ -15,10 +15,10 @@ class PreSubmit {
 	 */
 	static function get_email_capture_selectors() {
 		return apply_filters( 'automatewoo/guest_capture_fields', [
-			'.woocommerce-checkout [type="email"]',
 			'#billing_email',
 			'.automatewoo-capture-guest-email',
 			'input[name="billing_email"]',
+			'.wc-block-checkout #email',
 		]);
 	}
 

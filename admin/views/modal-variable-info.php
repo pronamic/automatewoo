@@ -43,6 +43,11 @@ defined( 'ABSPATH' ) || exit;
 						<td class="automatewoo-table__col automatewoo-table__col--field">
 							<?php $field->add_classes( 'aw-workflow-variable-parameter' ); ?>
 							<?php $field->render( '' ); ?>
+							<?php if ( ! empty( $field->meta['internal_meta_key_warning'] ) ) : ?>
+								<p class="aw-field-description aw-internal-meta-key-warning aw-hidden">
+									<?php echo esc_html( $field->meta['internal_meta_key_warning'] ); ?>
+								</p>
+							<?php endif; ?>
 						</td>
 					</tr>
 				<?php endforeach; ?>

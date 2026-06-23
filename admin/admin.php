@@ -98,7 +98,18 @@ class Admin {
 	public static function screen_options() {
 		$screen_id = self::get_screen_id();
 
+		if ( $screen_id === 'toplevel_page_automatewoo' ) {
+			$screen_id = 'dashboard';
+		}
+
 		switch ( $screen_id ) {
+			case 'dashboard':
+				$controller = Admin\Controllers::get( 'dashboard' );
+				if ( $controller ) {
+					$controller->screen_options();
+				}
+				break;
+
 			case 'opt-ins':
 				$screen_id = 'optins'; // Screen option with dash is not supported.
 			case 'logs':
@@ -367,11 +378,9 @@ class Admin {
 
 		global $wp_locale;
 
-		wp_localize_script( 'automatewoo-dashboard', 'automatewooDashboardLocalizeScript', [] );
+		wp_add_inline_script( 'automatewoo-dashboard', 'var automatewooDashboardLocalizeScript = {};', 'before' );
 
-		wp_localize_script(
-			'automatewoo-validate',
-			'automatewooValidateLocalizedErrorMessages',
+		$validate_localized = wp_json_encode(
 			[
 				'noVariablesSupport' => __( 'This field does not support variables.', 'automatewoo' ),
 				/* translators: Variable name. */
@@ -380,6 +389,11 @@ class Admin {
 				'invalidVariable'    => __( "Variable '%s' is not valid. Please only use variables listed in the variables box.", 'automatewoo' ),
 				'noTrigger'          => __( 'Choose a trigger before selecting a variable.', 'automatewoo' ),
 			]
+		);
+		wp_add_inline_script(
+			'automatewoo-validate',
+			'var automatewooValidateLocalizedErrorMessages = ' . $validate_localized . ';',
+			'before'
 		);
 
 		$settings = [
@@ -401,26 +415,22 @@ class Admin {
 			],
 		];
 
-		wp_localize_script(
+		wp_add_inline_script(
 			'automatewoo',
-			'automatewooLocalizeScript',
-			apply_filters( 'automatewoo/admin/js_settings', $settings )
+			'var automatewooLocalizeScript = ' . wp_json_encode( apply_filters( 'automatewoo/admin/js_settings', $settings ) ) . ';',
+			'before'
 		);
 
-		wp_localize_script(
+		wp_add_inline_script(
 			'automatewoo-preview',
-			'automatewooPreviewLocalizeScript',
-			[
-				'nonce' => wp_create_nonce( 'aw_send_test_email' ),
-			]
+			'var automatewooPreviewLocalizeScript = ' . wp_json_encode( [ 'nonce' => wp_create_nonce( 'aw_send_test_email' ) ] ) . ';',
+			'before'
 		);
 
-		wp_localize_script(
+		wp_add_inline_script(
 			'automatewoo-sms-test',
-			'automatewooSmsTestLocalizeScript',
-			[
-				'nonce' => wp_create_nonce( 'aw_test_sms' ),
-			]
+			'var automatewooSmsTestLocalizeScript = ' . wp_json_encode( [ 'nonce' => wp_create_nonce( 'aw_test_sms' ) ] ) . ';',
+			'before'
 		);
 	}
 
@@ -449,8 +459,10 @@ class Admin {
 			wp_enqueue_style( WC_ADMIN_APP );
 		}
 
-		wp_enqueue_script( 'automatewoo' );
-		wp_enqueue_style( 'automatewoo-main' );
+		if ( $is_aw_screen ) {
+			wp_enqueue_script( 'automatewoo' );
+			wp_enqueue_style( 'automatewoo-main' );
+		}
 
 		if ( self::should_react_ui_be_loaded() ) {
 			wp_enqueue_style(
@@ -486,14 +498,41 @@ class Admin {
 	/**
 	 * Should the react UI load?
 	 *
-	 * If the current page is an AW php page or a WC Admin JS-powered page, then yes.
+	 * If the current page is an AW admin screen or an AutomateWoo WC Admin
+	 * JS-powered page (e.g. the Manual Workflow Runner), then yes.
 	 *
 	 * @since 5.1.2
 	 *
 	 * @return bool
 	 */
 	protected static function should_react_ui_be_loaded() {
-		return WC()->is_wc_admin_active() && ( self::is_automatewoo_screen() || wc_admin_is_registered_page() );
+		if ( ! WC()->is_wc_admin_active() ) {
+			return false;
+		}
+
+		return self::is_automatewoo_screen() || self::is_automatewoo_wc_admin_page();
+	}
+
+	/**
+	 * Is the current page an AutomateWoo page rendered by WC Admin?
+	 *
+	 * Matches WC Admin JS-powered pages registered by AutomateWoo (e.g. the
+	 * Manual Workflow Runner), i.e. registered wc-admin pages whose route
+	 * path starts with "/automatewoo/". The route itself is registered by
+	 * the React UI bundle, so it must be loaded on these pages.
+	 *
+	 * @since 6.5.0
+	 *
+	 * @return bool
+	 */
+	protected static function is_automatewoo_wc_admin_page() {
+		if ( ! wc_admin_is_registered_page() ) {
+			return false;
+		}
+
+		$path = aw_get_url_var( 'path' );
+
+		return is_string( $path ) && 0 === strpos( $path, '/automatewoo/' );
 	}
 
 	/**
@@ -548,6 +587,8 @@ class Admin {
 		$ids[] = "$prefix-guests";
 		$ids[] = "$prefix-opt-ins";
 		$ids[] = "$prefix-preview";
+		$ids[] = "$prefix-data-upgrade";
+		$ids[] = 'toplevel_page_automatewoo';
 		$ids[] = 'aw_workflow';
 		$ids[] = 'edit-aw_workflow';
 
@@ -844,6 +885,10 @@ class Admin {
 	 * @return array
 	 */
 	public static function add_editor_styles( $stylesheets ) {
+		if ( ! function_exists( 'get_current_screen' ) || ! self::is_automatewoo_screen() ) {
+			return $stylesheets;
+		}
+
 		$stylesheets[] = AW()->admin_assets_url( '/css/editor.css' );
 		return $stylesheets;
 	}
@@ -948,7 +993,16 @@ class Admin {
 	 * @return string
 	 */
 	public static function help_link( $url, $pull_right = true ) {
-		return '<a href="' . esc_url( $url ) . '" class="automatewoo-help-link ' . ( $pull_right ? 'automatewoo-help-link--right' : '' ) . '" target="_blank"></a>';
+		$label   = __( 'View documentation', 'automatewoo' );
+		$classes = 'automatewoo-help-link ' . ( $pull_right ? 'automatewoo-help-link--right' : '' );
+
+		return sprintf(
+			'<a href="%1$s" class="%2$s" target="_blank" rel="noopener noreferrer" aria-label="%3$s"><span class="screen-reader-text">%4$s</span></a>',
+			esc_url( $url ),
+			esc_attr( $classes ),
+			esc_attr( $label ),
+			esc_html( $label )
+		);
 	}
 
 

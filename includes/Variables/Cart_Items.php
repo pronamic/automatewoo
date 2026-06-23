@@ -50,6 +50,11 @@ class Variable_Cart_Items extends Variable_Abstract_Product_Display {
 
 		if ( is_array( $cart_items ) ) {
 			foreach ( $cart_items as $item ) {
+				// Skip bundled items hidden from the cart by the Product Bundles plugin.
+				if ( aw_is_hidden_bundled_cart_item( $item ) ) {
+					continue;
+				}
+
 				$id = ( 0 !== $item->get_variation_id() ) ? $item->get_variation_id() : $item->get_product_id();
 				if ( $id ) {
 					$product_ids[] = $id;

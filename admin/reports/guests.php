@@ -107,7 +107,13 @@ class Report_Guests extends Admin_List_Table {
 	 * @return string
 	 */
 	function column_cb( $guest ) {
-		return '<input type="checkbox" name="guest_ids[]" value="' . absint( $guest->get_id() ) . '" />';
+		$id = absint( $guest->get_id() );
+		return sprintf(
+			'<label class="screen-reader-text" for="cb-select-%1$d">%2$s</label><input id="cb-select-%1$d" type="checkbox" name="guest_ids[]" value="%1$d" />',
+			$id,
+			/* translators: %d: guest ID */
+			esc_html( sprintf( __( 'Select guest %d', 'automatewoo' ), $id ) )
+		);
 	}
 
 

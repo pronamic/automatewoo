@@ -49,11 +49,14 @@ class Frontend {
 	/**
 	 * If $customer is set the customer key will be added to the link.
 	 *
-	 * @param Customer|false $customer
-	 * @param bool|string $intent
+	 * @since 6.5.0 Added the $workflow_id parameter.
+	 *
+	 * @param Customer|false $customer    Customer object.
+	 * @param bool|string    $intent      Communication page intent.
+	 * @param int            $workflow_id Workflow that caused the opt-out.
 	 * @return bool|string
 	 */
-	static function get_communication_page_permalink( $customer = false, $intent = false ) {
+	static function get_communication_page_permalink( $customer = false, $intent = false, $workflow_id = 0 ) {
 		if ( ! $url = get_permalink( Options::communication_page_id() ) ) {
 			return false;
 		}
@@ -66,6 +69,11 @@ class Frontend {
 
 		if ( $intent ) {
 			$args['intent'] = urlencode( $intent );
+		}
+
+		$workflow_id = Clean::id( $workflow_id );
+		if ( $workflow_id ) {
+			$args['workflow'] = $workflow_id;
 		}
 
 		// SEMGREP WARNING EXPLANATION

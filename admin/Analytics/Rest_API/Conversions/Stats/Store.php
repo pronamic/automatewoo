@@ -103,6 +103,12 @@ class Store extends Generic_Stats_Store {
 	protected function update_sql_query_params( $query_args ) {
 		parent::update_sql_query_params( $query_args );
 
+		$status_where_clause = $this->get_status_subquery( $query_args );
+		if ( $status_where_clause ) {
+			$this->total_query->add_sql_clause( 'where', " AND ( {$status_where_clause} )" );
+			$this->interval_query->add_sql_clause( 'where', " AND ( {$status_where_clause} )" );
+		}
+
 		// Filter selected workflows.
 		if ( ! empty( $query_args['workflows'] ) ) {
 			$included_workflows     = implode( ',', wp_parse_id_list( $query_args['workflows'] ) );
@@ -197,17 +203,8 @@ class Store extends Generic_Stats_Store {
 		$order_stats_table_name = self::get_db_table_name();
 		$join_clause            = "JOIN {$this->meta_table->name} ON ( {$order_stats_table_name}.order_id = {$this->meta_table->name}.{$this->meta_table->id_column} AND {$this->meta_table->name}.meta_key = '_aw_conversion' )";
 
-		// We hardcode paid statuses only.
-		// This is to match the legacy Reports behavior,
-		// but is inconsistent with set of statuses used by WC Core analytics.
-		// https://github.com/woocommerce/automatewoo/issues/1266
-		$allowed_statuses    = array_map( 'aw_add_order_status_prefix', wc_get_is_paid_statuses() );
-		$status_where_clause = " AND {$order_stats_table_name}.status IN ( '" . implode( "','", $allowed_statuses ) . "' )";
-
 		$this->total_query->add_sql_clause( 'join', $join_clause );
-		$this->total_query->add_sql_clause( 'where', $status_where_clause );
 
 		$this->interval_query->add_sql_clause( 'join', $join_clause );
-		$this->interval_query->add_sql_clause( 'where', $status_where_clause );
 	}
 }

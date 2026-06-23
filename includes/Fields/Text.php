@@ -25,6 +25,15 @@ class Text extends Field {
 	 */
 	public $decode_html_entities_before_render = true;
 
+	/**
+	 * Whether to allow safe HTML tags when sanitizing the field value.
+	 *
+	 * @since 6.5.0
+	 *
+	 * @var bool
+	 */
+	protected $allow_html = false;
+
 
 	function __construct() {
 		parent::__construct();
@@ -40,6 +49,36 @@ class Text extends Field {
 	function set_multiple( $multi = true ) {
 		$this->multiple = $multi;
 		return $this;
+	}
+
+	/**
+	 * Allow safe HTML tags when sanitizing the field value.
+	 *
+	 * @since 6.5.0
+	 *
+	 * @param bool $allow
+	 *
+	 * @return $this
+	 */
+	public function set_allow_html( $allow = true ) {
+		$this->allow_html = $allow;
+		return $this;
+	}
+
+	/**
+	 * Sanitize the field value, preserving safe HTML when enabled.
+	 *
+	 * @since 6.5.0
+	 *
+	 * @param string $value
+	 *
+	 * @return string
+	 */
+	public function sanitize_value( $value ) {
+		if ( $this->allow_html ) {
+			return wp_kses_post( $value );
+		}
+		return parent::sanitize_value( $value );
 	}
 
 	/**

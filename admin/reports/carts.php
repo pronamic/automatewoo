@@ -42,7 +42,7 @@ class Report_Carts extends Admin_List_Table {
 			'last_modified' => __( 'Last active', 'automatewoo' ),
 			'items' => __( 'Items', 'automatewoo' ),
 			'total' => __( 'Total', 'automatewoo' ),
-			'actions' => '',
+			'actions' => '<span class="screen-reader-text">' . esc_html__( 'Actions', 'automatewoo' ) . '</span>',
 		];
 
 		if ( Language::is_multilingual() ) {
@@ -116,7 +116,13 @@ class Report_Carts extends Admin_List_Table {
 	 * @return string
 	 */
 	function column_cb( $cart ) {
-		return '<input type="checkbox" name="cart_ids[]" value="' . absint( $cart->get_id() ) . '" />';
+		$id = absint( $cart->get_id() );
+		return sprintf(
+			'<label class="screen-reader-text" for="cb-select-%1$d">%2$s</label><input id="cb-select-%1$d" type="checkbox" name="cart_ids[]" value="%1$d" />',
+			$id,
+			/* translators: %d: cart ID */
+			esc_html( sprintf( __( 'Select cart %d', 'automatewoo' ), $id ) )
+		);
 	}
 
 

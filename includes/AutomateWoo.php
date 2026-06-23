@@ -161,6 +161,7 @@ final class AutomateWoo extends AutomateWoo_Legacy {
 			AutomateWoo\AdminNotices\NewWorkflowHelperManager::init();
 			( new AutomateWoo\AdminNotices\LogRetentionWorkflowNotice() )->init();
 			( new AutomateWoo\AdminNotices\WcAdminDisabled() )->init();
+			( new AutomateWoo\AdminNotices\NonProductionEnvironment() )->init();
 
 			foreach ( Addons::get_all() as $addon ) {
 				( new AutomateWoo\AdminNotices\AddonWelcome( $addon ) )->init();

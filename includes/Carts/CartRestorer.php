@@ -74,12 +74,37 @@ class CartRestorer {
 		$this->restore_items();
 		$this->restore_coupons();
 
-		// Revert notices to backup to remove all notices that were added when re-adding coupons and products to cart
-		$this->current_session->set( 'wc_notices', $notices_backup );
+		// Revert success notices added when re-adding coupons and products, but keep restore errors visible.
+		$this->current_session->set( 'wc_notices', $this->get_restored_notices( $notices_backup, wc_get_notices() ) );
 
 		do_action( 'automatewoo/cart/restored', $this->stored_cart );
 
 		return true;
+	}
+
+	/**
+	 * Get notices to restore after rebuilding the cart.
+	 *
+	 * @param array $notices_backup Notices present before restore.
+	 * @param array $current_notices Notices present after restore.
+	 *
+	 * @return array
+	 */
+	protected function get_restored_notices( array $notices_backup, array $current_notices ): array {
+		foreach ( $current_notices as $notice_type => $notices ) {
+			if ( 'success' === $notice_type ) {
+				continue;
+			}
+
+			$backup_notice_count = isset( $notices_backup[ $notice_type ] ) ? count( $notices_backup[ $notice_type ] ) : 0;
+			$new_notices         = array_slice( $notices, $backup_notice_count );
+
+			if ( $new_notices ) {
+				$notices_backup[ $notice_type ] = array_merge( $notices_backup[ $notice_type ] ?? [], $new_notices );
+			}
+		}
+
+		return $notices_backup;
 	}
 
 	/**

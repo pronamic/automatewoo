@@ -43,14 +43,14 @@ class Text_Area extends Text {
 	/**
 	 * Determines if HTML will be allowed in the field value.
 	 *
-	 * @param bool|string|array $allow_html Default is false.
+	 * @param bool|string|array $allow_html Default is true.
 	 *  false - Strips all HTML
 	 *  true - Sanitize content for allowed HTML tags in post content, uses wp_kses_post()
 	 *  array|string - List of allowed HTML elements for wp_kses()
 	 *
 	 * @return $this
 	 */
-	function set_allow_html( $allow_html ) {
+	function set_allow_html( $allow_html = true ) {
 		$this->allow_html = $allow_html;
 		return $this;
 	}

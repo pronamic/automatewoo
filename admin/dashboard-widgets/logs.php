@@ -43,7 +43,7 @@ class Dashboard_Widget_Logs extends Dashboard_Widget {
 				<div class="automatewoo-dashboard-list__heading">
 					<?php esc_html_e( 'Recent logs', 'automatewoo' ); ?>
 				</div>
-				<a href="<?php echo esc_url( Admin::page_url( 'logs' ) ); ?>" class="automatewoo-arrow-link"></a>
+				<a href="<?php echo esc_url( Admin::page_url( 'logs' ) ); ?>" class="automatewoo-arrow-link"><span class="screen-reader-text"><?php esc_html_e( 'View logs', 'automatewoo' ); ?></span></a>
 			</div>
 
 			<?php if ( $logs ) : ?>

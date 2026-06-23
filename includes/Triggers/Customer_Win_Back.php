@@ -203,13 +203,8 @@ class Trigger_Customer_Win_Back extends AbstractBatchedDailyTrigger {
 			return false;
 		}
 
-		// exclude customers with active subscriptions
-		// these customers are still active but their last purchase date might suggest they are inactive
-		// TODO in the future the end date of the customers last subscription should be factored in to this logic
-		if ( Integrations::is_subscriptions_active() && $customer->is_registered() ) {
-			if ( wcs_user_has_subscription( $customer->get_user_id(), '', 'active' ) ) {
-				return false;
-			}
+		if ( $this->customer_has_active_subscription( $customer ) ) {
+			return false;
 		}
 
 		// for accuracy, we use the actual order date instead of Customer::get_date_last_purchased()
@@ -279,11 +274,30 @@ class Trigger_Customer_Win_Back extends AbstractBatchedDailyTrigger {
 			return false;
 		}
 
+		if ( $this->customer_has_active_subscription( $customer ) ) {
+			return false;
+		}
+
 		// check that the user has not made a purchase while the workflow was queued
 		if ( $last_purchase_date->getTimestamp() > $min_last_order_date->getTimestamp() ) {
 			return false;
 		}
 
 		return true;
+	}
+
+	/**
+	 * @param Customer $customer
+	 *
+	 * @return bool
+	 */
+	protected function customer_has_active_subscription( $customer ) {
+		// These customers are still active but their last purchase date might suggest they are inactive.
+		// TODO in the future the end date of the customer's last subscription should be factored into this logic.
+		return (
+			Integrations::is_subscriptions_active()
+			&& $customer->is_registered()
+			&& wcs_user_has_subscription( $customer->get_user_id(), '', 'active' )
+		);
 	}
 }

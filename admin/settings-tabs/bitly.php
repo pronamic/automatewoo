@@ -67,10 +67,13 @@ class Settings_Tab_Bitly extends Admin_Settings_Tab_Abstract {
 		parent::save( $fields );
 
 		$bitly = Integrations::get_bitly();
-		if ( $bitly && $bitly->test_integration() ) {
-			// If a notification exists relating to a Bitly integration error, delete it.
-			BitlyCheck::possibly_delete_note();
+
+		if ( ! $bitly && Options::bitly_enabled() ) {
+			$this->add_integration_validation_error( __( 'Bitly', 'automatewoo' ) );
+			return;
 		}
+
+		$this->validate_integration_on_save( $bitly, __( 'Bitly', 'automatewoo' ), BitlyCheck::class );
 	}
 }
 

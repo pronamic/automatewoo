@@ -109,17 +109,82 @@ class AbandonedCarts extends AbstractRecurringBatchedActionSchedulerJob {
 	 *
 	 * @param int   $cart_id
 	 * @param array $args The args for this instance of the job. Args are already validated.
-	 *
-	 * @throws JobException If item can't be found.
 	 */
 	protected function process_item( $cart_id, array $args ) {
 		$cart = Cart_Factory::get( $cart_id );
 
 		if ( ! $cart ) {
-			throw JobException::item_not_found();
+			// The cart may have been deleted as a stale duplicate by another item in the batch.
+			return;
+		}
+
+		if ( ! $this->should_process_cart( $cart ) ) {
+			return;
 		}
 
 		$cart->update_status( 'abandoned' );
+	}
+
+	/**
+	 * Check whether the cart is the latest stored cart for its customer.
+	 *
+	 * Duplicate active carts for the same customer can cause duplicate abandoned cart workflows. Keep the most recent
+	 * stored cart and delete stale duplicates so they can't be processed by a later batch item.
+	 *
+	 * @param Cart $cart
+	 *
+	 * @return bool
+	 */
+	protected function should_process_cart( Cart $cart ): bool {
+		$customer = $cart->get_customer();
+
+		if ( ! $customer ) {
+			return true;
+		}
+
+		$duplicate_query = ( new Cart_Query() )
+			->where_customer( $customer )
+			->where_status( [ Cart::STATUS_ACTIVE, Cart::STATUS_ABANDONED ] );
+
+		foreach ( $duplicate_query->get_results() as $duplicate_cart ) {
+			if ( $duplicate_cart->get_id() === $cart->get_id() ) {
+				continue;
+			}
+
+			if ( $this->cart_is_newer_than( $duplicate_cart, $cart ) ) {
+				$cart->delete();
+				return false;
+			}
+
+			$duplicate_cart->delete();
+		}
+
+		return true;
+	}
+
+	/**
+	 * Compare two carts by last modified date, then ID.
+	 *
+	 * @param Cart $cart
+	 * @param Cart $cart_to_compare
+	 *
+	 * @return bool
+	 */
+	protected function cart_is_newer_than( Cart $cart, Cart $cart_to_compare ): bool {
+		$cart_modified            = $cart->get_date_last_modified();
+		$cart_to_compare_modified = $cart_to_compare->get_date_last_modified();
+
+		if ( $cart_modified && $cart_to_compare_modified ) {
+			if ( $cart_modified->getTimestamp() > $cart_to_compare_modified->getTimestamp() ) {
+				return true;
+			}
+
+			if ( $cart_modified->getTimestamp() < $cart_to_compare_modified->getTimestamp() ) {
+				return false;
+			}
+		}
+
+		return $cart->get_id() > $cart_to_compare->get_id();
 	}
 
 	/**

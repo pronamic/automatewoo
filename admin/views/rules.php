@@ -75,7 +75,21 @@ defined( 'ABSPATH' ) || exit;
 
 						<# if ( data.rule.object.type === 'number' ) { #>
 
-							<input name="{{ data.fieldNameBase }}[value]" class="automatewoo-field js-rule-value-field" type="text" required>
+							<# if ( data.rule.object.has_payment_count_scope === true ) { #>
+								<div class="field-cols">
+									<div class="col-1">
+										<input name="{{ data.fieldNameBase }}[value][count]" class="automatewoo-field js-rule-value-field js-rule-value-count" type="text" required>
+									</div>
+									<div class="col-2">
+										<select name="{{ data.fieldNameBase }}[value][count_scope]" class="automatewoo-field js-rule-value-field js-rule-value-count_scope">
+											<option value="current"><?php esc_html_e( 'Current subscription', 'automatewoo' ); ?></option>
+											<option value="include_resubscriptions"><?php esc_html_e( 'Current and previous resubscriptions', 'automatewoo' ); ?></option>
+										</select>
+									</div>
+								</div>
+							<# } else { #>
+								<input name="{{ data.fieldNameBase }}[value]" class="automatewoo-field js-rule-value-field" type="text" required>
+							<# } #>
 
 						<# } else if ( data.rule.object.type === 'object' ) { #>
 
@@ -109,8 +123,19 @@ defined( 'ABSPATH' ) || exit;
 
 						<# } else if ( data.rule.object.type === 'meta' )  { #>
 
-							<input name="{{ data.fieldNameBase }}[value][]" class="automatewoo-field js-rule-value-field" type="text" placeholder="<?php esc_attr_e( 'key', 'automatewoo' ); ?>">
+							<input
+								name="{{ data.fieldNameBase }}[value][]"
+								class="automatewoo-field js-rule-value-field js-rule-value-field--meta-key"
+								type="text"
+								placeholder="<?php esc_attr_e( 'key', 'automatewoo' ); ?>"
+								<# if ( ! _.isEmpty( data.rule.object.internal_meta_keys ) ) { #>
+									data-aw-internal-meta-keys="{{ data.rule.object.internal_meta_keys.join( ' ' ) }}"
+								<# } #>
+							>
 							<input name="{{ data.fieldNameBase }}[value][]" class="automatewoo-field js-rule-value-field" type="text" placeholder="<?php esc_attr_e( 'value', 'automatewoo' ); ?>">
+							<# if ( data.rule.object.internal_meta_key_warning ) { #>
+								<p class="aw-field-description aw-internal-meta-key-warning aw-hidden">{{ data.rule.object.internal_meta_key_warning }}</p>
+							<# } #>
 
 						<# } else if ( data.rule.object.type === 'bool' )  { #>
 
@@ -120,11 +145,22 @@ defined( 'ABSPATH' ) || exit;
 									<# }); #>
 							</select>
 
-						<# } else if ( data.rule.object.type === 'date' ) { #>
-							<# if ( data.rule.object.uses_datepicker === true ) { #>
-									<input type="text" name="{{ data.fieldNameBase }}[value][date]" class="automatewoo-field js-rule-value-field js-rule-value-date js-date-picker date-picker aw-hidden" required pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}" data-aw-compare="is_after is_before is_on is_not_on" autocomplete="off"/>
-							<# } #>
-							<# if ( data.rule.object.has_is_between_dates === true ) { #>
+							<# } else if ( data.rule.object.type === 'date' ) { #>
+								<# if ( data.rule.object.uses_datepicker === true ) { #>
+									<# if ( data.rule.object.has_time_of_day === true ) { #>
+										<div class="field-cols aw-hidden" data-aw-compare="is_after is_before is_on is_not_on">
+											<div class="col-1">
+												<input type="text" name="{{ data.fieldNameBase }}[value][date]" class="automatewoo-field js-rule-value-field js-rule-value-date js-date-picker date-picker" required pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}" autocomplete="off"/>
+											</div>
+											<div class="col-2">
+												<input type="time" step="60" name="{{ data.fieldNameBase }}[value][time]" class="automatewoo-field js-rule-value-field js-rule-value-time" data-aw-optional="true" aria-label="<?php esc_attr_e( 'Time', 'automatewoo' ); ?>" autocomplete="off"/>
+											</div>
+										</div>
+									<# } else { #>
+										<input type="text" name="{{ data.fieldNameBase }}[value][date]" class="automatewoo-field js-rule-value-field js-rule-value-date js-date-picker date-picker aw-hidden" required pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}" data-aw-compare="is_after is_before is_on is_not_on" autocomplete="off"/>
+									<# } #>
+								<# } #>
+								<# if ( data.rule.object.has_is_between_dates === true ) { #>
 									<div class="field-cols aw-hidden" data-aw-compare="is_between">
 										<div class="col-1">
 											<input type="text" name="{{ data.fieldNameBase }}[value][from]" class="automatewoo-field js-rule-value-field js-rule-value-from date-picker js-date-picker" placeholder="start" required pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}" autocomplete="off"/>
@@ -189,8 +225,6 @@ defined( 'ABSPATH' ) || exit;
 
 
 </script>
-
-
 
 <script type="text/template" id="tmpl-aw-rule-group">
 	<div class="rules"></div>

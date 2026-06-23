@@ -25,6 +25,20 @@ class Report_Queue extends Admin_List_Table {
 	function filters() {
 		$this->output_workflow_filter();
 		$this->output_customer_filter();
+		$this->output_failed_filter();
+	}
+
+	function output_failed_filter() {
+		$selected = Clean::string( aw_request( 'filter_failed' ) );
+		?>
+
+		<select name="filter_failed" aria-label="<?php esc_attr_e( 'Filter by queue status', 'automatewoo' ); ?>">
+			<option value=""><?php esc_html_e( 'All queue statuses', 'automatewoo' ); ?></option>
+			<option value="not_failed" <?php selected( $selected, 'not_failed' ); ?>><?php esc_html_e( 'Not failed', 'automatewoo' ); ?></option>
+			<option value="failed" <?php selected( $selected, 'failed' ); ?>><?php esc_html_e( 'Failed', 'automatewoo' ); ?></option>
+		</select>
+
+		<?php
 	}
 
 
@@ -33,7 +47,13 @@ class Report_Queue extends Admin_List_Table {
 	 * @return string
 	 */
 	function column_cb( $queued_event ) {
-		return '<input type="checkbox" name="queued_event_ids[]" value="' . $queued_event->get_id() . '" />';
+		$id = absint( $queued_event->get_id() );
+		return sprintf(
+			'<label class="screen-reader-text" for="cb-select-%1$d">%2$s</label><input id="cb-select-%1$d" type="checkbox" name="queued_event_ids[]" value="%1$d" />',
+			$id,
+			/* translators: %d: queued event ID */
+			esc_html( sprintf( __( 'Select queued event %d', 'automatewoo' ), $id ) )
+		);
 	}
 
 
@@ -106,6 +126,10 @@ class Report_Queue extends Admin_List_Table {
 	 * @return string
 	 */
 	public function column_customer( $queued_event ) {
+		if ( $customer = $queued_event->get_stored_customer() ) {
+			return Format::customer( $customer );
+		}
+
 		$workflow = $queued_event->get_workflow();
 
 		if ( $workflow ) {
@@ -134,7 +158,7 @@ class Report_Queue extends Admin_List_Table {
 			'workflow' => __( 'Workflow', 'automatewoo' ),
 			'customer' => __( 'Customer', 'automatewoo' ),
 			'date' => __( 'Run Date', 'automatewoo' ),
-			'actions' => '',
+			'actions' => '<span class="screen-reader-text">' . esc_html__( 'Actions', 'automatewoo' ) . '</span>',
 		];
 
 		return $columns;
@@ -169,7 +193,7 @@ class Report_Queue extends Admin_List_Table {
 		$query->set_calc_found_rows( true );
 		$query->set_limit( $per_page );
 		$query->set_page( $current_page );
-		$query->set_ordering('date', 'ASC');
+		$query->order_by_failed_status_and_date();
 
 		if ( ! empty( $_GET[ '_workflow' ] ) ) {
 			$query->where_workflow( absint( $_GET['_workflow'] ) );
@@ -180,6 +204,16 @@ class Report_Queue extends Admin_List_Table {
 			 	$query->where_customer_or_legacy_user( $customer );
 			 }
 		 }
+
+		switch ( Clean::string( aw_request( 'filter_failed' ) ) ) {
+			case 'failed':
+				$query->where_failed( true );
+				break;
+
+			case 'not_failed':
+				$query->where_failed( false );
+				break;
+		}
 
 		$res = $query->get_results();
 		$this->items = $res;

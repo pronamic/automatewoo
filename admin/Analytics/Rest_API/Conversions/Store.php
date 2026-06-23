@@ -136,12 +136,10 @@ class Store extends ReportsDataStore implements DataStoreInterface {
 		$this->subquery->add_sql_clause( 'join', "JOIN {$this->meta_table->name} aw_workflow ON ( {$order_stats_table_name}.order_id = aw_workflow.{$this->meta_table->id_column} AND aw_workflow.meta_key = '_aw_conversion' {$workflows_clause} )" );
 		$this->subquery->add_sql_clause( 'join', "JOIN {$this->meta_table->name} aw_conversion ON ( {$order_stats_table_name}.order_id = aw_conversion.{$this->meta_table->id_column} AND aw_conversion.meta_key = '_aw_conversion_log' )" );
 
-		// We hardcode paid statuses only.
-		// This is to match the legacy Reports behavior,
-		// but is inconsistent with set of statuses used by WC Core analytics.
-		// https://github.com/woocommerce/automatewoo/issues/1266
-		$query_args['status_is'] = wc_get_is_paid_statuses();
-		$this->subquery->add_sql_clause( 'where', 'AND ' . $this->get_status_subquery( $query_args ) );
+		$status_where_clause = $this->get_status_subquery( $query_args );
+		if ( $status_where_clause ) {
+			$this->subquery->add_sql_clause( 'where', "AND ( {$status_where_clause} )" );
+		}
 	}
 
 	/**

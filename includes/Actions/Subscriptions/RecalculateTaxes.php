@@ -43,8 +43,15 @@ class RecalculateTaxes extends Action {
 			return;
 		}
 
+		$reloaded_subscription = wcs_get_subscription( $subscription->get_id() );
+		if ( $reloaded_subscription ) {
+			$subscription = $reloaded_subscription;
+			$this->workflow->set_data_item( 'subscription', $subscription );
+		}
+
 		$subscription->calculate_totals( true );
-		$subscription->add_order_note(
+		$this->add_order_note(
+			$subscription,
 			sprintf(
 				/* translators: %1$s workflow title, %2$d workflow ID */
 				__( '%1$s workflow run: recalculated taxes. (Workflow ID: %2$d)', 'automatewoo' ),

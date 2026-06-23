@@ -126,6 +126,21 @@ class Tool_Optout_Importer extends Tool_Background_Processed_Abstract {
 	}
 
 
+	/**
+	 * Output the icon legend in the confirmation screen footer.
+	 */
+	function display_confirmation_legend() {
+		echo wp_kses_post(
+			'<p style="float: left;">' . sprintf(
+				/* translators: %1$s and %2$s are status icons shown next to each email in the preview list. */
+				__( '%1$s Existing customer &nbsp; %2$s New customer record will be created', 'automatewoo' ),
+				'✅',
+				'⚠️'
+			) . '</p>'
+		);
+	}
+
+
 	function display_data_preview( $items ) {
 		$number_to_preview = 25;
 
@@ -136,7 +151,9 @@ class Tool_Optout_Importer extends Tool_Background_Processed_Abstract {
 			if ( $i == $number_to_preview )
 				break;
 
-			echo $email . '<br>';
+			$icon = $this->email_matches_existing_customer( $email ) ? '✅' : '⚠️';
+
+			echo esc_html( $email ) . ' ' . $icon . '<br>';
 		}
 
 		if ( count( $items ) > $number_to_preview ) {
@@ -148,6 +165,27 @@ class Tool_Optout_Importer extends Tool_Background_Processed_Abstract {
 		}
 
 		echo '</p>';
+	}
+
+
+	/**
+	 * Check whether the email is already known to the store without creating a customer record.
+	 *
+	 * @param string $email
+	 * @return bool
+	 */
+	function email_matches_existing_customer( $email ) {
+		$email = Clean::email( $email );
+
+		if ( ! $email ) {
+			return false;
+		}
+
+		if ( get_user_by( 'email', $email ) ) {
+			return true;
+		}
+
+		return (bool) Guest_Factory::get_by_email( $email );
 	}
 
 

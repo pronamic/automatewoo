@@ -38,6 +38,7 @@ class Carts extends Database_Table {
 			'fees' => '%s',
 			'shipping_tax_total' => '%d',
 			'shipping_total' => '%d',
+			'shipping_total_is_calculated' => '%d',
 			'total' => '%s',
 			'token' => '%s',
 			'currency' => '%s'
@@ -61,6 +62,7 @@ class Carts extends Database_Table {
 			fees longtext NOT NULL,
 			shipping_tax_total double DEFAULT 0 NOT NULL,
 			shipping_total double DEFAULT 0 NOT NULL,
+			shipping_total_is_calculated tinyint(1) NOT NULL DEFAULT 0,
 			total double DEFAULT 0 NOT NULL,
 			token varchar(32) NOT NULL default '',
 			currency varchar(8) NOT NULL default '',

@@ -291,6 +291,22 @@ abstract class Field {
 
 
 	/**
+	 * @since 6.5.0
+	 *
+	 * @return bool
+	 */
+	function supports_variables() {
+		if ( ! $this->has_data_attr( 'automatewoo-validate' ) ) {
+			return false;
+		}
+
+		$options = explode( ' ', $this->extra_attrs['data-automatewoo-validate'] );
+
+		return in_array( 'variables', $options, true );
+	}
+
+
+	/**
 	 * If $options is left blank then the field not support variables
 	 *
 	 * @param string $options

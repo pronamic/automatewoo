@@ -187,6 +187,28 @@ class Cart extends Model {
 		return (float) $this->get_prop( 'shipping_tax_total' );
 	}
 
+	/**
+	 * Set whether the shipping total has been calculated.
+	 *
+	 * @since 6.5.0
+	 *
+	 * @param bool $is_calculated
+	 */
+	public function set_shipping_total_is_calculated( bool $is_calculated ): void {
+		$this->set_prop( 'shipping_total_is_calculated', (int) $is_calculated );
+	}
+
+	/**
+	 * Check if shipping has been calculated for the cart.
+	 *
+	 * @since 6.5.0
+	 *
+	 * @return bool
+	 */
+	public function has_shipping_calculated(): bool {
+		return (bool) $this->get_prop( 'shipping_total_is_calculated' );
+	}
+
 
 	/**
 	 * @return string
@@ -234,7 +256,12 @@ class Cart extends Model {
 	function get_shipping_total_html() {
 		$total = get_option( 'woocommerce_tax_display_cart' ) === 'excl' ? $this->get_shipping_total() : $this->get_shipping_total() + $this->get_shipping_tax_total();
 
-		if ( $total == 0 ) {
+		// Virtual-only carts don't display shipping at all (consistent with WC checkout).
+		if ( $this->has_items() && ! $this->needs_shipping() ) {
+			$html = '';
+		} elseif ( $total == 0 && ! $this->has_shipping_calculated() ) {
+			$html = __( 'Calculated at checkout', 'automatewoo' );
+		} elseif ( $total == 0 ) {
 			$html = __( 'Free!', 'automatewoo' );
 		} else {
 			$html = $this->price( $total );
@@ -408,8 +435,8 @@ class Cart extends Model {
 	protected function translate_items( $items, $lang ) {
 		if ( Language::is_multilingual() ) {
 			foreach ( $items as &$item ) {
-				$item->set_product_id( icl_object_id( $item->get_product_id(), 'product', true, $lang ) );
-				$item->set_variation_id( icl_object_id( $item->get_variation_id(), 'product', true, $lang ) );
+				$item->set_product_id( Language::get_translated_object_id( $item->get_product_id(), 'product', $lang ) );
+				$item->set_variation_id( Language::get_translated_object_id( $item->get_variation_id(), 'product', $lang ) );
 			}
 		}
 
@@ -482,6 +509,10 @@ class Cart extends Model {
 		$this->set_currency( get_woocommerce_currency() );
 		$this->set_shipping_tax_total( WC()->cart->shipping_tax_total );
 		$this->set_shipping_total( WC()->cart->shipping_total );
+
+		if ( Options::database_version() === AW()->version ) {
+			$this->set_shipping_total_is_calculated( WC()->customer instanceof \WC_Customer && WC()->customer->has_calculated_shipping() );
+		}
 
 		$this->calculate_totals();
 

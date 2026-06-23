@@ -6,6 +6,7 @@ use AutomateWoo\Guest_Eraser;
 use AutomateWoo\Options;
 use AutomateWoo\OptionsStore;
 use AutomateWoo\Tool_Abstract;
+use AutomateWoo\Tool_Delete_Data;
 use AutomateWoo\Tool_Optin_Importer;
 use AutomateWoo\Tool_Optout_Importer;
 use AutomateWoo\Tool_Reset_Workflow_Records;
@@ -49,6 +50,7 @@ class ToolsService {
 		$class_names[] = $this->options_store->get_optin_enabled() ? Tool_Optin_Importer::class : Tool_Optout_Importer::class;
 		$class_names[] = Guest_Eraser::class;
 		$class_names[] = Tool_Reset_Workflow_Records::class;
+		$class_names[] = Tool_Delete_Data::class;
 
 		$class_names = apply_filters( 'automatewoo/tools', $class_names );
 

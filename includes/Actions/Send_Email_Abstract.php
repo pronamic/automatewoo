@@ -69,6 +69,7 @@ abstract class Action_Send_Email_Abstract extends Action implements PreviewableI
 		$reply_to = ( new EmailAddressWithName() )
 			->set_name( 'reply_to' )
 			->set_title( __( 'Reply to', 'automatewoo' ) )
+			->set_variable_validation()
 			->set_description(
 				__( 'Optionally set a reply-to email for the email. Please note that not all email delivery services support "Reply-To" email headers.', 'automatewoo' )
 			);

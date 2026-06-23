@@ -37,7 +37,7 @@ class Subscription_Payment_Method extends AutomateWoo\Rule_Order_Payment_Gateway
 	public function load_select_choices() {
 		$choices = [];
 
-		foreach ( WC()->payment_gateways()->get_available_payment_gateways() as $gateway ) {
+		foreach ( WC()->payment_gateways()->payment_gateways() as $gateway ) {
 			// compatibility-code "woocommerce-subscriptions >= 4.0.0"
 			// Use helper function to check if subscriptions is supported by payment gateway.
 			if ( is_callable( [ WC_Subscriptions_Payment_Gateways::class, 'gateway_supports_subscriptions' ] ) ) {
@@ -47,7 +47,7 @@ class Subscription_Payment_Method extends AutomateWoo\Rule_Order_Payment_Gateway
 			}
 
 			if ( $supported ) {
-				$choices[ $gateway->id ] = $gateway->get_title();
+				$choices[ $gateway->id ] = $this->get_gateway_choice_label( $gateway );
 			}
 		}
 

@@ -62,6 +62,23 @@ class UpdateSchedule extends AbstractEditItem {
 	 */
 	protected function edit_subscription( $billing_schedule, $subscription ) {
 
+		// Skip when the gateway can't honour schedule changes — applying them
+		// anyway would leave the subscription's schedule out of sync with the
+		// gateway's actual billing capability. Returning false here also keeps
+		// AbstractEditItem::run() from writing the success note from get_note().
+		if ( ! $subscription->payment_method_supports( 'subscription_date_changes' ) ) {
+			$this->add_order_note(
+				$subscription,
+				sprintf(
+					/* translators: %1$s: workflow title, %2$d: workflow ID */
+					__( '%1$s workflow run: subscription schedule was not updated because the payment gateway does not support changes to the billing schedule. (Workflow ID: %2$d)', 'automatewoo' ),
+					$this->workflow->get_title(),
+					$this->workflow->get_id()
+				)
+			);
+			return false;
+		}
+
 		if ( ! empty( $billing_schedule['billing_interval'] ) ) {
 			$subscription->set_billing_interval( $billing_schedule['billing_interval'] );
 		}

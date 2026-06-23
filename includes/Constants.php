@@ -51,6 +51,10 @@ class Constants {
 			define( 'AUTOMATEWOO_LOG_SENT_SMS', false );
 		}
 
+		if ( ! defined( 'AUTOMATEWOO_USE_ORDER_BILLING_EMAIL_FOR_CUSTOMER_EMAIL' ) ) {
+			define( 'AUTOMATEWOO_USE_ORDER_BILLING_EMAIL_FOR_CUSTOMER_EMAIL', false );
+		}
+
 		if ( ! defined( 'AUTOMATEWOO_BACKGROUND_PROCESS_DEBUG' ) ) {
 			define( 'AUTOMATEWOO_BACKGROUND_PROCESS_DEBUG', false );
 		}

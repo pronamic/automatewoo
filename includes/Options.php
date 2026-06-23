@@ -38,6 +38,7 @@ namespace AutomateWoo;
  * @property int $conversion_window
  *
  * @property bool $enable_background_system_check
+ * @property bool $delete_data_on_uninstall
  *
  */
 
@@ -73,7 +74,9 @@ class Options extends Options_API {
 			'conversion_window'                        => 14,
 			'enable_background_system_check'           => true,
 			'bitly_shorten_sms_links'                  => 'no',
+			'delete_data_on_uninstall'                 => 'no',
 			'log_retention_months'                     => 0,
+			'non_production_workflow_override'         => 'no',
 		];
 	}
 
@@ -285,5 +288,16 @@ class Options extends Options_API {
 	 */
 	static public function campaign_monitor_enabled(): bool {
 		return (bool) Options::get( 'campaign_monitor_enabled' );
+	}
+
+	/**
+	 * Get non_production_workflow_override option.
+	 *
+	 * @since 6.5.0
+	 *
+	 * @return bool
+	 */
+	static public function non_production_workflow_override(): bool {
+		return (bool) Options::get( 'non_production_workflow_override' );
 	}
 }

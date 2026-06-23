@@ -51,7 +51,6 @@ $data['extensions']['automatewoo'] = [
 		'account_optin_enabled'                    => (bool) "enabled",
 		'communication_account_tab_enabled'        => (bool) "enabled",
 		'mailchimp_integration_enabled'            => (bool) "enabled",
-		'mailpoet_integration_enabled'             => (bool) "enabled",
 		'campaign_monitor_integration_enabled'     => (bool) "enabled",
 		'active_campaign_integration_enabled'      => (bool) "enabled",
 		'twilio_integration_enabled'               => (bool) "enabled",
@@ -65,8 +64,8 @@ $data['extensions']['automatewoo'] = [
 	'conversion_value'           => (float) "value",
 	'log_counts'                 => [
 		'total'                       => (int) "count",
-		'conversion_tracking_enabled' => (bool) "enabled",
-		'tracking_enabled'            => (bool) "enabled",
+		'conversion_tracking_enabled' => (int) "count",
+		'tracking_enabled'            => (int) "count",
 	],
 ];
 ```
@@ -75,23 +74,52 @@ $data['extensions']['automatewoo'] = [
 
 All event names are prefixed by `wcadmin_aw_`.
 
-* `workflow_before_run` &ndash; triggered when a workflow runs
-* `workflow_created` &ndash; triggered when a workflow is first created
-* `conversion_recorded` &ndash; triggered when a conversion is recorded
-* `first_installed` &ndash; triggered when AutomateWoo is installed for the first time
-* `manual_workflow_runner_select_workflow` &ndash; triggered when a workflow is selected when using the workflow runner
-* `manual_run_workflow_button_clicked` &ndash; triggered when the run workflow button is clicked
-* `manual_find_matching_cancel_button_clicked` &ndash; triggered when the workflow runner find matching items cancel button is clicked
-* `manual_queue_items_cancel_button_clicked` &ndash; triggered when the workflow runner queue items cancel button is clicked
-* `manual_run_workflow_complete` &ndash; triggered when the workflow runner completes queuing workflow items
-* `notice_viewed` &ndash; triggered when an admin notice is displayed (includes `notice_identifier` property to distinguish which notice)
-* `notice_link_clicked` &ndash; triggered when a link in an admin notice is clicked (includes `notice_identifier` and `link_type` properties)
-* `notice_dismissed` &ndash; triggered when an admin notice is dismissed by the user (includes `notice_identifier` property)
-* `workflow_tab_view` &ndash; triggered when each "AutomateWoo > Workflows" tab is viewed by the user 
-* `preset_list_button_clicked` &ndash; fires when a button in the workflow presets list is clicked
-* `preset_activation_alert_rendered` &ndash; triggered when a message to confirm preset activation is rendered (includes `is_active` property)
-* `preset_activation_alert_closed` &ndash; triggered when a preset activation alert is closed 
-		(includes properties `is_active`, and `action: 'confirm' | 'cancel' | 'dismiss'` )
+Server-side Tracks events recorded through `AutomateWoo\Usage_Tracking\Tracks` include the base property `aw_version`. Add-ons can add more base properties through the `automatewoo/usage_tracking/addon_base_properties` filter. Client-side events recorded through `@woocommerce/tracks` or `AW.tracks.recordEvent()` do not add `aw_version` in this repository.
+
+Event | Trigger | Properties
+----- | ------- | ----------
+`workflow_before_run` | A workflow starts running. | `aw_version` plus the workflow properties listed below.
+`workflow_created` | A workflow is first created. | `aw_version` plus the workflow properties listed below.
+`conversion_recorded` | A conversion is recorded from a workflow log. | `aw_version`, `order_currency`, `order_total`, `workflow_run_date`, `workflow_trigger`, `workflow_title`.
+`first_installed` | AutomateWoo is installed for the first time. | `aw_version`.
+`manual_workflow_runner_select_workflow` | A workflow is selected in the manual workflow runner. | `conversion_tracking_enabled`, `tracking_enabled`, `title`, `type`, `trigger_name`.
+`manual_run_workflow_button_clicked` | The manual workflow runner advances after matching items are found. | `items_count`.
+`manual_find_matching_cancel_button_clicked` | The find matching items step is cancelled. | No custom properties.
+`manual_queue_items_cancel_button_clicked` | The queue items step is cancelled. | No custom properties.
+`manual_run_workflow_complete` | The manual workflow runner finishes queueing items. | `items_count`, `conversion_tracking_enabled`, `tracking_enabled`, `title`, `type`, `trigger_name`.
+`notice_viewed` | A tracked admin notice is displayed. | `notice_identifier`.
+`notice_link_clicked` | A tracked admin notice link is clicked. | `notice_identifier`, `link_type`.
+`notice_dismissed` | A tracked admin notice is dismissed. | `notice_identifier`.
+`workflow_tab_view` | A tab on the "AutomateWoo > Workflows" screen is viewed. | `tab`.
+`preset_list_button_clicked` | A button in the workflow presets list is clicked. | `action`, `preset_name`.
+`preset_activation_alert_rendered` | The preset activation alert is rendered. | `is_active`.
+`preset_activation_alert_closed` | The preset activation alert is closed. | `is_active`, `action` (`confirm`, `cancel`, or `dismiss`).
+
+#### Workflow event properties
+
+`workflow_before_run` and `workflow_created` use `AutomateWoo\Usage_Tracking\WorkflowTracksData` to flatten workflow data into one-level Tracks properties.
+
+Static workflow properties:
+
+* `conversion_tracking_enabled`
+* `date_created`
+* `ga_tracking_enabled`
+* `status`
+* `title`
+* `tracking_enabled`
+* `unsubscribe_exempt`
+* `type`
+* `trigger_name`
+
+Dynamic workflow properties:
+
+* `action_{index}` stores each configured action name. For example, `action_0 = send_email`.
+* `trigger_{option}` stores scalar trigger option values. Nested trigger option arrays are flattened by appending keys, for example `trigger_order_status_0`.
+* `rule_{group_index}_{rule_index}_{property}` stores rule group data after dropping saved rule group IDs and rule IDs. For example, `rule_0_0_name`, `rule_0_0_compare`, and `rule_0_0_value`.
+* Workflow data can be extended with the `automatewoo/usage_tracking/workflow_data` filter.
+* Rule values for `customer_email` and `customer_phone` are anonymized before being sent.
+
+The external Tracks event registry is maintained outside this repository. This readme documents the in-repository event emitters and property shapes that should be kept in sync with that registry.
 
 
 ## Available hooks

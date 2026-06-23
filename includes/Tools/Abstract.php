@@ -47,6 +47,12 @@ abstract class Tool_Abstract {
 
 
 	/**
+	 * Optionally output a legend in the confirmation screen footer.
+	 */
+	function display_confirmation_legend() {}
+
+
+	/**
 	 * @return Fields\Field[]
 	 */
 	function get_form_fields() {

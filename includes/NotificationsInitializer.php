@@ -78,6 +78,10 @@ class NotificationsInitializer {
 		add_action( 'automatewoo_installed', array( $this, 'schedule_activate_or_update_notifications' ) );
 		add_action( self::ACTION_SCHEDULER_SINGLE_HOOK, array( $this, 'process_activate_or_update_notifications' ) );
 
+		// Delete the welcome note when a workflow is created. Registered unconditionally
+		// so it also fires for REST API, WP-CLI and programmatic workflow creation.
+		add_action( 'automatewoo/workflow/created', array( $this, 'delete_welcome_notification' ), 10, 0 );
+
 		// Delete the scheduled action if AutomateWoo is deactivated.
 		register_deactivation_hook( AUTOMATEWOO_FILE, array( $this, 'maybe_remove_scheduled_action' ) );
 		register_deactivation_hook( AUTOMATEWOO_FILE, array( $this, 'maybe_delete_notes' ) );
@@ -108,6 +112,17 @@ class NotificationsInitializer {
 	 */
 	public function process_activate_or_update_notifications(): void {
 		$this->run( Notifications::ACTIVATION_OR_UPDATE );
+	}
+
+	/**
+	 * Delete the welcome note when a workflow is created.
+	 *
+	 * @since 6.5.0
+	 *
+	 * @return void
+	 */
+	public function delete_welcome_notification(): void {
+		( new WelcomeNotification() )->maybe_delete_on_workflow_created();
 	}
 
 	/**

@@ -40,6 +40,7 @@ defined( 'ABSPATH' ) || exit;
 				</div>
 
 				<div class="automatewoo-metabox-footer">
+					<?php $tool->display_confirmation_legend(); ?>
 					<button type="submit" class="button button-primary button-large"><?php esc_html_e( 'Confirm', 'automatewoo' ); ?></button>
 				</div>
 			</div>

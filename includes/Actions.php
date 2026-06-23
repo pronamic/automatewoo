@@ -62,11 +62,12 @@ class Actions extends Registry {
 			$includes['subscription_update_shipping']          = Actions\Subscriptions\UpdateShipping::class;
 			$includes['subscription_remove_shipping']          = Actions\Subscriptions\RemoveShipping::class;
 			$includes['subscription_update_currency']          = Actions\Subscriptions\UpdateCurrency::class;
-			$includes['subscription_update_end_date']          = Actions\Subscriptions\UpdateEndDate::class;
-			$includes['subscription_update_trial_end_date']    = Actions\Subscriptions\UpdateTrialEndDate::class;
-			$includes['subscription_update_next_payment_date'] = Actions\Subscriptions\UpdateNextPaymentDate::class;
-			$includes['subscription_recalculate_taxes']        = Actions\Subscriptions\RecalculateTaxes::class;
-			$includes['subscription_regenerate_downloads']     = Actions\Subscriptions\RegenerateDownloadPermissions::class;
+			$includes['subscription_update_end_date']           = Actions\Subscriptions\UpdateEndDate::class;
+			$includes['subscription_update_trial_end_date']     = Actions\Subscriptions\UpdateTrialEndDate::class;
+			$includes['subscription_update_next_payment_date']  = Actions\Subscriptions\UpdateNextPaymentDate::class;
+			$includes['subscription_stagger_next_payment_time'] = Actions\Subscriptions\StaggerNextPaymentTime::class;
+			$includes['subscription_recalculate_taxes']         = Actions\Subscriptions\RecalculateTaxes::class;
+			$includes['subscription_regenerate_downloads']      = Actions\Subscriptions\RegenerateDownloadPermissions::class;
 		}
 
 		if ( Integrations::is_memberships_enabled() ) {

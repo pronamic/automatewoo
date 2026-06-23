@@ -58,7 +58,7 @@ class UpdateEndDate extends AbstractEditDateItem {
 			/* translators: %1$s: workflow name, %2$s: new end date, %3$s: workflow ID */
 			__( '%1$s workflow run: updated end date to %2$s.  (Workflow ID: %3$d)', 'automatewoo' ),
 			$this->workflow->get_title(),
-			$new_end_date,
+			$this->format_date_for_note( $new_end_date ),
 			$this->workflow->get_id()
 		);
 	}

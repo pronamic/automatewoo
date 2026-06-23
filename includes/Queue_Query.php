@@ -53,6 +53,19 @@ class Queue_Query extends Query_Data_Layer_Abstract {
 		return $this->where( 'failed', absint( $failed ), $compare );
 	}
 
+	/**
+	 * Order non-failed events before failed events, then by due date.
+	 *
+	 * @since 6.5.0
+	 * @return $this
+	 */
+	function order_by_failed_status_and_date() {
+		$this->orderby = 'failed ASC, date';
+		$this->order   = 'ASC';
+
+		return $this;
+	}
+
 
 	/**
 	 * @since 3.8

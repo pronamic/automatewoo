@@ -111,6 +111,13 @@ abstract class Abstract_Date extends Rule {
 	public $uses_datepicker = false;
 
 	/**
+	 * Does the datepicker support an optional time of day?
+	 *
+	 * @var bool
+	 */
+	public $has_time_of_day = false;
+
+	/**
 	 * Rule select options.
 	 *
 	 * @var array
@@ -169,10 +176,39 @@ abstract class Abstract_Date extends Rule {
 
 		$this->select_choices = [
 			'hours' => __( 'Hours', 'automatewoo' ),
-			'days'  => __( 'Days', 'automatewoo' ),
+			'days'  => __( 'Calendar days', 'automatewoo' ),
 		];
 
 		parent::__construct();
+	}
+
+	/**
+	 * Get a UTC boundary date for relative calendar-day comparisons.
+	 *
+	 * @since 6.5.0
+	 *
+	 * @param DateTime $date      Date in UTC.
+	 * @param int      $timeframe Number of days.
+	 * @param string   $direction The direction to calculate: past or future.
+	 *
+	 * @return DateTime
+	 * @throws \Exception When the interval can't be created.
+	 */
+	protected function get_relative_calendar_day_boundary( $date, $timeframe, $direction ) {
+		$boundary = clone $date;
+		$boundary->convert_to_site_time();
+
+		$interval = new \DateInterval( 'P' . absint( $timeframe ) . 'D' );
+
+		if ( 'past' === $direction ) {
+			$boundary->sub( $interval );
+			$boundary->set_time_to_day_start();
+		} else {
+			$boundary->add( $interval );
+			$boundary->set_time_to_day_end();
+		}
+
+		return $boundary->convert_to_utc_time();
 	}
 
 	/**
@@ -186,14 +222,8 @@ abstract class Abstract_Date extends Rule {
 	 * @return bool
 	 */
 	protected function validate_date_diff( $date, $compare, $timeframe, $measure ) {
-		if ( 'days' === $measure ) {
-			$interval_spec = 'P' . $timeframe . 'D';
-		} else {
-			$interval_spec = 'PT' . $timeframe . 'H';
-		}
-
 		try {
-			$interval = new \DateInterval( $interval_spec );
+			$interval = new \DateInterval( 'PT' . $timeframe . 'H' );
 		} catch ( \Exception $e ) {
 			return false;
 		}
@@ -203,16 +233,24 @@ abstract class Abstract_Date extends Rule {
 
 		switch ( $compare ) {
 			case 'is_in_the_next':
-				$comparison_date->add( $interval );
+				$comparison_date = 'days' === $measure
+					? $this->get_relative_calendar_day_boundary( $now, $timeframe, 'future' )
+					: $comparison_date->add( $interval );
 				return $this->validate_is_between_dates( $date, $now, $comparison_date );
 			case 'is_not_in_the_next':
-				$comparison_date->add( $interval );
+				$comparison_date = 'days' === $measure
+					? $this->get_relative_calendar_day_boundary( $now, $timeframe, 'future' )
+					: $comparison_date->add( $interval );
 				return ! $this->validate_is_between_dates( $date, $now, $comparison_date );
 			case 'is_in_the_last':
-				$comparison_date->sub( $interval );
+				$comparison_date = 'days' === $measure
+					? $this->get_relative_calendar_day_boundary( $now, $timeframe, 'past' )
+					: $comparison_date->sub( $interval );
 				return $this->validate_is_between_dates( $date, $comparison_date, $now );
 			case 'is_not_in_the_last':
-				$comparison_date->sub( $interval );
+				$comparison_date = 'days' === $measure
+					? $this->get_relative_calendar_day_boundary( $now, $timeframe, 'past' )
+					: $comparison_date->sub( $interval );
 				return ! $this->validate_is_between_dates( $date, $comparison_date, $now );
 		}
 
@@ -244,13 +282,62 @@ abstract class Abstract_Date extends Rule {
 	 *
 	 * @param DateTime $date1 First date.
 	 * @param DateTime $date2 Second date for comparision.
+	 * @param string   $format Date format to compare.
 	 *
 	 * @return bool
 	 */
-	private function validate_same_date( $date1, $date2 ) {
-		$format = 'Y-m-d';
-
+	private function validate_same_date( $date1, $date2, $format = 'Y-m-d' ) {
 		return ( $date1->format( $format ) === $date2->format( $format ) );
+	}
+
+	/**
+	 * Parses a rule's optional time of day.
+	 *
+	 * @param array|int $value The rule value.
+	 *
+	 * @return int[]|false|null
+	 */
+	private function parse_rule_time_of_day( $value ) {
+		if ( ! $this->has_time_of_day || ! is_array( $value ) || ! array_key_exists( 'time', $value ) ) {
+			return null;
+		}
+
+		$time = $value['time'];
+
+		if ( is_string( $time ) ) {
+			if ( '' === trim( $time ) ) {
+				return null;
+			}
+
+			if ( ! preg_match( '/^([0-9]{1,2}):([0-9]{2})(?::[0-9]{2})?$/', $time, $matches ) ) {
+				return false;
+			}
+
+			$hour   = (int) $matches[1];
+			$minute = (int) $matches[2];
+		} elseif ( is_array( $time ) ) {
+			$hour_value   = isset( $time[0] ) ? trim( (string) $time[0] ) : '';
+			$minute_value = isset( $time[1] ) ? trim( (string) $time[1] ) : '';
+
+			if ( '' === $hour_value && '' === $minute_value ) {
+				return null;
+			}
+
+			if ( ! ctype_digit( $hour_value ) || ! ctype_digit( $minute_value ) ) {
+				return false;
+			}
+
+			$hour   = (int) $hour_value;
+			$minute = (int) $minute_value;
+		} else {
+			return false;
+		}
+
+		if ( $hour < 0 || $hour > 23 || $minute < 0 || $minute > 59 ) {
+			return false;
+		}
+
+		return [ $hour, $minute ];
 	}
 
 	/**
@@ -399,6 +486,7 @@ abstract class Abstract_Date extends Rule {
 			$rule_days_of_week = ( ! empty( $value['dow'] ) ) ? $value['dow'] : [];
 			$rule_from         = ( ! empty( $value['from'] ) ) ? $value['from'] : '';
 			$rule_to           = ( ! empty( $value['to'] ) ) ? $value['to'] : '';
+			$rule_time         = $this->parse_rule_time_of_day( $value );
 		} else {
 			$rule_timeframe    = absint( $value );
 			$rule_measure      = 'hours';
@@ -406,6 +494,11 @@ abstract class Abstract_Date extends Rule {
 			$rule_days_of_week = [];
 			$rule_from         = '';
 			$rule_to           = '';
+			$rule_time         = null;
+		}
+
+		if ( false === $rule_time ) {
+			return false;
 		}
 
 		// Verify that the date is set.
@@ -428,10 +521,11 @@ abstract class Abstract_Date extends Rule {
 			}
 
 			$rule_date   = new DateTime( $rule_date );
-			$comparative = 'before';
+			$comparative = 'is_after' === $compare ? 'after' : 'before';
 
-			if ( 'is_after' === $compare ) {
-				$comparative = 'after';
+			if ( is_array( $rule_time ) ) {
+				$rule_date->setTime( $rule_time[0], $rule_time[1], 0 );
+			} elseif ( 'is_after' === $compare ) {
 				// exclude the current day from after comparisons
 				$rule_date->set_time_to_day_end();
 			}
@@ -450,16 +544,20 @@ abstract class Abstract_Date extends Rule {
 			}
 			$rule_date = new DateTime( $rule_date );
 
+			if ( is_array( $rule_time ) ) {
+				$rule_date->setTime( $rule_time[0], $rule_time[1], 0 );
+			}
+
 			// We must consider that the dates are from the user perspective in this case
 			// So do the comparison in the site's timezone
 			$date->convert_to_site_time();
 
 			if ( 'is_on' === $compare ) {
-				return $this->validate_same_date( $date, $rule_date );
+				return $this->validate_same_date( $date, $rule_date, is_array( $rule_time ) ? 'Y-m-d H:i' : 'Y-m-d' );
 			}
 
 			if ( 'is_not_on' === $compare ) {
-				return ! $this->validate_same_date( $date, $rule_date );
+				return ! $this->validate_same_date( $date, $rule_date, is_array( $rule_time ) ? 'Y-m-d H:i' : 'Y-m-d' );
 			}
 		}
 

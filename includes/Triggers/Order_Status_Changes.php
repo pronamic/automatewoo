@@ -50,6 +50,10 @@ class Trigger_Order_Status_Changes extends Trigger_Abstract_Order_Status_Base {
 	 * @return bool
 	 */
 	public function validate_workflow( $workflow ) {
+		if ( ! parent::validate_workflow( $workflow ) ) {
+			return false;
+		}
+
 		$order = $workflow->data_layer()->get_order();
 
 		if ( ! $order ) {
@@ -81,6 +85,10 @@ class Trigger_Order_Status_Changes extends Trigger_Abstract_Order_Status_Base {
 	 * @return bool
 	 */
 	public function validate_before_queued_event( $workflow ) {
+		if ( ! parent::validate_before_queued_event( $workflow ) ) {
+			return false;
+		}
+
 		$order = $workflow->data_layer()->get_order();
 
 		if ( ! $order ) {

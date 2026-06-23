@@ -21,7 +21,7 @@ global $post;
 		<tr id="automatewoo-workflow-type-field-row" class="automatewoo-table__row">
 			<td class="automatewoo-table__col">
 				<div class="automatewoo-input-group">
-					<label class="automatewoo-input-group__addon automatewoo-input-group__addon--pad-right automatewoo-label--weight-normal">
+					<label class="automatewoo-input-group__addon automatewoo-input-group__addon--pad-right automatewoo-label--weight-normal" for="aw-workflow-type">
 						<?php esc_html_e( 'Type:', 'automatewoo' ); ?>
 					</label>
 					<div class="automatewoo-input-group__input">
@@ -31,6 +31,7 @@ global $post;
 							->set_name( 'type' )
 							->set_name_base( 'aw_workflow_data' )
 							->set_options( Workflows::get_types() )
+							->add_extra_attr( 'id', 'aw-workflow-type' )
 							->render( $workflow ? $workflow->get_type() : 'automatic' );
 						?>
 					</div>
@@ -40,7 +41,7 @@ global $post;
 		<tr id="automatewoo-workflow-status-field-row" class="automatewoo-table__row">
 			<td class="automatewoo-table__col">
 				<div class="automatewoo-input-group">
-					<label class="automatewoo-input-group__addon automatewoo-input-group__addon--pad-right automatewoo-label--weight-normal">
+					<label class="automatewoo-input-group__addon automatewoo-input-group__addon--pad-right automatewoo-label--weight-normal" for="aw-workflow-status">
 						<?php esc_html_e( 'Status:', 'automatewoo' ); ?>
 					</label>
 
@@ -60,6 +61,7 @@ global $post;
 									'disabled' => __( 'Disabled', 'automatewoo' ),
 								]
 							)
+							->add_extra_attr( 'id', 'aw-workflow-status' )
 							->render( $status );
 						?>
 					</div>

@@ -69,14 +69,12 @@ class Settings_Tab_Campaign_Monitor extends Admin_Settings_Tab_Abstract {
 	 * @return void
 	 */
 	public function save( $fields = array() ): void {
-		Integrations::campaign_monitor()->clear_cache_data();
 		parent::save();
 
 		$campaign_monitor = Integrations::campaign_monitor();
-		if ( $campaign_monitor && $campaign_monitor->test_integration() ) {
-			// If a notification exists relating to a Campaign Monitor integration error, delete it.
-			CampaignMonitorCheck::possibly_delete_note();
-		}
+		$campaign_monitor->clear_cache_data();
+
+		$this->validate_integration_on_save( $campaign_monitor, __( 'Campaign Monitor', 'automatewoo' ), CampaignMonitorCheck::class );
 	}
 }
 

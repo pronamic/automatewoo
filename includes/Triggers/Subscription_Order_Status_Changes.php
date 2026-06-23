@@ -40,6 +40,10 @@ class Subscription_Order_Status_Changes extends Trigger_Order_Status_Changes {
 	public function load_fields() {
 		$this->add_field( Subscription_Workflow_Helper::get_subscription_order_types_field() );
 		parent::load_fields();
+
+		// Renewal, resubscribe, and switch orders are never created at checkout, so the
+		// checkout-source option would conflict with the subscription order types field.
+		$this->remove_field( self::OPTION_ONLY_RUN_FOR_CHECKOUT_ORDERS );
 	}
 
 	/**

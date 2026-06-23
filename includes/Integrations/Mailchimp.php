@@ -208,17 +208,25 @@ class Integration_Mailchimp extends Integration {
 			return [];
 		}
 
-		$body       = $request->get_body();
-		$categories = isset( $body['categories'] ) ? (array) $body['categories'] : [];
+		$body        = $request->get_body();
+		$categories  = isset( $body['categories'] ) ? (array) $body['categories'] : [];
+		$has_failure = false;
 		foreach ( $categories as $category ) {
+			$interests = $this->get_interest_categories_interests( $list_id, $category['id'] );
+			if ( null === $interests ) {
+				$has_failure = true;
+				$interests   = [];
+			}
 			$data[ $category['id'] ] = [
 				'id'        => $category['id'],
 				'title'     => $category['title'],
-				'interests' => $this->get_interest_categories_interests( $list_id, $category['id'] ),
+				'interests' => $interests,
 			];
 		}
 
-		Cache::set_transient( $cache_key, $data, 0.15 );
+		if ( ! $has_failure ) {
+			Cache::set_transient( $cache_key, $data, 0.15 );
+		}
 
 		return $data;
 	}
@@ -228,10 +236,15 @@ class Integration_Mailchimp extends Integration {
 	 *
 	 * Protected method due to not being cached, use $this->get_list_interest_categories()
 	 *
+	 * Returns null on request failure so the caller can distinguish a failed fetch
+	 * from a category that genuinely has no interests (empty array).
+	 *
+	 * @since 6.5.0
+	 *
 	 * @param string $list_id     The list ID.
 	 * @param string $category_id The category ID.
 	 *
-	 * @return array
+	 * @return array|null Array of interests on success, null on request failure.
 	 */
 	protected function get_interest_categories_interests( $list_id, $category_id ) {
 		$data    = [];
@@ -244,7 +257,7 @@ class Integration_Mailchimp extends Integration {
 		);
 
 		if ( ! $request->is_successful() ) {
-			return [];
+			return null;
 		}
 
 		$body      = $request->get_body();

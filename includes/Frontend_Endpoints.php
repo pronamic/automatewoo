@@ -66,7 +66,7 @@ class Frontend_Endpoints {
 			$customer = Customer_Factory::get_by_email( $email );
 		}
 
-		$redirect = Frontend::get_communication_page_permalink( $customer, 'unsubscribe' );
+		$redirect = Frontend::get_communication_page_permalink( $customer, 'unsubscribe', Clean::id( aw_request( 'workflow' ) ) );
 
 		if ( $redirect ) {
 			wp_safe_redirect( $redirect );
@@ -108,12 +108,14 @@ class Frontend_Endpoints {
 
 
 	/**
-	 * @see \WC_Form_Handler::order_again()
+	 * @see \Automattic\WooCommerce\Internal\Orders\OrderActionsRestController and
+	 * @see \WC_Cart_Session::populate_cart_from_order() — the modern WC order-again
+	 *      flow lives there now (WC_Form_Handler::order_again() is a deprecated stub).
 	 */
 	static function reorder() {
 
 		$order_id = wc_get_order_id_by_order_key( Clean::string( aw_request( 'aw-order-key' ) ) );
-		$order = wc_get_order( absint( $order_id ) );
+		$order    = wc_get_order( absint( $order_id ) );
 
 		if ( ! $order ) {
 			wc_add_notice( __( 'The previous order could not be found.', 'automatewoo' ) );
@@ -122,41 +124,86 @@ class Frontend_Endpoints {
 
 		WC()->cart->empty_cart();
 
-		// Copy products from the order to the cart
-		$order_items = $order->get_items();
+		// Build the cart array directly, mirroring WC_Cart_Session::populate_cart_from_order().
+		// This deliberately does NOT call WC()->cart->add_to_cart(): doing so would fire the
+		// `woocommerce_add_to_cart` action and trigger extensions (e.g. Chained Products) that
+		// auto-add child products to the cart — duplicating items that are already part of the
+		// order being replayed. See #1010.
+		$cart_contents = [];
+		$order_items   = $order->get_items();
+
 		foreach ( $order_items as $item ) {
-			// Load all product info including variation data
-			$product_id   = (int) apply_filters( 'woocommerce_add_to_cart_product_id', $item->get_product_id() );
-			$quantity     = $item->get_quantity();
-			$variation_id = $item->get_variation_id();
-			$variations   = array();
-			$cart_item_data = apply_filters( 'woocommerce_order_again_cart_item_data', array(), $item, $order );
+			$product_id     = (int) apply_filters( 'woocommerce_add_to_cart_product_id', $item->get_product_id() );
+			$quantity       = $item->get_quantity();
+			$variation_id   = (int) $item->get_variation_id();
+			$variations     = [];
+			$cart_item_data = apply_filters( 'woocommerce_order_again_cart_item_data', [], $item, $order );
+			$product        = $item->get_product();
+
+			if ( ! $product ) {
+				continue;
+			}
+
+			// Prevent reordering variable products if no selected variation.
+			if ( ! $variation_id && $product->is_type( 'variable' ) ) {
+				continue;
+			}
+
+			// Prevent reordering items specifically out of stock.
+			if ( ! $product->is_in_stock() ) {
+				continue;
+			}
 
 			foreach ( $item->get_meta_data() as $meta ) {
 				if ( taxonomy_is_product_attribute( $meta->key ) ) {
-					$term = get_term_by( 'slug', $meta->value, $meta->key );
+					$term                       = get_term_by( 'slug', $meta->value, $meta->key );
 					$variations[ $meta->key ] = $term ? $term->name : $meta->value;
 				} elseif ( meta_is_product_attribute( $meta->key, $meta->value, $product_id ) ) {
 					$variations[ $meta->key ] = $meta->value;
 				}
 			}
 
-			// Prevent reordering variable products if no selected variation.
-			if ( ! $variation_id && ( $product = $item->get_product() ) && $product->is_type( 'variable' ) ) {
-				continue;
-			}
-
-			// Add to cart validation
 			if ( ! apply_filters( 'woocommerce_add_to_cart_validation', true, $product_id, $quantity, $variation_id, $variations, $cart_item_data ) ) {
 				continue;
 			}
 
-			WC()->cart->add_to_cart( $product_id, $quantity, $variation_id, $variations, $cart_item_data );
+			// Resolve to variation if applicable so cart-level price / data is correct.
+			$cart_id      = WC()->cart->generate_cart_id( $product_id, $variation_id, $variations, $cart_item_data );
+			$product_data = wc_get_product( $variation_id ? $variation_id : $product_id );
+
+			// `$product_id` may have been mutated by the `woocommerce_add_to_cart_product_id`
+			// filter above and no longer resolve, in which case we can't build a valid cart
+			// item — skip rather than pass `false` into `wc_get_cart_item_data_hash()`.
+			if ( ! $product_data ) {
+				continue;
+			}
+
+			$cart_contents[ $cart_id ] = apply_filters(
+				'woocommerce_add_order_again_cart_item',
+				array_merge(
+					$cart_item_data,
+					[
+						'key'          => $cart_id,
+						'product_id'   => $product_id,
+						'variation_id' => $variation_id,
+						'variation'    => $variations,
+						'quantity'     => $quantity,
+						'data'         => $product_data,
+						'data_hash'    => wc_get_cart_item_data_hash( $product_data ),
+					]
+				),
+				$cart_id
+			);
 		}
 
-		do_action( 'woocommerce_ordered_again', $order->get_id() );
+		// Fire before the cart is committed (matching WC core) so listeners can
+		// mutate $cart_contents by reference and have it reflected in the cart.
+		do_action_ref_array( 'woocommerce_ordered_again', [ $order->get_id(), $order_items, &$cart_contents ] );
 
-		$num_items_in_cart = count( WC()->cart->get_cart() );
+		WC()->cart->set_cart_contents( $cart_contents );
+		WC()->cart->set_session();
+
+		$num_items_in_cart           = count( $cart_contents );
 		$num_items_in_original_order = count( $order_items );
 
 		if ( $num_items_in_original_order > $num_items_in_cart ) {

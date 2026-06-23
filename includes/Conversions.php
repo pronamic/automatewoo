@@ -2,6 +2,8 @@
 
 namespace AutomateWoo;
 
+use Automattic\WooCommerce\Admin\API\Reports\Cache as Reports_Cache;
+
 /**
  * @class Conversions
  * @since 2.1
@@ -92,6 +94,10 @@ class Conversions {
 	public static function clear_cache() {
 		// Clear cached dashboard conversions.
 		Cache::flush_group( 'dashboard' );
+
+		if ( class_exists( Reports_Cache::class ) ) {
+			Reports_Cache::invalidate();
+		}
 	}
 
 	/**

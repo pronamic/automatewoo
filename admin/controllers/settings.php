@@ -15,11 +15,15 @@ class Settings extends Base {
 
 
 	function handle() {
-		wp_localize_script( 'automatewoo-settings', 'automatewooSettingsLocalizeScript', [
-			'messages' => [
-				'switchToOptinWarning' => __( "WARNING: After switching to 'Opt-in mode' current customers will not be automatically opted in. Non-transactional workflows will stop sending emails and SMS until customers choose to opt-in. You can import opt-ins via AutomateWoo > Tools.", 'automatewoo' ),
-			],
-		] );
+		wp_add_inline_script(
+			'automatewoo-settings',
+			'var automatewooSettingsLocalizeScript = ' . wp_json_encode( [
+				'messages' => [
+					'switchToOptinWarning' => __( "WARNING: After switching to 'Opt-in mode' current customers will not be automatically opted in. Non-transactional workflows will stop sending emails and SMS until customers choose to opt-in. You can import opt-ins via AutomateWoo > Tools.", 'automatewoo' ),
+				],
+			] ) . ';',
+			'before'
+		);
 
 		wp_enqueue_script( 'automatewoo-settings' );
 

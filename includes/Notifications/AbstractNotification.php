@@ -79,19 +79,26 @@ abstract class AbstractNotification {
 			return;
 		}
 
-		$note = static::get_note();
-
-		// If the note shouldn't be added but exists then delete it.
-		if ( static::note_exists() && ! static::should_be_added() ) {
-			$this->delete_existing_note();
+		// Check the in-memory condition first to short-circuit before touching
+		// the wc_admin_notes table. See #1895.
+		if ( ! static::should_be_added() ) {
+			// Clean up a stale note if one exists.
+			if ( static::note_exists() ) {
+				$this->delete_existing_note();
+			}
 			return;
 		}
 
-		if ( ! static::can_be_added() || ! static::should_be_added() ) {
+		// `can_be_added()` from NoteTraits already checks whether the note exists,
+		// so we call it once here instead of also calling `note_exists()` ourselves
+		// — halving the SELECT on `wp_wc_admin_notes` for the common
+		// "should add but already exists" path. See #1895.
+		if ( ! static::can_be_added() ) {
 			return;
 		}
 
-		$note->save();
+		// Lazy-allocate the Note: only built when we're actually about to save it.
+		static::get_note()->save();
 	}
 
 	/**

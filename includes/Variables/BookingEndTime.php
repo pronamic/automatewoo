@@ -29,7 +29,7 @@ class BookingEndTime extends AbstractBookingTime {
 	 * @return DateTime|null The variable's target datetime value in the site's local timezone.
 	 */
 	protected function get_target_datetime_value( WC_Booking $booking ) {
-		$datetime = aw_normalize_date( $booking->get_end( 'view', true ) );
+		$datetime = aw_normalize_date( $booking->get_end( 'view', false ) );
 		return $datetime ? $datetime : null;
 	}
 }

@@ -14,7 +14,8 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 $links = [];
 
 if ( isset( $order ) ) {
-	$products = $order->get_items();
+	$products = empty( $include_refunded ) ? aw_filter_refunded_order_items( $order->get_items(), $order ) : $order->get_items();
+	$products = aw_filter_hidden_bundled_order_items( $products );
 }
 
 foreach( $products as $product ) {

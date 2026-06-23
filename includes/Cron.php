@@ -51,6 +51,20 @@ class Cron {
 		// Now this job runs via ActionScheduler
 		wp_unschedule_hook('automatewoo_midnight');
 
+		register_deactivation_hook( AUTOMATEWOO_FILE, [ __CLASS__, 'remove_events' ] );
+	}
+
+
+	/**
+	 * Remove all cron events on plugin deactivation.
+	 *
+	 * @since 6.5.0
+	 */
+	public static function remove_events() {
+		foreach ( self::$workers as $worker => $schedule ) {
+			wp_unschedule_hook( 'automatewoo_' . $worker . '_worker' );
+		}
+		wp_unschedule_hook( 'automatewoo_midnight' );
 	}
 
 
@@ -133,10 +147,54 @@ class Cron {
 		foreach ( self::$workers as $worker => $schedule ) {
 			$hook = 'automatewoo_' . $worker . '_worker';
 
+			if ( 'events' === $worker && ! self::has_worker_callbacks( $hook ) ) {
+				wp_clear_scheduled_hook( $hook );
+				continue;
+			}
+
 			if ( ! wp_next_scheduled( $hook ) ) {
 				wp_schedule_event( time(), $schedule, $hook );
 			}
 		}
+	}
+
+
+	/**
+	 * Checks if a worker hook has callbacks other than the generic lock guard.
+	 *
+	 * @param string $hook Worker hook name.
+	 * @return bool
+	 */
+	private static function has_worker_callbacks( $hook ) {
+		global $wp_filter;
+
+		if ( empty( $wp_filter[ $hook ] ) || ! $wp_filter[ $hook ] instanceof \WP_Hook ) {
+			return false;
+		}
+
+		foreach ( $wp_filter[ $hook ]->callbacks as $callbacks ) {
+			foreach ( $callbacks as $callback ) {
+				if ( ! self::is_before_worker_callback( $callback['function'] ) ) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+
+	/**
+	 * Checks if a callback is the generic worker lock guard.
+	 *
+	 * @param callable $callback Callback to check.
+	 * @return bool
+	 */
+	private static function is_before_worker_callback( $callback ) {
+		return is_array( $callback )
+			&& isset( $callback[0], $callback[1] )
+			&& __CLASS__ === $callback[0]
+			&& 'before_worker' === $callback[1];
 	}
 
 

@@ -126,6 +126,10 @@ class Report_Email_Tracking extends \AW_Report_Abstract_Graph {
 		$unsubscribes_query->where( 'unsubscribed_date', $start_date, '>' );
 		$unsubscribes_query->where( 'unsubscribed_date', $end_date, '<' );
 
+		if ( $this->workflow_ids ) {
+			$unsubscribes_query->where_meta( Customer::UNSUBSCRIBED_WORKFLOW_META_KEY, $this->workflow_ids );
+		}
+
 		if ( $unsubscribes = $unsubscribes_query->get_results() ) {
 			$this->unsubscribes = $unsubscribes;
 			$this->unsubscribes_count = count( $this->unsubscribes );

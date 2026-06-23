@@ -38,7 +38,13 @@ class Report_Logs extends Admin_List_Table {
 	 * @return string
 	 */
 	function column_cb( $log ) {
-		return '<input type="checkbox" name="log_ids[]" value="' . absint( $log->get_id() ) . '" />';
+		$id = absint( $log->get_id() );
+		return sprintf(
+			'<label class="screen-reader-text" for="cb-select-%1$d">%2$s</label><input id="cb-select-%1$d" type="checkbox" name="log_ids[]" value="%1$d" />',
+			$id,
+			/* translators: %d: log ID */
+			esc_html( sprintf( __( 'Select log %d', 'automatewoo' ), $id ) )
+		);
 	}
 
 
@@ -109,7 +115,7 @@ class Report_Logs extends Admin_List_Table {
 			'workflow'  => __( 'Workflow', 'automatewoo' ),
 			'user' => __( 'Customer', 'automatewoo' ),
 			'time' => __( 'Time', 'automatewoo' ),
-			'actions' => '',
+			'actions' => '<span class="screen-reader-text">' . esc_html__( 'Actions', 'automatewoo' ) . '</span>',
 		];
 
 		return $columns;
@@ -171,5 +177,45 @@ class Report_Logs extends Admin_List_Table {
 		return $actions;
 	}
 
+	/**
+	 * Display the table plus the log deletion confirmation script.
+	 */
+	public function display() {
+		parent::display();
+		$this->output_delete_confirmation_script();
+	}
+
+	/**
+	 * Prompt before deleting logs through the bulk action.
+	 */
+	private function output_delete_confirmation_script() {
+		$message = __( 'Deleting workflow logs can affect workflow behavior and cannot be undone. Are you sure you want to delete the selected logs?', 'automatewoo' );
+		?>
+		<script>
+			jQuery( function( $ ) {
+				const message = <?php echo wp_json_encode( $message ); ?>;
+
+				$( '.automatewoo-list-table--logs' ).closest( 'form.automatewoo-list-table-form' ).on( 'submit', function( event ) {
+					const submitter = event.originalEvent && event.originalEvent.submitter ? event.originalEvent.submitter : document.activeElement;
+					const submitterId = submitter ? submitter.getAttribute( 'id' ) : '';
+
+					if ( submitterId && submitterId !== 'doaction' && submitterId !== 'doaction2' ) {
+						return;
+					}
+
+					const $form = $( this );
+					const isDeleteAction =
+						$form.find( 'select[name="action"]' ).val() === 'bulk_delete' ||
+						$form.find( 'select[name="action2"]' ).val() === 'bulk_delete';
+					const hasSelectedLogs = $form.find( 'tbody input[name="log_ids[]"]:checked' ).length > 0;
+
+					if ( isDeleteAction && hasSelectedLogs && ! window.confirm( message ) ) {
+						event.preventDefault();
+					}
+				} );
+			} );
+		</script>
+		<?php
+	}
 
 }

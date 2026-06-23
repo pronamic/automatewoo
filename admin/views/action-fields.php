@@ -61,6 +61,10 @@ foreach ( $fields as $field ) :
 			AutomateWoo\Admin::help_tip( $field->get_description() );
 			?>
 
+			<?php if ( $field->supports_variables() ) : ?>
+				<span class="automatewoo-field-variable-support automatewoo-tiptip" data-tip="<?php echo esc_attr__( 'Supports variables', 'automatewoo' ); ?>"><span class="screen-reader-text"><?php esc_html_e( 'Supports variables', 'automatewoo' ); ?></span></span>
+			<?php endif; ?>
+
 			<label><?php echo esc_html( $field->get_title() ); ?>
 				<?php if ( $field->get_required() ) : ?>
 					<span class="required">*</span>

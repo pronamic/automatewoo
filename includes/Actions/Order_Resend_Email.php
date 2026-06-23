@@ -114,7 +114,7 @@ class Action_Order_Resend_Email extends Action {
 			do_action( 'woocommerce_after_resend_order_email', $order, $email_type );
 
 			// translators: %1$s Mail title, %2$d The Workflow ID
-			$order->add_order_note( sprintf( __( '%1$s email notification sent by AutomateWoo workflow #%2$d', 'automatewoo' ), $mail->title, $this->workflow->get_id() ) );
+			$this->add_order_note( $order, sprintf( __( '%1$s email notification sent by AutomateWoo workflow #%2$d', 'automatewoo' ), $mail->title, $this->workflow->get_id() ) );
 		}
 	}
 }

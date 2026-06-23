@@ -424,6 +424,11 @@ class Workflow {
 			return false;
 		}
 
+		if ( AdminNotices\NonProductionEnvironment::is_environment_locked() ) {
+			Logger::info( 'prevented-workflows', sprintf( 'Workflow "%s" blocked — non-production environment (%s).', $this->title, AdminNotices\NonProductionEnvironment::get_environment_type() ) );
+			return false;
+		}
+
 		do_action( 'automatewoo/workflow/before_run', $this );
 
 		if ( ! $this->is_test_mode() ) {
@@ -507,6 +512,13 @@ class Workflow {
 				break;
 			case 'fixed':
 				$date = $this->get_fixed_time();
+
+				$current_timestamp = time();
+
+				if ( $date && $date->getTimestamp() <= $current_timestamp ) {
+					$date = new DateTime();
+					$date->setTimestamp( $current_timestamp + 1 );
+				}
 				break;
 			case 'datetime':
 				$date = $this->get_variable_time();
@@ -1553,12 +1565,7 @@ class Workflow {
 	 * @return false|string
 	 */
 	function get_language() {
-		if ( Integrations::is_wpml() ) {
-			$info = wpml_get_language_information( null, $this->get_id() );
-			if ( is_array( $info ) )
-				return $info['language_code'];
-		}
-		return false;
+		return Language::get_post_language( $this->get_id() ) ?: false;
 	}
 
 
@@ -1567,26 +1574,7 @@ class Workflow {
 	 * @return array
 	 */
 	function get_translation_ids() {
-
-		if ( ! Integrations::is_wpml() ) {
-			return [ $this->get_id() ];
-		}
-
-		global $sitepress;
-
-		$ids = [];
-
-		$translations = $sitepress->get_element_translations( $this->get_id(), 'post_post', false, true );
-
-		if ( is_array( $translations ) ) {
-			foreach ( $translations as $translation ) {
-				$ids[] = $translation->element_id;
-			}
-		}
-
-		$ids[] = $this->get_id(); // sometimes wpml doesn't return default language id?
-
-		return Clean::ids( $ids );
+		return Language::get_post_translation_ids( $this->get_id() );
 	}
 
 

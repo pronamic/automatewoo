@@ -63,6 +63,25 @@ class Integrations {
 	}
 
 	/**
+	 * Check if WooCommerce Subscriptions early renewals are available and enabled.
+	 *
+	 * @since 6.5.0
+	 *
+	 * @return bool
+	 */
+	static function is_subscriptions_early_renewal_enabled() {
+		if ( ! self::is_subscriptions_active( '2.3' ) ) {
+			return false;
+		}
+
+		if ( ! class_exists( '\WCS_Early_Renewal_Manager' ) || ! is_callable( [ '\WCS_Early_Renewal_Manager', 'is_early_renewal_enabled' ] ) ) {
+			return false;
+		}
+
+		return \WCS_Early_Renewal_Manager::is_early_renewal_enabled();
+	}
+
+	/**
 	 * Check if MailPoet is active
 	 *
 	 * @since 5.6.4
@@ -125,6 +144,15 @@ class Integrations {
 	 */
 	static function is_wpml() {
 		return class_exists('SitePress');
+	}
+
+	/**
+	 * @since 6.5.0
+	 *
+	 * @return bool
+	 */
+	static function is_polylang() {
+		return function_exists( 'pll_current_language' );
 	}
 
 

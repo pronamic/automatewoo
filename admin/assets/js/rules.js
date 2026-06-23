@@ -2,6 +2,28 @@
 // https://github.com/woocommerce/automatewoo/issues/1212
 /* global AW, Backbone, _, ajaxurl, automatewooWorkflowLocalizeScript */
 ( function ( $, data ) {
+	/**
+	 * Toggle the "internal WooCommerce order meta key" warning for a field.
+	 *
+	 * Shared by the Order - Custom Field rule and the order custom-field
+	 * variable modal; both render a sibling `.aw-internal-meta-key-warning`
+	 * and carry the reserved keys in `data-aw-internal-meta-keys`.
+	 *
+	 * @param {Element} field The meta-key input.
+	 */
+	function toggleInternalMetaKeyWarning( field ) {
+		const $field = $( field );
+		const keys = String( $field.data( 'aw-internal-meta-keys' ) || '' )
+			.split( ' ' )
+			.filter( Boolean );
+		const val = $.trim( String( $field.val() || '' ) );
+		const isInternalKey = val && keys.indexOf( val ) !== -1;
+
+		$field
+			.siblings( '.aw-internal-meta-key-warning' )
+			.toggleClass( 'aw-hidden', ! isInternalKey );
+	}
+
 	// MODELS
 
 	AW.Rules = Backbone.Model.extend( {
@@ -298,6 +320,11 @@
 			this.maybeToggleValueDisplay();
 			this.initDatepicker();
 
+			// Set initial warning state for a pre-filled internal meta key.
+			this.$el.find( '[data-aw-internal-meta-keys]' ).each( function () {
+				toggleInternalMetaKeyWarning( this );
+			} );
+
 			$( document.body ).trigger( 'wc-enhanced-select-init' );
 
 			return this;
@@ -380,6 +407,13 @@
 							);
 						} );
 					}
+
+					if (
+						! _.isArray( selectedId ) &&
+						! _.isObject( selectedId )
+					) {
+						$fields.first().val( selectedId );
+					}
 				} else {
 					$fields.val( selectedId );
 				}
@@ -450,12 +484,18 @@
 					.prop( 'required', false );
 
 				// Show our selected rules.
-				$valueFields
+				const $selectedValueFields = $valueFields
 					.filter( '[data-aw-compare~="' + compare + '"]' )
 					.removeClass( 'aw-hidden' )
-					.prop( 'required', true )
+					.prop( 'required', true );
+
+				$selectedValueFields
 					.find( 'select, input' )
 					.prop( 'required', true );
+
+				$selectedValueFields
+					.find( '[data-aw-optional="true"]' )
+					.prop( 'required', false );
 			}
 		},
 
@@ -632,5 +672,14 @@
 		AW.rulesView = new AW.RulesView( {
 			model: AW.rules,
 		} );
+
+		// Delegated so it also covers the AJAX-loaded variable modal fields.
+		$( document.body ).on(
+			'change keyup',
+			'[data-aw-internal-meta-keys]',
+			function () {
+				toggleInternalMetaKeyWarning( this );
+			}
+		);
 	} );
 } )( jQuery, automatewooWorkflowLocalizeScript );

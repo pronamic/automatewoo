@@ -9,6 +9,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 
 use AutomateWoo\Admin\Analytics\Rest_API\Upstream\Generic_Stats_Store;
+use AutomateWoo\Customer;
+use AutomateWoo\Database_Tables;
 use Automattic\WooCommerce\Admin\API\Reports\TimeInterval;
 use stdClass;
 use WP_Error;
@@ -66,6 +68,39 @@ class Data_Store extends Generic_Stats_Store {
 		$this->report_columns = array(
 			'unsubscribers' => 'COUNT(DISTINCT id) as unsubscribers',
 		);
+	}
+
+	/**
+	 * Updates the totals and intervals database queries with `workflows` parameter.
+	 *
+	 * @param array $query_args Query arguments supplied by the user.
+	 */
+	protected function update_sql_query_params( $query_args ) {
+		parent::update_sql_query_params( $query_args );
+
+		if ( empty( $query_args['workflows'] ) ) {
+			return;
+		}
+
+		$included_workflows = wp_parse_id_list( $query_args['workflows'] );
+		if ( empty( $included_workflows ) ) {
+			return;
+		}
+
+		$customers_table_name = self::get_db_table_name();
+		$meta_table           = Database_Tables::get( 'customer-meta' );
+		$meta_table_name      = $meta_table->get_name();
+		$object_id_column     = $meta_table->get_object_id_column();
+		$workflow_meta_key    = esc_sql( Customer::UNSUBSCRIBED_WORKFLOW_META_KEY );
+		$workflow_ids         = implode( ',', $included_workflows );
+		$join_clause          = "JOIN {$meta_table_name} aw_unsubscribed_workflow ON ( {$customers_table_name}.id = aw_unsubscribed_workflow.{$object_id_column} AND aw_unsubscribed_workflow.meta_key = '{$workflow_meta_key}' )";
+		$where_clause         = " AND aw_unsubscribed_workflow.meta_value IN ({$workflow_ids})";
+
+		$this->total_query->add_sql_clause( 'join', $join_clause );
+		$this->total_query->add_sql_clause( 'where', $where_clause );
+
+		$this->interval_query->add_sql_clause( 'join', $join_clause );
+		$this->interval_query->add_sql_clause( 'where', $where_clause );
 	}
 
 	/**

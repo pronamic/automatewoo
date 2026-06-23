@@ -33,6 +33,8 @@ class Rules extends Registry {
 			'customer_country'              => 'AutomateWoo\Rules\Customer_Country',
 			'customer_state'                => 'AutomateWoo\Rules\Customer_State',
 			'customer_state_text_match'     => 'AutomateWoo\Rules\Customer_State_Text_Match',
+			'customer_shipping_state'            => 'AutomateWoo\Rules\Customer_Shipping_State',
+			'customer_shipping_state_text_match' => 'AutomateWoo\Rules\Customer_Shipping_State_Text_Match',
 			'customer_postcode'             => 'AutomateWoo\Rules\Customer_Postcode',
 			'customer_city'                 => 'AutomateWoo\Rules\Customer_City',
 			'customer_phone'                => 'AutomateWoo\Rules\Customer_Phone',
@@ -112,7 +114,7 @@ class Rules extends Registry {
 			$includes['order_is_subscription_parent']     = 'AutomateWoo\Rules\Order_Is_Subscription_Parent';
 			$includes['order_subscription_order_type']    = 'AutomateWoo\Rules\Order_Subscription_Order_Type';
 
-			if ( class_exists( 'WCS_Retry_Manager' ) && \WCS_Retry_Manager::is_retry_enabled() ) {
+			if ( class_exists( 'WCS_Retry_Manager' ) && method_exists( 'WCS_Retry_Manager', 'is_retry_enabled' ) && \WCS_Retry_Manager::is_retry_enabled() ) {
 				$includes['order_subscription_payment_retry_count'] = 'AutomateWoo\Rules\Order_Subscription_Failed_Automatic_Payment_Retry_Count';
 			}
 

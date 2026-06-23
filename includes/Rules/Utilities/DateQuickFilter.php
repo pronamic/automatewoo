@@ -61,10 +61,15 @@ trait DateQuickFilter {
 
 			case 'is_in_the_last':
 			case 'is_not_in_the_last':
-				$time_period  = Time_Helper::get_period_in_seconds( $rule_values['timeframe'], $rule_values['measure'] );
 				$now          = new DateTime();
 				$compare_date = new DateTime();
-				$compare_date->setTimestamp( $now->getTimestamp() - $time_period );
+
+				if ( 'days' === $rule_values['measure'] ) {
+					$compare_date = $this->get_relative_calendar_day_boundary( $now, $rule_values['timeframe'], 'past' );
+				} else {
+					$time_period = Time_Helper::get_period_in_seconds( $rule_values['timeframe'], $rule_values['measure'] );
+					$compare_date->setTimestamp( $now->getTimestamp() - $time_period );
+				}
 
 				$operator = $compare_type === 'is_in_the_last' ? 'BETWEEN' : 'NOT BETWEEN';
 				$value    = [ $compare_date, $now ];
@@ -72,10 +77,15 @@ trait DateQuickFilter {
 
 			case 'is_in_the_next':
 			case 'is_not_in_the_next':
-				$time_period  = Time_Helper::get_period_in_seconds( $rule_values['timeframe'], $rule_values['measure'] );
 				$now          = new DateTime();
 				$compare_date = new DateTime();
-				$compare_date->setTimestamp( $now->getTimestamp() + $time_period );
+
+				if ( 'days' === $rule_values['measure'] ) {
+					$compare_date = $this->get_relative_calendar_day_boundary( $now, $rule_values['timeframe'], 'future' );
+				} else {
+					$time_period = Time_Helper::get_period_in_seconds( $rule_values['timeframe'], $rule_values['measure'] );
+					$compare_date->setTimestamp( $now->getTimestamp() + $time_period );
+				}
 
 				$operator = $compare_type === 'is_in_the_next' ? 'BETWEEN' : 'NOT BETWEEN';
 				$value    = [ $now, $compare_date ];

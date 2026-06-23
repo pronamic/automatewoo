@@ -101,7 +101,32 @@ abstract class AbstractEditItem extends Action {
 	 * @param \WC_Subscription $subscription Instance of the subscription being edited by this action.
 	 */
 	protected function add_note( $object, $subscription ) {
-		$subscription->add_order_note( $this->get_note( $object ), false, false );
+		$this->add_order_note( $subscription, $this->get_note( $object ), false, false );
+	}
+
+
+	/**
+	 * Format a UTC MySQL date string for display in the site's timezone using WooCommerce date/time formats.
+	 *
+	 * @since 6.5.0
+	 *
+	 * @param string $utc_date_string UTC MySQL date/time string.
+	 * @return string Formatted date string in the site's timezone.
+	 */
+	protected function format_date_for_note( $utc_date_string ) {
+		if ( ! $utc_date_string ) {
+			return (string) $utc_date_string;
+		}
+
+		$date = new \WC_DateTime( $utc_date_string, new \DateTimeZone( 'UTC' ) );
+
+		if ( get_option( 'timezone_string' ) ) {
+			$date->setTimezone( new \DateTimeZone( wc_timezone_string() ) );
+		} else {
+			$date->set_utc_offset( wc_timezone_offset() );
+		}
+
+		return wc_format_datetime( $date, wc_date_format() . ' ' . wc_time_format() );
 	}
 
 

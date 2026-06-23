@@ -288,14 +288,14 @@ class Data_Layer {
 	 */
 	function get_language() {
 
-		if ( ! Integrations::is_wpml() ) {
+		if ( ! Language::is_multilingual() ) {
 			return false;
 		}
 
 		// only use the order language if the order belongs to the customer
 		if ( $this->order_belongs_to_customer ) {
 			if ( $order = $this->get_order() ) {
-				if ( $lang = $order->get_meta( 'wpml_language' ) ) {
+				if ( $lang = Language::get_order_language( $order ) ) {
 					return $lang;
 				}
 			}
@@ -346,8 +346,24 @@ class Data_Layer {
 			return '';
 		}
 
+		$billing_email = '';
+
+		if ( $this->order_belongs_to_customer ) {
+			if ( $subscription = $this->get_subscription() ) {
+				$billing_email = Clean::email( $subscription->get_billing_email() );
+			}
+
+			if ( ! $billing_email && $order = $this->get_order() ) {
+				$billing_email = Clean::email( $order->get_billing_email() );
+			}
+		}
+
 		if ( $customer->is_registered() ) {
-			// If the customer has an account always use the account email over a order billing email
+			if ( $billing_email && $this->should_use_order_billing_email_for_customer_email() ) {
+				return $billing_email;
+			}
+
+			// If the customer has an account use the account email over an order billing email by default.
 			// The reason for this is that a customer could change their account email and their
 			// orders or subscriptions will not be updated.
 			return $customer->get_email();
@@ -355,24 +371,38 @@ class Data_Layer {
 		else {
 			// If the customer is not registered use the order/subscription billing email over the
 			// email stored in the guest account.
-			$prop = '';
-
-			if ( $this->order_belongs_to_customer ) {
-				if ( $subscription = $this->get_subscription() ) {
-					$prop = Clean::email( $subscription->get_billing_email() );
-				}
-
-				if ( ! $prop && $order = $this->get_order() ) {
-					$prop = Clean::email( $order->get_billing_email() );
-				}
+			if ( ! $billing_email ) {
+				$billing_email = $customer->get_email();
 			}
 
-			if ( ! $prop ) {
-				$prop = $customer->get_email();
-			}
-
-			return $prop;
+			return $billing_email;
 		}
+	}
+
+	/**
+	 * Should a registered customer's order billing email override their account email?
+	 *
+	 * @since 6.5.0
+	 *
+	 * @return bool
+	 */
+	protected function should_use_order_billing_email_for_customer_email() {
+		$use_order_billing_email = defined( 'AUTOMATEWOO_USE_ORDER_BILLING_EMAIL_FOR_CUSTOMER_EMAIL' )
+			&& \AUTOMATEWOO_USE_ORDER_BILLING_EMAIL_FOR_CUSTOMER_EMAIL;
+
+		/**
+		 * Filter whether a registered customer's order billing email should override their account email.
+		 *
+		 * @since 6.5.0
+		 *
+		 * @param bool       $use_order_billing_email True to prefer the order billing email.
+		 * @param Data_Layer $data_layer              The current data layer instance.
+		 */
+		return (bool) apply_filters(
+			'automatewoo/data_layer/use_order_billing_email_for_customer_email',
+			$use_order_billing_email,
+			$this
+		);
 	}
 
 
@@ -491,6 +521,66 @@ class Data_Layer {
 
 		if ( ! $prop && $customer = $this->get_customer() ) {
 			$prop = $customer->get_billing_company();
+		}
+
+		return $prop;
+	}
+
+
+	/**
+	 * Gets the customer shipping country code.
+	 *
+	 * @since 6.5.0
+	 * @return string
+	 */
+	function get_customer_shipping_country() {
+		$prop = '';
+
+		if ( $this->order_belongs_to_customer ) {
+			if ( $subscription = $this->get_subscription() ) {
+				$prop = $subscription->get_shipping_country();
+			}
+
+			if ( ! $prop && $order = $this->get_order() ) {
+				$prop = $order->get_shipping_country();
+			}
+		}
+
+		if ( ! $prop && $customer = $this->get_customer() ) {
+			if ( $customer->is_registered() ) {
+				$user = $customer->get_user();
+				$prop = $user ? get_user_meta( $user->ID, 'shipping_country', true ) : '';
+			}
+		}
+
+		return $prop;
+	}
+
+
+	/**
+	 * Gets the customer shipping state.
+	 *
+	 * @since 6.5.0
+	 * @return string
+	 */
+	function get_customer_shipping_state() {
+		$prop = '';
+
+		if ( $this->order_belongs_to_customer ) {
+			if ( $subscription = $this->get_subscription() ) {
+				$prop = $subscription->get_shipping_state();
+			}
+
+			if ( ! $prop && $order = $this->get_order() ) {
+				$prop = $order->get_shipping_state();
+			}
+		}
+
+		if ( ! $prop && $customer = $this->get_customer() ) {
+			if ( $customer->is_registered() ) {
+				$user = $customer->get_user();
+				$prop = $user ? get_user_meta( $user->ID, 'shipping_state', true ) : '';
+			}
 		}
 
 		return $prop;
@@ -703,19 +793,31 @@ class Data_Layer {
 	 * @return bool
 	 */
 	public function is_missing_data() {
-		$is_missing = false;
-		$raw_data = $this->get_raw_data();
+		return ! empty( $this->get_missing_data_types() );
+	}
+
+
+	/**
+	 * Get the data types that could not be restored from the data layer.
+	 *
+	 * @since 6.5.0
+	 *
+	 * @return string[]
+	 */
+	public function get_missing_data_types() {
+		$missing_data_types = [];
+		$raw_data           = $this->get_raw_data();
 
 		// Remove customer from the data to check
-		unset($raw_data['customer']);
+		unset( $raw_data['customer'] );
 
-		foreach ( $raw_data as $data_item ) {
+		foreach ( $raw_data as $data_type => $data_item ) {
 			if ( ! $data_item ) {
-				$is_missing = true;
+				$missing_data_types[] = $data_type;
 			}
 		}
 
-		return $is_missing;
+		return $missing_data_types;
 	}
 
 }

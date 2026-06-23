@@ -26,6 +26,11 @@ class Trigger_Order_Created extends Trigger_Abstract_Order_Base {
 	}
 
 
+	function load_fields() {
+		$this->add_field_only_run_for_checkout_orders();
+	}
+
+
 	function register_hooks() {
 		add_action( 'automatewoo/async/order_created', [ $this, 'trigger_for_order' ] );
 	}

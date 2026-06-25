@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo\Rules;
 
@@ -10,8 +9,10 @@ defined( 'ABSPATH' ) || exit;
  */
 abstract class Abstract_Select_Single extends Rule {
 
+	/** @var string */
 	public $type = 'select';
 
+	/** @var bool */
 	public $is_single_select = true;
 
 	/** @var array - leave public for json */
@@ -22,8 +23,8 @@ abstract class Abstract_Select_Single extends Rule {
 
 	/**
 	 * Don't gather select choices on construct as there could be a lot of data
+	 *
 	 * @return array
 	 */
-	abstract function get_select_choices();
-
+	abstract public function get_select_choices();
 }

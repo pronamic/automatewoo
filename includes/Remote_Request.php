@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
@@ -20,6 +19,7 @@ class Remote_Request {
 
 	/**
 	 * Response from wp_remote_request()
+	 *
 	 * @var array|\WP_Error
 	 */
 	public $request;
@@ -28,17 +28,20 @@ class Remote_Request {
 	/**
 	 * Passes to wp_remote_request()
 	 *
-	 * @param $url
-	 * @param $args
+	 * @param string $url
+	 * @param array  $args
 	 */
-	function __construct( $url, $args ) {
+	public function __construct( $url, $args ) {
 		$domain = home_url();
 		$domain = str_replace( [ 'http://', 'https://' ], '', $domain );
 		$domain = untrailingslashit( $domain );
 
-		$args = wp_parse_args( $args, [
-			'user-agent' => 'AutomateWoo ' . AW()->version . ' - ' . $domain
-		]);
+		$args = wp_parse_args(
+			$args,
+			[
+				'user-agent' => 'AutomateWoo ' . AW()->version . ' - ' . $domain,
+			]
+		);
 
 		/**
 		 * Filter the arguments passed to wp_remote_request() for all AutomateWoo remote requests.
@@ -52,7 +55,7 @@ class Remote_Request {
 		 */
 		$args = apply_filters( 'automatewoo/remote_request/args', $args, $url );
 
-		$this->url = $url;
+		$this->url    = $url;
 		$this->method = $args['method'];
 
 		$this->request = wp_remote_request( $url, $args );
@@ -65,7 +68,7 @@ class Remote_Request {
 	 *
 	 * @return bool
 	 */
-	function is_http_error() {
+	public function is_http_error() {
 		return is_wp_error( $this->request );
 	}
 
@@ -74,7 +77,7 @@ class Remote_Request {
 	 *
 	 * @return bool
 	 */
-	function is_api_error() {
+	public function is_api_error() {
 		if ( $this->is_http_error() ) {
 			return false;
 		}
@@ -88,7 +91,7 @@ class Remote_Request {
 	 *
 	 * @return bool
 	 */
-	function is_successful() {
+	public function is_successful() {
 		return $this->is_http_success_code();
 	}
 
@@ -97,7 +100,7 @@ class Remote_Request {
 	 *
 	 * @return string|false
 	 */
-	function get_http_error_message() {
+	public function get_http_error_message() {
 		if ( $this->is_http_error() ) {
 			return $this->request->get_error_message();
 		}
@@ -111,7 +114,7 @@ class Remote_Request {
 	 *
 	 * @return int
 	 */
-	function get_response_code() {
+	public function get_response_code() {
 		if ( $this->is_http_error() ) {
 			return 503;
 		}
@@ -124,7 +127,7 @@ class Remote_Request {
 	 *
 	 * @return string
 	 */
-	function get_response_message() {
+	public function get_response_message() {
 		if ( $this->is_http_error() ) {
 			return '';
 		}
@@ -139,7 +142,7 @@ class Remote_Request {
 	 *
 	 * @return array|false
 	 */
-	function get_body() {
+	public function get_body() {
 		if ( $this->is_http_error() ) {
 			return false;
 		}
@@ -153,7 +156,7 @@ class Remote_Request {
 	 *
 	 * @return string
 	 */
-	function get_body_raw() {
+	public function get_body_raw() {
 		if ( $this->is_http_error() ) {
 			return '';
 		}
@@ -166,8 +169,8 @@ class Remote_Request {
 	 *
 	 * @return bool
 	 */
-	function is_http_success_code() {
-		return in_array( $this->get_response_code(), $this->http_success_codes );
+	public function is_http_success_code() {
+		return in_array( (int) $this->get_response_code(), $this->http_success_codes, true );
 	}
 
 
@@ -178,7 +181,7 @@ class Remote_Request {
 	 * @deprecated
 	 * @return bool
 	 */
-	function is_failed() {
+	public function is_failed() {
 		wc_deprecated_function( __METHOD__, '5.2.0', 'is_http_error' );
 
 		return $this->is_http_error();
@@ -189,11 +192,9 @@ class Remote_Request {
 	 * @deprecated
 	 * @return bool
 	 */
-	function get_error_message() {
+	public function get_error_message() {
 		wc_deprecated_function( __METHOD__, '5.2.0', 'get_http_error_message' );
 
 		return $this->get_http_error_message();
 	}
-
-
 }

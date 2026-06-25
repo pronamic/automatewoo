@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo\DataTypes;
 
@@ -7,7 +6,9 @@ use AutomateWoo\Clean;
 use WC_Abstract_Order;
 use WC_Order;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * Order data type class.
@@ -15,10 +16,10 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 class Order extends AbstractDataType {
 
 	/**
-	 * @param $item
+	 * @param mixed $item
 	 * @return bool
 	 */
-	function validate( $item ) {
+	public function validate( $item ) {
 		return $item instanceof WC_Abstract_Order;
 	}
 
@@ -27,17 +28,17 @@ class Order extends AbstractDataType {
 	 * @param \WC_Order $item
 	 * @return mixed
 	 */
-	function compress( $item ) {
+	public function compress( $item ) {
 		return $item->get_id();
 	}
 
 
 	/**
-	 * @param $compressed_item
-	 * @param $compressed_data_layer
+	 * @param int|string|null $compressed_item
+	 * @param array           $compressed_data_layer
 	 * @return mixed
 	 */
-	function decompress( $compressed_item, $compressed_data_layer ) {
+	public function decompress( $compressed_item, $compressed_data_layer ) {
 		$id = Clean::id( $compressed_item );
 
 		if ( ! $id && isset( $compressed_data_layer['booking'] ) ) {
@@ -78,6 +79,4 @@ class Order extends AbstractDataType {
 	public function get_plural_name() {
 		return __( 'Orders', 'automatewoo' );
 	}
-
-
 }

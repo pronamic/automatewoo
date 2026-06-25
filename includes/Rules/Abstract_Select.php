@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo\Rules;
 
@@ -27,5 +26,4 @@ abstract class Abstract_Select extends Preloaded_Select_Rule_Abstract {
 			}
 		}
 	}
-
 }

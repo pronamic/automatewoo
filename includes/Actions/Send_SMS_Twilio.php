@@ -1,9 +1,10 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * @class Action_Send_SMS_Twilio
@@ -11,9 +12,12 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 class Action_Send_SMS_Twilio extends Action {
 
 
-	function load_admin_details() {
-		$this->title = __( 'Send SMS (Twilio)', 'automatewoo' );
-		$this->group = __( 'SMS', 'automatewoo' );
+	/**
+	 * Load the admin details for the action.
+	 */
+	public function load_admin_details() {
+		$this->title       = __( 'Send SMS (Twilio)', 'automatewoo' );
+		$this->group       = __( 'SMS', 'automatewoo' );
 		$this->description = __( 'It is recommended to include an unsubscribe link by using the variable {{ customer.unsubscribe_url }} in the SMS body.', 'automatewoo' );
 
 		if ( AW()->options()->bitly_api && AW()->options()->bitly_shorten_sms_links ) {
@@ -32,7 +36,10 @@ class Action_Send_SMS_Twilio extends Action {
 	}
 
 
-	function load_fields() {
+	/**
+	 * Load the fields for the action.
+	 */
+	public function load_fields() {
 		$sms_recipient = ( new Fields\Text() )
 			->set_name( 'sms_recipient' )
 			->set_title( __( 'SMS recipients', 'automatewoo' ) )
@@ -43,7 +50,7 @@ class Action_Send_SMS_Twilio extends Action {
 		$sms_body = ( new Fields\Text_Area() )
 			->set_name( 'sms_body' )
 			->set_title( __( 'SMS body', 'automatewoo' ) )
-			->set_rows(4)
+			->set_rows( 4 )
 			->set_variable_validation()
 			->set_required();
 
@@ -53,14 +60,16 @@ class Action_Send_SMS_Twilio extends Action {
 
 
 	/**
-	 * @throws \Exception
+	 * Run the action.
+	 *
+	 * @throws \Exception When the message body is empty or there are no valid recipients.
 	 */
-	function run() {
+	public function run() {
 		$recipients = Clean::comma_delimited_string( $this->get_option( 'sms_recipient' ) );
-		$message = $this->get_option( 'sms_body', true );
+		$message    = $this->get_option( 'sms_body', true );
 
 		if ( empty( $message ) ) {
-			throw new \Exception( __( 'Empty message body', 'automatewoo') );
+			throw new \Exception( esc_html__( 'Empty message body', 'automatewoo' ) );
 		}
 
 		$message = $this->process_urls_in_sms( $message );
@@ -69,13 +78,13 @@ class Action_Send_SMS_Twilio extends Action {
 		foreach ( $recipients as $recipient_string ) {
 			$recipient = $this->workflow->variable_processor()->process_field( $recipient_string );
 			// Do not send SMS for a variable that resolved to an empty number.
-			if( $recipient ) {
+			if ( $recipient ) {
 				$this->send_sms( $recipient, $recipient_string, $message );
-				$valid_recipients_count++;
+				++$valid_recipients_count;
 			}
 		}
-		if ( $valid_recipients_count == 0 ) {
-			throw new \Exception( __( 'No valid recipients', 'automatewoo') );
+		if ( 0 === $valid_recipients_count ) {
+			throw new \Exception( esc_html__( 'No valid recipients', 'automatewoo' ) );
 		}
 	}
 
@@ -104,15 +113,14 @@ class Action_Send_SMS_Twilio extends Action {
 
 			// check if the customer is unsubscribed
 			if ( $this->workflow->is_customer_unsubscribed( $customer ) ) {
-				$error = new \WP_Error( 'unsubscribed', __( "The recipient is not opted-in to this workflow.", 'automatewoo' ) );
+				$error = new \WP_Error( 'unsubscribed', __( 'The recipient is not opted-in to this workflow.', 'automatewoo' ) );
 				$this->workflow->log_action_email_error( $error, $this );
 				return;
 			}
 
 			// because the SMS is to the primary customer, use the customer's country to parse the phone number
 			$recipient_phone = Phone_Numbers::parse( $recipient_phone, $customer->get_billing_country() );
-		}
-		else {
+		} else {
 			$recipient_phone = Phone_Numbers::parse( $recipient_phone );
 		}
 
@@ -120,8 +128,7 @@ class Action_Send_SMS_Twilio extends Action {
 
 		if ( $request->is_successful() ) {
 			$this->workflow->log_action_note( $this, __( 'SMS successfully sent.', 'automatewoo' ) );
-		}
-		else {
+		} else {
 			// don't throw exception since the error is only for one recipient
 			$this->workflow->log_action_error( $this, $twilio->get_request_error_message( $request ) );
 		}
@@ -164,7 +171,7 @@ class Action_Send_SMS_Twilio extends Action {
 	 * @return string
 	 */
 	public function process_urls_in_sms( $sms ) {
-		$replacer = new Replace_Helper( $sms, [ $this, 'callback_process_url' ], 'text_urls' );
+		$replacer  = new Replace_Helper( $sms, [ $this, 'callback_process_url' ], 'text_urls' );
 		$processed = $replacer->process();
 		return $processed;
 	}
@@ -206,6 +213,4 @@ class Action_Send_SMS_Twilio extends Action {
 
 		return $url;
 	}
-
-
 }

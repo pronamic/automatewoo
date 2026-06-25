@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
@@ -16,18 +15,22 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class Trigger_Wishlist_Reminder extends AbstractBatchedDailyTrigger {
 
+	/** @var array */
 	public $supplied_data_items = [ 'customer', 'wishlist' ];
 
 	const SUPPORTS_QUEUING = false;
 
-	function load_admin_details() {
-		$this->title       = sprintf(
+	/**
+	 * Load admin details.
+	 */
+	public function load_admin_details() {
+		$this->title = sprintf(
 			/* translators: %s Wishlist reminder title. */
 			__( 'Wishlist Reminder (%s)', 'automatewoo' ),
 			Wishlists::get_integration_title()
 		);
-		$this->group       = __( 'Wishlists', 'automatewoo' );
-		$this->description = __( "Setting the 'Reminder Interval' field to 30 means this trigger will fire every 30 days for any users that have items in their wishlist. Please note this doesn't work for guests because their wishlist data only exists locally in their browser.", 'automatewoo' );
+		$this->group        = __( 'Wishlists', 'automatewoo' );
+		$this->description  = __( "Setting the 'Reminder Interval' field to 30 means this trigger will fire every 30 days for any users that have items in their wishlist. Please note this doesn't work for guests because their wishlist data only exists locally in their browser.", 'automatewoo' );
 		$this->description .= ' ' . $this->get_description_text_workflow_not_immediate();
 	}
 
@@ -35,7 +38,7 @@ class Trigger_Wishlist_Reminder extends AbstractBatchedDailyTrigger {
 	/**
 	 * Add options to the trigger
 	 */
-	function load_fields() {
+	public function load_fields() {
 
 		$period = new Fields\Positive_Number();
 		$period->set_name( 'interval' );
@@ -68,7 +71,7 @@ class Trigger_Wishlist_Reminder extends AbstractBatchedDailyTrigger {
 
 		foreach ( Wishlists::get_wishlist_ids( $limit, 0, $after_id ) as $wishlist_id ) {
 			$tasks[] = [
-				'wishlist' => $wishlist_id
+				'wishlist' => $wishlist_id,
 			];
 		}
 
@@ -81,7 +84,7 @@ class Trigger_Wishlist_Reminder extends AbstractBatchedDailyTrigger {
 	 * @param Workflow $workflow
 	 * @param array    $item
 	 *
-	 * @throws InvalidArgument If wishlist is not set
+	 * @throws InvalidArgument If wishlist is not set.
 	 * @throws RuntimeException If the item fails to be processed.
 	 */
 	public function process_item_for_workflow( Workflow $workflow, array $item ) {
@@ -101,17 +104,17 @@ class Trigger_Wishlist_Reminder extends AbstractBatchedDailyTrigger {
 		$workflow->maybe_run(
 			[
 				'customer' => $wishlist->get_customer(),
-				'wishlist' => $wishlist
+				'wishlist' => $wishlist,
 			]
 		);
 	}
 
 	/**
-	 * @param $workflow Workflow
+	 * @param Workflow $workflow
 	 *
 	 * @return bool
 	 */
-	function validate_workflow( $workflow ) {
+	public function validate_workflow( $workflow ) {
 		$customer = $workflow->data_layer()->get_customer();
 		$wishlist = $workflow->data_layer()->get_wishlist();
 
@@ -170,11 +173,9 @@ class Trigger_Wishlist_Reminder extends AbstractBatchedDailyTrigger {
 			return false;
 		}
 
-		$min_interval_date = new DateTime();
+		$min_interval_date = $this->get_batch_base_date();
 		$min_interval_date->modify( ( -1 * $interval ) . ' days' );
 
 		return $date_created->getTimestamp() < $min_interval_date->getTimestamp();
 	}
-
 }
-

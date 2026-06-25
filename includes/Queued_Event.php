@@ -483,7 +483,7 @@ class Queued_Event extends Abstract_Model_With_Meta_Table {
 			return false;
 		}
 
-		if ( ! $workflow->validate_rules() ) {
+		if ( $workflow->should_validate_rules_before_queued_run() && ! $workflow->validate_rules() ) {
 			return false;
 		}
 

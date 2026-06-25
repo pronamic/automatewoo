@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
@@ -9,6 +8,7 @@ namespace AutomateWoo;
  */
 class Workflow_Location {
 
+	/** @var Workflow */
 	public $workflow;
 
 	/** @var string */
@@ -32,13 +32,13 @@ class Workflow_Location {
 
 	/**
 	 * @param Workflow $workflow
-	 * @param string $based_on
+	 * @param string   $based_on
 	 */
-	function __construct( $workflow, $based_on = 'billing' ) {
+	public function __construct( $workflow, $based_on = 'billing' ) {
 
 		$this->workflow = $workflow;
 
-		if ( in_array( $based_on, [ 'billing', 'shipping' ] ) ) {
+		if ( in_array( $based_on, [ 'billing', 'shipping' ], true ) ) {
 			$this->based_on = $based_on;
 		}
 	}
@@ -47,7 +47,7 @@ class Workflow_Location {
 	/**
 	 * @return string
 	 */
-	function get_target_object_type() {
+	public function get_target_object_type() {
 		if ( ! isset( $this->target_object_type ) ) {
 			$this->target_object_type = $this->load_target_object_type();
 		}
@@ -63,20 +63,24 @@ class Workflow_Location {
 
 		// only use the order/subscription location if the order belongs to the customer
 		if ( $this->workflow->data_layer()->order_belongs_to_customer ) {
-			if ( $order = $this->workflow->data_layer()->get_order() ) {
+			$order = $this->workflow->data_layer()->get_order();
+			if ( $order ) {
 				return 'order';
 			}
 
-			if ( $subscription = $this->workflow->data_layer()->get_subscription() ) {
+			$subscription = $this->workflow->data_layer()->get_subscription();
+			if ( $subscription ) {
 				return 'subscription';
 			}
 		}
 
-		if ( $user = $this->workflow->data_layer()->get_user() ) {
+		$user = $this->workflow->data_layer()->get_user();
+		if ( $user ) {
 			return 'user';
 		}
 
-		if ( $guest = $this->workflow->data_layer()->get_guest() ) {
+		$guest = $this->workflow->data_layer()->get_guest();
+		if ( $guest ) {
 			return 'guest';
 		}
 
@@ -87,7 +91,7 @@ class Workflow_Location {
 	/**
 	 * @return \WC_Order|\WC_Subscription|\WP_User|Order_Guest|Guest|false
 	 */
-	function get_target_object() {
+	public function get_target_object() {
 		if ( $this->get_target_object_type() ) {
 			return $this->workflow->data_layer()->get_item( $this->get_target_object_type() );
 		}
@@ -98,7 +102,7 @@ class Workflow_Location {
 	/**
 	 * @return string
 	 */
-	function get_country() {
+	public function get_country() {
 
 		if ( ! isset( $this->country ) ) {
 
@@ -135,7 +139,7 @@ class Workflow_Location {
 	/**
 	 * @return string
 	 */
-	function get_state() {
+	public function get_state() {
 
 		if ( ! isset( $this->state ) ) {
 
@@ -172,7 +176,7 @@ class Workflow_Location {
 	/**
 	 * @return string
 	 */
-	function get_postcode() {
+	public function get_postcode() {
 
 		if ( ! isset( $this->postcode ) ) {
 
@@ -209,7 +213,7 @@ class Workflow_Location {
 	/**
 	 * @return string
 	 */
-	function get_city() {
+	public function get_city() {
 
 		if ( ! isset( $this->city ) ) {
 
@@ -246,13 +250,12 @@ class Workflow_Location {
 	/**
 	 * @return array
 	 */
-	function get_location_array() {
+	public function get_location_array() {
 		return [
 			$this->get_country(),
 			$this->get_state(),
 			$this->get_postcode(),
-			$this->get_city()
+			$this->get_city(),
 		];
 	}
-
 }

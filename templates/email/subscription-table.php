@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 /**
  * Subscription table. Can only be used with the subscription.items variable
  * Override this template by copying it to yourtheme/automatewoo/email/subscription-table.php
@@ -13,6 +12,8 @@
  * @var string $data_field
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 do_action( 'woocommerce_email_order_details', $subscription, false, false, '' );

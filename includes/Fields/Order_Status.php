@@ -1,21 +1,23 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo\Fields;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * @class Order_Status
  */
 class Order_Status extends Select {
 
+	/** @var string */
 	protected $name = 'order_status';
 
 	/**
 	 * @param bool $allow_all
 	 */
-	function __construct( $allow_all = true ) {
+	public function __construct( $allow_all = true ) {
 		parent::__construct( true );
 
 		$this->set_title( __( 'Order status', 'automatewoo' ) );
@@ -26,5 +28,4 @@ class Order_Status extends Select {
 
 		$this->set_options( wc_get_order_statuses() );
 	}
-
 }

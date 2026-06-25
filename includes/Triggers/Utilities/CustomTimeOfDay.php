@@ -19,7 +19,7 @@ trait CustomTimeOfDay {
 	public function register_hooks() {
 		// This action only needs to be added once for all custom time of day triggers
 		if ( ! has_action( 'automatewoo/custom_time_of_day_workflow' ) ) {
-			add_action( 'automatewoo/custom_time_of_day_workflow', [ $this, 'start_batched_workflow_job' ] );
+			add_action( 'automatewoo/custom_time_of_day_workflow', [ $this, 'start_batched_workflow_job' ], 10, 2 );
 		}
 	}
 
@@ -53,13 +53,20 @@ trait CustomTimeOfDay {
 	 * Start a batched workflow job for the Custom Day Triggers.
 	 *
 	 * @since 6.0.0
-	 * @param int $workflow_id The workflow id to attach to the batched workflow job
+	 * @param int         $workflow_id The workflow id to attach to the batched workflow job
+	 * @param string|null $scheduled_date Site date the custom time of day event was scheduled for.
 	 */
-	public function start_batched_workflow_job( $workflow_id ) {
+	public function start_batched_workflow_job( $workflow_id, $scheduled_date = null ) {
 		try {
 			/** @var BatchedWorkflows $job */
-			$job = AW()->job_service()->get_job( 'batched_workflows' );
-			$job->start( [ 'workflow' => $workflow_id ] );
+			$job  = AW()->job_service()->get_job( 'batched_workflows' );
+			$args = [ 'workflow' => $workflow_id ];
+
+			if ( is_string( $scheduled_date ) ) {
+				$args['_aw_scheduled_date'] = $scheduled_date;
+			}
+
+			$job->start( $args );
 		} catch ( \Exception $e ) {
 			Logger::error(
 				'jobs',

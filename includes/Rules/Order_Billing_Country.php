@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo\Rules;
 
@@ -17,10 +16,14 @@ class Order_Billing_Country extends Preloaded_Select_Rule_Abstract implements Qu
 
 	use ArrayQuickFilter;
 
+	/** @var string */
 	public $data_item = 'order';
 
 
-	function init() {
+	/**
+	 * Init the rule.
+	 */
+	public function init() {
 		parent::init();
 
 		$this->title = __( 'Order - Billing Country', 'automatewoo' );
@@ -30,18 +33,18 @@ class Order_Billing_Country extends Preloaded_Select_Rule_Abstract implements Qu
 	/**
 	 * @return array
 	 */
-	function load_select_choices() {
+	public function load_select_choices() {
 		return WC()->countries->get_allowed_countries();
 	}
 
 
 	/**
-	 * @param $order \WC_Order
-	 * @param $compare
-	 * @param $value
+	 * @param \WC_Order $order
+	 * @param string    $compare
+	 * @param mixed     $value
 	 * @return bool
 	 */
-	function validate( $order, $compare, $value ) {
+	public function validate( $order, $compare, $value ) {
 		return $this->validate_select( $order->get_billing_country(), $compare, $value );
 	}
 
@@ -60,5 +63,4 @@ class Order_Billing_Country extends Preloaded_Select_Rule_Abstract implements Qu
 	public function get_quick_filter_clause( $compare_type, $value ) {
 		return $this->generate_array_quick_filter_clause( 'billing_country', $compare_type, $value );
 	}
-
 }

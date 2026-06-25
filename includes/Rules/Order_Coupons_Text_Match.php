@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo\Rules;
 
@@ -14,20 +13,22 @@ class Order_Coupons_Text_Match extends Abstract_String {
 	public $data_item = 'order';
 
 
-	function init() {
-		$this->title = __( 'Order - Coupons - Text Match', 'automatewoo' );
+	/**
+	 * Init the rule.
+	 */
+	public function init() {
+		$this->title         = __( 'Order - Coupons - Text Match', 'automatewoo' );
 		$this->compare_types = $this->get_multi_string_compare_types();
 	}
 
 
 	/**
 	 * @param \WC_Order $order
-	 * @param $compare
-	 * @param $value
+	 * @param string    $compare
+	 * @param mixed     $value
 	 * @return bool
 	 */
-	function validate( $order, $compare, $value ) {
+	public function validate( $order, $compare, $value ) {
 		return $this->validate_string_multi( $order->get_coupon_codes(), $compare, $value );
 	}
-
 }

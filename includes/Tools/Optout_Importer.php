@@ -1,9 +1,10 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * @class Tool_Optout_Importer
@@ -11,20 +12,28 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  */
 class Tool_Optout_Importer extends Tool_Background_Processed_Abstract {
 
+	/**
+	 * The tool ID.
+	 *
+	 * @var string
+	 */
 	public $id = 'optout_importer';
 
 
-	function __construct() {
+	/**
+	 * Tool_Optout_Importer constructor.
+	 */
+	public function __construct() {
 		parent::__construct();
-		$this->title = __( 'Opt-out Importer', 'automatewoo' );
-		$this->description = __( "Opt-out customers by importing email addresses.", 'automatewoo' );
+		$this->title       = __( 'Opt-out Importer', 'automatewoo' );
+		$this->description = __( 'Opt-out customers by importing email addresses.', 'automatewoo' );
 	}
 
 
 	/**
 	 * @return array
 	 */
-	function get_form_fields() {
+	public function get_form_fields() {
 		$fields = [];
 
 		$fields[] = ( new Fields\Text_Area() )
@@ -42,13 +51,13 @@ class Tool_Optout_Importer extends Tool_Background_Processed_Abstract {
 	/**
 	 * Parse emails but don't actually check if they are valid
 	 *
-	 * @param $emails
+	 * @param string $emails
 	 * @return array
 	 */
-	function parse_emails( $emails ) {
+	public function parse_emails( $emails ) {
 		$emails = explode( PHP_EOL, $emails );
 		$emails = array_map( 'trim', $emails );
-		$emails = array_map( 'stripslashes', $emails);
+		$emails = array_map( 'stripslashes', $emails );
 
 		return $emails;
 	}
@@ -58,9 +67,9 @@ class Tool_Optout_Importer extends Tool_Background_Processed_Abstract {
 	 * @param array $args sanitized
 	 * @return bool|\WP_Error
 	 */
-	function validate_process( $args ) {
+	public function validate_process( $args ) {
 		if ( empty( $args['emails'] ) ) {
-			return new \WP_Error( 1, __( 'Missing a required field.', 'automatewoo') );
+			return new \WP_Error( 1, __( 'Missing a required field.', 'automatewoo' ) );
 		}
 
 		$emails = $this->parse_emails( $args['emails'] );
@@ -83,15 +92,15 @@ class Tool_Optout_Importer extends Tool_Background_Processed_Abstract {
 
 
 	/**
-	 * @param $args
+	 * @param array $args
 	 * @return bool|\WP_Error
 	 */
-	function process( $args ) {
-		$args = $this->sanitize_args( $args );
+	public function process( $args ) {
+		$args   = $this->sanitize_args( $args );
 		$emails = $this->parse_emails( $args['emails'] );
 
 		if ( empty( $emails ) ) {
-			return new \WP_Error( 2, __( 'Could not process.', 'automatewoo') );
+			return new \WP_Error( 2, __( 'Could not process.', 'automatewoo' ) );
 		}
 
 		$tasks = [];
@@ -99,7 +108,7 @@ class Tool_Optout_Importer extends Tool_Background_Processed_Abstract {
 		foreach ( $emails as $email ) {
 			$tasks[] = [
 				'tool_id' => $this->get_id(),
-				'email' => $email,
+				'email'   => $email,
 			];
 		}
 
@@ -108,10 +117,10 @@ class Tool_Optout_Importer extends Tool_Background_Processed_Abstract {
 
 
 	/**
-	 * @param $args
+	 * @param array $args
 	 */
-	function display_confirmation_screen( $args ) {
-		$args = $this->sanitize_args( $args );
+	public function display_confirmation_screen( $args ) {
+		$args   = $this->sanitize_args( $args );
 		$emails = $this->parse_emails( $args['emails'] );
 
 		echo wp_kses_post(
@@ -129,7 +138,7 @@ class Tool_Optout_Importer extends Tool_Background_Processed_Abstract {
 	/**
 	 * Output the icon legend in the confirmation screen footer.
 	 */
-	function display_confirmation_legend() {
+	public function display_confirmation_legend() {
 		echo wp_kses_post(
 			'<p style="float: left;">' . sprintf(
 				/* translators: %1$s and %2$s are status icons shown next to each email in the preview list. */
@@ -141,19 +150,25 @@ class Tool_Optout_Importer extends Tool_Background_Processed_Abstract {
 	}
 
 
-	function display_data_preview( $items ) {
+	/**
+	 * Output a preview of the emails to be imported.
+	 *
+	 * @param array $items
+	 */
+	public function display_data_preview( $items ) {
 		$number_to_preview = 25;
 
 		echo '<p>';
 
 		foreach ( $items as $i => $email ) {
 
-			if ( $i == $number_to_preview )
+			if ( $i === $number_to_preview ) {
 				break;
+			}
 
 			$icon = $this->email_matches_existing_customer( $email ) ? '✅' : '⚠️';
 
-			echo esc_html( $email ) . ' ' . $icon . '<br>';
+			echo esc_html( $email ) . ' ' . esc_html( $icon ) . '<br>';
 		}
 
 		if ( count( $items ) > $number_to_preview ) {
@@ -174,7 +189,7 @@ class Tool_Optout_Importer extends Tool_Background_Processed_Abstract {
 	 * @param string $email
 	 * @return bool
 	 */
-	function email_matches_existing_customer( $email ) {
+	public function email_matches_existing_customer( $email ) {
 		$email = Clean::email( $email );
 
 		if ( ! $email ) {
@@ -193,7 +208,7 @@ class Tool_Optout_Importer extends Tool_Background_Processed_Abstract {
 	 * @param array $args
 	 * @return array
 	 */
-	function sanitize_args( $args ) {
+	public function sanitize_args( $args ) {
 		$args = parent::sanitize_args( $args );
 
 		if ( isset( $args['emails'] ) ) {
@@ -207,16 +222,16 @@ class Tool_Optout_Importer extends Tool_Background_Processed_Abstract {
 	/**
 	 * @param array $task
 	 */
-	function handle_background_task( $task ) {
+	public function handle_background_task( $task ) {
 		$email = isset( $task['email'] ) ? Clean::email( $task['email'] ) : false;
 
 		if ( ! $email ) {
 			return;
 		}
 
-		if ( $customer = Customer_Factory::get_by_email( $email ) ) {
+		$customer = Customer_Factory::get_by_email( $email );
+		if ( $customer ) {
 			$customer->opt_out();
 		}
 	}
-
 }

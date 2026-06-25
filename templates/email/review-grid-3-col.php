@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
@@ -18,14 +17,16 @@ namespace AutomateWoo;
  * @var string $data_field
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 $n        = 1;
 $products = aw_get_reviewable_products( $products );
 
 ?>
 
-	<?php if ( is_array( $products ) ): ?>
+	<?php if ( is_array( $products ) ) : ?>
 
 	<style>
 		/** don't inline this css - hack for gmail */
@@ -37,17 +38,20 @@ $products = aw_get_reviewable_products( $products );
 	<table cellspacing="0" cellpadding="0" class="aw-product-grid aw-reviews-grid">
 		<tbody><tr><td style="padding: 0;"><div class="aw-product-grid-container">
 
-			  <?php foreach ( $products as $product ): ?>
+				<?php foreach ( $products as $product ) : ?>
 
-					 <div class="aw-product-grid-item-3-col aw-reviews-grid__item" style="<?php echo ( $n % 3 ? '' : 'margin-right: 0;' ) ?>">
+					<div class="aw-product-grid-item-3-col aw-reviews-grid__item" style="<?php echo ( $n % 3 ? '' : 'margin-right: 0;' ); ?>">
 
-						 <?php echo \AW_Mailer_API::get_product_image( $product ) ?>
-						 <h3><?php echo esc_html( $product->get_name() ); ?></h3>
-						 <a href="<?php echo esc_url( $product->get_permalink() ); ?>" class="automatewoo-button automatewoo-button--small"><?php esc_html_e( 'Review', 'automatewoo' ); ?></a>
+						<?php echo \AW_Mailer_API::get_product_image( $product ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_product_image() returns trusted <img> markup. ?>
+						<h3><?php echo esc_html( $product->get_name() ); ?></h3>
+						<a href="<?php echo esc_url( $product->get_permalink() ); ?>" class="automatewoo-button automatewoo-button--small"><?php esc_html_e( 'Review', 'automatewoo' ); ?></a>
 
-					 </div>
+					</div>
 
-			  <?php $n++; endforeach; ?>
+					<?php
+					++$n;
+endforeach;
+				?>
 
 		</div></td></tr></tbody>
 	</table>

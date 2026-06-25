@@ -909,7 +909,7 @@ class Customer extends Abstract_Model_With_Meta_Table {
 					return $key;
 				} else {
 					// guests are always created with a key
-					return $guest->get_key();
+					return Clean::string( $guest->get_prop( 'tracking_key' ) );
 				}
 				break;
 		}
@@ -1079,6 +1079,23 @@ class Customer extends Abstract_Model_With_Meta_Table {
 		}
 
 		return current( wc_get_orders( $query_args ) );
+	}
+
+	/**
+	 * Recalculate the customer's last paid order date.
+	 *
+	 * @since 6.6.0
+	 *
+	 * @return DateTime|false
+	 */
+	public function recache_date_last_purchased() {
+		$last_paid_order = $this->get_nth_last_paid_order( 1 );
+		$date            = $last_paid_order ? $last_paid_order->get_date_created() : null;
+
+		$this->set_date_last_purchased( $date );
+		$this->save();
+
+		return $this->get_date_last_purchased();
 	}
 
 	/**

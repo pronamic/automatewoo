@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
@@ -12,7 +11,12 @@ use AutomateWoo\Frontend_Endpoints\Login_Redirect;
 class Frontend_Endpoints {
 
 
-	static function handle() {
+	/**
+	 * Dispatch the current frontend endpoint action.
+	 *
+	 * @return void
+	 */
+	public static function handle() {
 		$action = sanitize_key( aw_request( 'aw-action' ) );
 
 		if ( ! $action ) {
@@ -44,7 +48,7 @@ class Frontend_Endpoints {
 				break;
 
 			case 'login-redirect':
-				( new Login_Redirect )->handle_endpoint();
+				( new Login_Redirect() )->handle_endpoint();
 				break;
 
 		}
@@ -54,15 +58,14 @@ class Frontend_Endpoints {
 	/**
 	 * Redirect legacy unsubscribe links to the communication page
 	 */
-	static function catch_legacy_unsubscribe_url() {
+	public static function catch_legacy_unsubscribe_url() {
 		$customer_key = Clean::string( aw_request( 'customer_key' ) );
-		$email = Clean::email( aw_request( 'user' ) ); // user param is legacy, todo remove later
-		$customer = false;
+		$email        = Clean::email( aw_request( 'user' ) ); // user param is legacy, todo remove later
+		$customer     = false;
 
 		if ( $customer_key ) {
 			$customer = Customer_Factory::get_by_key( $customer_key );
-		}
-		elseif ( $email ) {
+		} elseif ( $email ) {
 			$customer = Customer_Factory::get_by_email( $email );
 		}
 
@@ -75,15 +78,21 @@ class Frontend_Endpoints {
 	}
 
 
-	static function restore_cart() {
-		$token = Clean::string( aw_request( 'token' ) );
+	/**
+	 * Restore a saved cart from its token and redirect the customer.
+	 *
+	 * @return false|void False when no token is present, otherwise redirects and exits.
+	 */
+	public static function restore_cart() {
+		$token    = Clean::string( aw_request( 'token' ) );
 		$redirect = Clean::string( aw_request( 'redirect' ) );
 
 		if ( ! $token ) {
 			return false;
 		}
 
-		$restored         = Carts::restore_cart( Cart_Factory::get_by_token( $token ) );
+		$cart             = Cart_Factory::get_by_token( $token );
+		$restored         = Carts::restore_cart( $cart );
 		$url_params       = [];
 		$redirect_options = [ 'cart', 'checkout' ];
 
@@ -94,8 +103,18 @@ class Frontend_Endpoints {
 		if ( $restored ) {
 			wc_add_notice( __( 'Your cart has been restored.', 'automatewoo' ) );
 			$url_params['aw-cart-restored'] = 'success';
-		}
-		else {
+		} elseif ( $cart && ! $cart->is_current() ) {
+			// The cart still exists but is in a terminal state (emptied, placed
+			// or recovered) — it was already purchased or cleared, so this is not
+			// an expiry/failure and should not show the error notice.
+			wc_add_notice( __( 'This cart has already been restored or is no longer available.', 'automatewoo' ), 'notice' );
+			$url_params['aw-cart-restored'] = 'unavailable';
+		} elseif ( $cart && ! $cart->has_items() ) {
+			// The cart is still current but has no items, so there is nothing to
+			// restore. It has not expired, so don't show the failure notice.
+			wc_add_notice( __( 'This cart is empty, so there is nothing to restore.', 'automatewoo' ), 'notice' );
+			$url_params['aw-cart-restored'] = 'empty';
+		} else {
 			wc_add_notice( __( 'Your cart could not be restored, it may have expired.', 'automatewoo' ), 'notice' );
 			$url_params['aw-cart-restored'] = 'fail';
 		}
@@ -112,7 +131,7 @@ class Frontend_Endpoints {
 	 * @see \WC_Cart_Session::populate_cart_from_order() — the modern WC order-again
 	 *      flow lives there now (WC_Form_Handler::order_again() is a deprecated stub).
 	 */
-	static function reorder() {
+	public static function reorder() {
 
 		$order_id = wc_get_order_id_by_order_key( Clean::string( aw_request( 'aw-order-key' ) ) );
 		$order    = wc_get_order( absint( $order_id ) );
@@ -156,7 +175,7 @@ class Frontend_Endpoints {
 
 			foreach ( $item->get_meta_data() as $meta ) {
 				if ( taxonomy_is_product_attribute( $meta->key ) ) {
-					$term                       = get_term_by( 'slug', $meta->value, $meta->key );
+					$term                     = get_term_by( 'slug', $meta->value, $meta->key );
 					$variations[ $meta->key ] = $term ? $term->name : $meta->value;
 				} elseif ( meta_is_product_attribute( $meta->key, $meta->value, $product_id ) ) {
 					$variations[ $meta->key ] = $meta->value;
@@ -250,5 +269,4 @@ class Frontend_Endpoints {
 		wp_safe_redirect( add_query_arg( $args, $url ) );
 		exit;
 	}
-
 }

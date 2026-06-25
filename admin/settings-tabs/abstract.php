@@ -491,6 +491,80 @@ abstract class Admin_Settings_Tab_Abstract {
 	}
 
 	/**
+	 * Get an option cast to a declared type.
+	 *
+	 * Settings are stored (and returned by {@see get_option()}) as strings (or
+	 * arrays of strings), which can be awkward for callers — including
+	 * third-party plugins that extend this abstract — that need a typed value
+	 * (e.g. comparing an int against a constant).
+	 *
+	 * This is an opt-in, backwards-compatible accessor: it only casts when the
+	 * field declares a `type_cast` key, and otherwise returns exactly what
+	 * {@see get_option()} returns. The stored value and the form-rendering path
+	 * (which keeps using {@see get_option()}) are unchanged, so existing
+	 * behaviour — for AutomateWoo and for extenders that do not opt in — is
+	 * untouched.
+	 *
+	 * Supported `type_cast` values: `int`, `float`, `bool`, `array`. For `int`
+	 * and `float`, array values are cast element-wise. `bool` treats the stored
+	 * checkbox value `yes` (and `1`/`true`) as true.
+	 *
+	 * @since 6.6.0
+	 *
+	 * @param array $field The field definition.
+	 * @return mixed The option value, cast when the field declares `type_cast`.
+	 */
+	public function get_typed_option( $field ) {
+		// get_option() reads $field['default'] unconditionally; settings
+		// definitions may omit it, so normalise it to avoid an undefined-key
+		// notice when callers pass a bare field.
+		if ( ! isset( $field['default'] ) ) {
+			$field['default'] = null;
+		}
+
+		$value = $this->get_option( $field );
+		$cast  = isset( $field['type_cast'] ) ? $field['type_cast'] : '';
+
+		// Leave unset/false (no value, or invalid field id) and un-typed fields
+		// exactly as get_option() returned them.
+		if ( '' === $cast || null === $value || false === $value ) {
+			return $value;
+		}
+
+		switch ( $cast ) {
+			case 'int':
+				return is_array( $value ) ? array_map( 'intval', $value ) : (int) $value;
+			case 'float':
+				return is_array( $value ) ? array_map( 'floatval', $value ) : (float) $value;
+			case 'bool':
+				return $this->cast_option_to_bool( $value );
+			case 'array':
+				if ( is_array( $value ) ) {
+					return $value;
+				}
+				return '' === $value ? array() : array( $value );
+			default:
+				return $value;
+		}
+	}
+
+	/**
+	 * Cast a stored option value to a boolean.
+	 *
+	 * Mirrors how checkbox settings persist their value (`yes`/`no`).
+	 *
+	 * @param mixed $value The stored option value.
+	 * @return bool
+	 */
+	private function cast_option_to_bool( $value ) {
+		if ( is_bool( $value ) ) {
+			return $value;
+		}
+
+		return in_array( $value, array( 'yes', '1', 1, 'true', true ), true );
+	}
+
+	/**
 	 * Save settings.
 	 *
 	 * @param array $fields Which fields to save. If empty, all fields will be saved.

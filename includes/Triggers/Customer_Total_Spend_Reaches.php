@@ -1,9 +1,10 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * This trigger hooks in the the order completed action but will only fire once when a users total spend reaches a certain amount.
@@ -12,6 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  */
 class Trigger_Customer_Total_Spend_Reaches extends Trigger_Abstract_Order_Base {
 
+	/** @var array */
 	public $supplied_data_items = [ 'customer', 'order' ];
 
 	/**
@@ -23,14 +25,20 @@ class Trigger_Customer_Total_Spend_Reaches extends Trigger_Abstract_Order_Base {
 	protected $required_async_events = 'order_status_changed';
 
 
-	function load_admin_details() {
-		$this->title = __( 'Customer Total Spend Reaches', 'automatewoo' );
-		$this->description = __( "This trigger checks the customer's total spend each time an order is completed.", 'automatewoo');
-		$this->group = __( 'Customers', 'automatewoo' );
+	/**
+	 * Load admin details.
+	 */
+	public function load_admin_details() {
+		$this->title       = __( 'Customer Total Spend Reaches', 'automatewoo' );
+		$this->description = __( "This trigger checks the customer's total spend each time an order is completed.", 'automatewoo' );
+		$this->group       = __( 'Customers', 'automatewoo' );
 	}
 
 
-	function load_fields() {
+	/**
+	 * Load fields.
+	 */
+	public function load_fields() {
 		$spend = new Fields\Price();
 		$spend->set_name( 'total_spend' );
 		$spend->set_title( __( 'Total spend', 'automatewoo' ) );
@@ -44,17 +52,17 @@ class Trigger_Customer_Total_Spend_Reaches extends Trigger_Abstract_Order_Base {
 	/**
 	 * Must run after customer totals have been updated
 	 */
-	function register_hooks() {
+	public function register_hooks() {
 		add_action( $this->get_hook_order_status_changed(), [ $this, 'catch_hooks' ], 10, 3 );
 	}
 
 
 	/**
-	 * @param $order_id
-	 * @param $old_status
-	 * @param $new_status
+	 * @param int    $order_id
+	 * @param string $old_status
+	 * @param string $new_status
 	 */
-	function catch_hooks( $order_id, $old_status, $new_status ) {
+	public function catch_hooks( $order_id, $old_status, $new_status ) {
 		if ( $new_status !== 'completed' ) {
 			return;
 		}
@@ -68,8 +76,8 @@ class Trigger_Customer_Total_Spend_Reaches extends Trigger_Abstract_Order_Base {
 	 *
 	 * @return bool
 	 */
-	function validate_workflow( $workflow ) {
-		$customer = $workflow->data_layer()->get_customer();
+	public function validate_workflow( $workflow ) {
+		$customer    = $workflow->data_layer()->get_customer();
 		$total_spend = $workflow->get_trigger_option( 'total_spend' );
 
 		if ( ! $customer ) {
@@ -87,5 +95,4 @@ class Trigger_Customer_Total_Spend_Reaches extends Trigger_Abstract_Order_Base {
 
 		return true;
 	}
-
 }

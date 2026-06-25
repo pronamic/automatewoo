@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo\DataTypes;
 
@@ -7,7 +6,9 @@ use AutomateWoo\Customer as CustomerModel;
 use AutomateWoo\Customer_Factory;
 use AutomateWoo\Integrations;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * @class Customer
@@ -18,7 +19,7 @@ class Customer extends AbstractDataType {
 	 * @param mixed $item
 	 * @return bool
 	 */
-	function validate( $item ) {
+	public function validate( $item ) {
 		if ( ! $item instanceof CustomerModel ) {
 			return false;
 		}
@@ -35,17 +36,17 @@ class Customer extends AbstractDataType {
 	 * @param CustomerModel $item
 	 * @return int
 	 */
-	function compress( $item ) {
+	public function compress( $item ) {
 		return $item->get_id();
 	}
 
 
 	/**
-	 * @param $compressed_item
-	 * @param $compressed_data_layer
+	 * @param int|string|null $compressed_item
+	 * @param array           $compressed_data_layer
 	 * @return mixed
 	 */
-	function decompress( $compressed_item, $compressed_data_layer ) {
+	public function decompress( $compressed_item, $compressed_data_layer ) {
 
 		if ( $compressed_item ) {
 			return Customer_Factory::get( absint( $compressed_item ) );
@@ -54,13 +55,15 @@ class Customer extends AbstractDataType {
 		// decompress customer from user, order or subscription data if present, used for triggers that have been converted from 'user' to 'customer' data types
 
 		if ( isset( $compressed_data_layer['order'] ) ) {
-			if ( $order = wc_get_order( $compressed_data_layer['order'] ) ) {
+			$order = wc_get_order( $compressed_data_layer['order'] );
+			if ( $order ) {
 				return Customer_Factory::get_by_order( $order );
 			}
 		}
 
 		if ( Integrations::is_subscriptions_active() && isset( $compressed_data_layer['subscription'] ) ) {
-			if ( $subscription = wcs_get_subscription( $compressed_data_layer['subscription'] ) ) {
+			$subscription = wcs_get_subscription( $compressed_data_layer['subscription'] );
+			if ( $subscription ) {
 				return Customer_Factory::get_by_user_id( $subscription->get_user_id() );
 			}
 		}
@@ -93,5 +96,4 @@ class Customer extends AbstractDataType {
 	public function get_plural_name() {
 		return __( 'Customers', 'automatewoo' );
 	}
-
 }

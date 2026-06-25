@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 /**
  * Update to 2.9.7
  * - remove unused table form guests table
@@ -11,10 +10,16 @@ namespace AutomateWoo\DatabaseUpdates;
 use AutomateWoo\Queue_Manager;
 use AutomateWoo\Queue_Query;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
+/**
+ * Database update to version 2.9.7.
+ */
 class Database_Update_2_9_7 extends AbstractDatabaseUpdate {
 
+	/** @var string */
 	protected $version = '2.9.7';
 
 
@@ -27,9 +32,8 @@ class Database_Update_2_9_7 extends AbstractDatabaseUpdate {
 
 		// clear unused column from guests
 		if ( $wpdb->get_results( "SHOW COLUMNS FROM {$wpdb->prefix}automatewoo_guests LIKE 'ip2'" ) ) {
-			$wpdb->query( "ALTER TABLE {$wpdb->prefix}automatewoo_guests DROP ip2" );
+			$wpdb->query( "ALTER TABLE {$wpdb->prefix}automatewoo_guests DROP ip2" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.SchemaChange -- One-time schema migration.
 		}
-
 
 		// migrate queue
 		$query = new Queue_Query();
@@ -42,7 +46,6 @@ class Database_Update_2_9_7 extends AbstractDatabaseUpdate {
 			return true;
 		}
 
-
 		foreach ( $results as $queued_event ) {
 
 			$data_items = $queued_event->data_items;
@@ -54,12 +57,11 @@ class Database_Update_2_9_7 extends AbstractDatabaseUpdate {
 
 			$queued_event->data_items = '';
 			$queued_event->save();
-			$this->items_processed++;
+			++$this->items_processed;
 		}
 
 		return false;
 	}
-
 }
 
 return new Database_Update_2_9_7();

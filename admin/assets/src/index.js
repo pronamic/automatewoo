@@ -10,6 +10,7 @@ import { addFilter, didFilter, hasAction } from '@wordpress/hooks';
 import ManualWorkflowRunner from './manual-workflow-runner';
 import './workflow-tab-handler';
 import './workflow-tinymce';
+import './workflow-tinymce-url-variables';
 import './notice-tracking';
 import './data';
 

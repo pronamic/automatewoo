@@ -75,8 +75,10 @@ class Trigger_Customer_Before_Saved_Card_Expiry extends AbstractBatchedDailyTrig
 			return [];
 		}
 
-		$date = new DateTime();
-		Time_Helper::convert_from_gmt( $date ); // get cards based on the sites timezone
+		// Anchor on the date this batch was scheduled to run for (falls back to now)
+		// so the target expiry month isn't shifted if the batch runs after midnight.
+		$date = $this->get_batch_base_date();
+		$date->convert_to_site_time(); // get cards based on the sites timezone
 		$date->modify( "{$days_before} days" );
 
 		$day_to_run    = (int) $date->format( 'j' );

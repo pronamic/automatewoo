@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
@@ -50,7 +49,7 @@ class Integrations {
 	 *
 	 * @return bool
 	 */
-	static function is_subscriptions_active( $min_version = self::REQUIRED_SUBSCRIPTIONS_VERSION ) {
+	public static function is_subscriptions_active( $min_version = self::REQUIRED_SUBSCRIPTIONS_VERSION ) {
 		if ( ! class_exists( '\WC_Subscriptions' ) && ! class_exists( '\WC_Subscriptions_Core_Plugin' ) ) {
 			return false;
 		}
@@ -69,7 +68,7 @@ class Integrations {
 	 *
 	 * @return bool
 	 */
-	static function is_subscriptions_early_renewal_enabled() {
+	public static function is_subscriptions_early_renewal_enabled() {
 		if ( ! self::is_subscriptions_active( '2.3' ) ) {
 			return false;
 		}
@@ -126,7 +125,7 @@ class Integrations {
 	 * @return Integration_Mailpoet|false
 	 * @throws \Exception If API version is invalid.
 	 */
-	static function mailpoet() {
+	public static function mailpoet() {
 		if ( ! isset( self::$mailpoet ) ) {
 
 			if ( ! self::is_mailpoet_api_active() ) {
@@ -142,8 +141,8 @@ class Integrations {
 	/**
 	 * @return bool
 	 */
-	static function is_wpml() {
-		return class_exists('SitePress');
+	public static function is_wpml() {
+		return class_exists( 'SitePress' );
 	}
 
 	/**
@@ -151,7 +150,7 @@ class Integrations {
 	 *
 	 * @return bool
 	 */
-	static function is_polylang() {
+	public static function is_polylang() {
 		return function_exists( 'pll_current_language' );
 	}
 
@@ -159,8 +158,8 @@ class Integrations {
 	/**
 	 * @return bool
 	 */
-	static function is_woo_pos() {
-		return class_exists('WC_POS');
+	public static function is_woo_pos() {
+		return class_exists( 'WC_POS' );
 	}
 
 
@@ -168,9 +167,13 @@ class Integrations {
 	/**
 	 * @return bool
 	 */
-	static function is_memberships_enabled() {
-		if ( ! function_exists( 'wc_memberships' ) ) return false;
-		if ( version_compare( wc_memberships()->get_version(), self::REQUIRED_MEMBERSHIPS_VERSION, '<' ) ) return false;
+	public static function is_memberships_enabled() {
+		if ( ! function_exists( 'wc_memberships' ) ) {
+			return false;
+		}
+		if ( version_compare( wc_memberships()->get_version(), self::REQUIRED_MEMBERSHIPS_VERSION, '<' ) ) {
+			return false;
+		}
 		return true;
 	}
 
@@ -178,7 +181,7 @@ class Integrations {
 	/**
 	 * @return bool
 	 */
-	static function is_mc4wp() {
+	public static function is_mc4wp() {
 		return defined( 'MC4WP_VERSION' );
 	}
 
@@ -186,7 +189,7 @@ class Integrations {
 	/**
 	 * @return Integration_Twilio|false
 	 */
-	static function get_twilio() {
+	public static function get_twilio() {
 		if ( ! AW()->options()->twilio_integration_enabled ) {
 			return false;
 		}
@@ -205,7 +208,7 @@ class Integrations {
 	/**
 	 * @return Integration_Bitly|false
 	 */
-	static function get_bitly() {
+	public static function get_bitly() {
 		if ( ! AW()->options()->bitly_api ) {
 			return false;
 		}
@@ -219,12 +222,11 @@ class Integrations {
 	/**
 	 * @return Integration_Mailchimp|false
 	 */
-	static function mailchimp() {
+	public static function mailchimp() {
 		if ( ! isset( self::$mailchimp ) ) {
 			if ( Options::mailchimp_enabled() && Options::mailchimp_api_key() ) {
 				self::$mailchimp = new Integration_Mailchimp( Options::mailchimp_api_key() );
-			}
-			else {
+			} else {
 				self::$mailchimp = false;
 			}
 		}
@@ -236,10 +238,10 @@ class Integrations {
 	/**
 	 * @return Integration_ActiveCampaign
 	 */
-	static function activecampaign() {
+	public static function activecampaign() {
 		if ( ! isset( self::$activecampaign ) ) {
-			$api_url = trim( Clean::string( AW()->options()->active_campaign_api_url ) );
-			$api_key = trim( Clean::string( AW()->options()->active_campaign_api_key ) );
+			$api_url              = trim( Clean::string( AW()->options()->active_campaign_api_url ) );
+			$api_key              = trim( Clean::string( AW()->options()->active_campaign_api_key ) );
 			self::$activecampaign = new Integration_ActiveCampaign( $api_url, $api_key );
 		}
 
@@ -250,10 +252,10 @@ class Integrations {
 	/**
 	 * @return Integration_Campaign_Monitor
 	 */
-	static function campaign_monitor() {
+	public static function campaign_monitor() {
 		if ( ! isset( self::$campaign_monitor ) ) {
-			$api_key = trim( Clean::string( AW()->options()->campaign_monitor_api_key ) );
-			$client_id = trim( Clean::string( AW()->options()->campaign_monitor_client_id ) );
+			$api_key                = trim( Clean::string( AW()->options()->campaign_monitor_api_key ) );
+			$client_id              = trim( Clean::string( AW()->options()->campaign_monitor_client_id ) );
 			self::$campaign_monitor = new Integration_Campaign_Monitor( $api_key, $client_id );
 		}
 
@@ -261,7 +263,7 @@ class Integrations {
 	}
 
 	/**
-	 * is_points_rewards_active method.
+	 * Is_points_rewards_active method.
 	 *
 	 * @since 4.5.0
 	 *
@@ -269,7 +271,7 @@ class Integrations {
 	 *
 	 * @return bool
 	 */
-	static function is_points_rewards_active( $min_version = self::REQUIRED_POINTS_AND_REWARDS_VERSION ) {
+	public static function is_points_rewards_active( $min_version = self::REQUIRED_POINTS_AND_REWARDS_VERSION ) {
 		if ( ! class_exists( '\WC_Points_Rewards' ) ) {
 			return false;
 		}
@@ -277,7 +279,7 @@ class Integrations {
 	}
 
 	/**
-	 * is_woocommerce_blocks_active method.
+	 * Is_woocommerce_blocks_active method.
 	 *
 	 * @since 5.6.0
 	 *
@@ -285,7 +287,7 @@ class Integrations {
 	 *
 	 * @return bool
 	 */
-	static function is_woocommerce_blocks_active( $min_version = self::REQUIRED_WOOCOMMERCE_BLOCKS_VERSION ) {
+	public static function is_woocommerce_blocks_active( $min_version = self::REQUIRED_WOOCOMMERCE_BLOCKS_VERSION ) {
 		if ( ! class_exists( '\Automattic\WooCommerce\Blocks\Package' ) ) {
 			return false;
 		}
@@ -309,7 +311,7 @@ class Integrations {
 	}
 
 	/**
-	 * is_free_gift_coupons_active method.
+	 * Is_free_gift_coupons_active method.
 	 *
 	 * @since 4.8.4
 	 *
@@ -317,7 +319,7 @@ class Integrations {
 	 *
 	 * @return bool
 	 */
-	static function is_free_gift_coupons_active( $min_version = self::REQUIRED_FREE_GIFT_COUPONS_VERSION ) {
+	public static function is_free_gift_coupons_active( $min_version = self::REQUIRED_FREE_GIFT_COUPONS_VERSION ) {
 		if ( ! class_exists( '\WC_Free_Gift_Coupons' ) ) {
 			return false;
 		}
@@ -344,7 +346,7 @@ class Integrations {
 	 *
 	 * @return bool
 	 */
-	static function subscriptions_enabled() {
+	public static function subscriptions_enabled() {
 		wc_deprecated_function( __METHOD__, '5.2.0', 'is_subscriptions_active' );
 
 		return self::is_subscriptions_active();

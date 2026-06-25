@@ -147,20 +147,53 @@ class Workflows {
 		$time = array_map( 'absint', (array) $workflow->get_trigger_option( 'time' ) );
 
 		// calculate time of day in site's timezone
-		$datetime = new DateTime( 'now' );
-		$datetime->convert_to_site_time();
-		$datetime->setTime( isset( $time[0] ) ? $time[0] : 0, isset( $time[1] ) ? $time[1] : 0, 0 );
+		$site_datetime = new DateTime( 'now' );
+		$site_datetime->convert_to_site_time();
+		$site_datetime->setTime( isset( $time[0] ) ? $time[0] : 0, isset( $time[1] ) ? $time[1] : 0, 0 );
+
+		$datetime = clone $site_datetime;
 		$datetime->convert_to_utc_time();
 
 		$passed_for_today = $datetime->getTimestamp() < time();
 
-		AW()->action_scheduler()->cancel( $hook, [ $workflow->get_id() ] );
+		self::cancel_custom_time_of_day_events( $workflow->get_id() );
 
 		if ( $passed_for_today && $clear_if_time_has_passed_for_today ) {
 			return;
 		}
 
-		AW()->action_scheduler()->schedule_single( $datetime->getTimestamp(), $hook, [ $workflow->get_id() ] );
+		AW()->action_scheduler()->schedule_single( $datetime->getTimestamp(), $hook, [ $workflow->get_id(), $site_datetime->format( 'Y-m-d' ) ] );
+	}
+
+	/**
+	 * Cancel all pending custom time of day events for a workflow.
+	 *
+	 * Events may be scheduled with the legacy `[ $workflow_id ]` args or the
+	 * newer `[ $workflow_id, $site_date ]` args, so match on the workflow ID
+	 * rather than on exact args.
+	 *
+	 * @since 6.6.0
+	 *
+	 * @param int $workflow_id
+	 */
+	protected static function cancel_custom_time_of_day_events( $workflow_id ) {
+		$hook = 'automatewoo/custom_time_of_day_workflow';
+
+		$pending_actions = AW()->action_scheduler()->search(
+			[
+				'hook'     => $hook,
+				'status'   => \ActionScheduler_Store::STATUS_PENDING,
+				'per_page' => -1,
+			]
+		);
+
+		foreach ( $pending_actions as $action ) {
+			$args = $action->get_args();
+
+			if ( isset( $args[0] ) && absint( $args[0] ) === absint( $workflow_id ) ) {
+				AW()->action_scheduler()->cancel( $hook, $args );
+			}
+		}
 	}
 
 	/**

@@ -1,11 +1,12 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
 use WP_Query;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * @class Workflow_Query
@@ -34,16 +35,19 @@ class Workflow_Query {
 	protected $last_wp_query;
 
 
-	function __construct() {
+	/**
+	 * Workflow_Query constructor.
+	 */
+	public function __construct() {
 		$this->args = [
-			'post_type' => 'aw_workflow',
-			'post_status' => 'publish',
-			'order' => 'ASC',
-			'orderby' => 'menu_order',
-			'posts_per_page' => $this->limit,
-			'meta_query' => [],
+			'post_type'        => 'aw_workflow',
+			'post_status'      => 'publish',
+			'order'            => 'ASC',
+			'orderby'          => 'menu_order',
+			'posts_per_page'   => $this->limit,
+			'meta_query'       => [],
 			'suppress_filters' => true,
-			'no_found_rows' => true
+			'no_found_rows'    => true,
 		];
 	}
 
@@ -53,11 +57,10 @@ class Workflow_Query {
 	 *
 	 * @param string|array $trigger
 	 */
-	function set_trigger( $trigger ) {
+	public function set_trigger( $trigger ) {
 		if ( $trigger instanceof Trigger ) {
 			$this->trigger = $trigger->get_name();
-		}
-		else {
+		} else {
 			$this->trigger = $trigger;
 		}
 	}
@@ -67,7 +70,7 @@ class Workflow_Query {
 	 *
 	 * @param string|array $ids
 	 */
-	function set_include( $ids ) {
+	public function set_include( $ids ) {
 		$this->args['post__in'] = wp_parse_list( $ids );
 	}
 
@@ -102,7 +105,7 @@ class Workflow_Query {
 		$status_map = [
 			'any'      => 'any',
 			'active'   => 'publish',
-			'disabled' => 'aw-disabled'
+			'disabled' => 'aw-disabled',
 		];
 
 		$this->args['post_status'] = isset( $status_map[ $status ] ) ? $status_map[ $status ] : $status;
@@ -146,9 +149,9 @@ class Workflow_Query {
 	}
 
 	/**
-	 * @param $return - objects|ids
+	 * @param string $return objects|ids
 	 */
-	function set_return( $return ) {
+	public function set_return( $return ) {
 		$this->return = $return;
 	}
 
@@ -163,8 +166,8 @@ class Workflow_Query {
 	 */
 	public function add_meta_query( $key, $value, $compare = '=' ) {
 		$this->args['meta_query'][] = [
-			'key' => $key,
-			'value' => $value,
+			'key'     => $key,
+			'value'   => $value,
 			'compare' => $compare,
 		];
 	}
@@ -173,16 +176,16 @@ class Workflow_Query {
 	/**
 	 * @return Workflow[]
 	 */
-	function get_results() {
+	public function get_results() {
 
 		if ( $this->trigger ) {
 			$this->args['meta_query'][] = [
-				'key' => 'trigger_name',
+				'key'   => 'trigger_name',
 				'value' => $this->trigger,
 			];
 		}
 
-		if ( $this->return == 'ids' ) {
+		if ( $this->return === 'ids' ) {
 			$this->args['fields'] = 'ids';
 		}
 		$query = new WP_Query( $this->args );
@@ -196,14 +199,12 @@ class Workflow_Query {
 
 		foreach ( $posts as $post ) {
 
-			if ( $this->return == 'ids' ) {
+			if ( $this->return === 'ids' ) {
 				$workflows[] = $post;
-			}
-			else {
-				$workflow = new Workflow($post);
+			} else {
+				$workflow    = new Workflow( $post );
 				$workflows[] = $workflow;
 			}
-
 		}
 
 		$this->last_wp_query = $query;
@@ -231,8 +232,7 @@ class Workflow_Query {
 	 *
 	 * @param string|array $trigger
 	 */
-	function set_triggers( $trigger ) {
+	public function set_triggers( $trigger ) {
 		$this->set_trigger( $trigger );
 	}
-
 }

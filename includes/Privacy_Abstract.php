@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
@@ -13,8 +12,8 @@ class Privacy_Abstract extends \WC_Abstract_Privacy {
 
 
 	/**
-	 * @param string $id
-	 * @param string $name
+	 * @param string   $id
+	 * @param string   $name
 	 * @param callable $callback
 	 */
 	public function add_exporter( $id, $name, $callback ) {
@@ -23,8 +22,8 @@ class Privacy_Abstract extends \WC_Abstract_Privacy {
 
 
 	/**
-	 * @param string $id
-	 * @param string $name
+	 * @param string   $id
+	 * @param string   $name
 	 * @param callable $callback
 	 */
 	public function add_eraser( $id, $name, $callback ) {
@@ -40,17 +39,15 @@ class Privacy_Abstract extends \WC_Abstract_Privacy {
 	 */
 	public static function parse_export_data_array( $data ) {
 		$return = [];
-		foreach( $data as $name => $value ) {
+		foreach ( $data as $name => $value ) {
 			$value = trim( $value );
 			if ( $name && $value ) {
 				$return[] = [
-					'name' => $name,
+					'name'  => $name,
 					'value' => $value,
 				];
 			}
 		}
 		return $return;
 	}
-
-
 }

@@ -1,9 +1,10 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo\Admin\Controllers;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 use AutomateWoo\Admin;
 use AutomateWoo\Clean;
@@ -16,8 +17,11 @@ use AutomateWoo\Preview_Data;
 class Preview extends Base {
 
 
-	function handle() {
-		switch( $this->get_current_action() ) {
+	/**
+	 * Handle the current request.
+	 */
+	public function handle() {
+		switch ( $this->get_current_action() ) {
 			case 'loading':
 				$this->output_loader();
 				break;
@@ -28,54 +32,62 @@ class Preview extends Base {
 	}
 
 
-	function output_loader() {
+	/**
+	 * Output the preview loader view.
+	 */
+	public function output_loader() {
 		Admin::get_view( 'email-preview-loader' );
 	}
 
 
-	function output_preview_ui() {
+	/**
+	 * Output the preview UI view.
+	 */
+	public function output_preview_ui() {
 
-		$type = Clean::string( aw_request('type') );
-		$args = Clean::recursive( aw_request('args') );
+		$type = Clean::string( aw_request( 'type' ) );
+		$args = Clean::recursive( aw_request( 'args' ) );
 
-		$iframe_url = add_query_arg([
-			'action' => 'aw_email_preview_iframe',
-			'type' => $type,
-			'args' => $args
-		], admin_url( 'admin-ajax.php' ) );
-
+		$iframe_url = add_query_arg(
+			[
+				'action' => 'aw_email_preview_iframe',
+				'type'   => $type,
+				'args'   => $args,
+			],
+			admin_url( 'admin-ajax.php' )
+		);
 
 		switch ( $type ) {
 			case 'workflow_action':
 				try {
 					$action = Preview_Data::generate_preview_action( $args['workflow_id'], $args['action_number'] );
 				} catch ( InvalidPreviewData $e ) {
-					return wp_die( $e->getMessage() );
+					return wp_die( esc_html( $e->getMessage() ) );
 				}
 
-				$email_subject = $action->get_option('subject', true );
-				$template = $action->get_option( 'template' );
+				$email_subject = $action->get_option( 'subject', true );
+				$template      = $action->get_option( 'template' );
 				break;
 
 			default:
 				$email_subject = '';
-				$template = '';
+				$template      = '';
 		}
 
 		$email_subject = apply_filters( 'automatewoo/email_preview/subject', $email_subject, $type, $args );
-		$template = apply_filters( 'automatewoo/email_preview/template', $template, $type, $args );
+		$template      = apply_filters( 'automatewoo/email_preview/template', $template, $type, $args );
 
-		Admin::get_view('email-preview-ui', [
-			'iframe_url' => $iframe_url,
-			'type' => $type,
-			'args' => $args,
-			'email_subject' => $email_subject,
-			'template' => $template
-		]);
-
+		Admin::get_view(
+			'email-preview-ui',
+			[
+				'iframe_url'    => $iframe_url,
+				'type'          => $type,
+				'args'          => $args,
+				'email_subject' => $email_subject,
+				'template'      => $template,
+			]
+		);
 	}
-
-
 }
 
 return new Preview();

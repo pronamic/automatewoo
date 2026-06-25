@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo\Rules;
 
@@ -12,12 +11,17 @@ defined( 'ABSPATH' ) || exit;
  */
 class Product_Categories extends Preloaded_Select_Rule_Abstract {
 
+	/** @var string */
 	public $data_item = 'product';
 
+	/** @var bool */
 	public $is_multi = true;
 
 
-	function init() {
+	/**
+	 * Init the rule.
+	 */
+	public function init() {
 		parent::init();
 
 		$this->title = __( 'Product - Categories', 'automatewoo' );
@@ -27,18 +31,18 @@ class Product_Categories extends Preloaded_Select_Rule_Abstract {
 	/**
 	 * @return array
 	 */
-	function load_select_choices() {
+	public function load_select_choices() {
 		return Fields_Helper::get_categories_list();
 	}
 
 
 	/**
-	 * @param $product \WC_Product|\WC_Product_Variation
-	 * @param $compare
-	 * @param $expected
+	 * @param \WC_Product|\WC_Product_Variation $product
+	 * @param string                            $compare
+	 * @param mixed                             $expected
 	 * @return bool
 	 */
-	function validate( $product, $compare, $expected ) {
+	public function validate( $product, $compare, $expected ) {
 		if ( empty( $expected ) ) {
 			return false;
 		}

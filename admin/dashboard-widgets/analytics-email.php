@@ -45,35 +45,11 @@ class Dashboard_Widget_Analytics_Email extends Dashboard_Widget_Analytics {
 
 			<div class="automatewoo-dashboard-chart__header">
 
-				<div class="automatewoo-dashboard-chart__header-group">
-					<automatewoo-dashboard-chart__header-figure
-						class="automatewoo-dashboard-chart__header-figure"
-						name="sent">-</automatewoo-dashboard-chart__header-figure>
-					<div class="automatewoo-dashboard-chart__header-text">
-						<span class="automatewoo-dashboard-chart__legend automatewoo-dashboard-chart__legend--blue"></span>
-						<?php esc_html_e( 'messages sent', 'automatewoo' ); ?>
-					</div>
-				</div>
+				<?php $this->output_live_chart_header_group( 'sent', __( 'messages sent', 'automatewoo' ), 'blue' ); ?>
 
-				<div class="automatewoo-dashboard-chart__header-group">
-					<automatewoo-dashboard-chart__header-figure
-						class="automatewoo-dashboard-chart__header-figure"
-						name="opens">-</automatewoo-dashboard-chart__header-figure>
-					<div class="automatewoo-dashboard-chart__header-text">
-						<span class="automatewoo-dashboard-chart__legend automatewoo-dashboard-chart__legend--purple"></span>
-						<?php esc_html_e( 'opens', 'automatewoo' ); ?>
-					</div>
-				</div>
+				<?php $this->output_live_chart_header_group( 'opens', __( 'opens', 'automatewoo' ), 'purple' ); ?>
 
-				<div class="automatewoo-dashboard-chart__header-group">
-					<automatewoo-dashboard-chart__header-figure
-						class="automatewoo-dashboard-chart__header-figure"
-						name="unique-clicks">-</automatewoo-dashboard-chart__header-figure>
-					<div class="automatewoo-dashboard-chart__header-text">
-						<span class="automatewoo-dashboard-chart__legend automatewoo-dashboard-chart__legend--green"></span>
-						<?php esc_html_e( 'unique clicks', 'automatewoo' ); ?>
-					</div>
-				</div>
+				<?php $this->output_live_chart_header_group( 'unique-clicks', __( 'unique clicks', 'automatewoo' ), 'green' ); ?>
 
 				<?php $this->output_report_arrow_link(); ?>
 			</div>

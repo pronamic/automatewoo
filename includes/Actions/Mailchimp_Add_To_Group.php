@@ -68,7 +68,12 @@ class Action_Mailchimp_Add_To_Group extends Action_Mailchimp_Abstract {
 			$reference_field_value = $this->get_option( $field->dynamic_options_reference_field_name );
 		}
 
-		foreach ( Integrations::mailchimp()->get_list_interest_categories( $reference_field_value ) as $interest_category ) {
+		$mailchimp = $this->get_mailchimp_integration();
+		if ( ! $mailchimp ) {
+			return [];
+		}
+
+		foreach ( $mailchimp->get_list_interest_categories( $reference_field_value ) as $interest_category ) {
 			foreach ( $interest_category['interests'] as $interest_id => $interest_name ) {
 				$options[ $interest_id ] = "{$interest_category['title']} - {$interest_name}";
 			}
@@ -101,6 +106,6 @@ class Action_Mailchimp_Add_To_Group extends Action_Mailchimp_Abstract {
 			$group_updates[ $interest_id ] = true;
 		}
 
-		$this->maybe_log_action( Integrations::mailchimp()->update_contact_interest_groups( $email, $list_id, $group_updates ) );
+		$this->maybe_log_action( $this->mailchimp()->update_contact_interest_groups( $email, $list_id, $group_updates ) );
 	}
 }

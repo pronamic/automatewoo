@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
@@ -7,6 +6,7 @@ defined( 'ABSPATH' ) || exit;
 
 /**
  * Class Frontend_Form_Handler
+ *
  * @since 3.9
  */
 class Frontend_Form_Handler {
@@ -15,6 +15,7 @@ class Frontend_Form_Handler {
 	public static $current_action = '';
 
 
+	/** @var string[] */
 	private static $actions = [
 		'automatewoo_save_communication_preferences',
 		'automatewoo_save_communication_signup',
@@ -25,11 +26,12 @@ class Frontend_Form_Handler {
 	/**
 	 * Handle frontend form post
 	 */
-	static function handle() {
-		$action              = Clean::string( $_POST['action'] );
+	public static function handle() {
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified in Frontend_Form_Handler::handle() via wp_verify_nonce() before dispatch.
+		$action              = isset( $_POST['action'] ) ? sanitize_text_field( wp_unslash( $_POST['action'] ) ) : '';
 		$honeypot_field_name = apply_filters( 'automatewoo/honeypot_field/name', 'firstname' );
 
-		if ( ! in_array( $action, self::$actions ) || empty( $_POST['_wpnonce'] ) || ! wp_verify_nonce( $_POST['_wpnonce'], $action ) ) {
+		if ( ! in_array( $action, self::$actions, true ) || empty( $_POST['_wpnonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_wpnonce'] ) ), $action ) ) {
 			return;
 		}
 
@@ -45,7 +47,7 @@ class Frontend_Form_Handler {
 			return;
 		}
 
-		$action = str_replace( 'automatewoo_', '', $action );
+		$action               = str_replace( 'automatewoo_', '', $action );
 		self::$current_action = $action;
 
 		nocache_headers();
@@ -55,8 +57,12 @@ class Frontend_Form_Handler {
 
 
 
-	static function save_communication_preferences() {
-		$customer = isset( $_POST['customer_key'] ) ? Customer_Factory::get_by_key( $_POST['customer_key'] ): false;
+	/**
+	 * Save communication preferences for an existing customer identified by key.
+	 */
+	public static function save_communication_preferences() {
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified in Frontend_Form_Handler::handle() via wp_verify_nonce() before dispatch.
+		$customer = isset( $_POST['customer_key'] ) ? Customer_Factory::get_by_key( sanitize_text_field( wp_unslash( $_POST['customer_key'] ) ) ) : false;
 
 		if ( ! $customer ) {
 			return;
@@ -69,9 +75,13 @@ class Frontend_Form_Handler {
 
 
 
-	static function save_communication_signup() {
+	/**
+	 * Save communication preferences for a new signup identified by email.
+	 */
+	public static function save_communication_signup() {
 
-		$email = isset( $_POST['email'] ) ? sanitize_email( $_POST['email'] ) : '';
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified in Frontend_Form_Handler::handle() via wp_verify_nonce() before dispatch.
+		$email = isset( $_POST['email'] ) ? sanitize_email( wp_unslash( $_POST['email'] ) ) : '';
 
 		$maybe_customer = Customer_Factory::get_by_email( $email, false );
 
@@ -91,11 +101,9 @@ class Frontend_Form_Handler {
 
 		if ( $customer->is_opted_in() ) {
 			wc_add_notice( __( 'Thanks! Your signup was successful.', 'automatewoo' ) );
-		}
-		else {
+		} else {
 			wc_add_notice( __( "Saved successfully! You won't receive marketing communications from us.", 'automatewoo' ) );
 		}
-
 	}
 
 
@@ -103,10 +111,10 @@ class Frontend_Form_Handler {
 	 * @param Customer $customer
 	 */
 	protected static function update_customer_preferences( $customer ) {
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified in Frontend_Form_Handler::handle() via wp_verify_nonce() before dispatch.
 		if ( isset( $_POST['subscribe'] ) ) {
 			$customer->opt_in();
-		}
-		else {
+		} else {
 			$customer->opt_out( Clean::id( aw_request( 'workflow' ) ) );
 		}
 
@@ -114,7 +122,5 @@ class Frontend_Form_Handler {
 		Session_Tracker::set_session_customer( $customer );
 
 		do_action( 'automatewoo/communication_page/save_preferences', $customer );
-
 	}
-
 }

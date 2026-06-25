@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
@@ -31,49 +30,49 @@ class Preview_Data {
 	 * @return array
 	 * @throws InvalidPreviewData When there's an error getting the preview data.
 	 */
-	static function get_preview_data_layer( $required_items = [] ) {
+	public static function get_preview_data_layer( $required_items = [] ) {
 		$data_layer = [];
 
-		if ( in_array( 'user', $required_items ) ) {
+		if ( in_array( 'user', $required_items, true ) ) {
 			$data_layer['user'] = wp_get_current_user();
 		}
 
-		if ( in_array( 'customer', $required_items ) ) {
+		if ( in_array( 'customer', $required_items, true ) ) {
 			$data_layer['customer'] = Customer_Factory::get_by_user_id( get_current_user_id() );
 		}
 
 		/**
 		 * Order and order item
 		 */
-		if ( in_array( 'order', $required_items ) || in_array( 'order_item', $required_items ) ) {
-			$order = self::get_preview_order();
+		if ( in_array( 'order', $required_items, true ) || in_array( 'order_item', $required_items, true ) ) {
+			$order       = self::get_preview_order();
 			$order_items = $order->get_items();
 
 			if ( empty( $order_items ) ) {
 				throw InvalidPreviewData::data_item_needed( 'order_item' );
 			}
 
-			$data_layer['order'] = $order;
+			$data_layer['order']      = $order;
 			$data_layer['order_item'] = current( $order_items );
 		}
 
 		/**
 		 * Product
 		 */
-		if ( in_array( 'product', $required_items ) ) {
-			$product_ids = self::get_preview_product_ids();
+		if ( in_array( 'product', $required_items, true ) ) {
+			$product_ids           = self::get_preview_product_ids();
 			$data_layer['product'] = wc_get_product( $product_ids[0] );
 		}
 
 		/**
 		 * Category
 		 */
-		if ( in_array( 'category', $required_items ) ) {
+		if ( in_array( 'category', $required_items, true ) ) {
 			$categories = get_terms(
 				[
 					'taxonomy' => 'product_cat',
 					'order'    => 'count',
-					'number'   => 1
+					'number'   => 1,
 				]
 			);
 
@@ -87,7 +86,7 @@ class Preview_Data {
 		/**
 		 * Cart
 		 */
-		if ( in_array( 'cart', $required_items ) ) {
+		if ( in_array( 'cart', $required_items, true ) ) {
 			$cart = new Cart();
 			$cart->set_id( 1 );
 			$cart->set_total( 100 );
@@ -96,7 +95,7 @@ class Preview_Data {
 			$cart->set_date_last_modified( new DateTime() );
 
 			$product_ids = self::get_preview_product_ids( array( 'post_status' => 'publish' ) );
-			$items 		 = [];
+			$items       = [];
 
 			foreach ( $product_ids as $product_id ) {
 				$product = wc_get_product( $product_id );
@@ -107,23 +106,23 @@ class Preview_Data {
 				}
 
 				$variation_id = 0;
-				$variation = [];
+				$variation    = [];
 
-				if ( $product->is_type('variable') ) {
+				if ( $product->is_type( 'variable' ) ) {
 					/** @var \WC_Product_Variable $product */
 					$variations = $product->get_available_variations();
 					if ( $variations ) {
 						$variation_id = $variations[0]['variation_id'];
-						$variation = $variations[0]['attributes'];
+						$variation    = $variations[0]['attributes'];
 					}
 				}
 
 				$items[ uniqid() ] = [
-					'product_id' => $product_id,
-					'variation_id' => $variation_id,
-					'variation' => $variation,
-					'quantity' => 1,
-					'line_subtotal' => (float) $product->get_price(),
+					'product_id'        => $product_id,
+					'variation_id'      => $variation_id,
+					'variation'         => $variation,
+					'quantity'          => 1,
+					'line_subtotal'     => (float) $product->get_price(),
 					'line_subtotal_tax' => (float) wc_get_price_including_tax( $product ) - (float) $product->get_price(),
 				];
 
@@ -135,13 +134,15 @@ class Preview_Data {
 
 			$cart->set_items( $items );
 
-			$cart->set_coupons([
-				'10off' => [
-					'discount_incl_tax' => '10',
-					'discount_excl_tax' => '9',
-					'discount_tax' => '1'
+			$cart->set_coupons(
+				[
+					'10off' => [
+						'discount_incl_tax' => '10',
+						'discount_excl_tax' => '9',
+						'discount_tax'      => '1',
+					],
 				]
-			]);
+			);
 
 			$data_layer['cart'] = $cart;
 		}
@@ -149,7 +150,7 @@ class Preview_Data {
 		/**
 		 * Wishlist
 		 */
-		if ( in_array( 'wishlist', $required_items ) ) {
+		if ( in_array( 'wishlist', $required_items, true ) ) {
 			$wishlist        = new Wishlist();
 			$wishlist->items = self::get_preview_product_ids();
 
@@ -159,7 +160,7 @@ class Preview_Data {
 		/**
 		 * Guest
 		 */
-		if ( in_array( 'guest', $required_items ) ) {
+		if ( in_array( 'guest', $required_items, true ) ) {
 			$guest = new Guest();
 			$guest->set_email( 'guest@example.com' );
 			$data_layer['guest'] = $guest;
@@ -168,10 +169,10 @@ class Preview_Data {
 		/**
 		 * Subscription
 		 */
-		if ( Integrations::is_subscriptions_active() && in_array( 'subscription', $required_items ) ) {
+		if ( Integrations::is_subscriptions_active() && in_array( 'subscription', $required_items, true ) ) {
 			$subscriptions = wcs_get_subscriptions(
 				[
-					'subscriptions_per_page' => 1
+					'subscriptions_per_page' => 1,
 				]
 			);
 
@@ -185,7 +186,7 @@ class Preview_Data {
 		/**
 		 * Membership
 		 */
-		if ( Integrations::is_memberships_enabled() && in_array( 'membership', $required_items ) ) {
+		if ( Integrations::is_memberships_enabled() && in_array( 'membership', $required_items, true ) ) {
 			$memberships = get_posts(
 				[
 					'post_type'      => 'wc_user_membership',
@@ -204,7 +205,7 @@ class Preview_Data {
 		/**
 		 * Bookings
 		 */
-		if ( Integrations::is_bookings_active() && in_array( 'booking', $required_items ) ) {
+		if ( Integrations::is_bookings_active() && in_array( 'booking', $required_items, true ) ) {
 			try {
 				$booking               = AW()->bookings_proxy()->get_most_recent_booking();
 				$data_layer['booking'] = $booking;
@@ -283,10 +284,10 @@ class Preview_Data {
 		/**
 		 * Card
 		 */
-		if ( in_array( 'card', $required_items ) ) {
+		if ( in_array( 'card', $required_items, true ) ) {
 			$token = new \WC_Payment_Token_CC();
 			$token->set_user_id( 0 );
-			$token->set_card_type('visa');
+			$token->set_card_type( 'visa' );
 			$token->set_expiry_month( 04 );
 			$token->set_expiry_year( 2020 );
 			$token->set_last4( 1234 );
@@ -328,14 +329,14 @@ class Preview_Data {
 	 *
 	 * @throws InvalidPreviewData When there's an error with the preview data.
 	 */
-	static function generate_preview_action( $workflow_id, $action_number, $mode = 'preview' ) {
+	public static function generate_preview_action( $workflow_id, $action_number, $mode = 'preview' ) {
 		$preview_data = wp_unslash( get_option( 'aw_wf_preview_data_' . $workflow_id ) );
-		$workflow = Factory::get( $workflow_id );
+		$workflow     = Factory::get( $workflow_id );
 		if ( ! $workflow || ! $action_number || ! is_array( $preview_data ) ) {
 			throw InvalidPreviewData::generic();
 		}
 
-		$trigger = Triggers::get( Clean::string( $preview_data['trigger_name'] ) );
+		$trigger       = Triggers::get( Clean::string( $preview_data['trigger_name'] ) );
 		$action_fields = $workflow->format_action_fields( $preview_data['action_fields'] );
 		if ( ! $trigger || ! $action_fields ) {
 			throw InvalidPreviewData::generic();
@@ -359,7 +360,7 @@ class Preview_Data {
 		}
 
 		// set the data layer from preview trigger
-		$workflow->set_data_layer( Preview_Data::get_preview_data_layer( $trigger->get_supplied_data_items() ), true );
+		$workflow->set_data_layer( self::get_preview_data_layer( $trigger->get_supplied_data_items() ), true );
 
 		$action->workflow = $workflow;
 
@@ -424,7 +425,7 @@ class Preview_Data {
 	 *
 	 * @since 4.6.0
 	 *
-	 * @param string $lang
+	 * @param string   $lang
 	 * @param Customer $customer
 	 *
 	 * @return string
@@ -451,7 +452,7 @@ class Preview_Data {
 	 *
 	 * @param Action $action
 	 */
-	public static function remove_customer_language_filter( $action ) {
+	public static function remove_customer_language_filter( $action ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found -- Signature matches add_customer_language_filter() and the hook callback contract.
 		self::$preview_workflow = null;
 		remove_filter( 'automatewoo/customer/get_language', [ __CLASS__, 'filter_customer_language' ], 10 );
 	}
@@ -469,11 +470,14 @@ class Preview_Data {
 		// Cache for request since this may be called multiple times
 		static $products = null;
 		if ( null === $products ) {
-			$args = array_merge( array(
-				'post_type'      => 'product',
-				'posts_per_page' => 4,
-				'fields'         => 'ids'
-			), $args );
+			$args = array_merge(
+				array(
+					'post_type'      => 'product',
+					'posts_per_page' => 4,
+					'fields'         => 'ids',
+				),
+				$args
+			);
 
 			$product_query = new WP_Query( $args );
 
@@ -506,5 +510,4 @@ class Preview_Data {
 
 		return current( $courses );
 	}
-
 }

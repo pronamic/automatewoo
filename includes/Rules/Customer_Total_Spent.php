@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo\Rules;
 
@@ -12,24 +11,28 @@ defined( 'ABSPATH' ) || exit;
  */
 class Customer_Total_Spent extends Abstract_Number {
 
+	/** @var string */
 	public $data_item = DataTypes::CUSTOMER;
 
+	/** @var bool */
 	public $support_floats = true;
 
 
-	function init() {
+	/**
+	 * Init the rule.
+	 */
+	public function init() {
 		$this->title = __( 'Customer - Total Spent', 'automatewoo' );
 	}
 
 
 	/**
-	 * @param $customer \AutomateWoo\Customer
-	 * @param $compare
-	 * @param $value
+	 * @param \AutomateWoo\Customer $customer
+	 * @param string                $compare
+	 * @param mixed                 $value
 	 * @return bool
 	 */
-	function validate( $customer, $compare, $value ) {
+	public function validate( $customer, $compare, $value ) {
 		return $this->validate_number( $customer->get_total_spent(), $compare, $value );
 	}
-
 }

@@ -1,9 +1,10 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * @class Trigger_Abstract_Order_Base
@@ -16,12 +17,14 @@ abstract class Trigger_Abstract_Order_Base extends Trigger {
 	public $is_run_for_each_line_item = false;
 
 
-	function __construct() {
+	/**
+	 * Trigger_Abstract_Order_Base constructor.
+	 */
+	public function __construct() {
 
 		if ( $this->is_run_for_each_line_item ) {
 			$this->supplied_data_items = [ 'customer', 'order', 'product', 'order_item' ];
-		}
-		else {
+		} else {
 			$this->supplied_data_items = [ 'customer', 'order' ];
 		}
 
@@ -29,7 +32,10 @@ abstract class Trigger_Abstract_Order_Base extends Trigger {
 	}
 
 
-	function load_admin_details() {
+	/**
+	 * Load admin details for the trigger.
+	 */
+	public function load_admin_details() {
 		$this->group = __( 'Orders', 'automatewoo' );
 	}
 
@@ -38,7 +44,7 @@ abstract class Trigger_Abstract_Order_Base extends Trigger {
 	 * @param Workflow $workflow
 	 * @return bool
 	 */
-	function validate_workflow( $workflow ) {
+	public function validate_workflow( $workflow ) {
 		return $this->validate_checkout_order_source( $workflow );
 	}
 
@@ -47,7 +53,7 @@ abstract class Trigger_Abstract_Order_Base extends Trigger {
 	 * @param Workflow $workflow
 	 * @return bool
 	 */
-	function validate_before_queued_event( $workflow ) {
+	public function validate_before_queued_event( $workflow ) {
 		return $this->validate_checkout_order_source( $workflow );
 	}
 
@@ -56,12 +62,11 @@ abstract class Trigger_Abstract_Order_Base extends Trigger {
 	 * @param int|\WC_Order $order
 	 * @return \WC_Order|false
 	 */
-	function get_order( $order ) {
+	public function get_order( $order ) {
 
 		if ( is_object( $order ) && is_a( $order, 'WC_Abstract_Order' ) ) {
 			return $order;
-		}
-		elseif ( is_numeric( $order ) ) {
+		} elseif ( is_numeric( $order ) ) {
 			return wc_get_order( $order );
 		}
 		return false;
@@ -115,37 +120,41 @@ abstract class Trigger_Abstract_Order_Base extends Trigger {
 	/**
 	 * @param \WC_Order|int $order
 	 */
-	function trigger_for_order( $order ) {
-		if ( ! $order = $this->get_order( $order ) ) {
+	public function trigger_for_order( $order ) {
+		$order = $this->get_order( $order );
+		if ( ! $order ) {
 			return;
 		}
 
-		$this->maybe_run([
-			'order' => $order,
-			'customer' => Customer_Factory::get_by_order( $order ),
-		]);
+		$this->maybe_run(
+			[
+				'order'    => $order,
+				'customer' => Customer_Factory::get_by_order( $order ),
+			]
+		);
 	}
 
 
 	/**
 	 * @param int|\WC_Order $order
 	 */
-	function trigger_for_each_order_item( $order ) {
-		if ( ! $order = $this->get_order( $order ) ) {
+	public function trigger_for_each_order_item( $order ) {
+		$order = $this->get_order( $order );
+		if ( ! $order ) {
 			return;
 		}
 
 		$customer = Customer_Factory::get_by_order( $order );
 
 		foreach ( $order->get_items() as $order_item_id => $order_item ) {
-			$this->maybe_run( [
-				'order'      => $order,
-				'order_item' => $order_item,
-				'customer'   => $customer,
-				'product'    => $order_item->get_product(),
-			] );
+			$this->maybe_run(
+				[
+					'order'      => $order,
+					'order_item' => $order_item,
+					'customer'   => $customer,
+					'product'    => $order_item->get_product(),
+				]
+			);
 		}
 	}
-
-
 }

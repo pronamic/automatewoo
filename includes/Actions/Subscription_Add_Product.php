@@ -67,11 +67,15 @@ class Action_Subscription_Add_Product extends Action_Subscription_Edit_Product_A
 		}
 
 		if ( $this->get_option( 'line_item_cost' ) ) {
+			// Pass the subscription as the order context so the custom price resolves taxes the
+			// same way WooCommerce core does for the default product price (e.g. honouring the
+			// `woocommerce_adjust_non_base_location_prices` filter for non-base tax locations).
 			$add_product_args['subtotal'] = wc_get_price_excluding_tax(
 				$product,
 				array(
 					'price' => $this->get_option( 'line_item_cost', true ),
 					'qty'   => $this->get_option( 'quantity' ),
+					'order' => $subscription,
 				)
 			);
 			$add_product_args['total']    = $add_product_args['subtotal'];

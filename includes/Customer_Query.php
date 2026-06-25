@@ -1,9 +1,10 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * @class Customer_Query
@@ -17,14 +18,14 @@ class Customer_Query extends Query_Abstract {
 	/** @var string */
 	public $meta_table_id = 'customer-meta';
 
+	/** @var string */
 	protected $model = 'AutomateWoo\Customer';
 
 
 	/**
 	 * @return Customer[]
 	 */
-	function get_results() {
+	public function get_results() {
 		return parent::get_results();
 	}
-
 }

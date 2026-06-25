@@ -129,6 +129,8 @@ class BatchedWorkflows extends AbstractBatchedActionSchedulerJob {
 		/** @var BatchedWorkflowInterface $trigger */
 		$trigger = $workflow->get_trigger();
 
+		$this->maybe_set_trigger_base_date( $trigger, $args );
+
 		if ( $trigger instanceof AbstractBatchedDailyTrigger && ! empty( $args['_aw_cursor'] ) ) {
 			$after_id = (int) $args['_aw_cursor'];
 		} else {
@@ -180,7 +182,28 @@ class BatchedWorkflows extends AbstractBatchedActionSchedulerJob {
 		/** @var BatchedWorkflowInterface $trigger */
 		$trigger = $workflow->get_trigger();
 
+		// Apply the same scheduled date used when the batch was built so that
+		// date-sensitive validation (e.g. Win Back, Wishlist Reminder) anchors on
+		// the same day as the query, even when the item action runs after midnight.
+		$this->maybe_set_trigger_base_date( $trigger, $args );
+
 		$trigger->process_item_for_workflow( $workflow, $item );
+	}
+
+	/**
+	 * Apply the batch's scheduled site date to a daily trigger, when present.
+	 *
+	 * Both the batch query and per-item processing must anchor on the same date,
+	 * otherwise validation can fall back to "now" and disagree with the query
+	 * across the midnight boundary.
+	 *
+	 * @param BatchedWorkflowInterface $trigger The workflow trigger.
+	 * @param array                    $args    The job args.
+	 */
+	protected function maybe_set_trigger_base_date( $trigger, array $args ) {
+		if ( $trigger instanceof AbstractBatchedDailyTrigger && ! empty( $args['_aw_scheduled_date'] ) ) {
+			$trigger->set_batch_base_date_from_site_date( (string) $args['_aw_scheduled_date'] );
+		}
 	}
 
 	/**

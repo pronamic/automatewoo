@@ -10,7 +10,7 @@ use AutomateWoo\Data_Layer;
  * @since   5.0.0
  * @package AutomateWoo\Triggers
  */
-interface ManualInterface {
+interface ManualInterface extends TriggerInterface {
 
 	/**
 	 * Get primary data type.

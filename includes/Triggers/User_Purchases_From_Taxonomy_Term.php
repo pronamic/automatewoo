@@ -1,9 +1,10 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * @class Trigger_User_Purchases_From_Taxonomy_Term
@@ -11,13 +12,19 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 class Trigger_User_Purchases_From_Taxonomy_Term extends Trigger_Abstract_Order_Status_Base {
 
 
-	function load_admin_details() {
+	/**
+	 * Load the trigger admin details.
+	 */
+	public function load_admin_details() {
 		parent::load_admin_details();
-		$this->title = __('Order Includes Product from Taxonomy Term', 'automatewoo');
+		$this->title = __( 'Order Includes Product from Taxonomy Term', 'automatewoo' );
 	}
 
 
-	function load_fields() {
+	/**
+	 * Load the trigger fields.
+	 */
+	public function load_fields() {
 
 		$taxonomy = new Fields\Taxonomy();
 		$taxonomy->set_required();
@@ -27,7 +34,7 @@ class Trigger_User_Purchases_From_Taxonomy_Term extends Trigger_Abstract_Order_S
 
 		$order_status = new Fields\Order_Status( false );
 		$order_status->set_required();
-		$order_status->set_default('wc-completed');
+		$order_status->set_default( 'wc-completed' );
 
 		$this->add_field( $taxonomy );
 		$this->add_field( $term );
@@ -36,10 +43,10 @@ class Trigger_User_Purchases_From_Taxonomy_Term extends Trigger_Abstract_Order_S
 
 
 	/**
-	 * @param $workflow Workflow
+	 * @param Workflow $workflow
 	 * @return bool
 	 */
-	function validate_workflow( $workflow ) {
+	public function validate_workflow( $workflow ) {
 		$order = $workflow->data_layer()->get_order();
 
 		if ( ! $order ) {
@@ -70,8 +77,8 @@ class Trigger_User_Purchases_From_Taxonomy_Term extends Trigger_Abstract_Order_S
 			$product_terms = wp_get_object_terms( $order_item->get_product_id(), $taxonomy );
 
 			if ( $product_terms ) {
-				foreach( $product_terms as $product_term ) {
-					if ( $product_term->term_id == $term_id ) {
+				foreach ( $product_terms as $product_term ) {
+					if ( $product_term->term_id === (int) $term_id ) {
 						return true;
 					}
 				}
@@ -80,5 +87,4 @@ class Trigger_User_Purchases_From_Taxonomy_Term extends Trigger_Abstract_Order_S
 
 		return false;
 	}
-
 }

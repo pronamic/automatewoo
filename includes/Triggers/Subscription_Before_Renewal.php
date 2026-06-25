@@ -109,7 +109,7 @@ class Trigger_Subscription_Before_Renewal extends AbstractBatchedDailyTrigger {
 		$days_before_renewal = (int) $workflow->get_trigger_option( 'days_before_renewal' );
 		$this->validate_positive_integer( $days_before_renewal );
 
-		$date = ( new DateTime() )->add( new \DateInterval( "P{$days_before_renewal}D" ) );
+		$date = $this->get_batch_base_date()->add( new \DateInterval( "P{$days_before_renewal}D" ) );
 
 		return $this->query_subscriptions_for_day( $date, '_schedule_next_payment', [ 'wc-active' ], $after_id, $limit );
 	}

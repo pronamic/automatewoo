@@ -1,10 +1,10 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
 /**
  * Multi-lingual helper class
+ *
  * @class Language
  */
 class Language {
@@ -12,7 +12,7 @@ class Language {
 	/**
 	 * @return bool
 	 */
-	static function is_multilingual() {
+	public static function is_multilingual() {
 		return Integrations::is_wpml() || Integrations::is_polylang();
 	}
 
@@ -20,7 +20,7 @@ class Language {
 	/**
 	 * @return string
 	 */
-	static function get_default() {
+	public static function get_default() {
 		if ( Integrations::is_wpml() ) {
 			return wpml_get_default_language();
 		}
@@ -35,9 +35,10 @@ class Language {
 
 	/**
 	 * Returns empty string if multi-lingual is not enabled
+	 *
 	 * @return string
 	 */
-	static function get_current() {
+	public static function get_current() {
 		if ( Integrations::is_wpml() ) {
 			return wpml_get_current_language();
 		}
@@ -53,23 +54,23 @@ class Language {
 	/**
 	 * Set language back to original
 	 */
-	static function set_original() {
+	public static function set_original() {
 		if ( Integrations::is_wpml() ) {
-			Language::set_current( ICL_LANGUAGE_CODE );
+			self::set_current( ICL_LANGUAGE_CODE );
 		}
 	}
 
 
 	/**
-	 * @param $language
+	 * @param string $language
 	 */
-	static function set_current( $language ) {
+	public static function set_current( $language ) {
 
-		if ( ! Language::is_multilingual() || ! $language ) {
+		if ( ! self::is_multilingual() || ! $language ) {
 			return;
 		}
 
-		if ( $language == Language::get_current() ) {
+		if ( $language === self::get_current() ) {
 			return; // no change required
 		}
 
@@ -88,7 +89,7 @@ class Language {
 	 *
 	 * @return string
 	 */
-	static function get_post_language( $post_id ) {
+	public static function get_post_language( $post_id ) {
 		// WPML always wins when active so running both plugins cannot mix language sources.
 		if ( Integrations::is_wpml() ) {
 			$info = wpml_get_language_information( null, $post_id );
@@ -115,12 +116,13 @@ class Language {
 	 *
 	 * @return string
 	 */
-	static function get_order_language( $order ) {
+	public static function get_order_language( $order ) {
 		if ( ! $order ) {
 			return '';
 		}
 
-		if ( $order_lang = $order->get_meta( 'wpml_language' ) ) {
+		$order_lang = $order->get_meta( 'wpml_language' );
+		if ( $order_lang ) {
 			return Clean::string( $order_lang );
 		}
 
@@ -146,7 +148,7 @@ class Language {
 	 *
 	 * @return int
 	 */
-	static function get_translated_object_id( $object_id, $type, $language ) {
+	public static function get_translated_object_id( $object_id, $type, $language ) {
 		if ( ! $object_id || ! $language ) {
 			return $object_id;
 		}
@@ -172,8 +174,8 @@ class Language {
 	 *
 	 * @return array
 	 */
-	static function get_post_translation_ids( $post_id ) {
-		if ( ! Language::is_multilingual() ) {
+	public static function get_post_translation_ids( $post_id ) {
+		if ( ! self::is_multilingual() ) {
 			return [ $post_id ];
 		}
 
@@ -206,27 +208,26 @@ class Language {
 	/**
 	 * Make language choice for guests and users persist
 	 */
-	static function make_language_persistent() {
+	public static function make_language_persistent() {
 
-		if ( is_admin() || ! Language::is_multilingual() ) {
+		if ( is_admin() || ! self::is_multilingual() ) {
 			return;
 		}
 
-		$current_lang = Language::get_current();
+		$current_lang = self::get_current();
 
 		if ( is_user_logged_in() ) {
 			$user_lang = get_user_meta( get_current_user_id(), '_aw_persistent_language', true );
 
-			if ( $user_lang != $current_lang ) {
+			if ( $user_lang !== $current_lang ) {
 				self::set_user_language( get_current_user_id(), $current_lang );
 			}
-		}
-		else {
+		} else {
 			// Save language for guest if they have been stored
 			$guest = Session_Tracker::get_current_guest();
 
 			if ( $guest ) {
-				if ( $guest->get_language() != $current_lang ) {
+				if ( $guest->get_language() !== $current_lang ) {
 					$guest->set_language( $current_lang );
 					$guest->save();
 				}
@@ -236,36 +237,39 @@ class Language {
 
 
 	/**
-	 * @param $user Order_Guest|\WP_User
+	 * @param Order_Guest|\WP_User $user
 	 * @return string|false
 	 */
-	static function get_user_language( $user ) {
+	public static function get_user_language( $user ) {
 
-		if ( ! Language::is_multilingual() )
+		if ( ! self::is_multilingual() ) {
 			return false;
+		}
 
 		if ( $user instanceof \WP_User ) {
-			if ( $persisted = get_user_meta( $user->ID, '_aw_persistent_language', true ) ) {
+			$persisted = get_user_meta( $user->ID, '_aw_persistent_language', true );
+			if ( $persisted ) {
 				return Clean::string( $persisted );
 			}
 		}
 
 		// guest orders, fetch the language from their order
 		if ( is_a( $user, 'AutomateWoo\Order_Guest' ) && $user->order ) {
-			if ( $order_lang = Language::get_order_language( $user->order ) ) {
+			$order_lang = self::get_order_language( $user->order );
+			if ( $order_lang ) {
 				return Clean::string( $order_lang );
 			}
 		}
 
-		return Language::get_default();
+		return self::get_default();
 	}
 
 
 	/**
-	 * @param $user_id
-	 * @param $language
+	 * @param int    $user_id
+	 * @param string $language
 	 */
-	static function set_user_language( $user_id, $language ) {
+	public static function set_user_language( $user_id, $language ) {
 		update_user_meta( $user_id, '_aw_persistent_language', $language );
 	}
 
@@ -274,17 +278,15 @@ class Language {
 	 * @param Guest $guest
 	 * @return string
 	 */
-	static function get_guest_language( $guest ) {
+	public static function get_guest_language( $guest ) {
 
-		if ( ! Language::is_multilingual() ) {
+		if ( ! self::is_multilingual() ) {
 			return '';
 		}
 
 		if ( $guest && $guest->get_language() ) {
 			return $guest->get_language();
 		}
-		return Language::get_default();
+		return self::get_default();
 	}
-
-
 }

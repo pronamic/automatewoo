@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo\Rules;
 
@@ -21,10 +20,14 @@ class Customer_State extends Preloaded_Select_Rule_Abstract implements NonPrimar
 	use ArrayQuickFilter;
 	use DataTypeConditions;
 
+	/** @var string */
 	public $data_item = DataTypes::CUSTOMER;
 
 
-	function init() {
+	/**
+	 * Init the rule.
+	 */
+	public function init() {
 		parent::init();
 
 		$this->title = __( 'Customer - State', 'automatewoo' );
@@ -34,7 +37,7 @@ class Customer_State extends Preloaded_Select_Rule_Abstract implements NonPrimar
 	/**
 	 * @return array
 	 */
-	function load_select_choices() {
+	public function load_select_choices() {
 		$return = [];
 
 		foreach ( WC()->countries->get_states() as $country_code => $states ) {
@@ -48,13 +51,13 @@ class Customer_State extends Preloaded_Select_Rule_Abstract implements NonPrimar
 
 
 	/**
-	 * @param $customer \AutomateWoo\Customer
-	 * @param $compare
-	 * @param $value
+	 * @param \AutomateWoo\Customer $customer
+	 * @param string                $compare
+	 * @param mixed                 $value
 	 * @return bool
 	 */
-	function validate( $customer, $compare, $value ) {
-		$state = $this->data_layer()->get_customer_state();
+	public function validate( $customer, $compare, $value ) {
+		$state   = $this->data_layer()->get_customer_state();
 		$country = $this->data_layer()->get_customer_country();
 
 		return $this->validate_select( "$country|$state", $compare, $value );
@@ -87,7 +90,7 @@ class Customer_State extends Preloaded_Select_Rule_Abstract implements NonPrimar
 
 			return [
 				$this->generate_array_quick_filter_clause( 'billing_country', $compare_type, $countries ),
-				$this->generate_array_quick_filter_clause( 'billing_state', $compare_type, $states )
+				$this->generate_array_quick_filter_clause( 'billing_state', $compare_type, $states ),
 			];
 		}
 

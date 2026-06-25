@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
@@ -21,9 +20,9 @@ class Phone_Numbers {
 	 *
 	 * @return string
 	 */
-	static function parse( $original_number, $country = '' ) {
+	public static function parse( $original_number, $country = '' ) {
 
-		if ( ! $country )  {
+		if ( ! $country ) {
 			$country = WC()->countries->get_base_country();
 		}
 
@@ -31,7 +30,7 @@ class Phone_Numbers {
 
 		if ( ! self::is_international( $number, $country ) ) {
 
-			$number = ltrim( $number, '0' ); // remove leading zero
+			$number    = ltrim( $number, '0' ); // remove leading zero
 			$area_code = self::get_international_calling_code( $country );
 
 			if ( $area_code ) {
@@ -55,7 +54,7 @@ class Phone_Numbers {
 	 * @param string $country
 	 * @return bool
 	 */
-	static function is_international( $number, $country ) {
+	public static function is_international( $number, $country ) {
 
 		if ( strstr( $number, '+' ) ) {
 			return true;
@@ -63,7 +62,7 @@ class Phone_Numbers {
 
 		$number = ltrim( $number, '0' );
 
-		if ( strlen( $number ) > self::get_nsn( $country )  ) {
+		if ( strlen( $number ) > self::get_nsn( $country ) ) {
 			return true;
 		}
 
@@ -72,10 +71,10 @@ class Phone_Numbers {
 
 
 	/**
-	 * @param $country
+	 * @param string $country
 	 * @return string
 	 */
-	static function get_international_calling_code( $country ) {
+	public static function get_international_calling_code( $country ) {
 		$area_codes = [
 			'AC' => '247',
 			'AD' => '376',
@@ -336,10 +335,10 @@ class Phone_Numbers {
 			'YT' => '262',
 			'ZA' => '27',
 			'ZM' => '260',
-			'ZW' => '263'
+			'ZW' => '263',
 		];
 
-		return isset( $area_codes[$country] ) ? $area_codes[$country] : '';
+		return isset( $area_codes[ $country ] ) ? $area_codes[ $country ] : '';
 	}
 
 
@@ -347,10 +346,10 @@ class Phone_Numbers {
 	 * National Significant Number, i.e. the number of digits after the country code excluding any trunk code or access code.
 	 * If the country has more than one NSN use the higher e.g. Austria can be 10 or 11
 	 *
-	 * @param $country
+	 * @param string $country
 	 * @return int
 	 */
-	static function get_nsn( $country ) {
+	public static function get_nsn( $country ) {
 
 		$nsn = [
 
@@ -365,7 +364,7 @@ class Phone_Numbers {
 			'IL' => 9,
 		];
 
-		return isset( $nsn[$country] ) ? $nsn[$country] : 10;
+		return isset( $nsn[ $country ] ) ? $nsn[ $country ] : 10;
 	}
 
 
@@ -374,16 +373,15 @@ class Phone_Numbers {
 
 	/**
 	 * @deprecated use Clean::comma_delimited_string()
-	 * @param $list
+	 * @param string|array $list
 	 * @return array
 	 */
-	static function parse_list( $list ) {
+	public static function parse_list( $list ) {
 		wc_deprecated_function( __METHOD__, '5.2.0', 'Clean::comma_delimited_string' );
 
 		if ( ! is_array( $list ) ) {
-			$list = explode(',', $list );
+			$list = explode( ',', $list );
 		}
 		return array_filter( array_map( 'trim', $list ) );
 	}
-
 }

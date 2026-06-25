@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
@@ -11,14 +10,14 @@ defined( 'ABSPATH' ) || exit;
  */
 class Queued_Event_Factory extends Factory {
 
-	static $model = 'AutomateWoo\Queued_Event';
+	/** @var string */
+	public static $model = 'AutomateWoo\Queued_Event';
 
 	/**
 	 * @param int $id
 	 * @return Queued_Event|bool
 	 */
-	static function get( $id ) {
+	public static function get( $id ) {
 		return parent::get( $id );
 	}
-
 }

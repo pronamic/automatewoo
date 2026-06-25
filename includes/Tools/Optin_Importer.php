@@ -1,9 +1,10 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * @class Tool_Optin_Importer
@@ -11,21 +12,25 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  */
 class Tool_Optin_Importer extends Tool_Optout_Importer {
 
+	/** @var string */
 	public $id = 'optin_importer';
 
 
-	function __construct() {
+	/**
+	 * Tool_Optin_Importer constructor.
+	 */
+	public function __construct() {
 		parent::__construct();
-		$this->title = __( 'Opt-in Importer', 'automatewoo' );
-		$this->description = __( "Opt-in customers by importing email addresses.", 'automatewoo' );
+		$this->title       = __( 'Opt-in Importer', 'automatewoo' );
+		$this->description = __( 'Opt-in customers by importing email addresses.', 'automatewoo' );
 	}
 
 
 	/**
-	 * @param $args
+	 * @param array $args
 	 */
-	function display_confirmation_screen( $args ) {
-		$args = $this->sanitize_args( $args );
+	public function display_confirmation_screen( $args ) {
+		$args   = $this->sanitize_args( $args );
 		$emails = $this->parse_emails( $args['emails'] );
 		$count  = count( $emails );
 
@@ -49,16 +54,16 @@ class Tool_Optin_Importer extends Tool_Optout_Importer {
 	/**
 	 * @param array $task
 	 */
-	function handle_background_task( $task ) {
+	public function handle_background_task( $task ) {
 		$email = isset( $task['email'] ) ? Clean::email( $task['email'] ) : false;
 
 		if ( ! $email ) {
 			return;
 		}
 
-		if ( $customer = Customer_Factory::get_by_email( $email ) ) {
+		$customer = Customer_Factory::get_by_email( $email );
+		if ( $customer ) {
 			$customer->opt_in();
 		}
 	}
-
 }

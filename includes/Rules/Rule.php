@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo\Rules;
 
@@ -44,7 +43,7 @@ abstract class Rule {
 	/**
 	 * Constructor
 	 */
-	function __construct() {
+	public function __construct() {
 		$this->init();
 		$this->determine_rule_group();
 	}
@@ -70,9 +69,9 @@ abstract class Rule {
 
 
 	/**
-	 * @param $workflow
+	 * @param \AutomateWoo\Workflow $workflow
 	 */
-	function set_workflow( $workflow ) {
+	public function set_workflow( $workflow ) {
 		$this->workflow = $workflow;
 	}
 
@@ -80,7 +79,7 @@ abstract class Rule {
 	/**
 	 * @return \AutomateWoo\Workflow
 	 */
-	function get_workflow() {
+	public function get_workflow() {
 		return $this->workflow;
 	}
 
@@ -89,7 +88,7 @@ abstract class Rule {
 	 * @since 4.2
 	 * @return \AutomateWoo\Data_Layer
 	 */
-	function data_layer() {
+	public function data_layer() {
 		return $this->get_workflow()->data_layer();
 	}
 
@@ -112,17 +111,17 @@ abstract class Rule {
 	/**
 	 * @return array
 	 */
-	function get_string_compare_types() {
+	public function get_string_compare_types() {
 		return [
-			'contains' => __( 'contains', 'automatewoo' ),
+			'contains'     => __( 'contains', 'automatewoo' ),
 			'not_contains' => __( 'does not contain', 'automatewoo' ),
-			'is' => __( 'is', 'automatewoo' ),
-			'is_not' => __( 'is not', 'automatewoo' ),
-			'starts_with' => __( 'starts with', 'automatewoo' ),
-			'ends_with' => __( 'ends with', 'automatewoo' ),
-			'blank' => __( 'is blank', 'automatewoo' ),
-			'not_blank' => __( 'is not blank', 'automatewoo' ),
-			'regex' => __( 'matches regex', 'automatewoo' ),
+			'is'           => __( 'is', 'automatewoo' ),
+			'is_not'       => __( 'is not', 'automatewoo' ),
+			'starts_with'  => __( 'starts with', 'automatewoo' ),
+			'ends_with'    => __( 'ends with', 'automatewoo' ),
+			'blank'        => __( 'is blank', 'automatewoo' ),
+			'not_blank'    => __( 'is not blank', 'automatewoo' ),
+			'regex'        => __( 'matches regex', 'automatewoo' ),
 		];
 	}
 
@@ -130,12 +129,12 @@ abstract class Rule {
 	/**
 	 * @return array
 	 */
-	function get_multi_string_compare_types() {
+	public function get_multi_string_compare_types() {
 		return [
-			'contains' => __( 'any contains', 'automatewoo' ),
-			'is' => __( 'any matches exactly', 'automatewoo' ),
+			'contains'    => __( 'any contains', 'automatewoo' ),
+			'is'          => __( 'any matches exactly', 'automatewoo' ),
 			'starts_with' => __( 'any starts with', 'automatewoo' ),
-			'ends_with' => __( 'any ends with', 'automatewoo' ),
+			'ends_with'   => __( 'any ends with', 'automatewoo' ),
 		];
 	}
 
@@ -143,10 +142,10 @@ abstract class Rule {
 	/**
 	 * @return array
 	 */
-	function get_float_compare_types() {
+	public function get_float_compare_types() {
 		return $this->get_is_or_not_compare_types() + [
 			'greater_than' => __( 'is greater than', 'automatewoo' ),
-			'less_than' => __( 'is less than', 'automatewoo' ),
+			'less_than'    => __( 'is less than', 'automatewoo' ),
 		];
 	}
 
@@ -154,10 +153,20 @@ abstract class Rule {
 	/**
 	 * @return array
 	 */
-	function get_integer_compare_types() {
+	public function get_integer_compare_types() {
 		return $this->get_float_compare_types() + [
-			'multiple_of' => __( 'is a multiple of', 'automatewoo' ),
-			'not_multiple_of' => __( 'is not a multiple of', 'automatewoo' )
+			'multiple_of'     => __( 'is a multiple of', 'automatewoo' ),
+			'not_multiple_of' => __( 'is not a multiple of', 'automatewoo' ),
+		];
+	}
+
+	/**
+	 * @return array
+	 */
+	public function get_integer_offset_compare_types() {
+		return [
+			'multiple_with_offset'     => __( 'is a multiple of, starting at', 'automatewoo' ),
+			'not_multiple_with_offset' => __( 'is not a multiple of, starting at', 'automatewoo' ),
 		];
 	}
 
@@ -191,37 +200,38 @@ abstract class Rule {
 	}
 
 	/**
-	 * @param $compare_type
+	 * @param string $compare_type
 	 * @return bool
 	 */
-	function is_string_compare_type( $compare_type ) {
+	public function is_string_compare_type( $compare_type ) {
 		return array_key_exists( $compare_type, $this->get_string_compare_types() );
 	}
 
 
 	/**
-	 * @param $compare_type
+	 * @param string $compare_type
 	 * @return bool
 	 */
-	function is_integer_compare_type( $compare_type ) {
-		return array_key_exists( $compare_type, $this->get_integer_compare_types() );
+	public function is_integer_compare_type( $compare_type ) {
+		return array_key_exists( $compare_type, $this->get_integer_compare_types() )
+			|| array_key_exists( $compare_type, $this->get_integer_offset_compare_types() );
 	}
 
 
 	/**
-	 * @param $compare_type
+	 * @param string $compare_type
 	 * @return bool
 	 */
-	function is_float_compare_type( $compare_type ) {
+	public function is_float_compare_type( $compare_type ) {
 		return array_key_exists( $compare_type, $this->get_float_compare_types() );
 	}
 
 
 	/**
-	 * @param $compare_type
+	 * @param string $compare_type
 	 * @return bool
 	 */
-	function is_is_or_is_not_compare_type( $compare_type ) {
+	public function is_is_or_is_not_compare_type( $compare_type ) {
 		return array_key_exists( $compare_type, $this->get_is_or_not_compare_types() );
 	}
 
@@ -235,9 +245,9 @@ abstract class Rule {
 	 *
 	 * @return bool
 	 */
-	function validate_string( $actual_value, $compare_type, $expected_value ) {
+	public function validate_string( $actual_value, $compare_type, $expected_value ) {
 
-		$actual_value = (string) $actual_value;
+		$actual_value   = (string) $actual_value;
 		$expected_value = (string) $expected_value;
 
 		// most comparisons are case insensitive
@@ -247,20 +257,16 @@ abstract class Rule {
 		switch ( $compare_type ) {
 
 			case 'is':
-				return $actual_value_lowercase == $expected_value_lowercase;
-				break;
+				return $actual_value_lowercase === $expected_value_lowercase;
 
 			case 'is_not':
-				return $actual_value_lowercase != $expected_value_lowercase;
-				break;
+				return $actual_value_lowercase !== $expected_value_lowercase;
 
 			case 'contains':
 				return strstr( $actual_value_lowercase, $expected_value_lowercase ) !== false;
-				break;
 
 			case 'not_contains':
 				return strstr( $actual_value_lowercase, $expected_value_lowercase ) === false;
-				break;
 
 			case 'starts_with':
 				return aw_str_starts_with( $actual_value_lowercase, $expected_value_lowercase );
@@ -270,11 +276,9 @@ abstract class Rule {
 
 			case 'blank':
 				return empty( $actual_value );
-				break;
 
 			case 'not_blank':
 				return ! empty( $actual_value );
-				break;
 
 			case 'regex':
 				// Regex validation must not use case insensitive values
@@ -288,12 +292,12 @@ abstract class Rule {
 	/**
 	 * Only supports 'contains', 'is', 'starts_with', 'ends_with'
 	 *
-	 * @param array $actual_values
+	 * @param array  $actual_values
 	 * @param string $compare_type
 	 * @param string $expected_value
 	 * @return bool
 	 */
-	function validate_string_multi( $actual_values, $compare_type, $expected_value ) {
+	public function validate_string_multi( $actual_values, $compare_type, $expected_value ) {
 
 		if ( empty( $expected_value ) ) {
 			return false;
@@ -311,54 +315,94 @@ abstract class Rule {
 
 
 	/**
-	 * @param $actual_value
-	 * @param $compare_type
-	 * @param $expected_value
+	 * @param mixed  $actual_value
+	 * @param string $compare_type
+	 * @param mixed  $expected_value
 	 * @return bool
 	 */
-	function validate_number( $actual_value, $compare_type, $expected_value ) {
+	public function validate_number( $actual_value, $compare_type, $expected_value ) {
 
-		$actual_value = (float) $actual_value;
+		if ( in_array( $compare_type, [ 'multiple_of', 'not_multiple_of', 'multiple_with_offset', 'not_multiple_with_offset' ], true ) ) {
+			return $this->validate_number_multiple_of( $actual_value, $compare_type, $expected_value );
+		}
+
+		$actual_value   = (float) $actual_value;
 		$expected_value = (float) $expected_value;
 
 		switch ( $compare_type ) {
 
 			case 'is':
-				return $actual_value == $expected_value;
-				break;
+				return $actual_value === $expected_value;
 
 			case 'is_not':
-				return $actual_value != $expected_value;
-				break;
+				return $actual_value !== $expected_value;
 
 			case 'greater_than':
 				return $actual_value > $expected_value;
-				break;
 
 			case 'less_than':
 				return $actual_value < $expected_value;
-				break;
 
 		}
 
+		return false;
+	}
 
-		// validate 'multiple of' compares, only accept integers
-		if ( ! $this->is_whole_number( $actual_value ) || ! $this->is_whole_number( $expected_value ) ) {
+	/**
+	 * Validate 'multiple of' compares, only accepting integers.
+	 *
+	 * @param mixed  $actual_value
+	 * @param string $compare_type
+	 * @param mixed  $expected_value
+	 *
+	 * @return bool
+	 */
+	protected function validate_number_multiple_of( $actual_value, $compare_type, $expected_value ) {
+		$offset = 0;
+
+		if ( in_array( $compare_type, [ 'multiple_with_offset', 'not_multiple_with_offset' ], true ) ) {
+			if ( ! is_array( $expected_value ) ) {
+				return false;
+			}
+
+			if ( ! ( array_key_exists( 'multiple', $expected_value ) || array_key_exists( 0, $expected_value ) ) ) {
+				return false;
+			}
+
+			$multiple = $expected_value['multiple'] ?? $expected_value[0] ?? null;
+
+			// Offset is optional and defaults to 0 when missing or empty.
+			$offset = $expected_value['offset'] ?? $expected_value[1] ?? 0;
+			if ( '' === $offset || null === $offset ) {
+				$offset = 0;
+			}
+		} else {
+			$multiple = $expected_value;
+		}
+
+		if ( ! $this->is_whole_number( $actual_value ) || ! $this->is_whole_number( $multiple ) || ! $this->is_whole_number( $offset ) ) {
 			return false;
 		}
 
 		$actual_value = (int) $actual_value;
-		$expected_value = (int) $expected_value;
+		$multiple     = (int) $multiple;
+		$offset       = (int) $offset;
+
+		if ( ! $multiple ) {
+			return false;
+		}
+
+		$is_multiple = ( $actual_value - $offset ) % $multiple === 0;
 
 		switch ( $compare_type ) {
 
 			case 'multiple_of':
-				return $actual_value % $expected_value == 0;
-				break;
+			case 'multiple_with_offset':
+				return $is_multiple;
 
 			case 'not_multiple_of':
-				return $actual_value % $expected_value != 0;
-				break;
+			case 'not_multiple_with_offset':
+				return ! $is_multiple;
 		}
 
 		return false;
@@ -366,12 +410,12 @@ abstract class Rule {
 
 
 	/**
-	 * @param $number
+	 * @param mixed $number
 	 * @return bool
 	 */
-	function is_whole_number( $number ) {
+	public function is_whole_number( $number ) {
 		$number = (float) $number;
-		return floor( $number ) == $number;
+		return floor( $number ) === $number;
 	}
 
 
@@ -423,7 +467,7 @@ abstract class Rule {
 			$regex = '/' . $regex . '/';
 		}
 
-		return (bool) @preg_match( $regex, $string );
+		return (bool) @preg_match( $regex, $string ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- User-supplied regex may be invalid; suppression is intentional.
 	}
 
 	/**
@@ -436,9 +480,13 @@ abstract class Rule {
 	 * @return string
 	 */
 	protected function remove_global_regex_modifier( $regex ) {
-		return preg_replace_callback( '/(\/[a-z]+)$/', function( $modifiers ){
-			return str_replace( 'g', '', $modifiers[0] );
-		}, $regex );
+		return preg_replace_callback(
+			'/(\/[a-z]+)$/',
+			function ( $modifiers ) {
+				return str_replace( 'g', '', $modifiers[0] );
+			},
+			$regex
+		);
 	}
 
 	/**
@@ -481,5 +529,4 @@ abstract class Rule {
 	public function validate_value( $value ) {
 		// Override this method in child classes.
 	}
-
 }

@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
@@ -16,7 +15,7 @@ class Logic_Helper {
 	 * @param \WC_Product $expected_product
 	 * @return bool
 	 */
-	static function match_products( $actual_product, $expected_product ) {
+	public static function match_products( $actual_product, $expected_product ) {
 
 		if ( ! $actual_product ) {
 			return false;
@@ -26,20 +25,18 @@ class Logic_Helper {
 
 		if ( $expected_product->is_type( 'variation' ) ) {
 			// match a specific variation
-			if ( $expected_product->get_id() == $actual_product->get_id() ) {
+			if ( $expected_product->get_id() === $actual_product->get_id() ) {
 				$match = true;
 			}
-		}
-		else {
+		} else {
 			// match the main product or any of its variations
 			$actual_main_product_id = $actual_product->is_type( 'variation' ) ? $actual_product->get_parent_id() : $actual_product->get_id();
 
-			if ( $expected_product->get_id() == $actual_main_product_id ) {
+			if ( $expected_product->get_id() === $actual_main_product_id ) {
 				$match = true;
 			}
 		}
 
 		return $match;
 	}
-
 }

@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 /**
  * Contains deprecated functions.
@@ -8,4 +7,3 @@
  */
 
 defined( 'ABSPATH' ) || exit;
-

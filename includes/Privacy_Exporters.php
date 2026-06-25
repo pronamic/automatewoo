@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
@@ -11,15 +10,20 @@ defined( 'ABSPATH' ) || exit;
  */
 class Privacy_Exporters {
 
-	static $limit = 10;
+	/**
+	 * Number of items to process per batch.
+	 *
+	 * @var int
+	 */
+	public static $limit = 10;
 
 
 	/**
 	 * @param string $email
-	 * @param int $page
+	 * @param int    $page
 	 * @return array
 	 */
-	public static function customer_data( $email, $page ) {
+	public static function customer_data( $email, $page ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- Part of the overridable signature.
 		$response = [
 			'data' => [],
 			'done' => true,
@@ -32,10 +36,10 @@ class Privacy_Exporters {
 		}
 
 		$item = [
-			'group_id' => 'automatewoo_customer',
+			'group_id'    => 'automatewoo_customer',
 			'group_label' => __( 'Customer Data', 'automatewoo' ),
-			'item_id' => 'customer',
-			'data' => $personal_data,
+			'item_id'     => 'customer',
+			'data'        => $personal_data,
 		];
 
 		$response['data'][] = $item;
@@ -48,15 +52,16 @@ class Privacy_Exporters {
 	 * @param string $email
 	 * @return array
 	 */
-	static function get_customer_personal_data( $email ) {
-		$data = [];
+	public static function get_customer_personal_data( $email ) {
+		$data  = [];
 		$email = Clean::email( $email );
 
 		// look for a customer but don't create a new one
-		if ( $customer = Customer_Factory::get_by_email( $email, false ) ) {
-			$data[ __( 'Customer ID', 'automatewoo' ) ] = $customer->get_id();
+		$customer = Customer_Factory::get_by_email( $email, false );
+		if ( $customer ) {
+			$data[ __( 'Customer ID', 'automatewoo' ) ]  = $customer->get_id();
 			$data[ __( 'Customer key', 'automatewoo' ) ] = $customer->get_key();
-			$data[ __( 'Language', 'automatewoo' ) ] = $customer->get_language();
+			$data[ __( 'Language', 'automatewoo' ) ]     = $customer->get_language();
 		}
 
 		// user data
@@ -65,7 +70,8 @@ class Privacy_Exporters {
 		if ( $user instanceof \WP_User ) {
 
 			// show legacy tracking key
-			if ( $tracking_key = get_user_meta( $user->ID, 'automatewoo_visitor_key', true ) ) {
+			$tracking_key = get_user_meta( $user->ID, 'automatewoo_visitor_key', true );
+			if ( $tracking_key ) {
 				$data[ __( 'Tracking key', 'automatewoo' ) ] = $tracking_key;
 			}
 
@@ -75,28 +81,31 @@ class Privacy_Exporters {
 				$data[ __( 'Workflow preview emails', 'automatewoo' ) ] = $workflow_preview_emails;
 			}
 
-			if ( $tags = wp_get_object_terms( $user->ID, 'user_tag' ) ) {
-				$tag_names = wp_list_pluck( $tags, 'name' );
+			$tags = wp_get_object_terms( $user->ID, 'user_tag' );
+			if ( $tags ) {
+				$tag_names                                = wp_list_pluck( $tags, 'name' );
 				$data[ __( 'User tags', 'automatewoo' ) ] = implode( ', ', $tag_names );
 			}
 		}
 
 		// get guest data
-		if ( $guest = Guest_Factory::get_by_email( $email ) ) {
+		$guest = Guest_Factory::get_by_email( $email );
+		if ( $guest ) {
 			$data[ __( 'Guest ID', 'automatewoo' ) ] = $guest->get_id();
-			if ( $key = $guest->get_key() ) {
+			$key                                     = Clean::string( $guest->get_prop( 'tracking_key' ) );
+			if ( $key ) {
 				$data[ __( 'Tracking key ID', 'automatewoo' ) ] = $key;
 			}
-			$data[ __( 'First name', 'automatewoo' ) ] = Clean::string( $guest->get_first_name( true ) );
-			$data[ __( 'Last name', 'automatewoo' ) ] = Clean::string( $guest->get_last_name( true ) );
-			$data[ __( 'Phone', 'automatewoo' ) ] = Clean::string( $guest->get_phone( true ) );
-			$data[ __( 'Country', 'automatewoo' ) ] = Clean::string( $guest->get_country(true) );
-			$data[ __( 'State', 'automatewoo' ) ] = Clean::string( $guest->get_state(true) );
-			$data[ __( 'City', 'automatewoo' ) ] = Clean::string( $guest->get_city(true) );
-			$data[ __( 'Address', 'automatewoo' ) ] = Clean::string( $guest->get_address_1(true) . ' ' . $guest->get_address_2(true) );
-			$data[ __( 'Postcode', 'automatewoo' ) ] = Clean::string( $guest->get_postcode(true) );
-			$data[ __( 'Company', 'automatewoo' ) ] = Clean::string( $guest->get_company(true) );
-			$data[ __( 'Guest created', 'automatewoo' ) ] = Format::datetime( $guest->get_date_created(), 0 );
+			$data[ __( 'First name', 'automatewoo' ) ]        = Clean::string( $guest->get_first_name( true ) );
+			$data[ __( 'Last name', 'automatewoo' ) ]         = Clean::string( $guest->get_last_name( true ) );
+			$data[ __( 'Phone', 'automatewoo' ) ]             = Clean::string( $guest->get_phone( true ) );
+			$data[ __( 'Country', 'automatewoo' ) ]           = Clean::string( $guest->get_country( true ) );
+			$data[ __( 'State', 'automatewoo' ) ]             = Clean::string( $guest->get_state( true ) );
+			$data[ __( 'City', 'automatewoo' ) ]              = Clean::string( $guest->get_city( true ) );
+			$data[ __( 'Address', 'automatewoo' ) ]           = Clean::string( $guest->get_address_1( true ) . ' ' . $guest->get_address_2( true ) );
+			$data[ __( 'Postcode', 'automatewoo' ) ]          = Clean::string( $guest->get_postcode( true ) );
+			$data[ __( 'Company', 'automatewoo' ) ]           = Clean::string( $guest->get_company( true ) );
+			$data[ __( 'Guest created', 'automatewoo' ) ]     = Format::datetime( $guest->get_date_created(), 0 );
 			$data[ __( 'Guest last active', 'automatewoo' ) ] = Format::datetime( $guest->get_date_last_active(), 0 );
 		}
 
@@ -107,60 +116,77 @@ class Privacy_Exporters {
 
 	/**
 	 * @param string $email
-	 * @param int $page
+	 * @param int    $page
 	 * @return array
 	 */
-	public static function customer_cart( $email, $page ) {
+	public static function customer_cart( $email, $page ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- Part of the overridable signature.
 		$response = [
 			'data' => [],
 			'done' => true,
 		];
 
-		if ( ! $customer = Customer_Factory::get_by_email( $email ) ) {
+		$customer = Customer_Factory::get_by_email( $email );
+		if ( ! $customer ) {
 			return $response;
 		}
 
-		if ( ! $cart = $customer->get_cart() ) {
+		$carts = [];
+
+		foreach ( Cart_Factory::get_all_by_user_id( $customer->get_user_id() ) as $cart ) {
+			$carts[ $cart->get_id() ] = $cart;
+		}
+
+		$guest = Guest_Factory::get_by_email( Clean::email( $email ) );
+		if ( $guest ) {
+			foreach ( Cart_Factory::get_all_by_guest_id( $guest->get_id() ) as $cart ) {
+				$carts[ $cart->get_id() ] = $cart;
+			}
+		}
+
+		if ( ! $carts ) {
 			return $response;
 		}
 
-		$cart_data = [];
-		$cart_data[ __( 'Cart ID', 'automatewoo' ) ] = $cart->get_id();
-		$cart_data[ __( 'Cart status', 'automatewoo' ) ] = $cart->get_status();
-		$cart_data[ __( 'Cart token', 'automatewoo' ) ] = $cart->get_token();
-		$cart_data[ __( 'Cart currency', 'automatewoo' ) ] = $cart->get_currency();
-		$cart_data[ __( 'Cart shipping tax total', 'automatewoo' ) ] = $cart->price( $cart->get_shipping_tax_total() );
-		$cart_data[ __( 'Cart shipping total', 'automatewoo' ) ] = $cart->price( $cart->get_shipping_total() );
-		$cart_data[ __( 'Cart total', 'automatewoo' ) ] = $cart->price( $cart->get_total() );
-		$cart_data[ __( 'Date last modified', 'automatewoo' ) ] = Format::datetime( $cart->get_date_last_modified(), 0 );
-		$cart_data[ __( 'Date created', 'automatewoo' ) ] = Format::datetime( $cart->get_date_created(), 0 );
-		$cart_data[ __( 'Coupons', 'automatewoo' ) ] = implode( ', ', array_keys( $cart->get_coupons() ) );
+		$cart_count = count( $carts );
 
-		$items = [];
+		foreach ( $carts as $cart ) {
+			$cart_data                                       = [];
+			$cart_data[ __( 'Cart ID', 'automatewoo' ) ]     = $cart->get_id();
+			$cart_data[ __( 'Cart status', 'automatewoo' ) ] = $cart->get_status();
+			$cart_data[ __( 'Cart token', 'automatewoo' ) ]  = $cart->get_token();
+			$cart_data[ __( 'Cart currency', 'automatewoo' ) ]           = $cart->get_currency();
+			$cart_data[ __( 'Cart shipping tax total', 'automatewoo' ) ] = $cart->price( $cart->get_shipping_tax_total() );
+			$cart_data[ __( 'Cart shipping total', 'automatewoo' ) ]     = $cart->price( $cart->get_shipping_total() );
+			$cart_data[ __( 'Cart total', 'automatewoo' ) ]              = $cart->price( $cart->get_total() );
+			$cart_data[ __( 'Date last modified', 'automatewoo' ) ]      = Format::datetime( $cart->get_date_last_modified(), 0 );
+			$cart_data[ __( 'Date created', 'automatewoo' ) ]            = Format::datetime( $cart->get_date_created(), 0 );
+			$cart_data[ __( 'Coupons', 'automatewoo' ) ]                 = implode( ', ', array_keys( $cart->get_coupons() ) );
 
-		foreach( $cart->get_items() as $cart_item ) {
-			$items[] = $cart_item->get_quantity() . ' x ' . $cart_item->get_name();
+			$items = [];
+
+			foreach ( $cart->get_items() as $cart_item ) {
+				$items[] = $cart_item->get_quantity() . ' x ' . $cart_item->get_name();
+			}
+
+			$cart_data[ __( 'Items', 'automatewoo' ) ] = implode( ', ', $items );
+
+			$fees = [];
+
+			foreach ( $cart->get_fees() as $fee ) {
+				$fees[] = $fee->name . ' ' . $cart->price( $fee->amount + $fee->tax );
+			}
+
+			$cart_data[ __( 'Fees', 'automatewoo' ) ] = implode( ', ', $fees );
+
+			$item = [
+				'group_id'    => 'automatewoo_cart',
+				'group_label' => __( 'Saved Cart Data', 'automatewoo' ),
+				'item_id'     => 1 === $cart_count ? 'cart' : 'cart-' . $cart->get_id(),
+				'data'        => Privacy::parse_export_data_array( $cart_data ),
+			];
+
+			$response['data'][] = $item;
 		}
-
-		$cart_data[ __( 'Items', 'automatewoo' ) ] = implode( ', ', $items );
-
-
-		$fees = [];
-
-		foreach( $cart->get_fees() as $fee ) {
-			$fees[] = $fee->name . ' ' . $cart->price( $fee->amount + $fee->tax );
-		}
-
-		$cart_data[ __( 'Fees', 'automatewoo' ) ] = implode( ', ', $fees );
-
-		$item = [
-			'group_id' => 'automatewoo_cart',
-			'group_label' => __( 'Saved Cart Data', 'automatewoo' ),
-			'item_id' => 'cart',
-			'data' => Privacy::parse_export_data_array( $cart_data ),
-		];
-
-		$response['data'][] = $item;
 
 		return $response;
 	}
@@ -168,7 +194,7 @@ class Privacy_Exporters {
 
 	/**
 	 * @param string $email
-	 * @param int $page
+	 * @param int    $page
 	 * @return array
 	 */
 	public static function customer_workflow_logs( $email, $page ) {
@@ -177,7 +203,8 @@ class Privacy_Exporters {
 			'done' => true,
 		];
 
-		if ( ! $customer = Customer_Factory::get_by_email( $email ) ) {
+		$customer = Customer_Factory::get_by_email( $email );
+		if ( ! $customer ) {
 			return $response;
 		}
 
@@ -186,16 +213,16 @@ class Privacy_Exporters {
 		$query->set_limit( self::$limit );
 		$query->set_page( $page );
 
-		$results = $query->get_results();
-		$results_count = count( $results );
+		$results          = $query->get_results();
+		$results_count    = count( $results );
 		$response['done'] = $results_count < self::$limit;
 
-		foreach( $results as $log ) {
-			$item = [
-				'group_id' => 'automatewoo_logs',
+		foreach ( $results as $log ) {
+			$item               = [
+				'group_id'    => 'automatewoo_logs',
 				'group_label' => __( 'Workflow logs', 'automatewoo' ),
-				'item_id' => 'log-' . $log->get_id(),
-				'data' => self::get_log_data( $log ),
+				'item_id'     => 'log-' . $log->get_id(),
+				'data'        => self::get_log_data( $log ),
 			];
 			$response['data'][] = $item;
 		}
@@ -217,19 +244,22 @@ class Privacy_Exporters {
 		if ( $workflow ) {
 			$data[ __( 'Log workflow', 'automatewoo' ) ] = $workflow->get_title();
 		}
-		$data[ __( 'Log date', 'automatewoo' ) ] = Format::datetime( $log->get_date(), 0 );
-		$data[ __( 'Tracking enabled', 'automatewoo' ) ] = Format::bool( $log->is_tracking_enabled() );
+		$data[ __( 'Log date', 'automatewoo' ) ]                    = Format::datetime( $log->get_date(), 0 );
+		$data[ __( 'Tracking enabled', 'automatewoo' ) ]            = Format::bool( $log->is_tracking_enabled() );
 		$data[ __( 'Conversion tracking enabled', 'automatewoo' ) ] = Format::bool( $log->is_conversion_tracking_enabled() );
 
-		if ( $notes = $log->get_meta( 'notes' ) ) {
+		$notes = $log->get_meta( 'notes' );
+		if ( $notes ) {
 			$data[ __( 'Notes', 'automatewoo' ) ] = implode( ', ', $notes );
 		}
 
-		if ( $tracking_data = $log->get_meta('tracking_data') ) {
+		$tracking_data = $log->get_meta( 'tracking_data' );
+		if ( $tracking_data ) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r -- Intentional serialisation of tracking data for the privacy export value.
 			$data[ __( 'Click and open tracking', 'automatewoo' ) ] = print_r( $tracking_data, true );
 		}
 
-		$data_layer = Privacy_Exporters::format_data_layer( $log->get_data_layer('object') );
+		$data_layer                                  = self::format_data_layer( $log->get_data_layer( 'object' ) );
 		$data[ __( 'Related data', 'automatewoo' ) ] = implode( ', ', $data_layer );
 
 		return Privacy::parse_export_data_array( $data );
@@ -238,7 +268,7 @@ class Privacy_Exporters {
 
 	/**
 	 * @param string $email
-	 * @param int $page
+	 * @param int    $page
 	 * @return array
 	 */
 	public static function customer_workflow_queue( $email, $page ) {
@@ -247,7 +277,8 @@ class Privacy_Exporters {
 			'done' => true,
 		];
 
-		if ( ! $customer = Customer_Factory::get_by_email( $email ) ) {
+		$customer = Customer_Factory::get_by_email( $email );
+		if ( ! $customer ) {
 			return $response;
 		}
 
@@ -256,16 +287,16 @@ class Privacy_Exporters {
 		$query->set_limit( self::$limit );
 		$query->set_page( $page );
 
-		$results = $query->get_results();
-		$results_count = count( $results );
+		$results          = $query->get_results();
+		$results_count    = count( $results );
 		$response['done'] = $results_count < self::$limit;
 
-		foreach( $results as $event ) {
-			$item = [
-				'group_id' => 'automatewoo_queue',
+		foreach ( $results as $event ) {
+			$item               = [
+				'group_id'    => 'automatewoo_queue',
 				'group_label' => __( 'Workflow queued events', 'automatewoo' ),
-				'item_id' => 'queued-event-' . $event->get_id(),
-				'data' => self::get_queued_event_data( $event ),
+				'item_id'     => 'queued-event-' . $event->get_id(),
+				'data'        => self::get_queued_event_data( $event ),
 			];
 			$response['data'][] = $item;
 		}
@@ -288,14 +319,14 @@ class Privacy_Exporters {
 			$data[ __( 'Event workflow', 'automatewoo' ) ] = $workflow->get_title();
 		}
 		$data[ __( 'Date created', 'automatewoo' ) ] = Format::datetime( $event->get_date_created(), 0 );
-		$data[ __( 'Date due', 'automatewoo' ) ] = Format::datetime( $event->get_date_due(), 0 );
-		$data[ __( 'Failed', 'automatewoo' ) ] = Format::bool( $event->is_failed() );
+		$data[ __( 'Date due', 'automatewoo' ) ]     = Format::datetime( $event->get_date_due(), 0 );
+		$data[ __( 'Failed', 'automatewoo' ) ]       = Format::bool( $event->is_failed() );
 
 		if ( $event->is_failed() ) {
 			$data[ __( 'Failure code', 'automatewoo' ) ] = Format::bool( $event->get_failure_code() );
 		}
 
-		$data_layer = Privacy_Exporters::format_data_layer( $event->get_data_layer('object') );
+		$data_layer                                  = self::format_data_layer( $event->get_data_layer( 'object' ) );
 		$data[ __( 'Related data', 'automatewoo' ) ] = implode( ', ', $data_layer );
 
 		return Privacy::parse_export_data_array( $data );
@@ -327,7 +358,7 @@ class Privacy_Exporters {
 				case 'order':
 					/** @var $data_item \WC_Order */
 					$formatted_data[] = [
-						'title' => __('Order', 'automatewoo'),
+						'title' => __( 'Order', 'automatewoo' ),
 						'value' => '#' . $data_item->get_id(),
 					];
 					break;
@@ -336,7 +367,7 @@ class Privacy_Exporters {
 					/** @var $data_item Cart */
 					$formatted_data[] = [
 						'title' => __( 'Cart', 'automatewoo' ),
-						'value' => '#' . $data_item->get_id()
+						'value' => '#' . $data_item->get_id(),
 					];
 					break;
 
@@ -344,7 +375,7 @@ class Privacy_Exporters {
 					/** @var $data_item Review */
 					$formatted_data[] = [
 						'title' => __( 'Review', 'automatewoo' ),
-						'value' => 'Comment #' . $data_item->get_id()
+						'value' => 'Comment #' . $data_item->get_id(),
 					];
 					break;
 
@@ -352,7 +383,7 @@ class Privacy_Exporters {
 					/** @var $data_item \WC_Product */
 					$formatted_data[] = [
 						'title' => __( 'Product', 'automatewoo' ),
-						'value' => $data_item->get_title()
+						'value' => $data_item->get_title(),
 					];
 					break;
 
@@ -368,14 +399,14 @@ class Privacy_Exporters {
 					/** @var $data_item \WC_Memberships_User_Membership */
 					$formatted_data[] = [
 						'title' => __( 'Membership', 'automatewoo' ),
-						'value' => "#$data_item->id"
+						'value' => "#$data_item->id",
 					];
 					break;
 
 				case 'wishlist':
 					$formatted_data[] = [
 						'title' => __( 'Wishlist', 'automatewoo' ),
-						'value' => '#' . $data_item->id
+						'value' => '#' . $data_item->id,
 					];
 
 					break;
@@ -385,10 +416,9 @@ class Privacy_Exporters {
 		$formatted_data = apply_filters( 'automatewoo/privacy/exported_data_layer', $formatted_data, $raw_data_layer );
 
 		$return = [];
-		foreach( $formatted_data as $item ) {
-			$return[] = $item['title'] . ': '. $item['value'];
+		foreach ( $formatted_data as $item ) {
+			$return[] = $item['title'] . ': ' . $item['value'];
 		}
 		return $return;
 	}
-
 }

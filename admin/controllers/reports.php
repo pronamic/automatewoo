@@ -1,10 +1,12 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo\Admin\Controllers;
+
 use AutomateWoo\HPOS_Helper;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * @class Reports
@@ -15,7 +17,12 @@ class Reports extends Base {
 	private $reports = [];
 
 
-	function handle() {
+	/**
+	 * Handle controller requests.
+	 *
+	 * @return void
+	 */
+	public function handle() {
 
 		if ( HPOS_Helper::is_HPOS_enabled() ) {
 			wp_safe_redirect( $this->get_corresponding_analytics_url() );
@@ -29,10 +36,11 @@ class Reports extends Base {
 	/**
 	 * Show deprecation warning above other success and error messages.
 	 */
-	function output_messages() {
-		$analytics_link = '<a href="' . esc_url( $this->get_corresponding_analytics_url() ) . '">' . __( 'Analytics', 'automatewoo' ) . '</a>';
+	public function output_messages() {
+		$analytics_link = '<a href="' . esc_url( $this->get_corresponding_analytics_url() ) . '">' . esc_html__( 'Analytics', 'automatewoo' ) . '</a>';
 
 		// Show the warning.
+		// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- format_notice() returns trusted HTML; main text is escaped internally and the extra text is intentionally trusted markup.
 		echo $this->format_notice(
 			[
 				'main'  => __( 'This reports page is deprecated.', 'automatewoo' ),
@@ -45,21 +53,35 @@ class Reports extends Base {
 			],
 			'warning'
 		);
+		// phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped
 
 		// Show other messages.
 		parent::output_messages();
 	}
 
 
-	function output_list_table() {
-		$this->output_view( 'page-reports', [
-			'current_tab' => $this->get_current_tab(),
-			'tabs' => $this->get_reports_tabs()
-		]);
+	/**
+	 * Output the reports list table view.
+	 *
+	 * @return void
+	 */
+	public function output_list_table() {
+		$this->output_view(
+			'page-reports',
+			[
+				'current_tab' => $this->get_current_tab(),
+				'tabs'        => $this->get_reports_tabs(),
+			]
+		);
 	}
 
 
-	function handle_actions() {
+	/**
+	 * Handle actions for the current reports tab.
+	 *
+	 * @return void
+	 */
+	public function handle_actions() {
 		$current_tab = $this->get_current_tab();
 		$current_tab->handle_actions( $this->get_current_action() );
 	}
@@ -69,20 +91,21 @@ class Reports extends Base {
 	/**
 	 * @return \AW_Admin_Reports_Tab_Abstract|false
 	 */
-	function get_current_tab() {
+	public function get_current_tab() {
 
 		$tabs = $this->get_reports_tabs();
 
-		$current_tab_id = empty( $_GET['tab'] ) ? current($tabs)->id : sanitize_title( $_GET['tab'] );
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only admin tab selection; value sanitized, no state change.
+		$current_tab_id = empty( $_GET['tab'] ) ? current( $tabs )->id : sanitize_title( wp_unslash( $_GET['tab'] ) );
 
-		return isset( $tabs[$current_tab_id] ) ? $tabs[$current_tab_id] : false;
+		return isset( $tabs[ $current_tab_id ] ) ? $tabs[ $current_tab_id ] : false;
 	}
 
 
 	/**
 	 * @return array
 	 */
-	function get_reports_tabs() {
+	public function get_reports_tabs() {
 
 		if ( empty( $this->reports ) ) {
 			$path = AW()->path( '/admin/reports-tabs/' );
@@ -98,9 +121,9 @@ class Reports extends Base {
 
 			foreach ( $report_includes as $report_include ) {
 				/** @var \AW_Admin_Reports_Tab_Abstract $class */
-				$class = require_once $report_include;
-				$class->controller = $this;
-				$this->reports[$class->id] = $class;
+				$class                       = require_once $report_include;
+				$class->controller           = $this;
+				$this->reports[ $class->id ] = $class;
 			}
 		}
 
@@ -110,19 +133,21 @@ class Reports extends Base {
 	/**
 	 * Return an URL for the Analytics page with the same reports.
 	 */
-	function get_corresponding_analytics_url() {
+	public function get_corresponding_analytics_url() {
 		// Point to current tab's equivalent.
 		$path = $this->get_current_tab()->id;
 		if ( $path === 'conversions-list' ) {
 			$path = 'conversions';
 		}
 		// Construct the AnchorElement.
-		return add_query_arg( array(
-			'page' => 'wc-admin',
-			'path' => '/analytics/automatewoo-' . $path,
-		), admin_url( 'admin.php' ) );
+		return add_query_arg(
+			array(
+				'page' => 'wc-admin',
+				'path' => '/analytics/automatewoo-' . $path,
+			),
+			admin_url( 'admin.php' )
+		);
 	}
-
 }
 
 return new Reports();

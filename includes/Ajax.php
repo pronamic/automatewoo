@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
@@ -12,7 +11,7 @@ class Ajax {
 	/**
 	 * Init
 	 */
-	static function init() {
+	public static function init() {
 		self::maybe_define_ajax();
 		add_action( 'template_redirect', [ __CLASS__, 'do_ajax' ], 0 );
 	}
@@ -22,7 +21,7 @@ class Ajax {
 	 * @param  string $request Optional
 	 * @return string
 	 */
-	static function get_endpoint( $request ) {
+	public static function get_endpoint( $request ) {
 		// SEMGREP WARNING EXPLANATION
 		// $request seems to be always "%%endpoint%%" in the consumer side.
 		return add_query_arg( 'aw-ajax', $request );
@@ -32,10 +31,12 @@ class Ajax {
 	/**
 	 * Set WC AJAX constant and headers.
 	 */
-	static function maybe_define_ajax() {
+	public static function maybe_define_ajax() {
 
-		if ( empty( $_GET['aw-ajax'] ) )
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only check for the AJAX endpoint flag, no state change.
+		if ( empty( $_GET['aw-ajax'] ) ) {
 			return;
+		}
 
 		if ( ! defined( 'DOING_AJAX' ) ) {
 			define( 'DOING_AJAX', true );
@@ -43,6 +44,7 @@ class Ajax {
 
 		// Turn off display_errors during AJAX events to prevent malformed JSON
 		if ( ! WP_DEBUG || ( WP_DEBUG && ! WP_DEBUG_DISPLAY ) ) {
+			// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.PHP.IniSet.display_errors_Disallowed -- Intentional for the AJAX error path.
 			@ini_set( 'display_errors', 0 );
 		}
 
@@ -55,7 +57,9 @@ class Ajax {
 	 */
 	private static function send_headers() {
 		send_origin_headers();
+		// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- Intentional for the AJAX header path; headers may already be sent.
 		@header( 'Content-Type: text/html; charset=' . get_option( 'blog_charset' ) );
+		// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- Intentional for the AJAX header path; headers may already be sent.
 		@header( 'X-Robots-Tag: noindex' );
 		send_nosniff_header();
 		nocache_headers();
@@ -66,12 +70,17 @@ class Ajax {
 	/**
 	 * Check for AW Ajax request and fire action.
 	 */
-	static function do_ajax() {
-		if ( empty( $_GET['aw-ajax'] ) )
+	public static function do_ajax() {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only check for the AJAX endpoint flag, no state change.
+		if ( empty( $_GET['aw-ajax'] ) ) {
 			return;
+		}
 
-		if ( ! $action = sanitize_text_field( $_GET['aw-ajax'] ) )
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only AJAX dispatch; value sanitized, individual handlers verify nonce/capability.
+		$action = sanitize_text_field( wp_unslash( $_GET['aw-ajax'] ) );
+		if ( ! $action ) {
 			return;
+		}
 
 		self::send_headers();
 		do_action( 'automatewoo/ajax/' . sanitize_text_field( $action ) );
@@ -82,7 +91,7 @@ class Ajax {
 	/**
 	 * @param mixed $data
 	 */
-	static function send_json_success( $data = null ) {
+	public static function send_json_success( $data = null ) {
 		do_action( 'automatewoo/ajax/before_send_json' );
 		wp_send_json_success( $data );
 	}
@@ -91,10 +100,8 @@ class Ajax {
 	/**
 	 * @param mixed $data
 	 */
-	static function send_json_error( $data = null ) {
+	public static function send_json_error( $data = null ) {
 		do_action( 'automatewoo/ajax/before_send_json' );
 		wp_send_json_error( $data );
 	}
-
-
 }

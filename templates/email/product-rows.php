@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
@@ -18,29 +17,31 @@ namespace AutomateWoo;
  * @var string $data_field
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 ?>
 
-<?php if ( is_array( $products ) ): ?>
+<?php if ( is_array( $products ) ) : ?>
 
 	<table cellspacing="0" cellpadding="0" style="width: 100%;" class="aw-product-rows"><tbody>
 
-		<?php if ( isset( $order ) ): ?>
+		<?php if ( isset( $order ) ) : ?>
 			<?php $products = aw_filter_hidden_bundled_order_items( empty( $include_refunded ) ? aw_filter_refunded_order_items( $order->get_items(), $order ) : $order->get_items() ); ?>
 		<?php endif; ?>
 
-		<?php foreach ( $products as $product ): ?>
-			<?php $order_item                 = ( isset( $order ) && is_a( $product, 'WC_Order_Item_Product' ) ) ? $product : null; ?>
-			<?php $filtered_permalink_data    = automatewoo_email_template_product_permalink( $product ) ?>
-			<?php $permalink                  = $filtered_permalink_data['permalink']; ?>
-			<?php $filtered_product_name_data = automatewoo_email_template_product_name( $product ) ?>
-			<?php $product_name               = $filtered_product_name_data['product_name']; ?>
-			<?php $product                    = $filtered_product_name_data['product']; ?>
+		<?php foreach ( $products as $product ) : ?>
+			<?php $order_item = ( isset( $order ) && is_a( $product, 'WC_Order_Item_Product' ) ) ? $product : null; ?>
+			<?php $filtered_permalink_data = automatewoo_email_template_product_permalink( $product ); ?>
+			<?php $permalink = $filtered_permalink_data['permalink']; ?>
+			<?php $filtered_product_name_data = automatewoo_email_template_product_name( $product ); ?>
+			<?php $product_name = $filtered_product_name_data['product_name']; ?>
+			<?php $product = $filtered_product_name_data['product']; ?>
 			<tr>
 
 				<td class="image" width="25%">
-					<a href="<?php echo esc_url( $permalink ); ?>"><?php echo \AW_Mailer_API::get_product_image( $product ) ?></a>
+					<a href="<?php echo esc_url( $permalink ); ?>"><?php echo \AW_Mailer_API::get_product_image( $product ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_product_image() returns trusted <img> markup. ?></a>
 				</td>
 
 				<td>

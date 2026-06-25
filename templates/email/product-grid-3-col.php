@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
@@ -18,13 +17,15 @@ namespace AutomateWoo;
  * @var string $data_field
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 $n = 1;
 
 ?>
 
-	<?php if ( is_array( $products ) ): ?>
+	<?php if ( is_array( $products ) ) : ?>
 
 		<style>
 			/** don't inline this css - hack for gmail */
@@ -36,21 +37,21 @@ $n = 1;
 		<table cellspacing="0" cellpadding="0" class="aw-product-grid">
 			<tbody><tr><td style="padding: 0;"><div class="aw-product-grid-container">
 
-				<?php if ( isset( $order ) ): ?>
+				<?php if ( isset( $order ) ) : ?>
 					<?php $products = aw_filter_hidden_bundled_order_items( empty( $include_refunded ) ? aw_filter_refunded_order_items( $order->get_items(), $order ) : $order->get_items() ); ?>
 				<?php endif; ?>
 
-				<?php foreach ( $products as $product ): ?>
-					<?php $order_item                 = ( isset( $order ) && is_a( $product, 'WC_Order_Item_Product' ) ) ? $product : null; ?>
-					<?php $filtered_permalink_data    = automatewoo_email_template_product_permalink( $product ) ?>
-					<?php $permalink                  = $filtered_permalink_data['permalink']; ?>
-					<?php $filtered_product_name_data = automatewoo_email_template_product_name( $product ) ?>
-					<?php $product_name               = $filtered_product_name_data['product_name']; ?>
-					<?php $product                    = $filtered_product_name_data['product']; ?>
+				<?php foreach ( $products as $product ) : ?>
+					<?php $order_item = ( isset( $order ) && is_a( $product, 'WC_Order_Item_Product' ) ) ? $product : null; ?>
+					<?php $filtered_permalink_data = automatewoo_email_template_product_permalink( $product ); ?>
+					<?php $permalink = $filtered_permalink_data['permalink']; ?>
+					<?php $filtered_product_name_data = automatewoo_email_template_product_name( $product ); ?>
+					<?php $product_name = $filtered_product_name_data['product_name']; ?>
+					<?php $product = $filtered_product_name_data['product']; ?>
 
-					<div class="aw-product-grid-item-3-col" style="<?php echo ( $n % 3 ? '' : 'margin-right: 0;' ) ?>">
+					<div class="aw-product-grid-item-3-col" style="<?php echo ( $n % 3 ? '' : 'margin-right: 0;' ); ?>">
 
-						<a href="<?php echo esc_url( $permalink ); ?>"><?php echo \AW_Mailer_API::get_product_image( $product ) ?></a>
+						<a href="<?php echo esc_url( $permalink ); ?>"><?php echo \AW_Mailer_API::get_product_image( $product ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_product_image() returns trusted <img> markup. ?></a>
 						<h3><a href="<?php echo esc_url( $permalink ); ?>"><?php echo esc_html( $product_name ); ?></a></h3>
 						<?php if ( isset( $order ) && $order_item ) : ?>
 							<p class="price"><strong><?php echo wp_kses_post( automatewoo_email_template_line_total_html( $order, $order_item ) ); ?></strong></p>
@@ -60,7 +61,10 @@ $n = 1;
 
 					</div>
 
-				<?php $n++; endforeach; ?>
+					<?php
+					++$n;
+endforeach;
+				?>
 
 			</div></td></tr></tbody>
 		</table>

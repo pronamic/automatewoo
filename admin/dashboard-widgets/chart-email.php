@@ -107,29 +107,11 @@ class Dashboard_Widget_Chart_Email extends Dashboard_Widget_Chart {
 
 			<div class="automatewoo-dashboard-chart__header">
 
-				<div class="automatewoo-dashboard-chart__header-group">
-					<div class="automatewoo-dashboard-chart__header-figure"><?php echo esc_html( $this->email_count ); ?></div>
-					<div class="automatewoo-dashboard-chart__header-text">
-						<span class="automatewoo-dashboard-chart__legend automatewoo-dashboard-chart__legend--blue"></span>
-						<?php esc_html_e( 'messages sent', 'automatewoo' ); ?>
-					</div>
-				</div>
+				<?php $this->output_static_chart_header_group( $this->email_count, __( 'messages sent', 'automatewoo' ), 'blue' ); ?>
 
-				<div class="automatewoo-dashboard-chart__header-group">
-					<div class="automatewoo-dashboard-chart__header-figure"><?php echo esc_html( $this->open_count ); ?></div>
-					<div class="automatewoo-dashboard-chart__header-text">
-						<span class="automatewoo-dashboard-chart__legend automatewoo-dashboard-chart__legend--purple"></span>
-						<?php esc_html_e( 'opens', 'automatewoo' ); ?>
-					</div>
-				</div>
+				<?php $this->output_static_chart_header_group( $this->open_count, __( 'opens', 'automatewoo' ), 'purple' ); ?>
 
-				<div class="automatewoo-dashboard-chart__header-group">
-					<div class="automatewoo-dashboard-chart__header-figure"><?php echo esc_html( $this->click_count ); ?></div>
-					<div class="automatewoo-dashboard-chart__header-text">
-						<span class="automatewoo-dashboard-chart__legend automatewoo-dashboard-chart__legend--green"></span>
-						<?php esc_html_e( 'clicks', 'automatewoo' ); ?>
-					</div>
-				</div>
+				<?php $this->output_static_chart_header_group( $this->click_count, __( 'clicks', 'automatewoo' ), 'green' ); ?>
 
 				<?php $this->output_report_arrow_link(); ?>
 			</div>

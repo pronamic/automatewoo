@@ -488,6 +488,11 @@ class Admin_Workflow_Edit {
 				break;
 		}
 
+		// Queued (non-immediate) workflows can opt out of rule revalidation at runtime.
+		if ( 'immediately' !== $options['when_to_run'] ) {
+			$options['validate_rules_before_queued_run'] = ! empty( $posted['workflow_options']['validate_rules_before_queued_run'] );
+		}
+
 		$workflow->update_meta( 'workflow_options', $options );
 		$workflow->update_meta( 'is_transactional', ! empty( $posted['is_transactional'] ) );
 

@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo\Rules;
 
@@ -12,9 +11,13 @@ defined( 'ABSPATH' ) || exit;
  */
 class Order_Items extends Product_Select_Rule_Abstract {
 
+	/** @var string */
 	public $data_item = 'order';
 
 
+	/**
+	 * Init the rule.
+	 */
 	public function init() {
 		parent::init();
 
@@ -23,21 +26,22 @@ class Order_Items extends Product_Select_Rule_Abstract {
 
 
 	/**
-	 * @param $order \WC_Order
-	 * @param $compare
-	 * @param $value
+	 * @param \WC_Order $order
+	 * @param string    $compare
+	 * @param mixed     $value
 	 * @return bool
 	 */
 	public function validate( $order, $compare, $value ) {
 
-		if ( ! $expected_product = wc_get_product( absint( $value ) ) ) {
+		$expected_product = wc_get_product( absint( $value ) );
+		if ( ! $expected_product ) {
 			return false;
 		}
 
 		$includes = false;
 
 		foreach ( $order->get_items() as $item ) {
-			$product = $item->get_product();
+			$product  = $item->get_product();
 			$includes = Logic_Helper::match_products( $product, $expected_product );
 
 			if ( $includes ) {
@@ -51,6 +55,5 @@ class Order_Items extends Product_Select_Rule_Abstract {
 			case 'not_includes':
 				return ! $includes;
 		}
-
 	}
 }

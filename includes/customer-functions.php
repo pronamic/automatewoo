@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 defined( 'ABSPATH' ) || exit;
 
@@ -14,8 +13,7 @@ defined( 'ABSPATH' ) || exit;
 function aw_is_customer_opted_in( $email_or_user_id ) {
 	if ( is_numeric( $email_or_user_id ) ) {
 		$customer = AutomateWoo\Customer_Factory::get_by_user_id( $email_or_user_id );
-	}
-	else {
+	} else {
 		$customer = AutomateWoo\Customer_Factory::get_by_email( $email_or_user_id );
 	}
 
@@ -32,8 +30,10 @@ function aw_is_customer_opted_in( $email_or_user_id ) {
  */
 function aw_get_user_count() {
 
-	if ( $cache = AutomateWoo\Cache::get_transient( 'user_count' ) )
+	$cache = AutomateWoo\Cache::get_transient( 'user_count' );
+	if ( $cache ) {
 		return $cache;
+	}
 
 	global $wpdb;
 
@@ -47,12 +47,15 @@ function aw_get_user_count() {
 
 /**
  * Use if accuracy is not important, count is cached for a week
+ *
  * @return int
  */
 function aw_get_user_count_rough() {
 
-	if ( $cache = AutomateWoo\Cache::get_transient( 'user_count_rough' ) )
+	$cache = AutomateWoo\Cache::get_transient( 'user_count_rough' );
+	if ( $cache ) {
 		return $cache;
+	}
 
 	global $wpdb;
 
@@ -92,7 +95,7 @@ function aw_get_customer_first_order( $email_or_user_id, $status = '' ) {
 		'type'    => 'shop_order',
 		'limit'   => 1,
 		'orderby' => 'date',
-		'order'   => 'ASC'
+		'order'   => 'ASC',
 	];
 
 	if ( empty( $status ) ) {
@@ -102,9 +105,12 @@ function aw_get_customer_first_order( $email_or_user_id, $status = '' ) {
 	}
 
 	// Validate $email_or_user_id.
-	if ( is_numeric( $email_or_user_id ) && $user_id = AutomateWoo\Clean::id( $email_or_user_id ) ) {
+	$user_id = is_numeric( $email_or_user_id ) ? AutomateWoo\Clean::id( $email_or_user_id ) : 0;
+	$email   = $user_id ? '' : AutomateWoo\Clean::email( $email_or_user_id );
+
+	if ( $user_id ) {
 		$query_args['customer_id'] = $user_id;
-	} elseif ( $email = AutomateWoo\Clean::email( $email_or_user_id ) ) {
+	} elseif ( $email ) {
 		$query_args['customer'] = $email;
 	} else {
 		return false;

@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
@@ -24,31 +23,34 @@ class Format {
 
 	/**
 	 * @param int|string|DateTime|\WC_DateTime $date
-	 * @param bool|int $max_diff Set to 0 to disable diff format
-	 * @param bool $convert_from_gmt If its gmt convert it to local time
-	 * @param bool $shorten_month
+	 * @param bool|int                         $max_diff Set to 0 to disable diff format
+	 * @param bool                             $convert_from_gmt If its gmt convert it to local time
+	 * @param bool                             $shorten_month
 	 *
 	 * @since 3.8 $shorten_month param added
 	 *
 	 * @return string|false
 	 */
-	static function datetime( $date, $max_diff = false, $convert_from_gmt = true, $shorten_month = false ) {
-		if ( ! $timestamp = self::mixed_date_to_timestamp( $date ) ) {
+	public static function datetime( $date, $max_diff = false, $convert_from_gmt = true, $shorten_month = false ) {
+		$timestamp = self::mixed_date_to_timestamp( $date );
+		if ( ! $timestamp ) {
 			return false; // convert to timestamp ensures WC_DateTime objects are in UTC
 		}
 
 		if ( $convert_from_gmt ) {
-			$timestamp = strtotime( get_date_from_gmt( date( Format::MYSQL, $timestamp ), Format::MYSQL ) );
+			$timestamp = strtotime( get_date_from_gmt( date( self::MYSQL, $timestamp ), self::MYSQL ) ); // phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date -- Intentional; paired with get_date_from_gmt() conversion.
 		}
 
-		$now = current_time( 'timestamp' );
+		$now = current_time( 'timestamp' ); // phpcs:ignore WordPress.DateTime.CurrentTimeTimestamp.Requested -- Intentional local-timezone timestamp.
 
-		if ( $max_diff === false ) $max_diff = DAY_IN_SECONDS; // set default
+		if ( $max_diff === false ) {
+			$max_diff = DAY_IN_SECONDS; // set default
+		}
 
 		$diff = $timestamp - $now;
 
 		if ( abs( $diff ) >= $max_diff ) {
-			return $date_to_display = date_i18n(  self::get_date_format( $shorten_month ) . ' ' . wc_time_format(), $timestamp );
+			return date_i18n( self::get_date_format( $shorten_month ) . ' ' . wc_time_format(), $timestamp );
 		}
 
 		return self::human_time_diff( $timestamp );
@@ -66,31 +68,34 @@ class Format {
 
 	/**
 	 * @param int|string|DateTime|\WC_DateTime $date
-	 * @param bool|int $max_diff
-	 * @param bool $convert_from_gmt If its gmt convert it to local time
-	 * @param bool $shorten_month
+	 * @param bool|int                         $max_diff
+	 * @param bool                             $convert_from_gmt If its gmt convert it to local time
+	 * @param bool                             $shorten_month
 	 *
 	 * @since 3.8 $shorten_month param added
 	 *
 	 * @return string|false
 	 */
-	static function date( $date, $max_diff = false, $convert_from_gmt = true, $shorten_month = false ) {
-		if ( ! $timestamp = self::mixed_date_to_timestamp( $date ) ) {
+	public static function date( $date, $max_diff = false, $convert_from_gmt = true, $shorten_month = false ) {
+		$timestamp = self::mixed_date_to_timestamp( $date );
+		if ( ! $timestamp ) {
 			return false; // convert to timestamp ensures WC_DateTime objects are in UTC
 		}
 
 		if ( $convert_from_gmt ) {
-			$timestamp = strtotime( get_date_from_gmt( date( Format::MYSQL, $timestamp ), Format::MYSQL ) );
+			$timestamp = strtotime( get_date_from_gmt( date( self::MYSQL, $timestamp ), self::MYSQL ) ); // phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date -- Intentional; paired with get_date_from_gmt() conversion.
 		}
 
-		$now = current_time( 'timestamp' );
+		$now = current_time( 'timestamp' ); // phpcs:ignore WordPress.DateTime.CurrentTimeTimestamp.Requested -- Intentional local-timezone timestamp.
 
-		if ( $max_diff === false ) $max_diff = WEEK_IN_SECONDS; // set default
+		if ( $max_diff === false ) {
+			$max_diff = WEEK_IN_SECONDS; // set default
+		}
 
 		$diff = $timestamp - $now;
 
 		if ( abs( $diff ) >= $max_diff ) {
-			return $date_to_display = date_i18n( self::get_date_format( $shorten_month ), $timestamp );
+			return date_i18n( self::get_date_format( $shorten_month ), $timestamp );
 		}
 
 		return self::human_time_diff( $timestamp );
@@ -102,7 +107,7 @@ class Format {
 	 * @param bool $shorten_month
 	 * @return string
 	 */
-	static function get_date_format( $shorten_month = false ) {
+	public static function get_date_format( $shorten_month = false ) {
 		$format = wc_date_format();
 
 		if ( $shorten_month ) {
@@ -118,7 +123,7 @@ class Format {
 	 * @return string
 	 */
 	private static function human_time_diff( $timestamp ) {
-		$now = current_time( 'timestamp' );
+		$now = current_time( 'timestamp' ); // phpcs:ignore WordPress.DateTime.CurrentTimeTimestamp.Requested -- Intentional local-timezone timestamp.
 
 		$diff = $timestamp - $now;
 
@@ -152,7 +157,7 @@ class Format {
 	 * @param int|string|DateTime $date
 	 * @return int|bool
 	 */
-	static function mixed_date_to_timestamp( $date ) {
+	public static function mixed_date_to_timestamp( $date ) {
 		if ( ! $date ) {
 			return false;
 		}
@@ -161,14 +166,11 @@ class Format {
 
 		if ( is_numeric( $date ) ) {
 			$timestamp = $date;
-		}
-		else {
-			if ( is_a( $date, 'DateTime' ) ) { // maintain support for \DateTime
+		} elseif ( is_a( $date, 'DateTime' ) ) {
+			// maintain support for \DateTime
 				$timestamp = $date->getTimestamp();
-			}
-			elseif ( is_string( $date ) ) {
-				$timestamp = strtotime( $date );
-			}
+		} elseif ( is_string( $date ) ) {
+			$timestamp = strtotime( $date );
 		}
 
 		if ( $timestamp < 0 ) {
@@ -183,18 +185,18 @@ class Format {
 	 * @param integer $day - 1 (for Monday) through 7 (for Sunday)
 	 * @return string|false
 	 */
-	static function weekday( $day ) {
+	public static function weekday( $day ) {
 
 		global $wp_locale;
 
 		$days = [
-			1 => $wp_locale->get_weekday(1),
-			2 => $wp_locale->get_weekday(2),
-			3 => $wp_locale->get_weekday(3),
-			4 => $wp_locale->get_weekday(4),
-			5 => $wp_locale->get_weekday(5),
-			6 => $wp_locale->get_weekday(6),
-			7 => $wp_locale->get_weekday(0),
+			1 => $wp_locale->get_weekday( 1 ),
+			2 => $wp_locale->get_weekday( 2 ),
+			3 => $wp_locale->get_weekday( 3 ),
+			4 => $wp_locale->get_weekday( 4 ),
+			5 => $wp_locale->get_weekday( 5 ),
+			6 => $wp_locale->get_weekday( 6 ),
+			7 => $wp_locale->get_weekday( 0 ),
 		];
 
 		if ( ! isset( $days[ $day ] ) ) {
@@ -229,10 +231,11 @@ class Format {
 	 * @param integer $day - 1 (for Monday) through 7 (for Sunday)
 	 * @return string|false
 	 */
-	static function weekday_abbrev( $day ) {
+	public static function weekday_abbrev( $day ) {
 
 		global $wp_locale;
-		if ( $name = self::weekday( $day ) ) {
+		$name = self::weekday( $day );
+		if ( $name ) {
 			return $wp_locale->get_weekday_abbrev( $name );
 		}
 
@@ -244,11 +247,10 @@ class Format {
 	 * @param string|array $time
 	 * @return string
 	 */
-	static function time_of_day( $time ) {
+	public static function time_of_day( $time ) {
 		if ( is_array( $time ) ) {
 			$parts = array_map( 'absint', $time );
-		}
-		else {
+		} else {
 			$parts = explode( ':', $time );
 		}
 
@@ -290,20 +292,19 @@ class Format {
 	 * @param Customer $customer
 	 * @return string
 	 */
-	static function customer( $customer ) {
+	public static function customer( $customer ) {
 
 		if ( ! $customer ) {
 			return false;
 		}
 
-		$name = esc_attr( $customer->get_full_name() );
+		$name  = esc_attr( $customer->get_full_name() );
 		$email = esc_attr( $customer->get_email() );
 
 		if ( $customer->is_registered() ) {
 			$link = get_edit_user_link( $customer->get_user_id() );
-		}
-		else {
-			$link = Admin::page_url('guest', $customer->get_guest_id() );
+		} else {
+			$link = Admin::page_url( 'guest', $customer->get_guest_id() );
 		}
 
 		// Fall back to the email address for the accessible name when the customer has no name set.
@@ -315,14 +316,14 @@ class Format {
 
 	/**
 	 * @since 4.0
-	 * @param $email
+	 * @param string $email
 	 * @return string
 	 */
-	static function email( $email ) {
+	public static function email( $email ) {
 		$email = esc_attr( $email );
 
 		if ( ! aw_is_email_anonymized( $email ) ) {
-			return '<a href="mailto:'.$email.'">'.$email.'</a>';
+			return '<a href="mailto:' . $email . '">' . $email . '</a>';
 		}
 
 		return $email;
@@ -331,11 +332,11 @@ class Format {
 
 	/**
 	 * @since 4.0
-	 * @param $val
+	 * @param mixed $val
 	 * @return string
 	 */
-	static function bool( $val ) {
-		return $val ? __('Yes','automatewoo') : __('No','automatewoo');
+	public static function bool( $val ) {
+		return $val ? __( 'Yes', 'automatewoo' ) : __( 'No', 'automatewoo' );
 	}
 
 
@@ -344,13 +345,13 @@ class Format {
 	 * @deprecated Use Format::decimal() which will round automatically.
 	 *
 	 * @param string|float $number
-	 * @param $places
+	 * @param int|null     $places
 	 * @return float
 	 */
-	static function round( $number, $places = null ) {
+	public static function round( $number, $places = null ) {
 		wc_deprecated_function( __METHOD__, '5.2.0', 'Format::decimal' );
 
-		return (float) Format::decimal( $number, $places );
+		return (float) self::decimal( $number, $places );
 	}
 
 	/**

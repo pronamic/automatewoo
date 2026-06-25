@@ -1,9 +1,10 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 aw_deprecated_class( Trigger_Abstract_Subscriptions::class, '5.2.0', Subscription_Workflow_Helper::class );
 
@@ -19,11 +20,13 @@ abstract class Trigger_Abstract_Subscriptions extends Trigger {
 	public $is_run_for_each_line_item = false;
 
 
-	function __construct() {
+	/**
+	 * Constructor.
+	 */
+	public function __construct() {
 		if ( $this->is_run_for_each_line_item ) {
 			$this->supplied_data_items = [ 'customer', 'subscription', 'product', 'subscription_item' ];
-		}
-		else {
+		} else {
 			$this->supplied_data_items = [ 'customer', 'subscription' ];
 		}
 
@@ -31,34 +34,43 @@ abstract class Trigger_Abstract_Subscriptions extends Trigger {
 	}
 
 
-	function load_admin_details() {
+	/**
+	 * Load admin details.
+	 */
+	public function load_admin_details() {
 		$this->group = Subscription_Workflow_Helper::get_group_name();
 	}
 
 	/**
 	 * @param int|\WC_Subscription $subscription
 	 */
-	function trigger_for_subscription( $subscription ) {
+	public function trigger_for_subscription( $subscription ) {
 		Subscription_Workflow_Helper::trigger_for_subscription( $this, $subscription );
 	}
 
 	/**
 	 * @param int|\WC_Subscription $subscription
 	 */
-	function trigger_for_each_subscription_line_item( $subscription ) {
+	public function trigger_for_each_subscription_line_item( $subscription ) {
 		Subscription_Workflow_Helper::trigger_for_each_subscription_line_item( $this, $subscription );
 	}
 
-	function add_field_subscription_products() {
+	/**
+	 * Add the subscription products field.
+	 */
+	public function add_field_subscription_products() {
 		$this->add_field( Subscription_Workflow_Helper::get_products_field() );
 	}
 
-	function add_field_active_only() {
+	/**
+	 * Add the active only field.
+	 */
+	public function add_field_active_only() {
 		$this->add_field( Subscription_Workflow_Helper::get_active_subscriptions_only_field() );
 	}
 
 	/**
-	 * @param $workflow Workflow
+	 * @param Workflow $workflow
 	 * @return bool
 	 */
 	protected function validate_subscription_products_field( $workflow ) {
@@ -74,11 +86,10 @@ abstract class Trigger_Abstract_Subscriptions extends Trigger {
 	}
 
 	/**
-	 * @param $subscription
+	 * @param int|\WC_Subscription $subscription
 	 * @return \WC_Subscription|false
 	 */
-	function get_subscription( $subscription ) {
+	public function get_subscription( $subscription ) {
 		return wcs_get_subscription( $subscription );
 	}
-
 }

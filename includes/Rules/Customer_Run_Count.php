@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo\Rules;
 
@@ -12,28 +11,34 @@ defined( 'ABSPATH' ) || exit;
  */
 class Customer_Run_Count extends Abstract_Number {
 
+	/** @var string */
 	public $data_item = DataTypes::CUSTOMER;
 
+	/** @var bool */
 	public $support_floats = false;
 
 
-	function init() {
-		$this->title = __( "Workflow - Run Count For Customer", 'automatewoo' );
+	/**
+	 * Init the rule.
+	 */
+	public function init() {
+		$this->title = __( 'Workflow - Run Count For Customer', 'automatewoo' );
 	}
 
 
 	/**
 	 * @param \AutomateWoo\Customer $customer
-	 * @param $compare
-	 * @param $value
+	 * @param string                $compare
+	 * @param mixed                 $value
 	 * @return bool
 	 */
-	function validate( $customer, $compare, $value ) {
+	public function validate( $customer, $compare, $value ) {
 
-		if ( ! $workflow = $this->get_workflow() )
+		$workflow = $this->get_workflow();
+		if ( ! $workflow ) {
 			return false;
+		}
 
 		return $this->validate_number( $workflow->get_run_count_for_customer( $customer ), $compare, $value );
 	}
-
 }

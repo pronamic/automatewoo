@@ -56,7 +56,7 @@ class Trigger_Subscription_Before_End extends Trigger_Subscription_Before_Renewa
 		$days_before_end = (int) $workflow->get_trigger_option( 'days_before' );
 		$this->validate_positive_integer( $days_before_end );
 
-		$date = ( new DateTime() )->add( new \DateInterval( "P{$days_before_end}D" ) );
+		$date = $this->get_batch_base_date()->add( new \DateInterval( "P{$days_before_end}D" ) );
 
 		return $this->query_subscriptions_for_day(
 			$date,

@@ -290,8 +290,14 @@ class Workflow_Email {
 	public function get_mailer() {
 
 		if ( $this->is_type( 'plain-text' ) ) {
+			$content = $this->get_content_with_appended_plain_text_footer();
+
+			if ( $this->tracking_enabled ) {
+				$content = $this->replace_plain_text_urls( $content );
+			}
+
 			$mailer = new Mailer_Plain_Text();
-			$mailer->set_content( $this->get_content_with_appended_plain_text_footer() );
+			$mailer->set_content( $content );
 		} else {
 			if ( $this->is_type( 'html-raw' ) ) {
 				$mailer = new Mailer_Raw_HTML();
@@ -421,6 +427,40 @@ class Workflow_Email {
 		}
 
 		return 'href="' . esc_url( $url ) . '"';
+	}
+
+	/**
+	 * Callback for replacing bare URLs in plain text email content with tracked URLs.
+	 *
+	 * Unlike replace_content_urls_callback(), this uses esc_url_raw() instead of
+	 * esc_url() so that ampersands in the tracking URL are not HTML-encoded (e.g. to
+	 * &#038;), which would corrupt the URL in a plain text email body.
+	 *
+	 * @since 6.6.0
+	 * @param string $url
+	 * @return string
+	 */
+	public function replace_plain_text_url_callback( string $url ): string {
+		if ( ! strstr( $url, 'aw-action=unsubscribe' ) ) {
+			$url = html_entity_decode( $url );
+			$url = $this->workflow->append_ga_tracking_to_url( $url );
+			$url = Tracking::get_click_tracking_url( $this->workflow, $url );
+		}
+
+		return esc_url_raw( $url );
+	}
+
+	/**
+	 * Replace bare URLs in plain text email content with tracked URLs.
+	 *
+	 * @since 6.6.0
+	 * @param string $content Email content.
+	 *
+	 * @return string
+	 */
+	private function replace_plain_text_urls( $content ) {
+		$replacer = new Replace_Helper( $content, [ $this, 'replace_plain_text_url_callback' ], 'text_urls' );
+		return $replacer->process();
 	}
 
 

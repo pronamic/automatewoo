@@ -1,12 +1,13 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo\DataTypes;
 
 use AutomateWoo\Integrations;
 use AutomateWoo\Order_Guest;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * User data type class.
@@ -17,7 +18,7 @@ class User extends AbstractDataType {
 	 * @param \WP_User|Order_Guest $item
 	 * @return bool
 	 */
-	function validate( $item ) {
+	public function validate( $item ) {
 
 		if ( ! is_a( $item, 'WP_User' ) && ! is_a( $item, 'AutomateWoo\Order_Guest' ) ) {
 			return false;
@@ -35,27 +36,29 @@ class User extends AbstractDataType {
 	 * @param \WP_User $item
 	 * @return mixed
 	 */
-	function compress( $item ) {
+	public function compress( $item ) {
 		return $item->ID;
 	}
 
 
 	/**
-	 * @param $compressed_item
-	 * @param $compressed_data_layer
+	 * @param int|string|null $compressed_item
+	 * @param array           $compressed_data_layer
 	 * @return mixed
 	 */
-	function decompress( $compressed_item, $compressed_data_layer ) {
+	public function decompress( $compressed_item, $compressed_data_layer ) {
 
 		// if order based trigger always get the user data from the order
 		if ( isset( $compressed_data_layer['order'] ) ) {
-			if ( $order = wc_get_order( $compressed_data_layer['order'] ) ) {
+			$order = wc_get_order( $compressed_data_layer['order'] );
+			if ( $order ) {
 				return AW()->order_helper->prepare_user_data_item( $order );
 			}
 		}
 
 		if ( Integrations::is_subscriptions_active() && isset( $compressed_data_layer['subscription'] ) ) {
-			if ( $subscription = wcs_get_subscription( $compressed_data_layer['subscription'] ) ) {
+			$subscription = wcs_get_subscription( $compressed_data_layer['subscription'] );
+			if ( $subscription ) {
 				return $subscription->get_user();
 			}
 		}
@@ -66,5 +69,4 @@ class User extends AbstractDataType {
 
 		return false;
 	}
-
 }

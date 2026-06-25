@@ -53,6 +53,6 @@ class Action_Mailchimp_Remove_From_Group extends Action_Mailchimp_Add_To_Group {
 			$group_updates[ $interest_id ] = false;
 		}
 
-		$this->maybe_log_action( Integrations::mailchimp()->update_contact_interest_groups( $email, $list_id, $group_updates ) );
+		$this->maybe_log_action( $this->mailchimp()->update_contact_interest_groups( $email, $list_id, $group_updates ) );
 	}
 }

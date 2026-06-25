@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo\Rules;
 
@@ -12,6 +11,7 @@ defined( 'ABSPATH' ) || exit;
  */
 abstract class Abstract_Number extends Rule {
 
+	/** @var string */
 	public $type = 'number';
 
 	/**
@@ -22,13 +22,15 @@ abstract class Abstract_Number extends Rule {
 	public $support_floats = true;
 
 
-	function __construct() {
+	/**
+	 * Constructor.
+	 */
+	public function __construct() {
 
 		if ( $this->support_floats ) {
 			$this->compare_types = $this->get_float_compare_types();
-		}
-		else {
-			$this->compare_types = $this->get_integer_compare_types();
+		} else {
+			$this->compare_types = $this->get_integer_compare_types() + $this->get_integer_offset_compare_types();
 		}
 
 		parent::__construct();
@@ -41,11 +43,15 @@ abstract class Abstract_Number extends Rule {
 	 *
 	 * @since 4.6.0
 	 *
-	 * @param string $value
+	 * @param string|array $value
 	 *
-	 * @return string
+	 * @return string|array
 	 */
 	public function sanitize_value( $value ) {
+		if ( is_array( $value ) ) {
+			return array_map( [ $this, 'sanitize_value' ], $value );
+		}
+
 		// Localize price even if decimal/float values are not supported so thousand separators are removed
 		return Clean::localized_price( (string) $value, $this->support_floats ? null : 0 );
 	}
@@ -55,16 +61,19 @@ abstract class Abstract_Number extends Rule {
 	 *
 	 * @since 4.6.0
 	 *
-	 * @param string|int $value
+	 * @param string|int|array $value
 	 *
-	 * @return string
+	 * @return string|array
 	 */
 	public function format_value( $value ) {
+		if ( is_array( $value ) ) {
+			return array_map( [ $this, 'format_value' ], $value );
+		}
+
 		if ( $this->support_floats ) {
 			return wc_format_localized_price( $value );
 		} else {
 			return strval( (int) $value );
 		}
 	}
-
 }

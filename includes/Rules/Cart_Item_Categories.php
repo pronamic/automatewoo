@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo\Rules;
 
@@ -13,12 +12,17 @@ defined( 'ABSPATH' ) || exit;
  */
 class Cart_Item_Categories extends Preloaded_Select_Rule_Abstract {
 
+	/** @var string */
 	public $data_item = DataTypes::CART;
 
+	/** @var bool */
 	public $is_multi = true;
 
 
-	function init() {
+	/**
+	 * Init the rule.
+	 */
+	public function init() {
 		parent::init();
 
 		$this->title = __( 'Cart - Item Categories', 'automatewoo' );
@@ -28,18 +32,18 @@ class Cart_Item_Categories extends Preloaded_Select_Rule_Abstract {
 	/**
 	 * @return array
 	 */
-	function load_select_choices() {
+	public function load_select_choices() {
 		return Fields_Helper::get_categories_list();
 	}
 
 
 	/**
-	 * @param $cart \AutomateWoo\Cart
-	 * @param $compare
-	 * @param $expected
+	 * @param \AutomateWoo\Cart $cart
+	 * @param string            $compare
+	 * @param mixed             $expected
 	 * @return bool
 	 */
-	function validate( $cart, $compare, $expected ) {
+	public function validate( $cart, $compare, $expected ) {
 
 		if ( empty( $expected ) ) {
 			return false;
@@ -48,7 +52,7 @@ class Cart_Item_Categories extends Preloaded_Select_Rule_Abstract {
 		$category_ids = [];
 
 		foreach ( $cart->get_items() as $item ) {
-			$terms = wp_get_object_terms( $item->get_product_id(), 'product_cat', [ 'fields' => 'ids' ] );
+			$terms        = wp_get_object_terms( $item->get_product_id(), 'product_cat', [ 'fields' => 'ids' ] );
 			$category_ids = array_merge( $category_ids, $terms );
 		}
 

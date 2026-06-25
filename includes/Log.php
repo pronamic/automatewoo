@@ -1,12 +1,13 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
 use AutomateWoo\DataTypes\DataTypes;
 use AutomateWoo\Workflows\Factory;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * @class Log
@@ -34,15 +35,17 @@ class Log extends Abstract_Model_With_Meta_Table {
 	/**
 	 * @param bool|int $id
 	 */
-	function __construct( $id = false ) {
-		if ( $id ) $this->get_by( 'id', $id );
+	public function __construct( $id = false ) {
+		if ( $id ) {
+			$this->get_by( 'id', $id );
+		}
 	}
 
 
 	/**
 	 * @param int $workflow_id
 	 */
-	function set_workflow_id( $workflow_id ) {
+	public function set_workflow_id( $workflow_id ) {
 		$this->set_prop( 'workflow_id', Clean::id( $workflow_id ) );
 	}
 
@@ -50,7 +53,7 @@ class Log extends Abstract_Model_With_Meta_Table {
 	/**
 	 * @return int
 	 */
-	function get_workflow_id() {
+	public function get_workflow_id() {
 		return Clean::id( $this->get_prop( 'workflow_id' ) );
 	}
 
@@ -58,7 +61,7 @@ class Log extends Abstract_Model_With_Meta_Table {
 	/**
 	 * @param DateTime $date
 	 */
-	function set_date( $date ) {
+	public function set_date( $date ) {
 		$this->set_date_column( 'date', $date );
 	}
 
@@ -66,7 +69,7 @@ class Log extends Abstract_Model_With_Meta_Table {
 	/**
 	 * @return DateTime|bool
 	 */
-	function get_date() {
+	public function get_date() {
 		return $this->get_date_column( 'date' );
 	}
 
@@ -74,7 +77,7 @@ class Log extends Abstract_Model_With_Meta_Table {
 	/**
 	 * @param bool $has_errors
 	 */
-	function set_has_errors( $has_errors ) {
+	public function set_has_errors( $has_errors ) {
 		$this->set_prop( 'has_errors', aw_bool_int( $has_errors ) );
 	}
 
@@ -82,7 +85,7 @@ class Log extends Abstract_Model_With_Meta_Table {
 	/**
 	 * @return bool
 	 */
-	function has_errors() {
+	public function has_errors() {
 		return (bool) $this->get_prop( 'has_errors' );
 	}
 
@@ -90,7 +93,7 @@ class Log extends Abstract_Model_With_Meta_Table {
 	/**
 	 * @param bool $has_blocked_emails
 	 */
-	function set_has_blocked_emails( $has_blocked_emails ) {
+	public function set_has_blocked_emails( $has_blocked_emails ) {
 		$this->set_prop( 'has_blocked_emails', absint( (bool) $has_blocked_emails ) );
 	}
 
@@ -98,7 +101,7 @@ class Log extends Abstract_Model_With_Meta_Table {
 	/**
 	 * @return bool
 	 */
-	function has_blocked_emails() {
+	public function has_blocked_emails() {
 		return (bool) $this->get_prop( 'has_blocked_emails' );
 	}
 
@@ -106,7 +109,7 @@ class Log extends Abstract_Model_With_Meta_Table {
 	/**
 	 * @param bool $enabled
 	 */
-	function set_tracking_enabled( $enabled ) {
+	public function set_tracking_enabled( $enabled ) {
 		$this->set_prop( 'tracking_enabled', aw_bool_int( $enabled ) );
 	}
 
@@ -114,7 +117,7 @@ class Log extends Abstract_Model_With_Meta_Table {
 	/**
 	 * @return bool
 	 */
-	function is_tracking_enabled() {
+	public function is_tracking_enabled() {
 		return (bool) $this->get_prop( 'tracking_enabled' );
 	}
 
@@ -122,7 +125,7 @@ class Log extends Abstract_Model_With_Meta_Table {
 	/**
 	 * @param bool $enabled
 	 */
-	function set_conversion_tracking_enabled( $enabled ) {
+	public function set_conversion_tracking_enabled( $enabled ) {
 		$this->set_prop( 'conversion_tracking_enabled', aw_bool_int( $enabled ) );
 	}
 
@@ -130,7 +133,7 @@ class Log extends Abstract_Model_With_Meta_Table {
 	/**
 	 * @return bool
 	 */
-	function is_conversion_tracking_enabled() {
+	public function is_conversion_tracking_enabled() {
 		return (bool) $this->get_prop( 'conversion_tracking_enabled' );
 	}
 
@@ -138,7 +141,7 @@ class Log extends Abstract_Model_With_Meta_Table {
 	/**
 	 * @return bool
 	 */
-	function is_anonymized() {
+	public function is_anonymized() {
 		return (bool) $this->get_meta( 'is_anonymized' );
 	}
 
@@ -150,21 +153,22 @@ class Log extends Abstract_Model_With_Meta_Table {
 	 */
 	public function record_click( $url ) {
 
-		if ( ! $tracking = $this->get_meta('tracking_data') ) {
+		$tracking = $this->get_meta( 'tracking_data' );
+		if ( ! $tracking ) {
 			$tracking = [];
 		}
 
 		$tracking[] = [
 			'type' => 'click',
-			'url' => $url,
-			'date' => current_time( 'mysql', true )
+			'url'  => $url,
+			'date' => current_time( 'mysql', true ),
 		];
 
 		// clicking requires an open so record one in case images were blocked
 		if ( ! $this->has_open_recorded() ) {
 			$tracking[] = [
 				'type' => 'open',
-				'date' => current_time( 'mysql', true )
+				'date' => current_time( 'mysql', true ),
 			];
 		}
 
@@ -192,13 +196,14 @@ class Log extends Abstract_Model_With_Meta_Table {
 			return; // already opened
 		}
 
-		if ( ! $tracking = $this->get_meta('tracking_data') ) {
+		$tracking = $this->get_meta( 'tracking_data' );
+		if ( ! $tracking ) {
 			$tracking = [];
 		}
 
 		$tracking[] = [
 			'type' => 'open',
-			'date' => current_time( 'mysql', true )
+			'date' => current_time( 'mysql', true ),
 		];
 
 		$this->update_meta( 'tracking_data', $tracking );
@@ -216,13 +221,15 @@ class Log extends Abstract_Model_With_Meta_Table {
 	/**
 	 * @return bool
 	 */
-	function has_open_recorded() {
+	public function has_open_recorded() {
 
-		$tracking = $this->get_meta('tracking_data');
+		$tracking = $this->get_meta( 'tracking_data' );
 
-		if ( is_array( $tracking ) ) foreach( $tracking as $item ) {
-			if ( $item['type'] == 'open') {
-				return true;
+		if ( is_array( $tracking ) ) {
+			foreach ( $tracking as $item ) {
+				if ( $item['type'] === 'open' ) {
+					return true;
+				}
 			}
 		}
 
@@ -233,28 +240,15 @@ class Log extends Abstract_Model_With_Meta_Table {
 	/**
 	 * @return bool
 	 */
-	function has_click_recorded() {
+	public function has_click_recorded() {
 
-		$tracking = $this->get_meta('tracking_data');
+		$tracking = $this->get_meta( 'tracking_data' );
 
-		if ( is_array( $tracking ) ) foreach( $tracking as $item ) {
-			if ( $item['type'] == 'click')
-				return true;
-		}
-
-		return false;
-	}
-
-
-	/**
-	 * @return DateTime|false
-	 */
-	function get_date_opened() {
-		$tracking = $this->get_meta('tracking_data');
-
-		if ( is_array( $tracking ) ) foreach( $tracking as $item ) {
-			if ( $item['type'] == 'open') {
-				return new DateTime( $item['date'] );
+		if ( is_array( $tracking ) ) {
+			foreach ( $tracking as $item ) {
+				if ( $item['type'] === 'click' ) {
+					return true;
+				}
 			}
 		}
 
@@ -265,12 +259,32 @@ class Log extends Abstract_Model_With_Meta_Table {
 	/**
 	 * @return DateTime|false
 	 */
-	function get_date_clicked() {
-		$tracking = $this->get_meta('tracking_data');
+	public function get_date_opened() {
+		$tracking = $this->get_meta( 'tracking_data' );
 
-		if ( is_array( $tracking ) ) foreach( $tracking as $item ) {
-			if ( $item['type'] == 'click') {
-				return new DateTime( $item['date'] );
+		if ( is_array( $tracking ) ) {
+			foreach ( $tracking as $item ) {
+				if ( $item['type'] === 'open' ) {
+					return new DateTime( $item['date'] );
+				}
+			}
+		}
+
+		return false;
+	}
+
+
+	/**
+	 * @return DateTime|false
+	 */
+	public function get_date_clicked() {
+		$tracking = $this->get_meta( 'tracking_data' );
+
+		if ( is_array( $tracking ) ) {
+			foreach ( $tracking as $item ) {
+				if ( $item['type'] === 'click' ) {
+					return new DateTime( $item['date'] );
+				}
 			}
 		}
 
@@ -282,8 +296,8 @@ class Log extends Abstract_Model_With_Meta_Table {
 	 *
 	 * @param string $note
 	 */
-	function add_note( $note ) {
-		$notes = $this->get_notes();
+	public function add_note( $note ) {
+		$notes   = $this->get_notes();
 		$notes[] = $note;
 		$this->update_notes( $notes );
 	}
@@ -295,12 +309,11 @@ class Log extends Abstract_Model_With_Meta_Table {
 	 *
 	 * @return array
 	 */
-	function get_notes() {
+	public function get_notes() {
 		$notes = $this->get_meta( 'notes' );
 		if ( ! is_array( $notes ) ) {
 			return [];
-		}
-		else {
+		} else {
 			return Clean::recursive( $notes );
 		}
 	}
@@ -312,7 +325,7 @@ class Log extends Abstract_Model_With_Meta_Table {
 	 *
 	 * @param array $notes
 	 */
-	function update_notes( $notes ) {
+	public function update_notes( $notes ) {
 		$notes = Clean::recursive( $notes );
 		$this->update_meta( 'notes', $notes );
 	}
@@ -320,9 +333,10 @@ class Log extends Abstract_Model_With_Meta_Table {
 
 	/**
 	 * Returns the workflow without a data layer
+	 *
 	 * @return Workflow
 	 */
-	function get_workflow() {
+	public function get_workflow() {
 		return Factory::get( $this->get_workflow_id() );
 	}
 
@@ -331,18 +345,18 @@ class Log extends Abstract_Model_With_Meta_Table {
 	 * @param string $output - array|object this for backwards compatibility
 	 * @return Data_Layer|array
 	 */
-	function get_data_layer( $output = 'array' ) {
+	public function get_data_layer( $output = 'array' ) {
 
 		if ( ! isset( $this->data_layer ) ) {
-			if ( $compressed = $this->get_compressed_data_layer() ) {
+			$compressed = $this->get_compressed_data_layer();
+			if ( $compressed ) {
 				$this->data_layer = $this->decompress_data_layer( $compressed );
-			}
-			else {
+			} else {
 				$this->data_layer = new Data_Layer();
 			}
 		}
 
-		if ( $output == 'array' ) {
+		if ( $output === 'array' ) {
 			return $this->data_layer->get_raw_data();
 		}
 
@@ -358,16 +372,21 @@ class Log extends Abstract_Model_With_Meta_Table {
 	 */
 	private function get_compressed_data_layer() {
 
-		if ( ! $workflow = $this->get_workflow() )
+		$workflow = $this->get_workflow();
+		if ( ! $workflow ) {
 			return false; // workflow must be set
+		}
 
-		if ( ! $this->exists )
+		if ( ! $this->exists ) {
 			return false; // log must be saved
+		}
 
-		if ( ! $trigger = $workflow->get_trigger() )
+		$trigger = $workflow->get_trigger();
+		if ( ! $trigger ) {
 			return false; // need a trigger
+		}
 
-		$data_layer = [];
+		$data_layer     = [];
 		$supplied_items = $trigger->get_supplied_data_items();
 
 		// when anonymized log is converted to guest
@@ -389,9 +408,9 @@ class Log extends Abstract_Model_With_Meta_Table {
 
 
 	/**
-	 * @param $data_type_id
-	 * @param array $supplied_data_items
-	 * @return string|false
+	 * @param string $data_type_id
+	 * @param array  $supplied_data_items
+	 * @return string|int|false
 	 */
 	private function get_compressed_data_item( $data_type_id, $supplied_data_items ) {
 		if ( DataTypes::is_non_stored_data_type( $data_type_id ) ) {
@@ -399,14 +418,15 @@ class Log extends Abstract_Model_With_Meta_Table {
 		}
 
 		// user requires special logic when related to an order
-		if ( $data_type_id === 'user' && in_array( 'order', $supplied_data_items ) ) {
+		if ( $data_type_id === 'user' && in_array( 'order', $supplied_data_items, true ) ) {
 			return 0; // get user data from the order when decompressing
 		}
 
 		$storage_key = Logs::get_data_layer_storage_key( $data_type_id );
 
-		if ( ! $storage_key )
+		if ( ! $storage_key ) {
 			return false;
+		}
 
 		return Clean::string( $this->get_meta( $storage_key ) );
 	}
@@ -420,9 +440,12 @@ class Log extends Abstract_Model_With_Meta_Table {
 
 		$data = [];
 
-		if ( is_array( $compressed_data_layer ) ) foreach ( $compressed_data_layer as $data_type_id => $compressed_item ) {
-			if ( $data_type = DataTypes::get( $data_type_id ) ) {
-				$data[$data_type_id] = $data_type->decompress( $compressed_item, $compressed_data_layer );
+		if ( is_array( $compressed_data_layer ) ) {
+			foreach ( $compressed_data_layer as $data_type_id => $compressed_item ) {
+				$data_type = DataTypes::get( $data_type_id );
+				if ( $data_type ) {
+					$data[ $data_type_id ] = $data_type->decompress( $compressed_item, $compressed_data_layer );
+				}
 			}
 		}
 
@@ -432,12 +455,14 @@ class Log extends Abstract_Model_With_Meta_Table {
 
 	/**
 	 * Stores a data layer in log meta
+	 *
 	 * @param Data_Layer $data_layer
 	 */
-	function store_data_layer( $data_layer ) {
+	public function store_data_layer( $data_layer ) {
 
-		if ( ! $this->exists )
+		if ( ! $this->exists ) {
 			return; // log must be saved before meta can be added
+		}
 
 		foreach ( $data_layer->get_raw_data() as $data_type_id => $data_item ) {
 			$this->store_data_item( $data_type_id, $data_item );
@@ -446,8 +471,8 @@ class Log extends Abstract_Model_With_Meta_Table {
 
 
 	/**
-	 * @param $data_type_id
-	 * @param $data_item
+	 * @param string $data_type_id
+	 * @param mixed  $data_item
 	 */
 	private function store_data_item( $data_type_id, $data_item ) {
 		$data_type = DataTypes::get( $data_type_id );
@@ -462,11 +487,10 @@ class Log extends Abstract_Model_With_Meta_Table {
 
 		// special logic for users who are actually guests
 		if ( $data_type_id === 'user' && $data_item->ID === 0 ) {
-			$storage_key = 'guest_email';
+			$storage_key   = 'guest_email';
 			$storage_value = $data_item->user_email;
-		}
-		else {
-			$storage_key = Logs::get_data_layer_storage_key( $data_type_id );
+		} else {
+			$storage_key   = Logs::get_data_layer_storage_key( $data_type_id );
 			$storage_value = Logs::get_data_layer_storage_value( $data_type_id, $data_item );
 		}
 
@@ -479,7 +503,7 @@ class Log extends Abstract_Model_With_Meta_Table {
 	/**
 	 * Delete the log and clear related conversion order meta
 	 */
-	function delete() {
+	public function delete() {
 
 		// Get orders with conversion data.
 		$converted_orders = wc_get_orders(
@@ -503,10 +527,14 @@ class Log extends Abstract_Model_With_Meta_Table {
 		parent::delete();
 	}
 
-	function clear_cached_data() {
+	/**
+	 * Clear cached data related to this log.
+	 */
+	public function clear_cached_data() {
 
-		if ( ! $this->get_workflow_id() )
+		if ( ! $this->get_workflow_id() ) {
 			return;
+		}
 
 		Cache::delete_transient( 'times_run/workflow=' . $this->get_workflow_id() );
 	}
@@ -514,9 +542,10 @@ class Log extends Abstract_Model_With_Meta_Table {
 
 	/**
 	 * Reruns the workflow skipping validation
+	 *
 	 * @return Log|bool - the newly created log
 	 */
-	function rerun() {
+	public function rerun() {
 		$workflow = $this->get_workflow();
 		$workflow->maybe_run( $this->get_data_layer( 'object' ), true, true );
 
@@ -529,6 +558,4 @@ class Log extends Abstract_Model_With_Meta_Table {
 
 		return false;
 	}
-
 }
-

@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
@@ -18,20 +17,22 @@ namespace AutomateWoo;
  * @var string $data_field
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 $products = aw_get_reviewable_products( $products );
 
 ?>
 
-<?php if ( is_array( $products ) ): ?>
+<?php if ( is_array( $products ) ) : ?>
 
 	<table cellspacing="0" cellpadding="0" style="width: 100%;" class="aw-product-rows"><tbody>
 
-		<?php foreach ( $products as $product ): ?>
+		<?php foreach ( $products as $product ) : ?>
 			<tr>
 
-				<td class="image" width="25%"><?php echo \AW_Mailer_API::get_product_image( $product ) ?></td>
+				<td class="image" width="25%"><?php echo \AW_Mailer_API::get_product_image( $product ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_product_image() returns trusted <img> markup. ?></td>
 
 				<td>
 					<h3><?php echo esc_html( $product->get_name() ); ?></h3>

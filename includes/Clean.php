@@ -1,20 +1,20 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
 /**
  * Sanitizer
+ *
  * @class Clean
  * @since 2.9
  */
 class Clean {
 
 	/**
-	 * @param $string
+	 * @param string $string
 	 * @return string
 	 */
-	static function string( $string ) {
+	public static function string( $string ) {
 		return sanitize_text_field( $string );
 	}
 
@@ -24,7 +24,7 @@ class Clean {
 	 * @param string $order The order parameter provided on the input.
 	 * @return string ASC or DESC. DESC by default.
 	 */
-	static function order( $order ) {
+	public static function order( $order ) {
 		return strtoupper( $order ) === 'ASC' ? 'ASC' : 'DESC';
 	}
 
@@ -32,13 +32,13 @@ class Clean {
 	 * Sanitize the ORDER BY parameter allowing only valid column names.
 	 *
 	 * @param string $order_by The column attempted to set as order by
-	 * @param array $valid_columns Valid column names available to set as order_by. If empty, all the columns are allowed
+	 * @param array  $valid_columns Valid column names available to set as order_by. If empty, all the columns are allowed
 	 *
 	 * @return string The sanitized column name. Or empty string if invalid column name.
 	 */
-	static function order_by( $order_by, $valid_columns = [] ) {
+	public static function order_by( $order_by, $valid_columns = [] ) {
 
-		if ( empty( $valid_columns ) || in_array( $order_by, $valid_columns ) ) {
+		if ( empty( $valid_columns ) || in_array( $order_by, $valid_columns, true ) ) {
 			return $order_by;
 		}
 
@@ -46,10 +46,10 @@ class Clean {
 	}
 
 	/**
-	 * @param $email
+	 * @param string $email
 	 * @return string
 	 */
-	static function email( $email ) {
+	public static function email( $email ) {
 		return strtolower( sanitize_email( $email ) );
 	}
 
@@ -61,7 +61,7 @@ class Clean {
 	 *
 	 * @return string
 	 */
-	static function textarea( $text ) {
+	public static function textarea( $text ) {
 		return implode( "\n", array_map( 'sanitize_text_field', explode( "\n", $text ) ) );
 	}
 
@@ -108,11 +108,10 @@ class Clean {
 	 * @param array $var
 	 * @return array
 	 */
-	static function ids( $var ) {
+	public static function ids( $var ) {
 		if ( is_array( $var ) ) {
 			return array_filter( array_map( 'absint', $var ) );
-		}
-		elseif ( is_numeric( $var ) ) {
+		} elseif ( is_numeric( $var ) ) {
 			return [ absint( $var ) ];
 		}
 		return [];
@@ -123,20 +122,19 @@ class Clean {
 	 * @param string|int $id
 	 * @return int
 	 */
-	static function id( $id ) {
+	public static function id( $id ) {
 		return absint( $id );
 	}
 
 
 	/**
-	 * @param $var
+	 * @param mixed $var
 	 * @return array|string
 	 */
-	static function recursive( $var ) {
+	public static function recursive( $var ) {
 		if ( is_array( $var ) ) {
 			return array_map( [ 'AutomateWoo\Clean', 'recursive' ], $var );
-		}
-		else {
+		} else {
 			return is_scalar( $var ) ? self::string( $var ) : $var;
 		}
 	}
@@ -146,7 +144,7 @@ class Clean {
 	 * @param string|array $values
 	 * @return array
 	 */
-	static function multi_select_values( $values ) {
+	public static function multi_select_values( $values ) {
 
 		// pre WC 3.0 multi selects were saved as comma delimited strings
 		if ( is_string( $values ) ) {
@@ -154,9 +152,8 @@ class Clean {
 		}
 
 		if ( $values ) {
-			return Clean::recursive( $values );
-		}
-		else {
+			return self::recursive( $values );
+		} else {
 			return [];
 		}
 	}
@@ -168,8 +165,8 @@ class Clean {
 	 * @param string $list
 	 * @return array
 	 */
-	static function comma_delimited_string( $list ) {
-		$list = explode(',', Clean::string( $list ) );
+	public static function comma_delimited_string( $list ) {
+		$list = explode( ',', self::string( $list ) );
 		return array_filter( array_map( 'trim', $list ) );
 	}
 
@@ -201,7 +198,7 @@ class Clean {
 	 *
 	 * @return string
 	 */
-	static function email_content( $content ) {
+	public static function email_content( $content ) {
 		$content = self::standarize_new_line_characters( $content );
 		$content = wp_check_invalid_utf8( (string) $content );
 		return $content;
@@ -217,18 +214,16 @@ class Clean {
 	 *
 	 * @return string|array
 	 */
-	static function encode_emoji( $data ) {
+	public static function encode_emoji( $data ) {
 		if ( is_array( $data ) ) {
 			foreach ( $data as &$field ) {
 				if ( is_array( $field ) || is_string( $field ) ) {
 					$field = self::encode_emoji( $field );
 				}
 			}
-		}
-		elseif ( is_string( $data ) ) {
+		} elseif ( is_string( $data ) ) {
 			$data = wp_encode_emoji( $data );
 		}
 		return $data;
 	}
-
 }

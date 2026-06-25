@@ -1,9 +1,10 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * @class Guest_Factory
@@ -11,25 +12,28 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  */
 class Guest_Factory extends Factory {
 
-	static $model = 'AutomateWoo\Guest';
+	/** @var string */
+	public static $model = 'AutomateWoo\Guest';
 
 
 	/**
 	 * @param int $guest_id
 	 * @return Guest|bool
 	 */
-	static function get( $guest_id ) {
+	public static function get( $guest_id ) {
 		return parent::get( $guest_id );
 	}
 
 
 	/**
-	 * @param $email
+	 * @param string $email
 	 * @return Guest|bool
 	 */
-	static function get_by_email( $email ) {
+	public static function get_by_email( $email ) {
 
-		if ( ! is_email( $email ) ) return false;
+		if ( ! is_email( $email ) ) {
+			return false;
+		}
 
 		if ( Cache::exists( $email, 'guest_email' ) ) {
 			return static::get( Cache::get( $email, 'guest_email' ) );
@@ -50,7 +54,7 @@ class Guest_Factory extends Factory {
 	 * @param int $order_id
 	 * @return Guest|bool
 	 */
-	static public function get_by_most_recent_order_id( $order_id ) {
+	public static function get_by_most_recent_order_id( $order_id ) {
 		if ( is_int( $order_id ) ) {
 			$guest = new Guest();
 			$guest->get_by( 'most_recent_order', $order_id );
@@ -66,15 +70,17 @@ class Guest_Factory extends Factory {
 	/**
 	 * @deprecated
 	 *
-	 * @param $key
+	 * @param string $key
 	 *
 	 * @return Guest|bool
 	 */
-	static function get_by_key( $key ) {
+	public static function get_by_key( $key ) {
 
 		wc_deprecated_function( __METHOD__, '5.2.0' );
 
-		if ( ! $key ) return false;
+		if ( ! $key ) {
+			return false;
+		}
 
 		$guest = new Guest();
 		$guest->get_by( 'tracking_key', $key );
@@ -90,7 +96,7 @@ class Guest_Factory extends Factory {
 	/**
 	 * @param Guest $guest
 	 */
-	static function update_cache( $guest ) {
+	public static function update_cache( $guest ) {
 		parent::update_cache( $guest );
 
 		Cache::set( $guest->get_email(), $guest->get_id(), 'guest_email' );
@@ -100,7 +106,7 @@ class Guest_Factory extends Factory {
 	/**
 	 * @param Guest $guest
 	 */
-	static function clean_cache( $guest ) {
+	public static function clean_cache( $guest ) {
 		parent::clean_cache( $guest );
 
 		static::clear_cached_prop( $guest, 'email', 'guest_email' );
@@ -111,14 +117,13 @@ class Guest_Factory extends Factory {
 	 * @param string $email
 	 * @return Guest
 	 */
-	static function create( $email ) {
+	public static function create( $email ) {
 
 		$guest = new Guest();
-		$guest->set_email( Clean::email( $email) );
+		$guest->set_email( Clean::email( $email ) );
 		$guest->set_date_created( new DateTime() );
 		$guest->save();
 
 		return $guest;
 	}
-
 }

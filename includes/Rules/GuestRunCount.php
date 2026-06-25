@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo\Rules;
 
@@ -12,28 +11,34 @@ defined( 'ABSPATH' ) || exit;
  */
 class GuestRunCount extends Abstract_Number {
 
+	/** @var string */
 	public $data_item = 'guest';
 
+	/** @var bool */
 	public $support_floats = false;
 
 
-	function init() {
-		$this->title = __( "Workflow - Run Count For Guest", 'automatewoo' );
+	/**
+	 * Init the rule.
+	 */
+	public function init() {
+		$this->title = __( 'Workflow - Run Count For Guest', 'automatewoo' );
 	}
 
 
 	/**
-	 * @param Guest $guest
-	 * @param $compare
-	 * @param $value
+	 * @param Guest  $guest
+	 * @param string $compare
+	 * @param mixed  $value
 	 * @return bool
 	 */
-	function validate( $guest, $compare, $value ) {
+	public function validate( $guest, $compare, $value ) {
 
-		if ( ! $workflow = $this->get_workflow() )
+		$workflow = $this->get_workflow();
+		if ( ! $workflow ) {
 			return false;
+		}
 
 		return $this->validate_number( $workflow->get_times_run_for_guest( $guest ), $compare, $value );
 	}
-
 }

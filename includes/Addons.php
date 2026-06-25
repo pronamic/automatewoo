@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
@@ -13,38 +12,38 @@ class Addons {
 
 
 	/**
-	 * @param $addon Addon
+	 * @param Addon $addon
 	 */
-	static function register( $addon ) {
-		self::$registered_addons[$addon->id] = $addon;
+	public static function register( $addon ) {
+		self::$registered_addons[ $addon->id ] = $addon;
 	}
 
 
 	/**
 	 * @return Addon[]
 	 */
-	static function get_all() {
+	public static function get_all() {
 		return self::$registered_addons;
 	}
 
 
 	/**
-	 * @param $id string
+	 * @param string $id
 	 * @return Addon|false
 	 */
-	static function get( $id ) {
-		if ( ! isset( self::$registered_addons[$id] ) )
+	public static function get( $id ) {
+		if ( ! isset( self::$registered_addons[ $id ] ) ) {
 			return false;
+		}
 
-		return self::$registered_addons[$id];
+		return self::$registered_addons[ $id ];
 	}
 
 
 	/**
 	 * @return bool
 	 */
-	static function has_addons() {
+	public static function has_addons() {
 		return ! empty( self::$registered_addons );
 	}
-
 }

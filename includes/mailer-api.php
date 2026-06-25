@@ -97,9 +97,28 @@ class AW_Mailer_API {
 		$image_id = $product->get_image_id();
 
 		if ( $image_id ) {
-			$image_url = wp_get_attachment_image_url( $image_id, $size );
+			$image_data = wp_get_attachment_image_src( $image_id, $size );
 
-			$image = '<img src="' . esc_url( $image_url ) . '" class="aw-product-image" alt="' . esc_attr( $product->get_name() ) . '">';
+			if ( ! $image_data || empty( $image_data[0] ) ) {
+				return apply_filters( 'automatewoo/email/product_placeholder_image', wc_placeholder_img( $size ), $size, $product );
+			}
+
+			$width  = isset( $image_data[1] ) ? absint( $image_data[1] ) : 0;
+			$height = isset( $image_data[2] ) ? absint( $image_data[2] ) : 0;
+
+			// Only output dimension attributes when they are known. Some image providers
+			// (e.g. media offload or SVG plugins) return a URL without usable dimensions,
+			// and emitting width="0"/height="0" would hide the image.
+			$dimensions = ( $width && $height )
+				? sprintf( ' width="%1$d" height="%2$d"', $width, $height )
+				: '';
+
+			$image = sprintf(
+				'<img src="%1$s"%2$s class="aw-product-image" style="max-width: 100%%; height: auto;" alt="%3$s">',
+				esc_url( $image_data[0] ),
+				$dimensions,
+				esc_attr( $product->get_name() )
+			);
 
 			return apply_filters( 'automatewoo/email/product_image', $image, $size, $product );
 		} else {

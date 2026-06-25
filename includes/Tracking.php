@@ -1,9 +1,10 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * Contains functions relevant to open, click, conversion tracking.
@@ -17,15 +18,18 @@ class Tracking {
 	 * @param Workflow $workflow
 	 * @return string
 	 */
-	static function get_open_tracking_url( $workflow ) {
+	public static function get_open_tracking_url( $workflow ) {
 		$log = $workflow->get_current_log();
 
 		// SEMGREP WARNING EXPLANATION
 		// This URL is escaped later
-		$url = add_query_arg([
-			'aw-action' => 'open',
-			'log' => $log ? $log->get_id() : 0
-		], home_url() );
+		$url = add_query_arg(
+			[
+				'aw-action' => 'open',
+				'log'       => $log ? $log->get_id() : 0,
+			],
+			home_url()
+		);
 
 		return apply_filters( 'automatewoo_open_track_url', $url, $workflow );
 	}
@@ -33,10 +37,10 @@ class Tracking {
 
 	/**
 	 * @param Workflow $workflow
-	 * @param $redirect
+	 * @param string   $redirect
 	 * @return string
 	 */
-	static function get_click_tracking_url( $workflow, $redirect ) {
+	public static function get_click_tracking_url( $workflow, $redirect ) {
 		$valid_redirect = wp_validate_redirect( $redirect );
 
 		if ( ! $valid_redirect ) {
@@ -47,8 +51,8 @@ class Tracking {
 
 		$args = [
 			'aw-action' => 'click',
-			'log' => $log ? $log->get_id() : 0,
-			'redirect' => urlencode( $valid_redirect )
+			'log'       => $log ? $log->get_id() : 0,
+			'redirect'  => urlencode( $valid_redirect ), // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.urlencode_urlencode -- Preserve redirect URL encoding.
 		];
 
 		// SEMGREP WARNING EXPLANATION
@@ -63,8 +67,8 @@ class Tracking {
 	 * Records the open track event if a valid log id is passed.
 	 * Then outputs a blank GIF image.
 	 */
-	static function handle_open_tracking_url() {
-		$log = Log_Factory::get( aw_request( 'log' )  );
+	public static function handle_open_tracking_url() {
+		$log = Log_Factory::get( aw_request( 'log' ) );
 
 		if ( $log && ! self::is_excluded_user_agent() ) {
 			$log->record_open();
@@ -81,7 +85,7 @@ class Tracking {
 		header( 'Content-Disposition: attachment; filename="blank.gif"' );
 		header( 'Content-Transfer-Encoding: binary' );
 		header( 'Content-Length: ' . filesize( $image_path ) ); // provide file size
-		readfile( $image_path );
+		readfile( $image_path ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_readfile -- readfile streams the tracking-pixel image to output.
 		exit;
 	}
 
@@ -90,7 +94,7 @@ class Tracking {
 	 * Records the click event and then redirects the user if safe.
 	 * Still allow redirect if log param is invalid, when testing a '0' value for log is used.
 	 */
-	static function handle_click_tracking_url() {
+	public static function handle_click_tracking_url() {
 		$redirect = esc_url_raw( aw_request( 'redirect' ) );
 		$log      = Log_Factory::get( aw_request( 'log' ) );
 
@@ -113,7 +117,7 @@ class Tracking {
 	/**
 	 * @return string
 	 */
-	static function safe_redirect_fallback() {
+	public static function safe_redirect_fallback() {
 		return apply_filters( 'automatewoo/click_track/safe_redirect_fallback', home_url() );
 	}
 
@@ -131,7 +135,7 @@ class Tracking {
 		$matches = (array) apply_filters(
 			'automatewoo/tracking/excluded_user_agents',
 			[
-				'bitlybot'
+				'bitlybot',
 			]
 		);
 
@@ -144,5 +148,4 @@ class Tracking {
 
 		return false;
 	}
-
 }

@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 defined( 'ABSPATH' ) || exit;
 
@@ -64,18 +63,20 @@ function aw_filter_get_products_query_args( $query, $query_vars ) {
  * @return array
  */
 function aw_get_recent_product_ids( $limit = -1 ) {
-	$query = new WP_Query([
-		'post_type' => 'product',
-		'posts_per_page' => $limit,
-		'post_status' => 'publish',
-		'ignore_sticky_posts' => 1,
-		'no_found_rows' => true,
-		'orderby' => 'date',
-		'order' => 'desc',
-		'fields' => 'ids',
-		'meta_query' => WC()->query->get_meta_query(),
-		'tax_query' => WC()->query->get_tax_query()
-	]);
+	$query = new WP_Query(
+		[
+			'post_type'           => 'product',
+			'posts_per_page'      => $limit,
+			'post_status'         => 'publish',
+			'ignore_sticky_posts' => 1,
+			'no_found_rows'       => true,
+			'orderby'             => 'date',
+			'order'               => 'desc',
+			'fields'              => 'ids',
+			'meta_query'          => WC()->query->get_meta_query(),
+			'tax_query'           => WC()->query->get_tax_query(),
+		]
+	);
 	return $query->posts;
 }
 
@@ -89,19 +90,21 @@ function aw_get_recent_product_ids( $limit = -1 ) {
  * @return array
  */
 function aw_get_top_selling_product_ids( $limit = -1 ) {
-	$query = new WP_Query([
-		'post_type' => 'product',
-		'posts_per_page' => $limit,
-		'post_status' => 'publish',
-		'ignore_sticky_posts' => 1,
-		'no_found_rows' => true,
-		'fields' => 'ids',
-		'meta_key' => 'total_sales',
-		'orderby' => 'meta_value_num',
-		'order' => 'desc',
-		'tax_query' => WC()->query->get_tax_query(),
-		'meta_query' => WC()->query->get_meta_query()
-	]);
+	$query = new WP_Query(
+		[
+			'post_type'           => 'product',
+			'posts_per_page'      => $limit,
+			'post_status'         => 'publish',
+			'ignore_sticky_posts' => 1,
+			'no_found_rows'       => true,
+			'fields'              => 'ids',
+			'meta_key'            => 'total_sales',
+			'orderby'             => 'meta_value_num',
+			'order'               => 'desc',
+			'tax_query'           => WC()->query->get_tax_query(),
+			'meta_query'          => WC()->query->get_meta_query(),
+		]
+	);
 
 	return $query->posts;
 }
@@ -189,7 +192,7 @@ function aw_get_reviewable_products( $products ) {
 		return [];
 	}
 
-	foreach( $products as $product ) {
+	foreach ( $products as $product ) {
 		if ( ! $product instanceof WC_Product ) {
 			continue;
 		}

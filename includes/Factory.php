@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
@@ -10,19 +9,20 @@ namespace AutomateWoo;
 abstract class Factory {
 
 	/** @var array - must NOT be declared in child class  */
-	static $cache = [];
+	public static $cache = [];
 
 	/** @var string - must be declared in child class */
-	static $model;
+	public static $model;
 
 
 	/**
 	 * Fetches the object type from factories array
+	 *
 	 * @return string
 	 */
-	static function get_object_type() {
+	public static function get_object_type() {
 
-		$class = get_called_class();
+		$class     = get_called_class();
 		$factories = array_flip( Factories::get_factories() );
 
 		if ( ! isset( $factories[ $class ] ) ) {
@@ -37,7 +37,7 @@ abstract class Factory {
 	 * @param integer $object_id
 	 * @return Model|bool|mixed
 	 */
-	static function get( $object_id ) {
+	public static function get( $object_id ) {
 		$object_id = Clean::id( $object_id );
 
 		if ( ! $object_id ) {
@@ -62,10 +62,10 @@ abstract class Factory {
 
 	/**
 	 * @deprecated
-	 * @param $object
+	 * @param Model $object
 	 * @return Model|bool
 	 */
-	static function load( $object ) {
+	public static function load( $object ) {
 		wc_deprecated_function( __METHOD__, '5.2.0' );
 
 		return $object;
@@ -76,8 +76,8 @@ abstract class Factory {
 	/**
 	 * Setup cache array for type
 	 */
-	static function setup_cache() {
-		if ( ! isset( self::$cache[ static::get_object_type() ] ) )  {
+	public static function setup_cache() {
+		if ( ! isset( self::$cache[ static::get_object_type() ] ) ) {
 			self::$cache[ static::get_object_type() ] = [];
 		}
 	}
@@ -85,23 +85,24 @@ abstract class Factory {
 
 	/**
 	 * Does the object existing the cache, returns true if the object is false in the cache
-	 * @param $object_id
+	 *
+	 * @param int $object_id
 	 * @return bool
 	 */
-	static function is_cached( $object_id ) {
+	public static function is_cached( $object_id ) {
 		static::setup_cache();
 		return isset( self::$cache[ static::get_object_type() ][ $object_id ] );
 	}
 
 
 	/**
-	 * @param $object_id
+	 * @param int $object_id
 	 * @return bool|Model
 	 */
-	static function get_cached( $object_id ) {
+	public static function get_cached( $object_id ) {
 		static::setup_cache();
 
-		if ( ! isset( self::$cache[ static::get_object_type() ][$object_id] ) ) {
+		if ( ! isset( self::$cache[ static::get_object_type() ][ $object_id ] ) ) {
 			return false;
 		}
 
@@ -111,9 +112,10 @@ abstract class Factory {
 
 	/**
 	 * Cache the fact that the object does not exist
-	 * @param $object_id
+	 *
+	 * @param int $object_id
 	 */
-	static function cache_nonexistent_object( $object_id ) {
+	public static function cache_nonexistent_object( $object_id ) {
 		static::setup_cache();
 		self::$cache[ static::get_object_type() ][ $object_id ] = false;
 	}
@@ -122,7 +124,7 @@ abstract class Factory {
 	/**
 	 * @param Model $object
 	 */
-	static function update_cache( $object ) {
+	public static function update_cache( $object ) {
 		static::setup_cache();
 
 		if ( ! is_a( $object, 'AutomateWoo\Model' ) ) {
@@ -136,7 +138,7 @@ abstract class Factory {
 	/**
 	 * @param Model $object
 	 */
-	static function clean_cache( $object ) {
+	public static function clean_cache( $object ) {
 		static::setup_cache();
 
 		if ( ! is_a( $object, 'AutomateWoo\Model' ) ) {
@@ -146,7 +148,6 @@ abstract class Factory {
 		if ( isset( self::$cache[ static::get_object_type() ][ $object->get_id() ] ) ) {
 			unset( self::$cache[ static::get_object_type() ][ $object->get_id() ] );
 		}
-
 	}
 
 
@@ -154,18 +155,17 @@ abstract class Factory {
 	 * Clears cache property for object based on new and existing values
 	 *
 	 * @since 3.4.2
-	 * @param Model $object
+	 * @param Model  $object
 	 * @param string $prop
 	 * @param string $group
 	 */
-	static function clear_cached_prop( $object, $prop, $group ) {
-		if ( isset( $object->original_data[$prop] ) ) {
-			Cache::delete( $object->original_data[$prop], $group ); // clear old value, important if the value has changed
+	public static function clear_cached_prop( $object, $prop, $group ) {
+		if ( isset( $object->original_data[ $prop ] ) ) {
+			Cache::delete( $object->original_data[ $prop ], $group ); // clear old value, important if the value has changed
 		}
 
-		if ( isset( $object->data[$prop] ) ) {
-			Cache::delete( $object->data[$prop], $group ); // clear for new value, important for newly created carts for example
+		if ( isset( $object->data[ $prop ] ) ) {
+			Cache::delete( $object->data[ $prop ], $group ); // clear for new value, important for newly created carts for example
 		}
 	}
-
 }

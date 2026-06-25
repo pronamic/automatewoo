@@ -33,7 +33,82 @@ abstract class Action_Mailchimp_Abstract extends Action {
 	 * @see MailServiceAction::add_integration_list_field()
 	 */
 	protected function add_list_field() {
-		$this->add_integration_list_field( Integrations::mailchimp()->get_lists() );
+		$list_field = $this->add_integration_list_field( $this->get_mailchimp_lists() );
+		$this->maybe_add_mailchimp_list_field_notice( $list_field );
+	}
+
+	/**
+	 * Get the Mailchimp integration, if it is configured.
+	 *
+	 * @since 6.6.0
+	 *
+	 * @return Integration_Mailchimp|false
+	 */
+	protected function get_mailchimp_integration() {
+		return Integrations::mailchimp();
+	}
+
+	/**
+	 * Get the Mailchimp integration or fail with a workflow-safe exception.
+	 *
+	 * @since 6.6.0
+	 *
+	 * @return Integration_Mailchimp
+	 * @throws \Exception When the Mailchimp integration is unavailable.
+	 */
+	protected function mailchimp() {
+		$mailchimp = $this->get_mailchimp_integration();
+
+		if ( ! $mailchimp ) {
+			throw new \Exception( esc_html( $this->get_mailchimp_settings_error_message() ) );
+		}
+
+		return $mailchimp;
+	}
+
+	/**
+	 * Get Mailchimp lists for admin fields.
+	 *
+	 * @since 6.6.0
+	 *
+	 * @return array
+	 */
+	protected function get_mailchimp_lists() {
+		$mailchimp = $this->get_mailchimp_integration();
+
+		return $mailchimp ? $mailchimp->get_lists() : [];
+	}
+
+	/**
+	 * Add an admin notice to the list field when Mailchimp lists are unavailable.
+	 *
+	 * @since 6.6.0
+	 *
+	 * @param Fields\Select $list_field The list field.
+	 */
+	protected function maybe_add_mailchimp_list_field_notice( $list_field ) {
+		$description = '';
+
+		if ( ! $this->get_mailchimp_integration() ) {
+			$description = $this->get_mailchimp_settings_error_message();
+		} elseif ( ! $list_field->get_options() ) {
+			$description = __( 'No Mailchimp lists were found. Check your Mailchimp API key if this seems incorrect.', 'automatewoo' );
+		}
+
+		if ( $description ) {
+			$list_field->set_description( $description );
+		}
+	}
+
+	/**
+	 * Get the Mailchimp settings error shown in admin fields and workflow logs.
+	 *
+	 * @since 6.6.0
+	 *
+	 * @return string
+	 */
+	protected function get_mailchimp_settings_error_message() {
+		return __( 'Check your Mailchimp API key in AutomateWoo settings.', 'automatewoo' );
 	}
 
 	/**
@@ -62,7 +137,7 @@ abstract class Action_Mailchimp_Abstract extends Action {
 	 * @throws \Exception When the contact is not valid for the list.
 	 */
 	protected function validate_contact( $email, $list_id ) {
-		if ( ! Integrations::mailchimp()->is_subscribed_to_list( $email, $list_id ) ) {
+		if ( ! $this->mailchimp()->is_subscribed_to_list( $email, $list_id ) ) {
 			throw new \Exception( esc_html__( 'Failed because contact is not subscribed to the list.', 'automatewoo' ) );
 		}
 	}

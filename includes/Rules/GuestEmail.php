@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo\Rules;
 
@@ -12,22 +11,25 @@ defined( 'ABSPATH' ) || exit;
  */
 class GuestEmail extends Abstract_String {
 
+	/** @var string */
 	public $data_item = 'guest';
 
 
-	function init() {
+	/**
+	 * Init the rule.
+	 */
+	public function init() {
 		$this->title = __( 'Guest - Email', 'automatewoo' );
 	}
 
 
 	/**
-	 * @param Guest $guest
-	 * @param $compare
-	 * @param $value
+	 * @param Guest  $guest
+	 * @param string $compare
+	 * @param mixed  $value
 	 * @return bool
 	 */
-	function validate( $guest, $compare, $value ) {
+	public function validate( $guest, $compare, $value ) {
 		return $this->validate_string( $guest->get_email(), $compare, $value );
 	}
-
 }

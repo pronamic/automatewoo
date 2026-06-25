@@ -1,9 +1,10 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * @class Cart
@@ -12,6 +13,9 @@ class Cart extends Model {
 
 	const STATUS_ACTIVE    = 'active';
 	const STATUS_ABANDONED = 'abandoned';
+	const STATUS_EMPTIED   = 'emptied';
+	const STATUS_PLACED    = 'placed';
+	const STATUS_RECOVERED = 'recovered';
 
 	/** @var string */
 	public $table_id = 'carts';
@@ -35,7 +39,7 @@ class Cart extends Model {
 	/**
 	 * @param bool|int $id
 	 */
-	function __construct( $id = false ) {
+	public function __construct( $id = false ) {
 		if ( $id ) {
 			$this->get_by( 'id', $id );
 		}
@@ -45,29 +49,78 @@ class Cart extends Model {
 	/**
 	 * @return string
 	 */
-	function get_status() {
+	public function get_status() {
 		$status = $this->get_prop( 'status' );
 		return $status ? Clean::string( $status ) : 'abandoned';
 	}
 
 
 	/**
-	 * @param $status - active|abandoned
+	 * @param string $status active|abandoned|emptied|placed|recovered
 	 */
-	function set_status( $status ) {
-		$this->set_prop( 'status', Clean::string( $status ) );
+	public function set_status( $status ) {
+		$status = Clean::string( $status );
+
+		// Capture the abandoned history before the status is overwritten, so a cart
+		// that leaves the abandoned state (e.g. reactivated via restore or sync) is
+		// still classified as recovered at checkout even when the flag was never
+		// written while it was abandoned. Read the raw prop rather than get_status()
+		// (which defaults an unset status to 'abandoned') so brand-new unsaved carts
+		// are excluded, while existing legacy rows with an empty status — which the
+		// factory and get_status() already treat as abandoned — are included.
+		$previous_status = $this->get_prop( 'status' );
+		$was_abandoned   = self::STATUS_ABANDONED === $previous_status
+			|| ( ( null === $previous_status || '' === $previous_status ) && $this->exists );
+
+		$this->set_prop( 'status', $status );
+
+		// Only write the `has_been_abandoned` column when it actually exists. On a
+		// site that has updated the plugin files but not yet run the database
+		// upgrade the column is absent, and writing it would fail the cart save.
+		if ( ( self::STATUS_ABANDONED === $status || $was_abandoned ) && self::has_been_abandoned_column_exists() ) {
+			$this->set_has_been_abandoned( true );
+		}
+	}
+
+	/**
+	 * Whether the `has_been_abandoned` column exists on the carts table.
+	 *
+	 * Cached for the request. Used to avoid writing the column before the
+	 * database upgrade that adds it has run, which would fail the cart save.
+	 *
+	 * @return bool
+	 */
+	private static function has_been_abandoned_column_exists() {
+		static $exists = null;
+
+		if ( null === $exists ) {
+			global $wpdb;
+
+			$table  = Database_Tables::get( 'carts' )->get_name();
+			$column = $wpdb->get_var(
+				$wpdb->prepare(
+					'SHOW COLUMNS FROM `' . esc_sql( $table ) . '` LIKE %s',
+					'has_been_abandoned'
+				)
+			);
+
+			$exists = ! empty( $column );
+		}
+
+		return $exists;
 	}
 
 
 	/**
 	 * Transition status, triggers change hooks
-	 * @param $new_status - active|abandoned
+	 *
+	 * @param string $new_status active|abandoned|emptied|placed|recovered
 	 */
-	function update_status( $new_status ) {
+	public function update_status( $new_status ) {
 
 		$old_status = $this->get_status();
 
-		if ( $new_status == $old_status ) {
+		if ( $new_status === $old_status ) {
 			return;
 		}
 
@@ -78,9 +131,76 @@ class Cart extends Model {
 
 
 	/**
+	 * Statuses that can be used as the customer's current stored cart.
+	 *
+	 * @return string[]
+	 */
+	public static function get_current_statuses() {
+		return [
+			self::STATUS_ACTIVE,
+			self::STATUS_ABANDONED,
+		];
+	}
+
+
+	/**
+	 * Statuses that keep historical carts but should not be reused as current carts.
+	 *
+	 * @return string[]
+	 */
+	public static function get_terminal_statuses() {
+		return [
+			self::STATUS_EMPTIED,
+			self::STATUS_PLACED,
+			self::STATUS_RECOVERED,
+		];
+	}
+
+
+	/**
+	 * @return bool
+	 */
+	public function is_current() {
+		return in_array( $this->get_status(), self::get_current_statuses(), true );
+	}
+
+
+	/**
+	 * @return bool
+	 */
+	public function is_abandoned() {
+		return $this->get_status() === self::STATUS_ABANDONED;
+	}
+
+
+	/**
+	 * @return bool
+	 */
+	public function has_been_abandoned() {
+		return (bool) $this->get_prop( 'has_been_abandoned' ) || $this->is_abandoned();
+	}
+
+
+	/**
+	 * @param bool $has_been_abandoned
+	 */
+	public function set_has_been_abandoned( $has_been_abandoned ) {
+		$this->set_prop( 'has_been_abandoned', (int) (bool) $has_been_abandoned );
+	}
+
+
+	/**
+	 * @return bool
+	 */
+	public function is_restorable() {
+		return $this->is_current() && $this->has_items();
+	}
+
+
+	/**
 	 * @return int
 	 */
-	function get_user_id() {
+	public function get_user_id() {
 		return Clean::id( $this->get_prop( 'user_id' ) );
 	}
 
@@ -88,7 +208,7 @@ class Cart extends Model {
 	/**
 	 * @param int $user_id
 	 */
-	function set_user_id( $user_id ) {
+	public function set_user_id( $user_id ) {
 		$this->set_prop( 'user_id', Clean::id( $user_id ) );
 	}
 
@@ -96,7 +216,7 @@ class Cart extends Model {
 	/**
 	 * @return int
 	 */
-	function get_guest_id() {
+	public function get_guest_id() {
 		return Clean::id( $this->get_prop( 'guest_id' ) );
 	}
 
@@ -104,7 +224,7 @@ class Cart extends Model {
 	/**
 	 * @param int $guest_id
 	 */
-	function set_guest_id( $guest_id ) {
+	public function set_guest_id( $guest_id ) {
 		$this->set_prop( 'guest_id', Clean::id( $guest_id ) );
 	}
 
@@ -112,7 +232,7 @@ class Cart extends Model {
 	/**
 	 * @return bool|DateTime
 	 */
-	function get_date_last_modified() {
+	public function get_date_last_modified() {
 		return $this->get_date_column( 'last_modified' );
 	}
 
@@ -120,7 +240,7 @@ class Cart extends Model {
 	/**
 	 * @param DateTime|string $date
 	 */
-	function set_date_last_modified( $date ) {
+	public function set_date_last_modified( $date ) {
 		$this->set_date_column( 'last_modified', $date );
 	}
 
@@ -128,7 +248,7 @@ class Cart extends Model {
 	/**
 	 * @return bool|DateTime
 	 */
-	function get_date_created() {
+	public function get_date_created() {
 		return $this->get_date_column( 'created' );
 	}
 
@@ -136,7 +256,7 @@ class Cart extends Model {
 	/**
 	 * @param DateTime $date
 	 */
-	function set_date_created( $date ) {
+	public function set_date_created( $date ) {
 		$this->set_date_column( 'created', $date );
 	}
 
@@ -144,38 +264,38 @@ class Cart extends Model {
 	/**
 	 * @return float
 	 */
-	function get_total() {
+	public function get_total() {
 		return (float) $this->get_prop( 'total' );
 	}
 
 
 	/**
-	 * @param $total
+	 * @param float|string $total
 	 */
-	function set_total( $total ) {
+	public function set_total( $total ) {
 		$this->set_prop( 'total', wc_format_decimal( $total ) );
 	}
 
 
 	/**
-	 * @param $val
+	 * @param float|string $val
 	 */
-	function set_shipping_total( $val ) {
+	public function set_shipping_total( $val ) {
 		$this->set_prop( 'shipping_total', wc_format_decimal( $val ) );
 	}
 
 
 	/**
-	 * @param $val
+	 * @param float|string $val
 	 */
-	function set_shipping_tax_total( $val ) {
+	public function set_shipping_tax_total( $val ) {
 		$this->set_prop( 'shipping_tax_total', wc_round_tax_total( $val ) );
 	}
 
 	/**
 	 * @return float
 	 */
-	function get_shipping_total() {
+	public function get_shipping_total() {
 		return (float) $this->get_prop( 'shipping_total' );
 	}
 
@@ -183,7 +303,7 @@ class Cart extends Model {
 	/**
 	 * @return float
 	 */
-	function get_shipping_tax_total() {
+	public function get_shipping_tax_total() {
 		return (float) $this->get_prop( 'shipping_tax_total' );
 	}
 
@@ -213,7 +333,7 @@ class Cart extends Model {
 	/**
 	 * @return string
 	 */
-	function get_token() {
+	public function get_token() {
 		return Clean::string( $this->get_prop( 'token' ) );
 	}
 
@@ -221,7 +341,7 @@ class Cart extends Model {
 	/**
 	 * @param bool|string $token (optional)
 	 */
-	function set_token( $token = false ) {
+	public function set_token( $token = false ) {
 		if ( ! $token ) {
 			$token = aw_generate_key( 32 );
 		}
@@ -233,7 +353,7 @@ class Cart extends Model {
 	/**
 	 * @return float
 	 */
-	function get_currency() {
+	public function get_currency() {
 		$currency = $this->get_prop( 'currency' );
 		if ( $currency ) {
 			return Clean::string( $currency );
@@ -243,9 +363,9 @@ class Cart extends Model {
 
 
 	/**
-	 * @param $currency
+	 * @param string $currency
 	 */
-	function set_currency( $currency ) {
+	public function set_currency( $currency ) {
 		$this->set_prop( 'currency', Clean::string( $currency ) );
 	}
 
@@ -253,15 +373,15 @@ class Cart extends Model {
 	/**
 	 * @return string
 	 */
-	function get_shipping_total_html() {
+	public function get_shipping_total_html() {
 		$total = get_option( 'woocommerce_tax_display_cart' ) === 'excl' ? $this->get_shipping_total() : $this->get_shipping_total() + $this->get_shipping_tax_total();
 
 		// Virtual-only carts don't display shipping at all (consistent with WC checkout).
 		if ( $this->has_items() && ! $this->needs_shipping() ) {
 			$html = '';
-		} elseif ( $total == 0 && ! $this->has_shipping_calculated() ) {
+		} elseif ( $total == 0 && ! $this->has_shipping_calculated() ) { // phpcs:ignore Universal.Operators.StrictComparisons.LooseEqual -- Intentional loose numeric comparison on a float total.
 			$html = __( 'Calculated at checkout', 'automatewoo' );
-		} elseif ( $total == 0 ) {
+		} elseif ( $total == 0 ) { // phpcs:ignore Universal.Operators.StrictComparisons.LooseEqual -- Intentional loose numeric comparison on a float total.
 			$html = __( 'Free!', 'automatewoo' );
 		} else {
 			$html = $this->price( $total );
@@ -274,7 +394,7 @@ class Cart extends Model {
 	/**
 	 * @return bool
 	 */
-	function needs_shipping() {
+	public function needs_shipping() {
 
 		if ( ! wc_shipping_enabled() || 0 === wc_get_shipping_method_count( true ) ) {
 			return false;
@@ -299,7 +419,7 @@ class Cart extends Model {
 	/**
 	 * @return bool
 	 */
-	function has_coupons() {
+	public function has_coupons() {
 		return sizeof( $this->get_coupons() ) > 0;
 	}
 
@@ -307,7 +427,7 @@ class Cart extends Model {
 	/**
 	 * @return array
 	 */
-	function get_coupons() {
+	public function get_coupons() {
 		$coupons = $this->get_prop( 'coupons' );
 		return is_array( $coupons ) ? $coupons : [];
 	}
@@ -316,7 +436,7 @@ class Cart extends Model {
 	/**
 	 * @param array $coupon_data
 	 */
-	function set_coupons( $coupon_data ) {
+	public function set_coupons( $coupon_data ) {
 		$this->set_prop( 'coupons', (array) $coupon_data );
 	}
 
@@ -324,7 +444,7 @@ class Cart extends Model {
 	/**
 	 * @return array
 	 */
-	function get_fees() {
+	public function get_fees() {
 		$fees = $this->get_prop( 'fees' );
 		return is_array( $fees ) ? $fees : [];
 	}
@@ -333,7 +453,7 @@ class Cart extends Model {
 	/**
 	 * @param array $fees_data
 	 */
-	function set_fees( $fees_data ) {
+	public function set_fees( $fees_data ) {
 		$this->set_prop( 'fees', (array) $fees_data );
 	}
 
@@ -341,7 +461,7 @@ class Cart extends Model {
 	/**
 	 * @return bool
 	 */
-	function has_items() {
+	public function has_items() {
 		$items = $this->get_prop( 'items' );
 		return is_array( $items ) && sizeof( $items ) > 0;
 	}
@@ -354,7 +474,7 @@ class Cart extends Model {
 	 */
 	public function get_items() {
 		$raw_item_data = $this->get_prop( 'items' );
-		$items     = [];
+		$items         = [];
 
 		if ( is_array( $raw_item_data ) ) {
 			$items = $this->convert_cart_item_data_to_cart_item_objects( $raw_item_data );
@@ -383,7 +503,7 @@ class Cart extends Model {
 	protected function convert_cart_item_data_to_cart_item_objects( array $raw_items ): array {
 		$parsed_items = [];
 
-		foreach( $raw_items as $item_key => $item_data ) {
+		foreach ( $raw_items as $item_key => $item_data ) {
 			if ( ! is_string( $item_key ) || ! is_array( $item_data ) ) {
 				// Stored cart data is invalid.
 				continue;
@@ -399,7 +519,7 @@ class Cart extends Model {
 	/**
 	 * @return array
 	 */
-	function get_items_raw() {
+	public function get_items_raw() {
 		$raw = [];
 		foreach ( $this->get_items() as $item ) {
 			$raw[ $item->get_key() ] = $item->get_data();
@@ -412,7 +532,7 @@ class Cart extends Model {
 	 * @since 4.2
 	 * @return int
 	 */
-	function get_item_count() {
+	public function get_item_count() {
 		$count = 0;
 
 		foreach ( $this->get_items() as $item ) {
@@ -447,7 +567,7 @@ class Cart extends Model {
 	/**
 	 * @param array $items
 	 */
-	function set_items( $items ) {
+	public function set_items( $items ) {
 		$this->translated_items_cache = null;
 		$this->set_prop( 'items', (array) $items );
 	}
@@ -456,7 +576,7 @@ class Cart extends Model {
 	/**
 	 * @return Guest|false
 	 */
-	function get_guest() {
+	public function get_guest() {
 		if ( ! $this->get_guest_id() ) {
 			return false;
 		}
@@ -467,11 +587,10 @@ class Cart extends Model {
 	/**
 	 * @return Customer|bool
 	 */
-	function get_customer() {
+	public function get_customer() {
 		if ( $this->get_user_id() ) {
 			return Customer_Factory::get_by_user_id( $this->get_user_id() );
-		}
-		else {
+		} else {
 			return Customer_Factory::get_by_guest_id( $this->get_guest_id() );
 		}
 	}
@@ -479,7 +598,7 @@ class Cart extends Model {
 	/**
 	 * @return string
 	 */
-	function get_language() {
+	public function get_language() {
 		if ( $this->get_customer() ) {
 			return $this->get_customer()->get_language();
 		}
@@ -490,17 +609,17 @@ class Cart extends Model {
 	/**
 	 * Updates the stored cart with the current time and cart items
 	 */
-	function sync() {
+	public function sync() {
 		$this->set_date_last_modified( new DateTime() );
 		$this->set_items( $this->get_cart_for_sync() );
 
 		$coupon_data = [];
 
-		foreach( WC()->cart->get_applied_coupons() as $coupon_code ) {
-			$coupon_data[$coupon_code] = [
+		foreach ( WC()->cart->get_applied_coupons() as $coupon_code ) {
+			$coupon_data[ $coupon_code ] = [
 				'discount_incl_tax' => WC()->cart->get_coupon_discount_amount( $coupon_code, false ),
 				'discount_excl_tax' => WC()->cart->get_coupon_discount_amount( $coupon_code ),
-				'discount_tax' => WC()->cart->get_coupon_discount_tax_amount( $coupon_code )
+				'discount_tax'      => WC()->cart->get_coupon_discount_tax_amount( $coupon_code ),
 			];
 		}
 
@@ -518,10 +637,9 @@ class Cart extends Model {
 
 		$this->set_total( $this->calculated_total );
 
-		if ( $this->get_status() == 'abandoned' ) {
-			$this->update_status( 'active' );
-		}
-		else {
+		if ( $this->get_status() === self::STATUS_ABANDONED ) {
+			$this->update_status( self::STATUS_ACTIVE );
+		} else {
 			$this->save();
 		}
 	}
@@ -548,33 +666,36 @@ class Cart extends Model {
 		return $cart_session;
 	}
 
-	function calculate_totals() {
+	/**
+	 * Calculate cart totals from items, coupons, fees and shipping.
+	 */
+	public function calculate_totals() {
 
-		$this->calculated_subtotal = 0;
+		$this->calculated_subtotal  = 0;
 		$this->calculated_tax_total = 0;
-		$this->calculated_total = 0;
+		$this->calculated_total     = 0;
 
 		$tax_display = get_option( 'woocommerce_tax_display_cart' );
 
-		foreach( $this->get_items() as $item ) {
+		foreach ( $this->get_items() as $item ) {
 			$this->calculated_tax_total += $item->get_line_subtotal_tax();
-			$this->calculated_total += $item->get_line_subtotal() + $item->get_line_subtotal_tax();
-			$this->calculated_subtotal += $tax_display === 'excl' ? $item->get_line_subtotal() : $item->get_line_subtotal() + $item->get_line_subtotal_tax();
+			$this->calculated_total     += $item->get_line_subtotal() + $item->get_line_subtotal_tax();
+			$this->calculated_subtotal  += $tax_display === 'excl' ? $item->get_line_subtotal() : $item->get_line_subtotal() + $item->get_line_subtotal_tax();
 		}
 
 		foreach ( $this->get_coupons() as $coupon_code => $coupon ) {
-			$this->calculated_total -= $coupon[ 'discount_incl_tax' ];
+			$this->calculated_total     -= $coupon['discount_incl_tax'];
 			$this->calculated_tax_total -= $coupon['discount_tax'];
 		}
 
 		foreach ( $this->get_fees() as $fee ) {
-			$this->calculated_total += ( $fee->amount + $fee->tax );
+			$this->calculated_total     += ( $fee->amount + $fee->tax );
 			$this->calculated_tax_total += $fee->tax;
 		}
 
 		$this->calculated_tax_total += $this->get_shipping_tax_total();
-		$this->calculated_total += $this->get_shipping_total();
-		$this->calculated_total += $this->get_shipping_tax_total();
+		$this->calculated_total     += $this->get_shipping_total();
+		$this->calculated_total     += $this->get_shipping_tax_total();
 	}
 
 
@@ -582,7 +703,7 @@ class Cart extends Model {
 	 * @param float $price
 	 * @return string
 	 */
-	function price( $price ) {
+	public function price( $price ) {
 		return wc_price( $price, apply_filters( 'automatewoo/cart/price_args', [], $this ) );
 	}
 

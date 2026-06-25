@@ -1,23 +1,29 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo\Fields;
 
 use AutomateWoo\Fields_Helper;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * @class Category
  */
 class Category extends Field {
 
+	/** @var string */
 	protected $name = 'category';
 
+	/** @var string */
 	protected $type = 'category';
 
 
-	function __construct() {
+	/**
+	 * Category constructor.
+	 */
+	public function __construct() {
 		parent::__construct();
 		$this->set_title( __( 'Product category', 'automatewoo' ) );
 		$this->set_placeholder( __( '[Select]', 'automatewoo' ) );
@@ -25,20 +31,22 @@ class Category extends Field {
 
 
 	/**
-	 * @param $value
+	 * Output the field HTML.
+	 *
+	 * @param mixed $value
 	 */
-	function render( $value ) {
+	public function render( $value ) {
 		?>
 
 		<select name="<?php echo esc_attr( $this->get_full_name() ); ?>"
-		        class="wc-enhanced-select <?php echo esc_attr( $this->get_classes() ); ?>"
-		        data-placeholder="<?php echo esc_attr( $this->get_placeholder() ); ?>">
+				class="wc-enhanced-select <?php echo esc_attr( $this->get_classes() ); ?>"
+				data-placeholder="<?php echo esc_attr( $this->get_placeholder() ); ?>">
 
 			<option value=""><?php echo esc_html( $this->get_placeholder() ); ?></option>
 
 			<?php
 
-            $categories = Fields_Helper::get_categories_list();
+			$categories = Fields_Helper::get_categories_list();
 
 			foreach ( $categories as $category_id => $category_name ) {
 				echo '<option value="' . esc_attr( $category_id ) . '" ' . selected( $category_id, $value, false ) . '>' . esc_html( $category_name ) . '</option>';
@@ -50,7 +58,6 @@ class Category extends Field {
 			jQuery( 'body' ).trigger( 'wc-enhanced-select-init' );
 		</script>
 
-	<?php
+		<?php
 	}
-
 }

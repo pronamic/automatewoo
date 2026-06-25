@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
@@ -22,9 +21,10 @@ abstract class Registry {
 
 	/**
 	 * Implement this method in sub classes
+	 *
 	 * @return array
 	 */
-	static function load_includes() {
+	public static function load_includes() {
 		return [];
 	}
 
@@ -43,7 +43,7 @@ abstract class Registry {
 	/**
 	 * @return array
 	 */
-	static function get_includes() {
+	public static function get_includes() {
 		if ( ! isset( static::$includes ) ) {
 			static::$includes = static::load_includes();
 		}
@@ -54,7 +54,7 @@ abstract class Registry {
 	/**
 	 * @return mixed
 	 */
-	static function get_all() {
+	public static function get_all() {
 		foreach ( static::get_includes() as $name => $path ) {
 			static::load( $name );
 		}
@@ -63,10 +63,10 @@ abstract class Registry {
 
 
 	/**
-	 * @param $name
+	 * @param string $name
 	 * @return bool|object
 	 */
-	static function get( $name ) {
+	public static function get( $name ) {
 		if ( static::load( $name ) ) {
 			return static::$loaded[ $name ];
 		}
@@ -75,10 +75,10 @@ abstract class Registry {
 
 
 	/**
-	 * @param $name
+	 * @param string $name
 	 * @return bool
 	 */
-	static function is_loaded( $name ) {
+	public static function is_loaded( $name ) {
 		return isset( static::$loaded[ $name ] );
 	}
 
@@ -94,7 +94,7 @@ abstract class Registry {
 	 *
 	 * @return bool
 	 */
-	static function load( $name ) {
+	public static function load( $name ) {
 		if ( self::is_loaded( $name ) ) {
 			return true;
 		}
@@ -112,19 +112,15 @@ abstract class Registry {
 			// The include is already an object
 			// Allows objects to be dynamically registered, useful if they have variable data
 			$object = $include;
-		} else {
+		} elseif ( strstr( $include, '.php' ) ) {
 			// Check if include is a file path or a class name
 			// NOTE: the file include method should NOT be used! It is kept for compatibility.
-			if ( strstr( $include, '.php' ) ) {
-				if ( file_exists( $include ) ) {
-					$object = include_once $include;
-				}
-			} else {
-				// If include is not a file path, assume it's a class name
-				if ( class_exists( $include ) ) {
-					$object = new $include( ...static::get_item_constructor_args( $name ) );
-				}
+			if ( file_exists( $include ) ) {
+				$object = include_once $include;
 			}
+		} elseif ( class_exists( $include ) ) {
+			// If include is not a file path, assume it's a class name
+			$object = new $include( ...static::get_item_constructor_args( $name ) );
 		}
 
 		if ( static::is_item_valid( $object ) ) {
@@ -159,9 +155,8 @@ abstract class Registry {
 	 *
 	 * @since 4.4.0
 	 */
-	static function reset() {
+	public static function reset() {
 		static::$includes = null;
-		static::$loaded = [];
+		static::$loaded   = [];
 	}
-
 }

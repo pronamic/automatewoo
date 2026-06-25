@@ -1,11 +1,12 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo\DataTypes;
 
 use WP_Term;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * ProductTag data type class.
@@ -13,8 +14,8 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 class ProductTag extends ProductCategory {
 
 	/**
-	 * @param $compressed_item
-	 * @param $compressed_data_layer
+	 * @param int|string|null $compressed_item
+	 * @param array           $compressed_data_layer
 	 * @return WP_Term|false
 	 */
 	public function decompress( $compressed_item, $compressed_data_layer ) {
@@ -29,5 +30,4 @@ class ProductTag extends ProductCategory {
 
 		return $term;
 	}
-
 }

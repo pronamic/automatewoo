@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
@@ -21,13 +20,18 @@ class Data_Layer {
 	 */
 	public $order_belongs_to_customer = true;
 
+	/**
+	 * The data layer items keyed by type.
+	 *
+	 * @var array
+	 */
 	private $data = [];
 
 
 	/**
 	 * @param array $data
 	 */
-	function __construct( $data = [] ) {
+	public function __construct( $data = [] ) {
 		if ( is_array( $data ) ) {
 			$this->data = $data;
 
@@ -42,7 +46,7 @@ class Data_Layer {
 	/**
 	 * Initiate the data layer
 	 */
-	function init() {
+	public function init() {
 		$this->ensure_customer_object_compatibility();
 		do_action( 'automatewoo/data_layer/init' );
 	}
@@ -51,18 +55,17 @@ class Data_Layer {
 	/**
 	 * Auto fill customer based on user and user based on customer for compatibility with legacy triggers, rules etc
 	 */
-	function ensure_customer_object_compatibility() {
+	public function ensure_customer_object_compatibility() {
 		if ( $this->get_customer() && ! $this->get_user() ) {
 
 			if ( $this->get_customer()->is_registered() ) {
 				$this->set_item( 'user', $this->get_customer()->get_user() );
-			}
-			else {
+			} else {
 				// if the user is not registered at this point they may be a legacy order guest
-				if ( $order = $this->get_order() ) {
+				$order = $this->get_order();
+				if ( $order ) {
 					$this->set_item( 'user', AW()->order_helper->prepare_user_data_item( $order ) );
-				}
-				else {
+				} else {
 					// IMPORTANT the customer might be a guest in which case remove the user completely
 					unset( $this->data['user'] );
 				}
@@ -81,26 +84,30 @@ class Data_Layer {
 	}
 
 
-	function clear() {
+	/**
+	 * Clears the data layer.
+	 */
+	public function clear() {
 		$this->data = [];
 	}
 
 
 	/**
 	 * Returns unvalidated data layer
+	 *
 	 * @return array
 	 */
-	function get_raw_data() {
+	public function get_raw_data() {
 		return $this->data;
 	}
 
 
 	/**
-	 * @param $type
-	 * @param $item
+	 * @param string $type The data item type.
+	 * @param mixed  $item The data item.
 	 */
-	function set_item( $type, $item ) {
-		$this->data[$type] = $item;
+	public function set_item( $type, $item ) {
+		$this->data[ $type ] = $item;
 	}
 
 
@@ -108,20 +115,20 @@ class Data_Layer {
 	 * @param string $type
 	 * @return mixed
 	 */
-	function get_item( $type ) {
+	public function get_item( $type ) {
 
-		if ( ! isset( $this->data[$type] ) ) {
+		if ( ! isset( $this->data[ $type ] ) ) {
 			return false;
 		}
 
-		return aw_validate_data_item( $type, $this->data[$type] );
+		return aw_validate_data_item( $type, $this->data[ $type ] );
 	}
 
 
 	/**
 	 * @return Customer|false
 	 */
-	function get_customer() {
+	public function get_customer() {
 		return $this->get_item( 'customer' );
 	}
 
@@ -129,7 +136,7 @@ class Data_Layer {
 	/**
 	 * @return Cart|false
 	 */
-	function get_cart() {
+	public function get_cart() {
 		return $this->get_item( 'cart' );
 	}
 
@@ -137,7 +144,7 @@ class Data_Layer {
 	/**
 	 * @return Guest|bool
 	 */
-	function get_guest() {
+	public function get_guest() {
 		return $this->get_item( 'guest' );
 	}
 
@@ -145,7 +152,7 @@ class Data_Layer {
 	/**
 	 * @return \WP_User|Order_Guest|false
 	 */
-	function get_user() {
+	public function get_user() {
 		return $this->get_item( 'user' );
 	}
 
@@ -153,7 +160,7 @@ class Data_Layer {
 	/**
 	 * @return \WC_Order|false
 	 */
-	function get_order() {
+	public function get_order() {
 		return $this->get_item( 'order' );
 	}
 
@@ -161,7 +168,7 @@ class Data_Layer {
 	/**
 	 * @return \WC_Subscription|false
 	 */
-	function get_subscription() {
+	public function get_subscription() {
 		return $this->get_item( 'subscription' );
 	}
 
@@ -169,7 +176,7 @@ class Data_Layer {
 	/**
 	 * @return \WC_Booking|false
 	 */
-	function get_booking() {
+	public function get_booking() {
 		return $this->get_item( 'booking' );
 	}
 
@@ -177,7 +184,7 @@ class Data_Layer {
 	/**
 	 * @return array|\WC_Order_Item_Product|false
 	 */
-	function get_order_item() {
+	public function get_order_item() {
 		return $this->get_item( 'order_item' );
 	}
 
@@ -185,7 +192,7 @@ class Data_Layer {
 	/**
 	 * @return \WC_Memberships_User_Membership|false
 	 */
-	function get_membership() {
+	public function get_membership() {
 		return $this->get_item( 'membership' );
 	}
 
@@ -193,7 +200,7 @@ class Data_Layer {
 	/**
 	 * @return Wishlist|false
 	 */
-	function get_wishlist() {
+	public function get_wishlist() {
 		return $this->get_item( 'wishlist' );
 	}
 
@@ -201,7 +208,7 @@ class Data_Layer {
 	/**
 	 * @return \WC_Product|false
 	 */
-	function get_product() {
+	public function get_product() {
 		return $this->get_item( 'product' );
 	}
 
@@ -209,7 +216,7 @@ class Data_Layer {
 	/**
 	 * @return Order_Note|false
 	 */
-	function get_order_note() {
+	public function get_order_note() {
 		return $this->get_item( 'order_note' );
 	}
 
@@ -217,7 +224,7 @@ class Data_Layer {
 	/**
 	 * @return \WP_Comment|false
 	 */
-	function get_comment() {
+	public function get_comment() {
 		return $this->get_item( 'comment' );
 	}
 
@@ -225,7 +232,7 @@ class Data_Layer {
 	/**
 	 * @return Review|false
 	 */
-	function get_review() {
+	public function get_review() {
 		return $this->get_item( 'review' );
 	}
 
@@ -233,7 +240,7 @@ class Data_Layer {
 	/**
 	 * @return Workflow|false
 	 */
-	function get_workflow() {
+	public function get_workflow() {
 		return $this->get_item( 'workflow' );
 	}
 
@@ -241,7 +248,7 @@ class Data_Layer {
 	/**
 	 * @return \WP_Term|false
 	 */
-	function get_category() {
+	public function get_category() {
 		return $this->get_item( 'category' );
 	}
 
@@ -249,7 +256,7 @@ class Data_Layer {
 	/**
 	 * @return \WP_Term|false
 	 */
-	function get_tag() {
+	public function get_tag() {
 		return $this->get_item( 'tag' );
 	}
 
@@ -286,7 +293,7 @@ class Data_Layer {
 	 *
 	 * @return string|bool
 	 */
-	function get_language() {
+	public function get_language() {
 
 		if ( ! Language::is_multilingual() ) {
 			return false;
@@ -294,28 +301,35 @@ class Data_Layer {
 
 		// only use the order language if the order belongs to the customer
 		if ( $this->order_belongs_to_customer ) {
-			if ( $order = $this->get_order() ) {
-				if ( $lang = Language::get_order_language( $order ) ) {
+			$order = $this->get_order();
+			if ( $order ) {
+				$lang = Language::get_order_language( $order );
+				if ( $lang ) {
 					return $lang;
 				}
 			}
 		}
 
-
-		if ( $customer = $this->get_customer() ) {
-			if ( $lang = $customer->get_language() ) {
+		$customer = $this->get_customer();
+		if ( $customer ) {
+			$lang = $customer->get_language();
+			if ( $lang ) {
 				return $lang;
 			}
 		}
 
-		if ( $user = $this->get_user() ) {
-			if ( $lang = Language::get_user_language( $user ) ) {
+		$user = $this->get_user();
+		if ( $user ) {
+			$lang = Language::get_user_language( $user );
+			if ( $lang ) {
 				return $lang;
 			}
 		}
 
-		if ( $guest = $this->get_guest() ) {
-			if ( $lang = Language::get_guest_language( $guest ) ) {
+		$guest = $this->get_guest();
+		if ( $guest ) {
+			$lang = Language::get_guest_language( $guest );
+			if ( $lang ) {
 				return $lang;
 			}
 		}
@@ -326,9 +340,10 @@ class Data_Layer {
 
 	/**
 	 * Alias for $this->get_language()
+	 *
 	 * @return bool|string
 	 */
-	function get_customer_language() {
+	public function get_customer_language() {
 		return $this->get_language();
 	}
 
@@ -339,7 +354,7 @@ class Data_Layer {
 	 * @since 4.2
 	 * @return string
 	 */
-	function get_customer_email() {
+	public function get_customer_email() {
 		$customer = $this->get_customer();
 
 		if ( ! $customer ) {
@@ -349,12 +364,16 @@ class Data_Layer {
 		$billing_email = '';
 
 		if ( $this->order_belongs_to_customer ) {
-			if ( $subscription = $this->get_subscription() ) {
+			$subscription = $this->get_subscription();
+			if ( $subscription ) {
 				$billing_email = Clean::email( $subscription->get_billing_email() );
 			}
 
-			if ( ! $billing_email && $order = $this->get_order() ) {
-				$billing_email = Clean::email( $order->get_billing_email() );
+			if ( ! $billing_email ) {
+				$order = $this->get_order();
+				if ( $order ) {
+					$billing_email = Clean::email( $order->get_billing_email() );
+				}
 			}
 		}
 
@@ -367,8 +386,7 @@ class Data_Layer {
 			// The reason for this is that a customer could change their account email and their
 			// orders or subscriptions will not be updated.
 			return $customer->get_email();
-		}
-		else {
+		} else {
 			// If the customer is not registered use the order/subscription billing email over the
 			// email stored in the guest account.
 			if ( ! $billing_email ) {
@@ -412,21 +430,28 @@ class Data_Layer {
 	 * @since 4.2
 	 * @return string
 	 */
-	function get_customer_first_name() {
+	public function get_customer_first_name() {
 		$prop = '';
 
 		if ( $this->order_belongs_to_customer ) {
-			if ( $subscription = $this->get_subscription() ) {
+			$subscription = $this->get_subscription();
+			if ( $subscription ) {
 				$prop = $subscription->get_billing_first_name();
 			}
 
-			if ( ! $prop && $order = $this->get_order() ) {
-				$prop = $order->get_billing_first_name();
+			if ( ! $prop ) {
+				$order = $this->get_order();
+				if ( $order ) {
+					$prop = $order->get_billing_first_name();
+				}
 			}
 		}
 
-		if ( ! $prop && $customer = $this->get_customer() ) {
-			$prop = $customer->get_first_name();
+		if ( ! $prop ) {
+			$customer = $this->get_customer();
+			if ( $customer ) {
+				$prop = $customer->get_first_name();
+			}
 		}
 
 		return $prop;
@@ -439,21 +464,28 @@ class Data_Layer {
 	 * @since 4.2
 	 * @return string
 	 */
-	function get_customer_last_name() {
+	public function get_customer_last_name() {
 		$prop = '';
 
 		if ( $this->order_belongs_to_customer ) {
-			if ( $subscription = $this->get_subscription() ) {
+			$subscription = $this->get_subscription();
+			if ( $subscription ) {
 				$prop = $subscription->get_billing_last_name();
 			}
 
-			if ( ! $prop && $order = $this->get_order() ) {
-				$prop = $order->get_billing_last_name();
+			if ( ! $prop ) {
+				$order = $this->get_order();
+				if ( $order ) {
+					$prop = $order->get_billing_last_name();
+				}
 			}
 		}
 
-		if ( ! $prop && $customer = $this->get_customer() ) {
-			$prop = $customer->get_last_name();
+		if ( ! $prop ) {
+			$customer = $this->get_customer();
+			if ( $customer ) {
+				$prop = $customer->get_last_name();
+			}
 		}
 
 		return $prop;
@@ -466,7 +498,7 @@ class Data_Layer {
 	 * @since 4.2
 	 * @return string
 	 */
-	function get_customer_full_name() {
+	public function get_customer_full_name() {
 		/* translators: 1: User First name, 2: User Last name */
 		return trim( sprintf( _x( '%1$s %2$s', 'full name', 'automatewoo' ), $this->get_customer_first_name(), $this->get_customer_last_name() ) );
 	}
@@ -479,21 +511,28 @@ class Data_Layer {
 	 * @since 4.2
 	 * @return string
 	 */
-	function get_customer_phone() {
+	public function get_customer_phone() {
 		$prop = '';
 
 		if ( $this->order_belongs_to_customer ) {
-			if ( $subscription = $this->get_subscription() ) {
+			$subscription = $this->get_subscription();
+			if ( $subscription ) {
 				$prop = $subscription->get_billing_phone();
 			}
 
-			if ( ! $prop && $order = $this->get_order() ) {
-				$prop = $order->get_billing_phone();
+			if ( ! $prop ) {
+				$order = $this->get_order();
+				if ( $order ) {
+					$prop = $order->get_billing_phone();
+				}
 			}
 		}
 
-		if ( ! $prop && $customer = $this->get_customer() ) {
-			$prop = $customer->get_billing_phone();
+		if ( ! $prop ) {
+			$customer = $this->get_customer();
+			if ( $customer ) {
+				$prop = $customer->get_billing_phone();
+			}
 		}
 
 		return $prop;
@@ -506,21 +545,28 @@ class Data_Layer {
 	 * @since 4.2
 	 * @return string
 	 */
-	function get_customer_company() {
+	public function get_customer_company() {
 		$prop = '';
 
 		if ( $this->order_belongs_to_customer ) {
-			if ( $subscription = $this->get_subscription() ) {
+			$subscription = $this->get_subscription();
+			if ( $subscription ) {
 				$prop = $subscription->get_billing_company();
 			}
 
-			if ( ! $prop && $order = $this->get_order() ) {
-				$prop = $order->get_billing_company();
+			if ( ! $prop ) {
+				$order = $this->get_order();
+				if ( $order ) {
+					$prop = $order->get_billing_company();
+				}
 			}
 		}
 
-		if ( ! $prop && $customer = $this->get_customer() ) {
-			$prop = $customer->get_billing_company();
+		if ( ! $prop ) {
+			$customer = $this->get_customer();
+			if ( $customer ) {
+				$prop = $customer->get_billing_company();
+			}
 		}
 
 		return $prop;
@@ -533,23 +579,30 @@ class Data_Layer {
 	 * @since 6.5.0
 	 * @return string
 	 */
-	function get_customer_shipping_country() {
+	public function get_customer_shipping_country() {
 		$prop = '';
 
 		if ( $this->order_belongs_to_customer ) {
-			if ( $subscription = $this->get_subscription() ) {
+			$subscription = $this->get_subscription();
+			if ( $subscription ) {
 				$prop = $subscription->get_shipping_country();
 			}
 
-			if ( ! $prop && $order = $this->get_order() ) {
-				$prop = $order->get_shipping_country();
+			if ( ! $prop ) {
+				$order = $this->get_order();
+				if ( $order ) {
+					$prop = $order->get_shipping_country();
+				}
 			}
 		}
 
-		if ( ! $prop && $customer = $this->get_customer() ) {
-			if ( $customer->is_registered() ) {
-				$user = $customer->get_user();
-				$prop = $user ? get_user_meta( $user->ID, 'shipping_country', true ) : '';
+		if ( ! $prop ) {
+			$customer = $this->get_customer();
+			if ( $customer ) {
+				if ( $customer->is_registered() ) {
+					$user = $customer->get_user();
+					$prop = $user ? get_user_meta( $user->ID, 'shipping_country', true ) : '';
+				}
 			}
 		}
 
@@ -563,23 +616,30 @@ class Data_Layer {
 	 * @since 6.5.0
 	 * @return string
 	 */
-	function get_customer_shipping_state() {
+	public function get_customer_shipping_state() {
 		$prop = '';
 
 		if ( $this->order_belongs_to_customer ) {
-			if ( $subscription = $this->get_subscription() ) {
+			$subscription = $this->get_subscription();
+			if ( $subscription ) {
 				$prop = $subscription->get_shipping_state();
 			}
 
-			if ( ! $prop && $order = $this->get_order() ) {
-				$prop = $order->get_shipping_state();
+			if ( ! $prop ) {
+				$order = $this->get_order();
+				if ( $order ) {
+					$prop = $order->get_shipping_state();
+				}
 			}
 		}
 
-		if ( ! $prop && $customer = $this->get_customer() ) {
-			if ( $customer->is_registered() ) {
-				$user = $customer->get_user();
-				$prop = $user ? get_user_meta( $user->ID, 'shipping_state', true ) : '';
+		if ( ! $prop ) {
+			$customer = $this->get_customer();
+			if ( $customer ) {
+				if ( $customer->is_registered() ) {
+					$user = $customer->get_user();
+					$prop = $user ? get_user_meta( $user->ID, 'shipping_state', true ) : '';
+				}
 			}
 		}
 
@@ -593,21 +653,28 @@ class Data_Layer {
 	 * @since 4.2
 	 * @return string
 	 */
-	function get_customer_country() {
+	public function get_customer_country() {
 		$prop = '';
 
 		if ( $this->order_belongs_to_customer ) {
-			if ( $subscription = $this->get_subscription() ) {
+			$subscription = $this->get_subscription();
+			if ( $subscription ) {
 				$prop = $subscription->get_billing_country();
 			}
 
-			if ( ! $prop && $order = $this->get_order() ) {
-				$prop = $order->get_billing_country();
+			if ( ! $prop ) {
+				$order = $this->get_order();
+				if ( $order ) {
+					$prop = $order->get_billing_country();
+				}
 			}
 		}
 
-		if ( ! $prop && $customer = $this->get_customer() ) {
-			$prop = $customer->get_billing_country();
+		if ( ! $prop ) {
+			$customer = $this->get_customer();
+			if ( $customer ) {
+				$prop = $customer->get_billing_country();
+			}
 		}
 
 		return $prop;
@@ -620,21 +687,28 @@ class Data_Layer {
 	 * @since 4.2
 	 * @return string
 	 */
-	function get_customer_state() {
+	public function get_customer_state() {
 		$prop = '';
 
 		if ( $this->order_belongs_to_customer ) {
-			if ( $subscription = $this->get_subscription() ) {
+			$subscription = $this->get_subscription();
+			if ( $subscription ) {
 				$prop = $subscription->get_billing_state();
 			}
 
-			if ( ! $prop && $order = $this->get_order() ) {
-				$prop = $order->get_billing_state();
+			if ( ! $prop ) {
+				$order = $this->get_order();
+				if ( $order ) {
+					$prop = $order->get_billing_state();
+				}
 			}
 		}
 
-		if ( ! $prop && $customer = $this->get_customer() ) {
-			$prop = $customer->get_billing_state();
+		if ( ! $prop ) {
+			$customer = $this->get_customer();
+			if ( $customer ) {
+				$prop = $customer->get_billing_state();
+			}
 		}
 
 		return $prop;
@@ -647,21 +721,28 @@ class Data_Layer {
 	 * @since 4.2
 	 * @return string
 	 */
-	function get_customer_city() {
+	public function get_customer_city() {
 		$prop = '';
 
 		if ( $this->order_belongs_to_customer ) {
-			if ( $subscription = $this->get_subscription() ) {
+			$subscription = $this->get_subscription();
+			if ( $subscription ) {
 				$prop = $subscription->get_billing_city();
 			}
 
-			if ( ! $prop && $order = $this->get_order() ) {
-				$prop = $order->get_billing_city();
+			if ( ! $prop ) {
+				$order = $this->get_order();
+				if ( $order ) {
+					$prop = $order->get_billing_city();
+				}
 			}
 		}
 
-		if ( ! $prop && $customer = $this->get_customer() ) {
-			$prop = $customer->get_billing_city();
+		if ( ! $prop ) {
+			$customer = $this->get_customer();
+			if ( $customer ) {
+				$prop = $customer->get_billing_city();
+			}
 		}
 
 		return $prop;
@@ -674,21 +755,28 @@ class Data_Layer {
 	 * @since 4.2
 	 * @return string
 	 */
-	function get_customer_postcode() {
+	public function get_customer_postcode() {
 		$prop = '';
 
 		if ( $this->order_belongs_to_customer ) {
-			if ( $subscription = $this->get_subscription() ) {
+			$subscription = $this->get_subscription();
+			if ( $subscription ) {
 				$prop = $subscription->get_billing_postcode();
 			}
 
-			if ( ! $prop && $order = $this->get_order() ) {
-				$prop = $order->get_billing_postcode();
+			if ( ! $prop ) {
+				$order = $this->get_order();
+				if ( $order ) {
+					$prop = $order->get_billing_postcode();
+				}
 			}
 		}
 
-		if ( ! $prop && $customer = $this->get_customer() ) {
-			$prop = $customer->get_billing_postcode();
+		if ( ! $prop ) {
+			$customer = $this->get_customer();
+			if ( $customer ) {
+				$prop = $customer->get_billing_postcode();
+			}
 		}
 
 		return $prop;
@@ -701,21 +789,28 @@ class Data_Layer {
 	 * @since 4.2
 	 * @return string
 	 */
-	function get_customer_address_1() {
+	public function get_customer_address_1() {
 		$prop = '';
 
 		if ( $this->order_belongs_to_customer ) {
-			if ( $subscription = $this->get_subscription() ) {
+			$subscription = $this->get_subscription();
+			if ( $subscription ) {
 				$prop = $subscription->get_billing_address_1();
 			}
 
-			if ( ! $prop && $order = $this->get_order() ) {
-				$prop = $order->get_billing_address_1();
+			if ( ! $prop ) {
+				$order = $this->get_order();
+				if ( $order ) {
+					$prop = $order->get_billing_address_1();
+				}
 			}
 		}
 
-		if ( ! $prop && $customer = $this->get_customer() ) {
-			$prop = $customer->get_billing_address_1();
+		if ( ! $prop ) {
+			$customer = $this->get_customer();
+			if ( $customer ) {
+				$prop = $customer->get_billing_address_1();
+			}
 		}
 
 		return $prop;
@@ -728,7 +823,7 @@ class Data_Layer {
 	 * @since 4.2
 	 * @return string
 	 */
-	function get_customer_address_2() {
+	public function get_customer_address_2() {
 		$address_2 = '';
 		$address_1 = '';
 		$customer  = $this->get_customer();
@@ -763,21 +858,21 @@ class Data_Layer {
 	 * @param bool $include_name
 	 * @return array
 	 */
-	function get_customer_address_array( $include_name = true ) {
+	public function get_customer_address_array( $include_name = true ) {
 		$args = [];
 
 		if ( $include_name ) {
 			$args['first_name'] = $this->get_customer_first_name();
-			$args['last_name'] = $this->get_customer_last_name();
+			$args['last_name']  = $this->get_customer_last_name();
 		}
 
-		$args['company'] = $this->get_customer_company();
+		$args['company']   = $this->get_customer_company();
 		$args['address_1'] = $this->get_customer_address_1();
-		$args['address_2' ] = $this->get_customer_address_2();
-		$args['city'] = $this->get_customer_city();
-		$args['state'] = $this->get_customer_state();
-		$args['postcode'] = $this->get_customer_postcode();
-		$args['country'] = $this->get_customer_country();
+		$args['address_2'] = $this->get_customer_address_2();
+		$args['city']      = $this->get_customer_city();
+		$args['state']     = $this->get_customer_state();
+		$args['postcode']  = $this->get_customer_postcode();
+		$args['country']   = $this->get_customer_country();
 
 		return $args;
 	}
@@ -819,5 +914,4 @@ class Data_Layer {
 
 		return $missing_data_types;
 	}
-
 }

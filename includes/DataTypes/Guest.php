@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo\DataTypes;
 
@@ -7,7 +6,9 @@ use AutomateWoo\Clean;
 use AutomateWoo\Guest as GuestModel;
 use AutomateWoo\Guest_Factory;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * @class Guest
@@ -15,10 +16,10 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 class Guest extends AbstractDataType {
 
 	/**
-	 * @param $item
+	 * @param mixed $item
 	 * @return bool
 	 */
-	function validate( $item ) {
+	public function validate( $item ) {
 		return $item instanceof GuestModel;
 	}
 
@@ -27,17 +28,17 @@ class Guest extends AbstractDataType {
 	 * @param GuestModel $item
 	 * @return mixed
 	 */
-	function compress( $item ) {
+	public function compress( $item ) {
 		return $item->get_email();
 	}
 
 
 	/**
-	 * @param $compressed_item
-	 * @param $compressed_data_layer
+	 * @param int|string|null $compressed_item
+	 * @param array           $compressed_data_layer
 	 * @return mixed
 	 */
-	function decompress( $compressed_item, $compressed_data_layer ) {
+	public function decompress( $compressed_item, $compressed_data_layer ) {
 		if ( aw_is_email_anonymized( $compressed_item ) ) {
 			$guest = new GuestModel();
 			$guest->set_email( Clean::string( $compressed_item ) );
@@ -47,18 +48,16 @@ class Guest extends AbstractDataType {
 		// Guests are compressed by their email not their ID
 		if ( is_email( $compressed_item ) ) {
 			$guest_email = $compressed_item;
-		}
-		elseif ( isset( $compressed_data_layer['comment'] ) ) {
+		} elseif ( isset( $compressed_data_layer['comment'] ) ) {
 			// If there is a comment fetch the guest info from that
-			$comment = get_comment( $compressed_data_layer['comment'] );
+			$comment     = get_comment( $compressed_data_layer['comment'] );
 			$guest_email = $comment->comment_author_email;
-		}
-		else {
+		} else {
 			return false;
 		}
 
 		$guest_email = Clean::email( $guest_email );
-		$guest = Guest_Factory::get_by_email( $guest_email );
+		$guest       = Guest_Factory::get_by_email( $guest_email );
 
 		if ( ! $guest ) {
 			// still pass the guest object even if it doesn't exist in the database
@@ -69,5 +68,4 @@ class Guest extends AbstractDataType {
 
 		return $guest;
 	}
-
 }

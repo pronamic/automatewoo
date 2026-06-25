@@ -1,11 +1,12 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo\DatabaseTables;
 
 use AutomateWoo\Database_Table;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * Log meta database table class.
@@ -14,11 +15,14 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  */
 class LogMeta extends Database_Table {
 
-	function __construct() {
+	/**
+	 * Constructor.
+	 */
+	public function __construct() {
 		global $wpdb;
 
-		$this->name = $wpdb->prefix . 'automatewoo_log_meta';
-		$this->primary_key = 'meta_id';
+		$this->name             = $wpdb->prefix . 'automatewoo_log_meta';
+		$this->primary_key      = 'meta_id';
 		$this->object_id_column = 'log_id';
 	}
 
@@ -26,11 +30,11 @@ class LogMeta extends Database_Table {
 	/**
 	 * @return array
 	 */
-	function get_columns() {
+	public function get_columns() {
 		return [
-			'meta_id' => '%d',
-			'log_id' => '%d',
-			'meta_key' => '%s',
+			'meta_id'    => '%d',
+			'log_id'     => '%d',
+			'meta_key'   => '%s',
 			'meta_value' => '%s',
 		];
 	}
@@ -39,7 +43,7 @@ class LogMeta extends Database_Table {
 	/**
 	 * @return string
 	 */
-	function get_install_query() {
+	public function get_install_query() {
 		return "CREATE TABLE {$this->get_name()} (
 			meta_id bigint(20) NOT NULL AUTO_INCREMENT,
 			log_id bigint(20) NULL,
@@ -51,5 +55,4 @@ class LogMeta extends Database_Table {
 			KEY log_id_meta_key (log_id, meta_key({$this->max_index_length}))
 			) {$this->get_collate()};";
 	}
-
 }

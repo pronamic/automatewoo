@@ -1,9 +1,10 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * Order_Note class.
@@ -32,13 +33,13 @@ class Order_Note {
 
 
 	/**
-	 * @param $id
-	 * @param $content
-	 * @param $order_id
+	 * @param int    $id
+	 * @param string $content
+	 * @param int    $order_id
 	 */
-	function __construct( $id, $content, $order_id ) {
-		$this->id = $id;
-		$this->content = $content;
+	public function __construct( $id, $content, $order_id ) {
+		$this->id       = $id;
+		$this->content  = $content;
 		$this->order_id = $order_id;
 	}
 
@@ -46,7 +47,7 @@ class Order_Note {
 	/**
 	 * @return bool
 	 */
-	function is_customer_note() {
+	public function is_customer_note() {
 		if ( ! isset( $this->is_customer_note ) ) {
 			$this->is_customer_note = (bool) get_comment_meta( $this->id, 'is_customer_note', true );
 		}
@@ -57,8 +58,7 @@ class Order_Note {
 	/**
 	 * @return string
 	 */
-	function get_type() {
+	public function get_type() {
 		return $this->is_customer_note() ? 'customer' : 'private';
 	}
-
 }

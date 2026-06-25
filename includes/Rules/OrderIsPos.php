@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo\Rules;
 
@@ -12,34 +11,37 @@ defined( 'ABSPATH' ) || exit;
  */
 class OrderIsPos extends Abstract_Bool {
 
+	/**
+	 * @var string
+	 */
 	public $data_item = 'order';
 
 
-	function init() {
-		$this->title = __( "Order - Is POS", 'automatewoo' );
+	/**
+	 * Init the rule.
+	 */
+	public function init() {
+		$this->title = __( 'Order - Is POS', 'automatewoo' );
 		$this->group = __( 'POS', 'automatewoo' );
 	}
 
 
 	/**
 	 * @param WC_Order $order
-	 * @param $compare
-	 * @param $value
+	 * @param string   $compare
+	 * @param mixed    $value
 	 * @return bool
 	 */
-	function validate( $order, $compare, $value ) {
+	public function validate( $order, $compare, $value ) {
 
 		$is_pos = (bool) $order->get_meta( '_pos' );
 
 		switch ( $value ) {
 			case 'yes':
 				return $is_pos;
-				break;
 
 			case 'no':
 				return ! $is_pos;
-				break;
 		}
 	}
-
 }

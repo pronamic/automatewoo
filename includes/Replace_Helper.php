@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
@@ -12,17 +11,17 @@ class Replace_Helper {
 	/** @var array */
 	public $patterns = [
 		'text_urls' => [
-			'match' => 0,
-			'expression' => "/(?<!a href=\")(?<!src=\")((http|ftp)+(s)?:\/\/[^<>\s]+)/i"
+			'match'      => 0,
+			'expression' => '/(?<!a href=")(?<!src=")((http|ftp)+(s)?:\/\/[^<>\s]+)/i',
 		],
 		'href_urls' => [
-			'match' => 1,
-			'expression' => '/href=["\']?([^"\'>]+)["\']?/'
+			'match'      => 1,
+			'expression' => '/href=["\']?([^"\'>]+)["\']?/',
 		],
 		'variables' => [
-			'match' => 1,
-			'expression' => '/{{(.*?)}}/'
-		]
+			'match'      => 1,
+			'expression' => '/{{(.*?)}}/',
+		],
 	];
 
 	/** @var string */
@@ -39,17 +38,17 @@ class Replace_Helper {
 
 
 	/**
-	 * @param $string
+	 * @param string   $string
 	 * @param callable $callback
-	 * @param string $pattern_name
+	 * @param string   $pattern_name
 	 */
-	function __construct( $string, $callback, $pattern_name = '' ) {
+	public function __construct( $string, $callback, $pattern_name = '' ) {
 
-		$this->string = $string;
+		$this->string   = $string;
 		$this->callback = $callback;
 
-		if ( $pattern_name && isset( $this->patterns[$pattern_name] ) ) {
-			$this->selected_pattern = $this->patterns[$pattern_name];
+		if ( $pattern_name && isset( $this->patterns[ $pattern_name ] ) ) {
+			$this->selected_pattern      = $this->patterns[ $pattern_name ];
 			$this->selected_pattern_name = $pattern_name;
 		}
 	}
@@ -58,21 +57,23 @@ class Replace_Helper {
 	/**
 	 * @return mixed
 	 */
-	function process() {
+	public function process() {
 
-		if ( ! $this->selected_pattern )
+		if ( ! $this->selected_pattern ) {
 			return false;
+		}
 
-		return preg_replace_callback( $this->selected_pattern['expression'], [ $this, 'callback' ] , $this->string );
+		return preg_replace_callback( $this->selected_pattern['expression'], [ $this, 'callback' ], $this->string );
 	}
 
 
 	/**
 	 * Pre process match before using the actual callback
-	 * @param $match
+	 *
+	 * @param array $match
 	 * @return string
 	 */
-	function callback( $match ) {
+	public function callback( $match ) {
 		if ( is_array( $match ) ) {
 			$match = $match[ $this->selected_pattern['match'] ];
 		}
@@ -93,7 +94,7 @@ class Replace_Helper {
 	 * @param string $url
 	 * @return array
 	 */
-	function split_trailing_text_url_punctuation( $url ) {
+	public function split_trailing_text_url_punctuation( $url ) {
 		$trailing_punctuation = '';
 		$sentence_punctuation = [ '.', ',', '!', '?', ';', ':' ];
 
@@ -102,19 +103,19 @@ class Replace_Helper {
 
 			if ( in_array( $last_character, $sentence_punctuation, true ) ) {
 				$trailing_punctuation = $last_character . $trailing_punctuation;
-				$url = substr( $url, 0, -1 );
+				$url                  = substr( $url, 0, -1 );
 				continue;
 			}
 
 			if ( ')' === $last_character && substr_count( $url, ')' ) > substr_count( $url, '(' ) ) {
 				$trailing_punctuation = $last_character . $trailing_punctuation;
-				$url = substr( $url, 0, -1 );
+				$url                  = substr( $url, 0, -1 );
 				continue;
 			}
 
 			if ( ']' === $last_character && substr_count( $url, ']' ) > substr_count( $url, '[' ) ) {
 				$trailing_punctuation = $last_character . $trailing_punctuation;
-				$url = substr( $url, 0, -1 );
+				$url                  = substr( $url, 0, -1 );
 				continue;
 			}
 
@@ -123,5 +124,4 @@ class Replace_Helper {
 
 		return [ $url, $trailing_punctuation ];
 	}
-
 }

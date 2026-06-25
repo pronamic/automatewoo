@@ -65,6 +65,33 @@ abstract class Dashboard_Widget_Analytics extends Dashboard_Widget {
 	}
 
 	/**
+	 * Output a chart header group for a live (REST-powered) chart widget.
+	 *
+	 * The figure is rendered as the `<automatewoo-dashboard-chart__header-figure>` custom
+	 * element whose value is populated client-side from the chart data identified by `$name`.
+	 *
+	 * @since 6.6.0
+	 *
+	 * @param string $name   The figure's data field name (used by the chart's JS).
+	 * @param string $label  The translated, human-readable label for the figure.
+	 * @param string $legend The legend colour modifier (e.g. 'blue', 'purple', 'green').
+	 */
+	protected function output_live_chart_header_group( $name, $label, $legend ) {
+		printf(
+			'<div class="automatewoo-dashboard-chart__header-group">'
+			. '<automatewoo-dashboard-chart__header-figure class="automatewoo-dashboard-chart__header-figure" name="%1$s">-</automatewoo-dashboard-chart__header-figure>'
+			. '<div class="automatewoo-dashboard-chart__header-text">'
+			. '<span class="automatewoo-dashboard-chart__legend automatewoo-dashboard-chart__legend--%2$s"></span>'
+			. '%3$s'
+			. '</div>'
+			. '</div>',
+			esc_attr( $name ),
+			esc_attr( $legend ),
+			esc_html( $label )
+		);
+	}
+
+	/**
 	 * Output arrow link to the full report.
 	 */
 	protected function output_report_arrow_link() {

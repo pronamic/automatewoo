@@ -1,23 +1,29 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo\Fields;
 
 use AutomateWoo\Clean;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * @class Price
  */
 class Price extends Text {
 
+	/** @var string */
 	protected $name = 'price';
 
+	/** @var string */
 	protected $type = 'text';
 
 
-	function __construct() {
+	/**
+	 * Price constructor.
+	 */
+	public function __construct() {
 		parent::__construct();
 
 		$this->set_title( __( 'Price', 'automatewoo' ) );

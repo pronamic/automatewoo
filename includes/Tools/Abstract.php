@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
@@ -28,34 +27,34 @@ abstract class Tool_Abstract {
 	/**
 	 * @return int
 	 */
-	function get_id() {
+	public function get_id() {
 		return $this->id;
 	}
 
 
 	/**
-	 * @param $args
+	 * @param array $args
 	 * @return bool|\WP_Error
 	 */
-	abstract function process( $args );
+	abstract public function process( $args );
 
 
 	/**
-	 * @param $args
+	 * @param array $args
 	 */
-	abstract function display_confirmation_screen( $args );
+	abstract public function display_confirmation_screen( $args );
 
 
 	/**
 	 * Optionally output a legend in the confirmation screen footer.
 	 */
-	function display_confirmation_legend() {}
+	public function display_confirmation_legend() {}
 
 
 	/**
 	 * @return Fields\Field[]
 	 */
-	function get_form_fields() {
+	public function get_form_fields() {
 		return [];
 	}
 
@@ -64,7 +63,7 @@ abstract class Tool_Abstract {
 	 * @param array $args will be already sanitized
 	 * @return bool|\WP_Error
 	 */
-	function validate_process( $args ) {
+	public function validate_process( $args ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found -- Part of the overridable signature; subclasses use $args.
 		return true;
 	}
 
@@ -73,13 +72,13 @@ abstract class Tool_Abstract {
 	 * @param array $args
 	 * @return array
 	 */
-	function sanitize_args( $args ) {
+	public function sanitize_args( $args ) {
 		if ( ! $args ) {
 			return [];
 		}
 
 		if ( isset( $args['workflow'] ) ) {
-			$args['workflow'] = absint( $args[ 'workflow' ] );
+			$args['workflow'] = absint( $args['workflow'] );
 		}
 
 		if ( isset( $args['date_from'] ) ) {
@@ -92,6 +91,4 @@ abstract class Tool_Abstract {
 
 		return $args;
 	}
-
-
 }

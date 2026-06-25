@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo\Admin\Controllers;
 
@@ -7,7 +6,9 @@ use AutomateWoo\Clean;
 use AutomateWoo\Log_Factory;
 use AutomateWoo\Report_Logs;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * @class Logs
@@ -15,7 +16,10 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 class Logs extends Base {
 
 
-	function handle() {
+	/**
+	 * Handle the logs page output and any actions.
+	 */
+	public function handle() {
 
 		$action = $this->get_current_action();
 
@@ -39,6 +43,9 @@ class Logs extends Base {
 	}
 
 
+	/**
+	 * Output the logs list table.
+	 */
 	private function output_list_table() {
 		$table = new Report_Logs();
 		$table->prepare_items();
@@ -46,13 +53,19 @@ class Logs extends Base {
 
 		$sidebar_content = '<p>' . __( 'Every time a workflow runs a log entry is created. Logs are used by some triggers to determine when they should and should not fire. For this reason deleting logs should generally be avoided.', 'automatewoo' ) . '</p>';
 
-		$this->output_view( 'page-table-with-sidebar', [
-			'table' => $table,
-			'sidebar_content' => $sidebar_content
-		]);
+		$this->output_view(
+			'page-table-with-sidebar',
+			[
+				'table'           => $table,
+				'sidebar_content' => $sidebar_content,
+			]
+		);
 	}
 
 
+	/**
+	 * Re-run a single log.
+	 */
 	private function action_rerun() {
 
 		$this->verify_nonce_action( 'rerun_log' );
@@ -71,12 +84,10 @@ class Logs extends Base {
 						$new_log->get_id()
 					)
 				);
-			}
-			else {
+			} else {
 				$this->add_error( __( 'Workflow could not be re-run.', 'automatewoo' ) );
 			}
-		}
-		else {
+		} else {
 			$this->add_error( __( 'Log not found.', 'automatewoo' ) );
 		}
 
@@ -85,7 +96,7 @@ class Logs extends Base {
 
 
 	/**
-	 * @param $action
+	 * @param string $action
 	 */
 	private function action_bulk_edit( $action ) {
 
@@ -94,13 +105,14 @@ class Logs extends Base {
 		$ids = Clean::ids( aw_request( 'log_ids' ) );
 
 		if ( empty( $ids ) ) {
-			$this->add_error( __('Please select some logs to bulk edit.', 'automatewoo') );
+			$this->add_error( __( 'Please select some logs to bulk edit.', 'automatewoo' ) );
 			return;
 		}
 
 		foreach ( $ids as $id ) {
 
-			if ( ! $log = Log_Factory::get( $id ) ) {
+			$log = Log_Factory::get( $id );
+			if ( ! $log ) {
 				continue;
 			}
 
@@ -111,7 +123,7 @@ class Logs extends Base {
 			}
 		}
 
-		$this->add_message( __('Bulk edit completed.', 'automatewoo' ) );
+		$this->add_message( __( 'Bulk edit completed.', 'automatewoo' ) );
 	}
 }
 

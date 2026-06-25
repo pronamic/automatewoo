@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo\Rules;
 
@@ -10,18 +9,22 @@ defined( 'ABSPATH' ) || exit;
  */
 abstract class Abstract_Bool extends Rule {
 
+	/** @var string */
 	public $type = 'bool';
 
+	/** @var array */
 	public $select_choices;
 
-	function __construct() {
+	/**
+	 * Constructor.
+	 */
+	public function __construct() {
 
 		$this->select_choices = [
 			'yes' => __( 'Yes', 'automatewoo' ),
-			'no' => __( 'No','automatewoo' )
+			'no'  => __( 'No', 'automatewoo' ),
 		];
 
 		parent::__construct();
 	}
-
 }

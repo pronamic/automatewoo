@@ -1,9 +1,10 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * Simpler version of \WP_Error
@@ -27,7 +28,7 @@ class Error {
 	 */
 	public function __construct( $message, $code = '' ) {
 		$this->message = $message;
-		$this->code = $code;
+		$this->code    = $code;
 	}
 
 
@@ -45,5 +46,4 @@ class Error {
 	public function get_code() {
 		return $this->code;
 	}
-
 }

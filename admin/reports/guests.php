@@ -1,48 +1,60 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * @class Report_Guests
  */
 class Report_Guests extends Admin_List_Table {
 
+	/** @var string */
 	public $name = 'guests';
 
+	/** @var bool */
 	public $enable_search = true;
 
+	/** @var string */
 	protected $default_param_orderby = 'last_active';
 
 
-	function __construct() {
-		parent::__construct([
-			'singular' => __( 'Guest', 'automatewoo' ),
-			'plural' => __( 'Guests', 'automatewoo' ),
-			'ajax' => false
-		]);
+	/**
+	 * Report_Guests constructor.
+	 */
+	public function __construct() {
+		parent::__construct(
+			[
+				'singular' => __( 'Guest', 'automatewoo' ),
+				'plural'   => __( 'Guests', 'automatewoo' ),
+				'ajax'     => false,
+			]
+		);
 		$this->search_button_text = __( 'Search guests', 'automatewoo' );
 	}
 
 
-	function no_items() {
-		_e( 'No guests found.', 'automatewoo' );
+	/**
+	 * Output the no items message.
+	 */
+	public function no_items() {
+		esc_html_e( 'No guests found.', 'automatewoo' );
 	}
 
 
 	/**
-	 * get_columns function.
+	 * Get the report columns.
 	 */
-	function get_columns() {
+	public function get_columns() {
 		$columns = [
-			'cb' => '<input type="checkbox" />',
-			'id' => __( 'Guest', 'automatewoo' ),
-			'email' => __( 'Email', 'automatewoo' ),
+			'cb'          => '<input type="checkbox" />',
+			'id'          => __( 'Guest', 'automatewoo' ),
+			'email'       => __( 'Email', 'automatewoo' ),
 			'last_active' => __( 'Last Active', 'automatewoo' ),
-			'created' => __( 'Created', 'automatewoo' ),
-			'actions' => __( 'Actions', 'automatewoo' )
+			'created'     => __( 'Created', 'automatewoo' ),
+			'actions'     => __( 'Actions', 'automatewoo' ),
 		];
 
 		if ( Language::is_multilingual() ) {
@@ -59,29 +71,40 @@ class Report_Guests extends Admin_List_Table {
 	protected function get_sortable_columns() {
 		return [
 			'last_active' => [ 'last_active', true ],
-			'created' => [ 'created', true ]
+			'created'     => [ 'created', true ],
 		];
 	}
 
 
-	function prepare_items() {
+	/**
+	 * Prepare the report items.
+	 */
+	public function prepare_items() {
 
 		$this->_column_headers = [ $this->get_columns(), [], $this->get_sortable_columns() ];
-		$current_page = absint( $this->get_pagenum() );
-		$per_page = $this->get_items_per_page( 'automatewoo_guests_per_page' );
+		$current_page          = absint( $this->get_pagenum() );
+		$per_page              = $this->get_items_per_page( 'automatewoo_guests_per_page' );
 
 		$this->get_items( $current_page, $per_page );
 
-		$this->set_pagination_args([
-			'total_items' => $this->max_items,
-			'per_page'    => $per_page,
-			'total_pages' => ceil( $this->max_items / $per_page )
-		]);
+		$this->set_pagination_args(
+			[
+				'total_items' => $this->max_items,
+				'per_page'    => $per_page,
+				'total_pages' => ceil( $this->max_items / $per_page ),
+			]
+		);
 	}
 
 
 
-	function get_items( $current_page, $per_page ) {
+	/**
+	 * Get the report items.
+	 *
+	 * @param int $current_page
+	 * @param int $per_page
+	 */
+	public function get_items( $current_page, $per_page ) {
 
 		$query = new Guest_Query();
 		$query->set_calc_found_rows( true );
@@ -89,9 +112,10 @@ class Report_Guests extends Admin_List_Table {
 		$query->set_page( $current_page );
 		$query->set_ordering( $this->get_param_orderby(), $this->get_param_order(), array_keys( $this->get_sortable_columns() ) );
 
-		if ( $search = $this->get_param_search() ) {
+		$search = $this->get_param_search();
+		if ( $search ) {
 			$key = strtolower( $search );
-			$query->where('email', "%$key%", 'LIKE' );
+			$query->where( 'email', "%$key%", 'LIKE' );
 		}
 
 		$res = $query->get_results();
@@ -103,10 +127,10 @@ class Report_Guests extends Admin_List_Table {
 
 
 	/**
-	 * @param $guest Guest
+	 * @param Guest $guest
 	 * @return string
 	 */
-	function column_cb( $guest ) {
+	public function column_cb( $guest ) {
 		$id = absint( $guest->get_id() );
 		return sprintf(
 			'<label class="screen-reader-text" for="cb-select-%1$d">%2$s</label><input id="cb-select-%1$d" type="checkbox" name="guest_ids[]" value="%1$d" />',
@@ -121,7 +145,7 @@ class Report_Guests extends Admin_List_Table {
 	 * @param Guest $guest
 	 * @return string
 	 */
-	function column_id( $guest ) {
+	public function column_id( $guest ) {
 		return '#' . $guest->get_id();
 	}
 
@@ -130,7 +154,7 @@ class Report_Guests extends Admin_List_Table {
 	 * @param Guest $guest
 	 * @return string
 	 */
-	function column_email( $guest ) {
+	public function column_email( $guest ) {
 		return "<a href='mailto:{$guest->get_email()}'>{$guest->get_email()}</a>";
 	}
 
@@ -139,7 +163,7 @@ class Report_Guests extends Admin_List_Table {
 	 * @param Guest $guest
 	 * @return false|string
 	 */
-	function column_created( $guest ) {
+	public function column_created( $guest ) {
 		return $this->format_date( $guest->get_date_created() );
 	}
 
@@ -148,7 +172,7 @@ class Report_Guests extends Admin_List_Table {
 	 * @param Guest $guest
 	 * @return string
 	 */
-	function column_last_active( $guest ) {
+	public function column_last_active( $guest ) {
 		return $this->format_date( $guest->get_date_last_active() );
 	}
 
@@ -157,7 +181,7 @@ class Report_Guests extends Admin_List_Table {
 	 * @param Guest $guest
 	 * @return string
 	 */
-	function column_language( $guest ) {
+	public function column_language( $guest ) {
 		return Language::get_guest_language( $guest );
 	}
 
@@ -166,15 +190,24 @@ class Report_Guests extends Admin_List_Table {
 	 * @param Guest $guest
 	 * @return string
 	 */
-	function column_actions( $guest ) {
+	public function column_actions( $guest ) {
 
 		$actions = [];
 
-		$link = Admin::page_url('guest', $guest->get_id() );
-		$actions['view'] = '<a href="'. $link .'">'.__( 'View', 'automatewoo' ).'</a>';
+		$link            = Admin::page_url( 'guest', $guest->get_id() );
+		$actions['view'] = '<a href="' . $link . '">' . __( 'View', 'automatewoo' ) . '</a>';
 
-		$link = wp_nonce_url( add_query_arg( ['action' => 'delete', 'guest_id' => $guest->get_id() ], Admin::page_url('guests' ) ), $this->nonce_action );
-		$actions['delete'] = '<a href="'. $link .'">'.__( 'Delete', 'automatewoo' ).'</a>';
+		$link              = wp_nonce_url(
+			add_query_arg(
+				[
+					'action'   => 'delete',
+					'guest_id' => $guest->get_id(),
+				],
+				Admin::page_url( 'guests' )
+			),
+			$this->nonce_action
+		);
+		$actions['delete'] = '<a href="' . $link . '">' . __( 'Delete', 'automatewoo' ) . '</a>';
 
 		return $this->row_actions( $actions, true );
 	}
@@ -183,12 +216,11 @@ class Report_Guests extends Admin_List_Table {
 	/**
 	 * Retrieve the bulk actions
 	 */
-	function get_bulk_actions() {
+	public function get_bulk_actions() {
 		$actions = [
 			'bulk_delete' => __( 'Delete', 'automatewoo' ),
 		];
 
 		return $actions;
 	}
-
 }

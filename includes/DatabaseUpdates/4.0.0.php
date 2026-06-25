@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 /**
  * Update to 4.0.0
  *
@@ -12,13 +11,22 @@ namespace AutomateWoo\DatabaseUpdates;
 
 use AutomateWoo\Guest_Query;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
+/**
+ * Database update to version 4.0.0.
+ */
 class Database_Update_4_0_0 extends AbstractDatabaseUpdate {
 
+	/** @var string */
 	protected $version = '4.0.0';
 
 
+	/**
+	 * @return void
+	 */
 	protected function start() {
 		parent::start();
 
@@ -31,7 +39,7 @@ class Database_Update_4_0_0 extends AbstractDatabaseUpdate {
 
 		// drop IP column
 		if ( $wpdb->get_results( "SHOW COLUMNS FROM {$wpdb->prefix}automatewoo_guests LIKE 'ip'" ) ) {
-			$wpdb->query( "ALTER TABLE {$wpdb->prefix}automatewoo_guests DROP ip" );
+			$wpdb->query( "ALTER TABLE {$wpdb->prefix}automatewoo_guests DROP ip" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.SchemaChange -- One-time schema migration.
 		}
 	}
 
@@ -64,7 +72,7 @@ class Database_Update_4_0_0 extends AbstractDatabaseUpdate {
 				$guest->delete_presubmit_data();
 			}
 
-			$this->items_processed++;
+			++$this->items_processed;
 		}
 
 		return false;
@@ -80,7 +88,6 @@ class Database_Update_4_0_0 extends AbstractDatabaseUpdate {
 		$query->where_version( $this->version, '<' );
 		return $query->get_count();
 	}
-
 }
 
 return new Database_Update_4_0_0();

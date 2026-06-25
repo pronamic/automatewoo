@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo\Admin\Controllers;
 
@@ -9,7 +8,9 @@ use AutomateWoo\Guest_Factory;
 use AutomateWoo\Report_Guests;
 use AutomateWoo\Guest;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * @class Guests
@@ -17,7 +18,10 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 class Guests extends Base {
 
 
-	function handle() {
+	/**
+	 * Handle the request.
+	 */
+	public function handle() {
 
 		$action = $this->get_current_action();
 
@@ -47,43 +51,61 @@ class Guests extends Base {
 	}
 
 
-	function output_view_single() {
+	/**
+	 * Output the single guest view.
+	 */
+	public function output_view_single() {
 
-		if ( ! $guest = $this->get_current_guest() ) {
+		$guest = $this->get_current_guest();
+		if ( ! $guest ) {
 			$this->output_no_guest();
 		}
 
-		$this->output_view( 'page-guest-details', [
-			'guest' => $guest,
-			'customer' => Customer_Factory::get_by_guest_id( $guest->get_id() )
-		] );
+		$this->output_view(
+			'page-guest-details',
+			[
+				'guest'    => $guest,
+				'customer' => Customer_Factory::get_by_guest_id( $guest->get_id() ),
+			]
+		);
 	}
 
 
-	function output_no_guest() {
-		wp_die( __( 'Missing guest data.', 'automatewoo' ) );
+	/**
+	 * Output a die screen when no guest is found.
+	 */
+	public function output_no_guest() {
+		wp_die( esc_html__( 'Missing guest data.', 'automatewoo' ) );
 	}
 
 
+	/**
+	 * Output the guests list table.
+	 */
 	protected function output_list_table() {
 		$table = new Report_Guests();
 		$table->prepare_items();
 		$table->nonce_action = $this->get_nonce_action();
 
 		$sidebar_content = '<p>' .
-			__( 'Guest data is stored here when a customer places an order but does not create an account. '
-			. 'Or, if you have enabled pre-submit capturing, guest data can also be captured from a form on your website before an order is placed.', 'automatewoo' )
+			__(
+				'Guest data is stored here when a customer places an order but does not create an account. Or, if you have enabled pre-submit capturing, guest data can also be captured from a form on your website before an order is placed.',
+				'automatewoo'
+			)
 			. '</p>';
 
-		$this->output_view( 'page-table-with-sidebar', [
-			'table' => $table,
-			'sidebar_content' => $sidebar_content
-		]);
+		$this->output_view(
+			'page-table-with-sidebar',
+			[
+				'table'           => $table,
+				'sidebar_content' => $sidebar_content,
+			]
+		);
 	}
 
 
 	/**
-	 * @param $action
+	 * @param string $action
 	 */
 	protected function action_bulk_edit( $action ) {
 
@@ -98,7 +120,8 @@ class Guests extends Base {
 
 		foreach ( $ids as $id ) {
 
-			if ( ! $guest = Guest_Factory::get( $id ) ) {
+			$guest = Guest_Factory::get( $id );
+			if ( ! $guest ) {
 				continue;
 			}
 
@@ -120,7 +143,8 @@ class Guests extends Base {
 
 		$this->verify_nonce_action();
 
-		if ( ! $guest = $this->get_current_guest() ) {
+		$guest = $this->get_current_guest();
+		if ( ! $guest ) {
 			$this->output_no_guest();
 		}
 
@@ -135,10 +159,9 @@ class Guests extends Base {
 	/**
 	 * @return Guest|false
 	 */
-	function get_current_guest() {
+	public function get_current_guest() {
 		return Guest_Factory::get( Clean::id( aw_request( 'guest_id' ) ) );
 	}
-
 }
 
 return new Guests();

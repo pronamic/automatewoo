@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
@@ -26,7 +25,7 @@ abstract class Options_API {
 	 * @param string $key
 	 * @return mixed
 	 */
-	function __get( $key ) {
+	public function __get( $key ) {
 
 		$value = get_option( $this->prefix . $key );
 
@@ -42,8 +41,8 @@ abstract class Options_API {
 		}
 
 		// fallback to default
-		if ( isset( $this->defaults[$key] ) ) {
-			return $this->parse( $this->defaults[$key] );
+		if ( isset( $this->defaults[ $key ] ) ) {
+			return $this->parse( $this->defaults[ $key ] );
 		}
 
 		return false;
@@ -52,10 +51,10 @@ abstract class Options_API {
 
 	/**
 	 * @since 4.0
-	 * @param $option_name
+	 * @param string $option_name
 	 * @return mixed
 	 */
-	static function get( $option_name ) {
+	public static function get( $option_name ) {
 		return AW()->options()->__get( $option_name );
 	}
 
@@ -63,15 +62,18 @@ abstract class Options_API {
 	/**
 	 * Convert yes / no strings to boolean
 	 *
-	 * @param $value
+	 * @param mixed $value
 	 *
 	 * @return mixed
 	 */
-	function parse( $value ) {
-		if ( $value === 'yes' ) return true;
-		if ( $value === 'no' ) return false;
+	public function parse( $value ) {
+		if ( $value === 'yes' ) {
+			return true;
+		}
+		if ( $value === 'no' ) {
+			return false;
+		}
 
 		return $value;
 	}
 }
-

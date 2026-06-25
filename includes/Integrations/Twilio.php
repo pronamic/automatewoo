@@ -1,9 +1,10 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * @class Integration_Twilio
@@ -27,11 +28,16 @@ class Integration_Twilio extends Integration {
 	private $api_root;
 
 
-	function __construct( $from_number, $account_sid, $auth_token ) {
+	/**
+	 * @param string $from_number
+	 * @param string $account_sid
+	 * @param string $auth_token
+	 */
+	public function __construct( $from_number, $account_sid, $auth_token ) {
 		$this->from_number = trim( $from_number );
 		$this->account_sid = trim( $account_sid );
-		$this->auth_token = trim( $auth_token );
-		$this->api_root = 'https://api.twilio.com/2010-04-01/Accounts/' . $this->account_sid;
+		$this->auth_token  = trim( $auth_token );
+		$this->api_root    = 'https://api.twilio.com/2010-04-01/Accounts/' . $this->account_sid;
 	}
 
 	/**
@@ -55,28 +61,28 @@ class Integration_Twilio extends Integration {
 	/**
 	 * @return string
 	 */
-	function get_from_number() {
+	public function get_from_number() {
 		return $this->from_number;
 	}
 
 
 	/**
-	 * @param string $to
-	 * @param string $body
+	 * @param string      $to
+	 * @param string      $body
 	 * @param bool|string $from
 	 * @return Remote_Request
 	 */
-	function send_sms( $to, $body, $from = false ) {
+	public function send_sms( $to, $body, $from = false ) {
 		$args = [
 			'To'   => $to,
 			'From' => $from ? $from : $this->get_from_number(),
 			'Body' => $body,
 		];
 
-		$request = $this->request('POST', '/Messages.json', $args );
+		$request = $this->request( 'POST', '/Messages.json', $args );
 
 		if ( AUTOMATEWOO_LOG_SENT_SMS && $request->is_successful() ) {
-			Logger::info( 'sent-sms', print_r( $args, true ) );
+			Logger::info( 'sent-sms', print_r( $args, true ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r -- Intentional serialisation of args for log output.
 		}
 
 		return $request;
@@ -89,11 +95,10 @@ class Integration_Twilio extends Integration {
 	 * @param Remote_Request $request
 	 * @return string
 	 */
-	function get_request_error_message( $request ) {
+	public function get_request_error_message( $request ) {
 		if ( $request->is_http_error() ) {
 			return $request->get_http_error_message();
-		}
-		else {
+		} else {
 			$body = $request->get_body();
 			return $body['message'];
 		}
@@ -101,21 +106,21 @@ class Integration_Twilio extends Integration {
 
 
 	/**
-	 * @param $method
-	 * @param $endpoint
-	 * @param $args
+	 * @param string $method
+	 * @param string $endpoint
+	 * @param array  $args
 	 *
 	 * @return Remote_Request
 	 */
-	function request( $method, $endpoint, $args = [] ) {
+	public function request( $method, $endpoint, $args = [] ) {
 		$request_args = [
-			'headers' => [
+			'headers'   => [
 				'Authorization' => 'Basic ' . base64_encode( $this->account_sid . ':' . $this->auth_token ),
-				'Accept' => 'application/json'
+				'Accept'        => 'application/json',
 			],
-			'timeout' => 10,
-			'method' => $method,
-			'sslverify' => false
+			'timeout'   => 10,
+			'method'    => $method,
+			'sslverify' => false,
 		];
 
 		$request_args['body'] = http_build_query( $args );
@@ -126,6 +131,4 @@ class Integration_Twilio extends Integration {
 
 		return $request;
 	}
-
-
 }

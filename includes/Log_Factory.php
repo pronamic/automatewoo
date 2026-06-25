@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
@@ -11,14 +10,14 @@ defined( 'ABSPATH' ) || exit;
  */
 class Log_Factory extends Factory {
 
-	static $model = 'AutomateWoo\Log';
+	/** @var string */
+	public static $model = 'AutomateWoo\Log';
 
 	/**
 	 * @param int $id
 	 * @return Log|bool
 	 */
-	static function get( $id ) {
+	public static function get( $id ) {
 		return parent::get( $id );
 	}
-
 }

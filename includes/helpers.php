@@ -1,7 +1,8 @@
 <?php
-// phpcs:ignoreFile
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 
 /**
@@ -14,10 +15,8 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * @return mixed
  */
 function aw_get_url_var( $param ) {
-	if ( isset( $_GET[ $param ] ) ) {
-		return $_GET[ $param ];
-	}
-	return false;
+	// phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Generic accessor; nonce and type-appropriate sanitisation are the caller's responsibility.
+	return isset( $_GET[ $param ] ) ? $_GET[ $param ] : false;
 }
 
 
@@ -31,24 +30,20 @@ function aw_get_url_var( $param ) {
  * @return mixed
  */
 function aw_get_post_var( $param ) {
-	if ( isset( $_POST[ $param ] ) ) {
-		return $_POST[ $param ];
-	}
-	return false;
+	// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Generic accessor; nonce and type-appropriate sanitisation are the caller's responsibility.
+	return isset( $_POST[ $param ] ) ? $_POST[ $param ] : false;
 }
 
 
 /**
  * Gets a variable from the $_REQUEST array but checks if it's set first.
  *
- * @param $param
+ * @param string $param
  * @return mixed
  */
 function aw_request( $param ) {
-	if ( isset( $_REQUEST[ $param ] ) ) {
-		return $_REQUEST[ $param ];
-	}
-	return false;
+	// phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Generic accessor; nonce and type-appropriate sanitisation are the caller's responsibility.
+	return isset( $_REQUEST[ $param ] ) ? $_REQUEST[ $param ] : false;
 }
 
 
@@ -56,6 +51,7 @@ function aw_request( $param ) {
 /**
  * Clean variables using sanitize_text_field. Arrays are cleaned recursively.
  * Non-scalar values are ignored.
+ *
  * @deprecated
  * @param string|array $var
  * @return string|array
@@ -65,8 +61,7 @@ function aw_clean( $var ) {
 
 	if ( is_array( $var ) ) {
 		return array_map( 'aw_clean', $var );
-	}
-	else {
+	} else {
 		return is_scalar( $var ) ? sanitize_text_field( $var ) : $var;
 	}
 }
@@ -74,7 +69,7 @@ function aw_clean( $var ) {
 
 /**
  * @deprecated
- * @param $email
+ * @param string $email
  * @return string
  */
 function aw_clean_email( $email ) {
@@ -86,20 +81,22 @@ function aw_clean_email( $email ) {
 
 
 /**
- * @param $type string
- * @param $item
+ * @param string $type
+ * @param mixed  $item
  *
  * @return mixed item of false
  */
 function aw_validate_data_item( $type, $item ) {
 
-	if ( ! $type || ! $item )
+	if ( ! $type || ! $item ) {
 		return false;
+	}
 
 	$valid = false;
 
 	// Validate with the data type classes
-	if ( $data_type = \AutomateWoo\DataTypes\DataTypes::get( $type ) ) {
+	$data_type = \AutomateWoo\DataTypes\DataTypes::get( $type );
+	if ( $data_type ) {
 		$valid = $data_type->validate( $item );
 	}
 
@@ -108,7 +105,9 @@ function aw_validate_data_item( $type, $item ) {
 	 */
 	$valid = apply_filters( 'automatewoo_validate_data_item', $valid, $type, $item );
 
-	if ( $valid ) return $item;
+	if ( $valid ) {
+		return $item;
+	}
 
 	return false;
 }
@@ -119,17 +118,21 @@ function aw_validate_data_item( $type, $item ) {
  * This is much like wc_get_template() but won't fail if the default template file is missing
  *
  * @param string $template_name
- * @param array $imported_variables (default: array())
+ * @param array  $imported_variables (default: array())
  * @param string $template_path (default: '')
  * @param string $default_path (default: '')
  */
 function aw_get_template( $template_name, $imported_variables = [], $template_path = '', $default_path = '' ) {
 
-	if ( ! $template_path ) $template_path = 'automatewoo/';
-	if ( ! $default_path ) $default_path = AW()->path( '/templates/' );
+	if ( ! $template_path ) {
+		$template_path = 'automatewoo/';
+	}
+	if ( ! $default_path ) {
+		$default_path = AW()->path( '/templates/' );
+	}
 
 	if ( $imported_variables && is_array( $imported_variables ) ) {
-		extract( $imported_variables );
+		extract( $imported_variables ); // phpcs:ignore WordPress.PHP.DontExtract.extract_extract -- Imports template variables into scope for the included template.
 	}
 
 	$located = wc_locate_template( $template_name, $template_path, $default_path );
@@ -137,15 +140,14 @@ function aw_get_template( $template_name, $imported_variables = [], $template_pa
 	if ( file_exists( $located ) ) {
 		include $located; // nosemgrep No user input here. Also, we are checking the file existence and locating it with wc_locate_template
 	}
-
 }
 
 
 /**
  * @deprecated
- * @param int $timestamp
+ * @param int      $timestamp
  * @param bool|int $max_diff
- * @param bool $convert_from_gmt
+ * @param bool     $convert_from_gmt
  * @return string
  */
 function aw_display_date( $timestamp, $max_diff = false, $convert_from_gmt = true ) {
@@ -157,9 +159,9 @@ function aw_display_date( $timestamp, $max_diff = false, $convert_from_gmt = tru
 
 /**
  * @deprecated
- * @param int $timestamp
+ * @param int      $timestamp
  * @param bool|int $max_diff
- * @param bool $convert_from_gmt If its gmt convert it to site time
+ * @param bool     $convert_from_gmt If its gmt convert it to site time
  * @return string|false
  */
 function aw_display_time( $timestamp, $max_diff = false, $convert_from_gmt = true ) {
@@ -170,7 +172,7 @@ function aw_display_time( $timestamp, $max_diff = false, $convert_from_gmt = tru
 
 
 /**
- * @param $length int
+ * @param int  $length
  * @param bool $case_sensitive When false only lowercase letters will be included
  * @param bool $more_numbers
  * @return string
@@ -187,11 +189,11 @@ function aw_generate_key( $length = 25, $case_sensitive = true, $more_numbers = 
 		$chars .= '01234567890123456789';
 	}
 
-	$password = '';
+	$password     = '';
 	$chars_length = strlen( $chars );
 
 	for ( $i = 0; $i < $length; $i++ ) {
-		$password .= substr($chars, wp_rand( 0, $chars_length - 1), 1);
+		$password .= substr( $chars, wp_rand( 0, $chars_length - 1 ), 1 );
 	}
 
 	return $password;
@@ -210,12 +212,12 @@ function aw_generate_key( $length = 25, $case_sensitive = true, $more_numbers = 
  * @return string
  */
 function aw_generate_coupon_key( $length = 10 ) {
-	$chars = 'abcdefghjkmnpqrstuvwxyz23456789';
-	$coupon_key = '';
+	$chars        = 'abcdefghjkmnpqrstuvwxyz23456789';
+	$coupon_key   = '';
 	$chars_length = strlen( $chars );
 
 	for ( $i = 0; $i < $length; $i++ ) {
-		$coupon_key .= substr($chars, wp_rand( 0, $chars_length - 1), 1);
+		$coupon_key .= substr( $chars, wp_rand( 0, $chars_length - 1 ), 1 );
 	}
 
 	return $coupon_key;
@@ -223,14 +225,14 @@ function aw_generate_coupon_key( $length = 10 ) {
 
 
 /**
- * @param $price
+ * @param string $price
  * @return float
  */
 function aw_price_to_float( $price ) {
 
-	$price = html_entity_decode( str_replace(',', '.', $price ) );
+	$price = html_entity_decode( str_replace( ',', '.', $price ) );
 
-	$price = preg_replace( "/[^0-9\.]/", "", $price );
+	$price = preg_replace( '/[^0-9\.]/', '', $price );
 
 	return (float) $price;
 }
@@ -273,7 +275,7 @@ function aw_add_order_status_prefix( $status ) {
 
 
 /**
- * @param $order WC_Order
+ * @param WC_Order $order
  * @return array
  */
 function aw_get_order_cross_sells( $order ) {
@@ -286,7 +288,7 @@ function aw_get_order_cross_sells( $order ) {
 		$product = $item->get_product();
 
 		if ( $product ) {
-			$in_order[] = $product->is_type( 'variation' ) ? $product->get_parent_id() : $product->get_id();
+			$in_order[]  = $product->is_type( 'variation' ) ? $product->get_parent_id() : $product->get_id();
 			$cross_sells = array_merge( $product->get_cross_sell_ids(), $cross_sells );
 		}
 	}
@@ -296,13 +298,14 @@ function aw_get_order_cross_sells( $order ) {
 
 
 /**
- * @param $array
- * @param $value
+ * @param array $array
+ * @param mixed $value
  * @return void
  */
 function aw_array_remove_value( &$array, $value ) {
-	if ( ( $key = array_search( $value, $array ) ) !== false ) {
-		unset( $array[$key] );
+	$key = array_search( $value, $array ); // phpcs:ignore WordPress.PHP.StrictInArray.MissingTrueStrict -- Values are of arbitrary type; loose match preserves existing behaviour.
+	if ( false !== $key ) {
+		unset( $array[ $key ] );
 	}
 }
 
@@ -310,8 +313,8 @@ function aw_array_remove_value( &$array, $value ) {
 /**
  * Removes an item by key from array and returns its value.
  *
- * @param $array
- * @param $key
+ * @param array      $array
+ * @param string|int $key
  * @return mixed
  */
 function aw_array_extract( &$array, $key ) {
@@ -329,7 +332,7 @@ function aw_array_extract( &$array, $key ) {
 /**
  * Move an array item by key to the end of the array.
  *
- * @param array $array
+ * @param array  $array
  * @param string $key
  *
  * @return array
@@ -345,16 +348,17 @@ function aw_array_move_to_end( $array, $key ) {
 
 
 /**
- * str_replace but limited to one replacement
- * @param string$subject
- * @param string$find
+ * Str_replace but limited to one replacement.
+ *
+ * @param string $subject
+ * @param string $find
  * @param string $replace
  * @return string
  */
 function aw_str_replace_first_match( $subject, $find, $replace = '' ) {
-	$pos = strpos($subject, $find);
-	if ($pos !== false) {
-		return substr_replace($subject, $replace, $pos, strlen($find));
+	$pos = strpos( $subject, $find );
+	if ( $pos !== false ) {
+		return substr_replace( $subject, $replace, $pos, strlen( $find ) );
 	}
 	return $subject;
 }
@@ -400,7 +404,7 @@ function aw_str_starts_with( $haystack, $needle ) {
 function aw_str_ends_with( $haystack, $needle ) {
 	$length = strlen( $needle );
 
-	if ( $length == 0 ) {
+	if ( 0 === $length ) {
 		return true;
 	}
 
@@ -410,17 +414,18 @@ function aw_str_ends_with( $haystack, $needle ) {
 
 /**
  * Define cache blocking constants if not already defined
+ *
  * @since 3.6.0
  */
 function aw_set_nocache_constants() {
 	if ( ! defined( 'DONOTCACHEPAGE' ) ) {
-		define( "DONOTCACHEPAGE", true );
+		define( 'DONOTCACHEPAGE', true );
 	}
 	if ( ! defined( 'DONOTCACHEOBJECT' ) ) {
-		define( "DONOTCACHEOBJECT", true );
+		define( 'DONOTCACHEOBJECT', true );
 	}
 	if ( ! defined( 'DONOTCACHEDB' ) ) {
-		define( "DONOTCACHEDB", true );
+		define( 'DONOTCACHEDB', true );
 	}
 }
 
@@ -432,7 +437,7 @@ function aw_set_nocache_constants() {
  */
 function aw_no_page_cache() {
 	if ( ! defined( 'DONOTCACHEPAGE' ) ) {
-		define( "DONOTCACHEPAGE", true );
+		define( 'DONOTCACHEPAGE', true );
 	}
 	nocache_headers();
 }
@@ -446,9 +451,10 @@ function aw_no_page_cache() {
  * @return array
  */
 function aw_get_query_args( $excluded = [] ) {
-	$params = AutomateWoo\Clean::recursive( $_GET );
+	// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only admin request; value sanitized, no state change.
+	$params = AutomateWoo\Clean::recursive( wp_unslash( $_GET ) );
 
-	foreach( $excluded as $key ) {
+	foreach ( $excluded as $key ) {
 		unset( $params[ $key ] );
 	}
 
@@ -513,7 +519,7 @@ function aw_anonymize_email( $email ) {
  * @return string
  */
 function _aw_anonymize_email_part( $part ) {
-	$to_keep = 2;
+	$to_keep     = 2;
 	$star_length = max( strlen( $part ) - $to_keep, 3 ); // min length of 3 stars
 	return substr( $part, 0, $to_keep ) . str_repeat( '*', $star_length );
 }
@@ -521,11 +527,11 @@ function _aw_anonymize_email_part( $part ) {
 
 /**
  * @since 4.0
- * @param $email
+ * @param string $email
  * @return bool
  */
 function aw_is_email_anonymized( $email ) {
-	if ( $email == 'deleted@site.invalid' ) {
+	if ( 'deleted@site.invalid' === $email ) {
 		return true;
 	}
 
@@ -539,7 +545,7 @@ function aw_is_email_anonymized( $email ) {
 
 /**
  * @since 4.1
- * @param $thing
+ * @param mixed $thing
  * @return bool
  */
 function aw_is_error( $thing ) {
@@ -556,7 +562,7 @@ function aw_is_error( $thing ) {
  * @return int
  */
 function aw_version_str_to_int( $version ) {
-	$parts = array_map( 'absint', explode( '.', (string) $version ) ); // convert to int here to remove any extra version info
+	$parts  = array_map( 'absint', explode( '.', (string) $version ) ); // convert to int here to remove any extra version info
 	$padded = $parts[0]
 		. str_pad( isset( $parts[1] ) ? $parts[1] : 0, 3, '0', STR_PAD_LEFT )
 		. str_pad( isset( $parts[2] ) ? $parts[2] : 0, 3, '0', STR_PAD_LEFT );
@@ -571,7 +577,7 @@ function aw_version_str_to_int( $version ) {
  */
 function aw_version_int_to_str( $version ) {
 	$version = (string) (int) $version; // parse as int before convert to string
-	$length = strlen( $version );
+	$length  = strlen( $version );
 
 	if ( $length < 7 ) {
 		return '0.0.0'; // incorrect format
@@ -589,8 +595,8 @@ function aw_version_int_to_str( $version ) {
  * (For example, 5.1.0 => 5.1, but 5.1.1 => 5.1.1, and 5.0 => 5.0).
  *
  * @since 4.9.5
- * @param $version
- * return $string
+ * @param string $version
+ * @return string
  */
 function aw_prettify_version( $version ) {
 	return preg_replace(
@@ -613,7 +619,8 @@ function aw_prettify_version( $version ) {
  * @return string|false
  */
 function aw_date_to_mysql_string( $date ) {
-	if ( $date = aw_normalize_date( $date ) ) {
+	$date = aw_normalize_date( $date );
+	if ( $date ) {
 		return $date->to_mysql_string();
 	}
 
@@ -657,7 +664,7 @@ function aw_normalize_date( $input ) {
 			$new->setTimestamp( $input->getTimestamp() );
 			return $new;
 		}
-	} catch( \Exception $e ) {
+	} catch ( \Exception $e ) {
 		return false;
 	}
 
@@ -774,6 +781,7 @@ function aw_deprecated_class( string $class_name, string $version, $replacement 
 		);
 	}
 
+	// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_trigger_error -- Intentional deprecation notice, WP_DEBUG-gated and escaped.
 	trigger_error( esc_html( $message ), E_USER_DEPRECATED );
 }
 

@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
@@ -11,7 +10,10 @@ use Automattic\WooCommerce\Admin\Features\Features as WCAdminFeatures;
 class Post_Types {
 
 
-	static function init() {
+	/**
+	 * Register hooks for the AutomateWoo post types.
+	 */
+	public static function init() {
 		add_action( 'init', [ __CLASS__, 'register_post_types' ], 5 );
 		add_action( 'init', [ __CLASS__, 'register_post_status' ] );
 
@@ -20,11 +22,17 @@ class Post_Types {
 	}
 
 
-	static function register_post_types() {
+	/**
+	 * Register the aw_workflow post type.
+	 */
+	public static function register_post_types() {
 		$is_wc_admin_nav = class_exists( WCAdminFeatures::class ) & WCAdminFeatures::is_enabled( 'navigation' );
 
-		register_post_type( 'aw_workflow',
-			apply_filters( 'automatewoo_register_post_type_aw_workflow', [
+		register_post_type(
+			'aw_workflow',
+			apply_filters(
+				'automatewoo_register_post_type_aw_workflow',
+				[
 					'labels'              => [
 						'name'               => __( 'Workflows', 'automatewoo' ),
 						'singular_name'      => __( 'Workflow', 'automatewoo' ),
@@ -40,7 +48,7 @@ class Post_Types {
 						'not_found'          => __( 'No Workflows found', 'automatewoo' ),
 						'not_found_in_trash' => __( 'No Workflows found in trash', 'automatewoo' ),
 					],
-					'public' => false,
+					'public'              => false,
 					'show_ui'             => true,
 					'capability_type'     => 'shop_order',
 					'map_meta_cap'        => true,
@@ -58,14 +66,14 @@ class Post_Types {
 			)
 		);
 
-		do_action('automatewoo_after_register_post_types');
+		do_action( 'automatewoo_after_register_post_types' );
 	}
 
 
 	/**
-	 *
+	 * Register the aw-disabled post status.
 	 */
-	static function register_post_status() {
+	public static function register_post_status() {
 		register_post_status(
 			'aw-disabled',
 			[
@@ -86,22 +94,22 @@ class Post_Types {
 	 * @param  array $messages
 	 * @return array
 	 */
-	static function register_post_updated_messages( $messages ) {
+	public static function register_post_updated_messages( $messages ) {
 		$post = get_post();
 
 		$messages['aw_workflow'] = [
-			0 => '', // Unused. Messages start at index 1.
-			1 => __( 'Workflow updated.', 'automatewoo' ),
-			2 => __( 'Custom field updated.', 'automatewoo' ),
-			3 => __( 'Custom field deleted.', 'automatewoo' ),
-			4 => __( 'Workflow updated.', 'automatewoo' ),
+			0  => '', // Unused. Messages start at index 1.
+			1  => __( 'Workflow updated.', 'automatewoo' ),
+			2  => __( 'Custom field updated.', 'automatewoo' ),
+			3  => __( 'Custom field deleted.', 'automatewoo' ),
+			4  => __( 'Workflow updated.', 'automatewoo' ),
 			// translators: placeholder is previous workflow title
-			5 => isset( $_GET['revision'] ) ? sprintf( _x( 'Workflow restored to revision from %s', 'used in workflow updated messages', 'automatewoo' ), wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
-			6 => __( 'Workflow updated.', 'automatewoo' ),
-			7 => __( 'Workflow saved.', 'automatewoo' ),
-			8 => __( 'Workflow submitted.', 'automatewoo' ),
+			5  => isset( $_GET['revision'] ) ? sprintf( _x( 'Workflow restored to revision from %s', 'used in workflow updated messages', 'automatewoo' ), wp_post_revision_title( (int) $_GET['revision'], false ) ) : false, // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only admin notice (post_updated_messages); revision id is cast to int.
+			6  => __( 'Workflow updated.', 'automatewoo' ),
+			7  => __( 'Workflow saved.', 'automatewoo' ),
+			8  => __( 'Workflow submitted.', 'automatewoo' ),
 			// translators: php date string, see http://php.net/date
-			9 => sprintf( __( 'Workflow scheduled for: %1$s.', 'automatewoo' ), '<strong>' . date_i18n( _x( 'M j, Y @ G:i', 'used in "Workflow scheduled for <date>"', 'automatewoo' ), strtotime( $post->post_date ) ) . '</strong>' ),
+			9  => sprintf( __( 'Workflow scheduled for: %1$s.', 'automatewoo' ), '<strong>' . date_i18n( _x( 'M j, Y @ G:i', 'used in "Workflow scheduled for <date>"', 'automatewoo' ), strtotime( $post->post_date ) ) . '</strong>' ),
 			10 => __( 'Workflow draft updated.', 'automatewoo' ),
 		];
 
@@ -115,7 +123,7 @@ class Post_Types {
 	 * @param  array $bulk_counts Array of how many objects were updated.
 	 * @return array
 	 */
-	static public function register_bulk_post_updated_messages( $bulk_messages, $bulk_counts ) {
+	public static function register_bulk_post_updated_messages( $bulk_messages, $bulk_counts ) {
 		$bulk_messages['aw_workflow'] = [
 			/* translators: %s: workflow count */
 			'updated'   => _n( '%s workflow updated.', '%s workflows updated.', $bulk_counts['updated'], 'automatewoo' ),
@@ -131,7 +139,4 @@ class Post_Types {
 
 		return $bulk_messages;
 	}
-
 }
-
-

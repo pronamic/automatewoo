@@ -1,11 +1,12 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo\DataTypes;
 
 use AutomateWoo\Order_Note as OrderNoteModel;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * OrderNote data type class.
@@ -13,36 +14,36 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 class OrderNote extends AbstractDataType {
 
 	/**
-	 * @param $item
+	 * @param mixed $item
 	 * @return bool
 	 */
-	function validate( $item ) {
+	public function validate( $item ) {
 		return $item instanceof OrderNoteModel;
 	}
 
 
 	/**
-	 * @param $item
+	 * @param OrderNoteModel $item
 	 * @return mixed
 	 */
-	function compress( $item ) {
+	public function compress( $item ) {
 		return $item->id;
 	}
 
 
 	/**
-	 * @param $compressed_item
-	 * @param $compressed_data_layer
+	 * @param int|string|null $compressed_item
+	 * @param array           $compressed_data_layer
 	 * @return mixed
 	 */
-	function decompress( $compressed_item, $compressed_data_layer ) {
+	public function decompress( $compressed_item, $compressed_data_layer ) {
 		if ( ! $compressed_item ) {
 			return false;
 		}
 
-		if ( $comment = get_comment( $compressed_item ) ) {
+		$comment = get_comment( $compressed_item );
+		if ( $comment ) {
 			return new OrderNoteModel( $comment->comment_ID, $comment->comment_content, $comment->comment_post_ID );
 		}
 	}
-
 }

@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
@@ -59,13 +58,13 @@ class Workflow {
 
 
 	/**
-	 * @param $post mixed (object or post ID)
+	 * @param mixed $post Object or post ID.
 	 */
-	function __construct( $post ) {
+	public function __construct( $post ) {
 
 		if ( ! $post instanceof \WP_Post ) {
 			// Get from id
-			$post = get_post($post);
+			$post = get_post( $post );
 		}
 
 		if ( ! $post || $post->post_type !== self::POST_TYPE ) {
@@ -73,9 +72,9 @@ class Workflow {
 		}
 
 		$this->exists = true;
-		$this->post = $post;
-		$this->id = $post->ID;
-		$this->title = $post->post_title;
+		$this->post   = $post;
+		$this->id     = $post->ID;
+		$this->title  = $post->post_title;
 	}
 
 
@@ -100,7 +99,7 @@ class Workflow {
 	/**
 	 * @return string
 	 */
-	function get_title() {
+	public function get_title() {
 		return $this->title;
 	}
 
@@ -148,7 +147,7 @@ class Workflow {
 	/**
 	 * @return Variables_Processor
 	 */
-	function variable_processor() {
+	public function variable_processor() {
 
 		if ( ! isset( $this->variable_processor ) ) {
 			$this->variable_processor = new Variables_Processor( $this );
@@ -169,7 +168,7 @@ class Workflow {
 	 *
 	 * @return string
 	 */
-	function process_variable( $variable_string ) {
+	public function process_variable( $variable_string ) {
 		return $this->variable_processor()->process_field( '{{' . $variable_string . '}}', true );
 	}
 
@@ -177,7 +176,7 @@ class Workflow {
 	/**
 	 * @return Data_Layer
 	 */
-	function data_layer() {
+	public function data_layer() {
 		if ( ! isset( $this->data_layer ) ) {
 			$this->data_layer = new Data_Layer();
 		}
@@ -189,11 +188,11 @@ class Workflow {
 	/**
 	 * @return Trigger|ManualInterface|false
 	 */
-	function get_trigger() {
+	public function get_trigger() {
 		if ( ! isset( $this->trigger ) ) {
 
 			$this->trigger = false;
-			$trigger_name = $this->get_trigger_name();
+			$trigger_name  = $this->get_trigger_name();
 
 			if ( $trigger_name && Triggers::get( $trigger_name ) ) {
 				// @todo clone triggers just to retrieve options now seems a little confusing and inefficient
@@ -207,13 +206,32 @@ class Workflow {
 
 
 	/**
+	 * Get the workflow's trigger, or a null-object trigger if none is set.
+	 *
+	 * This is an additive, opt-in alternative to get_trigger() for callers that
+	 * prefer a safe object over a `false` return value. get_trigger()'s contract
+	 * (trigger or `false`) is intentionally left unchanged for backwards
+	 * compatibility.
+	 *
+	 * @since 6.6.0
+	 *
+	 * @return Trigger
+	 */
+	public function get_trigger_or_noop() {
+		$trigger = $this->get_trigger();
+
+		return $trigger instanceof Trigger ? $trigger : new \AutomateWoo\Triggers\NoOpTrigger();
+	}
+
+
+	/**
 	 * @return Action[]
 	 */
-	function get_actions() {
+	public function get_actions() {
 		if ( ! isset( $this->actions ) ) {
 
 			$this->actions = [];
-			$actions_data = $this->get_actions_data();
+			$actions_data  = $this->get_actions_data();
 
 			if ( ! is_array( $actions_data ) ) {
 				return $this->actions;
@@ -225,7 +243,7 @@ class Workflow {
 					$action_obj = clone $this->get_action_from_action_fields( $action );
 					$action_obj->set_options( $action );
 					$this->actions[ $n ] = $action_obj;
-					$n++;
+					++$n;
 				} catch ( Exception $e ) {
 					continue;
 				}
@@ -239,27 +257,27 @@ class Workflow {
 	/**
 	 * Returns the saved actions with their data
 	 *
-	 * @param $number
+	 * @param int $number The action number.
 	 * @return Action|false
 	 */
-	function get_action( $number ) {
+	public function get_action( $number ) {
 
 		$actions = $this->get_actions();
 
-		if ( ! isset( $actions[$number] ) ) {
+		if ( ! isset( $actions[ $number ] ) ) {
 			return false;
 		}
 
-		return $actions[$number];
+		return $actions[ $number ];
 	}
 
 
 	/**
 	 * @param Data_Layer|array $data_layer
-	 * @param bool $skip_validation
-	 * @param bool $force_immediate
+	 * @param bool             $skip_validation
+	 * @param bool             $force_immediate
 	 */
-	function maybe_run( $data_layer, $skip_validation = false, $force_immediate = false ) {
+	public function maybe_run( $data_layer, $skip_validation = false, $force_immediate = false ) {
 
 		// setup language and data before validation occurs
 		$this->setup( $data_layer );
@@ -272,8 +290,7 @@ class Workflow {
 
 			if ( $this->get_timing_type() === 'immediately' || $force_immediate ) {
 				$this->run();
-			}
-			else {
+			} else {
 				$this->queue();
 			}
 		}
@@ -290,7 +307,7 @@ class Workflow {
 	 *
 	 * @return bool
 	 */
-	public function is_missing_required_data(){
+	public function is_missing_required_data() {
 		if ( ! $this->exists ) {
 			return true;
 		}
@@ -309,25 +326,32 @@ class Workflow {
 	/**
 	 * @return bool
 	 */
-	function validate_workflow() {
+	public function validate_workflow() {
 
-		if ( ! $this->is_active() )
+		if ( ! $this->is_active() ) {
 			return false;
+		}
 
-		if ( ! $trigger = $this->get_trigger() )
+		$trigger = $this->get_trigger();
+		if ( ! $trigger ) {
 			return false;
+		}
 
-		if ( ! $trigger->validate_workflow_language( $this ) )
+		if ( ! $trigger->validate_workflow_language( $this ) ) {
 			return false;
+		}
 
-		if ( ! $trigger->validate_workflow( $this ) )
+		if ( ! $trigger->validate_workflow( $this ) ) {
 			return false;
+		}
 
-		if ( ! $this->validate_rules() )
+		if ( ! $this->validate_rules() ) {
 			return false;
+		}
 
-		if ( ! apply_filters( 'automatewoo_custom_validate_workflow', true, $this ) )
+		if ( ! apply_filters( 'automatewoo_custom_validate_workflow', true, $this ) ) {
 			return false;
+		}
 
 		return true;
 	}
@@ -336,13 +360,14 @@ class Workflow {
 	/**
 	 * @return bool
 	 */
-	function validate_rules() {
+	public function validate_rules() {
 
 		$rule_options = $this->get_rule_data();
 
 		// no rules exists
-		if ( empty( $rule_options ) )
+		if ( empty( $rule_options ) ) {
 			return true;
+		}
 
 		foreach ( $rule_options as $rule_group ) {
 
@@ -358,8 +383,9 @@ class Workflow {
 			}
 
 			// groups have an OR relationship so if one is valid we can break the loop and return true
-			if ( $is_group_valid )
+			if ( $is_group_valid ) {
 				return true;
+			}
 		}
 
 		// no groups were valid
@@ -373,14 +399,15 @@ class Workflow {
 	 * @param array $rule
 	 * @return bool
 	 */
-	function validate_rule( $rule ) {
+	public function validate_rule( $rule ) {
 
-		if ( ! is_array( $rule ) )
+		if ( ! is_array( $rule ) ) {
 			return true;
+		}
 
-		$rule_name = isset( $rule['name'] ) ? $rule['name'] : false;
+		$rule_name    = isset( $rule['name'] ) ? $rule['name'] : false;
 		$rule_compare = isset( $rule['compare'] ) ? $rule['compare'] : false;
-		$rule_value = isset( $rule['value'] ) ? $rule['value'] : false;
+		$rule_value   = isset( $rule['value'] ) ? $rule['value'] : false;
 
 		// its ok for compare to be false for boolean type rules
 		if ( ! $rule_name ) {
@@ -390,14 +417,16 @@ class Workflow {
 		$rule_object = Rules::get( $rule_name );
 
 		// rule doesn't exists
-		if ( ! $rule_object )
+		if ( ! $rule_object ) {
 			return false;
+		}
 
 		// get the data required to validate the rule
 		$data_item = $this->data_layer()->get_item( $rule_object->data_item );
 
-		if ( ! $data_item )
+		if ( ! $data_item ) {
 			return false;
+		}
 
 		// some rules need the full workflow object
 		$rule_object->set_workflow( $this );
@@ -417,7 +446,7 @@ class Workflow {
 	/**
 	 * @return bool
 	 */
-	function run() {
+	public function run() {
 
 		if ( AW_PREVENT_WORKFLOWS ) {
 			Logger::info( 'prevented-workflows', $this->title );
@@ -442,11 +471,10 @@ class Workflow {
 			$action->workflow = $this;
 
 			try {
-				do_action('automatewoo_before_action_run', $action, $this );
+				do_action( 'automatewoo_before_action_run', $action, $this );
 				$action->run();
-				do_action('automatewoo_after_action_run', $action, $this );
-			}
-			catch( \Exception $e ) {
+				do_action( 'automatewoo_after_action_run', $action, $this );
+			} catch ( \Exception $e ) {
 				// Log exceptions as errors
 				$this->log_action_error( $action, $e->getMessage() );
 			}
@@ -463,10 +491,10 @@ class Workflow {
 	 * Clears any data that is related to the last run
 	 * The trigger and actions don't need to be reset because their data flows from the workflow options not the workflow data layer
 	 */
-	function reset_data() {
+	public function reset_data() {
 		$this->data_layer()->clear();
-		$this->log = null;
-		$this->location = null;
+		$this->log          = null;
+		$this->location     = null;
 		$this->tax_location = null;
 	}
 
@@ -475,7 +503,7 @@ class Workflow {
 	 *
 	 * @return Queued_Event|false
 	 */
-	function queue() {
+	public function queue() {
 		$date = $this->get_queue_date();
 
 		if ( ! $date ) {
@@ -501,7 +529,7 @@ class Workflow {
 	public function get_queue_date() {
 		$date = false;
 
-		switch( $this->get_timing_type() ) {
+		switch ( $this->get_timing_type() ) {
 			case 'delayed':
 				$date              = new DateTime();
 				$current_timestamp = time();
@@ -530,9 +558,10 @@ class Workflow {
 
 	/**
 	 * Setup the state of the workflow before it is validated or checked
+	 *
 	 * @param array|Data_Layer|bool $data
 	 */
-	function setup( $data = false ) {
+	public function setup( $data = false ) {
 
 		// the only time data is false is in preview mode
 		if ( $data ) {
@@ -565,7 +594,7 @@ class Workflow {
 	/**
 	 * Clean up after workflow run
 	 */
-	function cleanup() {
+	public function cleanup() {
 
 		// reset language
 		if ( Language::is_multilingual() ) {
@@ -581,7 +610,7 @@ class Workflow {
 	/**
 	 * Record that the workflow has been run
 	 */
-	function create_run_log() {
+	public function create_run_log() {
 
 		$this->log = new Log();
 		$this->log->set_workflow_id( $this->get_id() );
@@ -606,17 +635,17 @@ class Workflow {
 	/**
 	 * @return int
 	 */
-	function get_times_run() {
+	public function get_times_run() {
 
 		$cache_key = 'times_run/workflow=' . $this->get_id();
-		$cache = Cache::get_transient( $cache_key );
+		$cache     = Cache::get_transient( $cache_key );
 
 		if ( $cache !== false ) {
 			return (int) $cache;
 		}
 
 		$query = new Log_Query();
-		$query->where_workflow(  $this->get_id() );
+		$query->where_workflow( $this->get_id() );
 		$count = $query->get_count();
 
 		Cache::set_transient( $cache_key, $count, 720 );
@@ -629,15 +658,14 @@ class Workflow {
 	 * @param bool $try_cache
 	 * @return int|string
 	 */
-	function get_current_queue_count( $try_cache = true ) {
+	public function get_current_queue_count( $try_cache = true ) {
 
 		$cache_key = 'current_queue_count/workflow=' . $this->get_id();
-		$cache = Cache::get_transient( $cache_key );
+		$cache     = Cache::get_transient( $cache_key );
 
 		if ( $try_cache && $cache !== false ) {
 			return $cache;
-		}
-		else {
+		} else {
 
 			$query = new Queue_Query();
 			$query->where_workflow( $this->get_id() );
@@ -652,32 +680,36 @@ class Workflow {
 
 	/**
 	 * @param string $name
-	 * @param bool $replace_vars
+	 * @param bool   $replace_vars
 	 * @return mixed
 	 */
-	function get_option( $name, $replace_vars = false ) {
+	public function get_option( $name, $replace_vars = false ) {
 
 		$options = $this->get_meta( 'workflow_options' );
 
-		if ( ! is_array( $options ) || ! isset( $options[$name] ) )
+		if ( ! is_array( $options ) || ! isset( $options[ $name ] ) ) {
 			return false;
-
-		if ( $replace_vars ) {
-			return $this->variable_processor()->process_field( $options[$name] );
 		}
 
-		return apply_filters( 'automatewoo/workflow/option', $options[$name], $name, $this );
+		if ( $replace_vars ) {
+			return $this->variable_processor()->process_field( $options[ $name ] );
+		}
+
+		return apply_filters( 'automatewoo/workflow/option', $options[ $name ], $name, $this );
 	}
 
 
 	/**
 	 * Returns options are immediately, delayed, scheduled, datetime
+	 *
 	 * @since 2.9
 	 * @return string
 	 */
-	function get_timing_type() {
+	public function get_timing_type() {
 		$when = Clean::string( $this->get_option( 'when_to_run' ) );
-		if ( ! $when ) $when = 'immediately';
+		if ( ! $when ) {
+			$when = 'immediately';
+		}
 		return $when;
 	}
 
@@ -697,7 +729,7 @@ class Workflow {
 
 		$timing_type = $this->get_timing_type();
 
-		if ( ! in_array( $timing_type, [ 'delayed', 'scheduled' ] ) ) {
+		if ( ! in_array( $timing_type, [ 'delayed', 'scheduled' ], true ) ) {
 			return 0;
 		}
 
@@ -733,41 +765,58 @@ class Workflow {
 	/**
 	 * @return float
 	 */
-	function get_timing_delay_number() {
-		return (float) $this->get_option('run_delay_value');
+	public function get_timing_delay_number() {
+		return (float) $this->get_option( 'run_delay_value' );
 	}
 
 
 	/**
 	 * @return string
 	 */
-	function get_timing_delay_unit() {
-		return Clean::string( $this->get_option('run_delay_unit') );
+	public function get_timing_delay_unit() {
+		return Clean::string( $this->get_option( 'run_delay_unit' ) );
+	}
+
+	/**
+	 * Should workflow rules be validated before a queued workflow runs?
+	 *
+	 * @return bool
+	 */
+	public function should_validate_rules_before_queued_run() {
+		$options = $this->get_meta( 'workflow_options' );
+
+		if ( ! is_array( $options ) || ! array_key_exists( 'validate_rules_before_queued_run', $options ) ) {
+			return true;
+		}
+
+		return (bool) apply_filters( 'automatewoo/workflow/option', $options['validate_rules_before_queued_run'], 'validate_rules_before_queued_run', $this );
 	}
 
 
 	/**
 	 * Calculate the next point in time that matches the workflow scheduling options
+	 *
 	 * @param bool|integer $current_timestamp - optional, not GMT
 	 * @return bool|DateTime
 	 */
-	function calculate_scheduled_datetime( $current_timestamp = false ) {
+	public function calculate_scheduled_datetime( $current_timestamp = false ) {
 
 		if ( $this->get_timing_type() !== 'scheduled' ) {
 			return false;
 		}
 
 		if ( ! $current_timestamp ) {
+			// phpcs:ignore WordPress.DateTime.CurrentTimeTimestamp.Requested -- Intentional local-timezone timestamp for scheduling.
 			$current_timestamp = current_time( 'timestamp' ); // calculate based on the local timezone
 		}
 
 		// scheduled day and time are in the sites specified timezone
-		$scheduled_time = $this->get_scheduled_time();
-		$scheduled_days = $this->get_scheduled_days();
+		$scheduled_time                        = $this->get_scheduled_time();
+		$scheduled_days                        = $this->get_scheduled_days();
 		$scheduled_time_seconds_from_day_start = Time_Helper::calculate_seconds_from_day_start( $scheduled_time );
 
 		// get minimum datetime before scheduling can happen, if no delay is set then this will be now
-		$min_wait_datetime = new DateTime;
+		$min_wait_datetime = new DateTime();
 		$min_wait_datetime->setTimestamp( $current_timestamp + $this->get_timing_delay( $current_timestamp ) );
 		$min_wait_time_seconds_from_day_start = Time_Helper::calculate_seconds_from_day_start( $min_wait_datetime );
 
@@ -777,21 +826,23 @@ class Workflow {
 		// if the scheduled time comes before the current min wait time we can not schedule on the same day as the min wait
 		// therefore update the min wait datetime so that is its midnight of the next day
 		if ( ! $is_scheduled_time_later_than_min_wait_time ) {
-			$min_wait_datetime->modify('+1 day');
+			$min_wait_datetime->modify( '+1 day' );
 		}
 
 		$min_wait_datetime->set_time_to_day_start(); // set time to midnight, time will be added on later
 
 		// check if scheduled day matches the min wait day
+		// phpcs:ignore WordPress.PHP.StrictInArray.MissingTrueStrict -- format( 'N' ) returns a numeric string while $scheduled_days holds integers; strict comparison would break matching.
 		if ( $scheduled_days && ! in_array( $min_wait_datetime->format( 'N' ), $scheduled_days ) ) {
 
 			// advance time until a matching day is found
+			// phpcs:ignore WordPress.PHP.StrictInArray.MissingTrueStrict -- format( 'N' ) returns a numeric string while $scheduled_days holds integers; strict comparison would break matching.
 			while ( ! in_array( $min_wait_datetime->format( 'N' ), $scheduled_days ) ) {
-				$min_wait_datetime->modify('+1 day');
+				$min_wait_datetime->modify( '+1 day' );
 			}
 		}
 
-		$scheduled_time = new DateTime;
+		$scheduled_time = new DateTime();
 		$scheduled_time->setTimestamp( $min_wait_datetime->getTimestamp() );
 		$scheduled_time->modify( "{$scheduled_time_seconds_from_day_start} seconds" );
 		$scheduled_time->convert_to_utc_time();
@@ -803,16 +854,17 @@ class Workflow {
 	/**
 	 * @return string
 	 */
-	function get_scheduled_time() {
+	public function get_scheduled_time() {
 		return Clean::string( $this->get_option( 'scheduled_time' ) );
 	}
 
 
 	/**
 	 * Returns empty if set to any day, 1 (for Monday) through 7 (for Sunday)
+	 *
 	 * @return array
 	 */
-	function get_scheduled_days() {
+	public function get_scheduled_days() {
 		return Clean::ids( $this->get_option( 'scheduled_day' ) );
 	}
 
@@ -820,17 +872,17 @@ class Workflow {
 	/**
 	 * @return DateTime|bool
 	 */
-	function get_fixed_time() {
+	public function get_fixed_time() {
 
-		$date = Clean::string( $this->get_option('fixed_date') );
-		$time = array_map( 'absint', (array) $this->get_option('fixed_time') );
+		$date = Clean::string( $this->get_option( 'fixed_date' ) );
+		$time = array_map( 'absint', (array) $this->get_option( 'fixed_time' ) );
 
 		if ( ! $date ) {
 			return false;
 		}
 
 		$datetime = new DateTime( $date );
-		$datetime->setTime( isset($time[0]) ? $time[0] : 0, isset($time[1]) ? $time[1] : 0, 0 );
+		$datetime->setTime( isset( $time[0] ) ? $time[0] : 0, isset( $time[1] ) ? $time[1] : 0, 0 );
 		$datetime->convert_to_utc_time();
 
 		return $datetime;
@@ -839,15 +891,17 @@ class Workflow {
 
 	/**
 	 * Get scheduled date as set by variable timing option
+	 *
 	 * @return DateTime|bool
 	 */
-	function get_variable_time() {
+	public function get_variable_time() {
 		$datetime = $this->get_option( 'queue_datetime', true );
 
 		if ( ! $datetime ) {
 			return false;
 		}
 
+		// phpcs:ignore WordPress.DateTime.CurrentTimeTimestamp.Requested -- Intentional local-timezone timestamp for scheduling.
 		$timestamp = strtotime( $datetime, current_time( 'timestamp' ) );
 
 		$date = new DateTime();
@@ -864,7 +918,7 @@ class Workflow {
 	 *
 	 * @return string
 	 */
-	function get_trigger_name() {
+	public function get_trigger_name() {
 		return Clean::string( $this->get_meta( 'trigger_name' ) );
 	}
 
@@ -873,9 +927,9 @@ class Workflow {
 	 *
 	 * @since 4.4.0
 	 *
-	 * @param $trigger_name
+	 * @param string $trigger_name The trigger name.
 	 */
-	function set_trigger_name( $trigger_name ) {
+	public function set_trigger_name( $trigger_name ) {
 		$this->update_meta( 'trigger_name', Clean::string( $trigger_name ) );
 		unset( $this->trigger );
 	}
@@ -886,7 +940,7 @@ class Workflow {
 	 *
 	 * @return array
 	 */
-	function get_trigger_options() {
+	public function get_trigger_options() {
 		$options = $this->get_meta( 'trigger_options' );
 		return is_array( $options ) ? $options : [];
 	}
@@ -901,7 +955,7 @@ class Workflow {
 	 * @param string $trigger_name
 	 * @param array  $trigger_options
 	 */
-	function set_trigger_data( $trigger_name, $trigger_options ) {
+	public function set_trigger_data( $trigger_name, $trigger_options ) {
 		if ( $trigger_name !== $this->get_trigger_name() ) {
 			$this->set_trigger_name( $trigger_name );
 		}
@@ -913,18 +967,17 @@ class Workflow {
 	/**
 	 * Get's the sanitized value of workflow trigger option.
 	 *
-	 * @param string $name
+	 * @param string      $name
 	 * @param bool|string $default used when value is not set, this should only be if the option was added workflow was created
 	 *
 	 * @return mixed Will vary depending on the field type specified in the trigger's fields.
 	 */
-	function get_trigger_option( $name, $default = false ) {
+	public function get_trigger_option( $name, $default = false ) {
 		$options = $this->get_trigger_options();
 
-		if ( isset( $options[$name] ) ) {
-			$value = $options[$name];
-		}
-		else {
+		if ( isset( $options[ $name ] ) ) {
+			$value = $options[ $name ];
+		} else {
 			$value = $default;
 		}
 
@@ -941,7 +994,7 @@ class Workflow {
 	 *
 	 * @return array
 	 */
-	function sanitize_trigger_options( $trigger_name, $raw_options ) {
+	public function sanitize_trigger_options( $trigger_name, $raw_options ) {
 		if ( empty( $trigger_name ) ) {
 			return [];
 		}
@@ -954,8 +1007,8 @@ class Workflow {
 
 		$return = [];
 
-		foreach( $raw_options as $name => $value ) {
-			$name = Clean::string( $name );
+		foreach ( $raw_options as $name => $value ) {
+			$name      = Clean::string( $name );
 			$field_obj = $trigger->get_field( $name );
 
 			if ( $field_obj ) {
@@ -976,7 +1029,7 @@ class Workflow {
 	 *
 	 * @return array
 	 */
-	function get_actions_data() {
+	public function get_actions_data() {
 		$actions_data = $this->get_meta( 'actions' );
 		return is_array( $actions_data ) ? array_map( [ $this, 'format_action_fields' ], $actions_data ) : [];
 	}
@@ -993,7 +1046,7 @@ class Workflow {
 	 *
 	 * @param array $raw_actions_data
 	 */
-	function set_actions_data( $raw_actions_data ) {
+	public function set_actions_data( $raw_actions_data ) {
 		$actions_data = array_map( [ $this, 'sanitize_action_fields' ], $raw_actions_data );
 		// remove empty values from actions array
 		$actions_data = array_filter( $actions_data );
@@ -1010,7 +1063,7 @@ class Workflow {
 	 *
 	 * @return array
 	 */
-	function sanitize_action_fields( $action_fields ) {
+	public function sanitize_action_fields( $action_fields ) {
 		try {
 			$action = $this->get_action_from_action_fields( $action_fields );
 		} catch ( Exception $e ) {
@@ -1021,14 +1074,14 @@ class Workflow {
 			'action_name' => $action->get_name(),
 		];
 
-		foreach( $action_fields as $name => $value ) {
-			$name = Clean::string( $name );
+		foreach ( $action_fields as $name => $value ) {
+			$name      = Clean::string( $name );
 			$field_obj = $action->get_field( $name );
 
 			if ( $field_obj ) {
 				$field_value = $field_obj->sanitize_value( $value );
 				// encode emojis to avoid emoji serialization issues
-				$field_value = Clean::encode_emoji( $field_value );
+				$field_value        = Clean::encode_emoji( $field_value );
 				$sanitized[ $name ] = $field_value;
 			}
 		}
@@ -1073,7 +1126,7 @@ class Workflow {
 	/**
 	 * @param array $rule_options
 	 */
-	function set_rule_data( $rule_options ) {
+	public function set_rule_data( $rule_options ) {
 		$this->update_meta( 'rule_options', $this->sanitize_rule_options( $rule_options ) );
 	}
 
@@ -1081,7 +1134,7 @@ class Workflow {
 	/**
 	 * @return array
 	 */
-	function get_rule_data() {
+	public function get_rule_data() {
 		$data = $this->get_meta( 'rule_options' );
 		return is_array( $data ) ? $data : [];
 	}
@@ -1106,7 +1159,7 @@ class Workflow {
 	 *
 	 * @return array
 	 */
-	function sanitize_rule_options( $options ) {
+	public function sanitize_rule_options( $options ) {
 		if ( ! is_array( $options ) ) {
 			return [];
 		}
@@ -1157,7 +1210,7 @@ class Workflow {
 	 *
 	 * @return Log|bool
 	 */
-	function get_current_log() {
+	public function get_current_log() {
 		if ( isset( $this->log ) ) {
 			return $this->log;
 		}
@@ -1171,7 +1224,7 @@ class Workflow {
 	 * @param Customer $customer
 	 * @return bool
 	 */
-	function is_customer_unsubscribed( $customer ) {
+	public function is_customer_unsubscribed( $customer ) {
 		if ( $this->is_preview_mode() || $this->is_test_mode() ) {
 			return false;
 		}
@@ -1194,7 +1247,7 @@ class Workflow {
 	 * @param Customer $customer
 	 * @return bool|string
 	 */
-	function get_unsubscribe_url( $customer ) {
+	public function get_unsubscribe_url( $customer ) {
 		if ( ! $customer ) {
 			return false;
 		}
@@ -1209,6 +1262,7 @@ class Workflow {
 			[
 				'aw-action'    => 'unsubscribe',
 				'workflow'     => $this->get_id(),
+				// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.urlencode_urlencode -- Preserve existing URL encoding.
 				'customer_key' => urlencode( $customer->get_key() ),
 			],
 			wc_get_page_permalink( 'myaccount' )
@@ -1223,7 +1277,7 @@ class Workflow {
 	/**
 	 * @return bool
 	 */
-	function is_exempt_from_unsubscribing() {
+	public function is_exempt_from_unsubscribing() {
 		$is_exempt = false;
 
 		// this avoids breaking changes for any customers using this gist: https://gist.github.com/danielbitzer/c25209057ba063ed4adcb6764049f1b6
@@ -1231,7 +1285,7 @@ class Workflow {
 			$is_exempt = true;
 		}
 
-		if ( $this->get_meta('is_transactional') ) {
+		if ( $this->get_meta( 'is_transactional' ) ) {
 			$is_exempt = true;
 		}
 
@@ -1240,11 +1294,11 @@ class Workflow {
 
 
 	/**
-	 * @param $user \WP_User or guest user
+	 * @param \WP_User|Order_Guest $user The user or guest user.
 	 *
 	 * @return bool
 	 */
-	function is_first_run_for_user( $user ) {
+	public function is_first_run_for_user( $user ) {
 		return $this->get_times_run_for_user( $user ) === 0;
 	}
 
@@ -1252,17 +1306,16 @@ class Workflow {
 	/**
 	 * Counts items in log and in queue for this user and workflow
 	 *
-	 * @param $user \WP_User|Order_Guest
+	 * @param \WP_User|Order_Guest $user The user or guest user.
 	 * @return int
 	 */
-	function get_times_run_for_user( $user ) {
+	public function get_times_run_for_user( $user ) {
 		$query = new Log_Query();
 		$query->where_workflow( $this->get_id() );
 
 		if ( $user->ID === 0 ) { // guest user
-			$query->where_guest(  $user->user_email );
-		}
-		else {
+			$query->where_guest( $user->user_email );
+		} else {
 			$query->where_user( $user->ID );
 		}
 
@@ -1276,7 +1329,7 @@ class Workflow {
 	 * @param Customer $customer
 	 * @return int
 	 */
-	function get_run_count_for_customer( $customer ) {
+	public function get_run_count_for_customer( $customer ) {
 		$query = new Log_Query();
 		$query->where_workflow( $this->get_id() );
 		$query->where_customer_or_legacy_user( $customer, true );
@@ -1288,7 +1341,7 @@ class Workflow {
 	 * @param \WC_Order $order
 	 * @return int
 	 */
-	function get_run_count_for_order( $order ) {
+	public function get_run_count_for_order( $order ) {
 		$query = new Log_Query();
 		$query->where_workflow( $this->get_id() );
 		$query->where_order( $order->get_id() );
@@ -1326,10 +1379,10 @@ class Workflow {
 	/**
 	 * Counts items in log and in queue for this guest and workflow
 	 *
-	 * @param $guest Guest
+	 * @param Guest $guest The guest.
 	 * @return int
 	 */
-	function get_times_run_for_guest( $guest ) {
+	public function get_times_run_for_guest( $guest ) {
 		$query = new Log_Query();
 		$query->where_workflow( $this->get_id() );
 		$query->where_guest( $guest->get_email() );
@@ -1354,7 +1407,7 @@ class Workflow {
 	 *
 	 * @return bool
 	 */
-	function has_run_for_data_item( $query_data_items, $within_timeframe = false, $skip_queue_query = false ) {
+	public function has_run_for_data_item( $query_data_items, $within_timeframe = false, $skip_queue_query = false ) {
 		if ( ! $this->is_setup ) {
 			return false;
 		}
@@ -1401,19 +1454,19 @@ class Workflow {
 
 
 	/**
-	 * @param $name
-	 * @param $item
+	 * @param string $name The data type name.
+	 * @param mixed  $item The data item.
 	 */
-	function set_data_item( $name, $item ) {
+	public function set_data_item( $name, $item ) {
 		$this->data_layer()->set_item( $name, $item );
 	}
 
 
 	/**
 	 * @param array|Data_Layer $data_layer
-	 * @param bool $reset_workflow_data
+	 * @param bool             $reset_workflow_data
 	 */
-	function set_data_layer( $data_layer, $reset_workflow_data ) {
+	public function set_data_layer( $data_layer, $reset_workflow_data ) {
 
 		if ( ! is_a( $data_layer, 'AutomateWoo\Data_Layer' ) ) {
 			$data_layer = new Data_Layer( $data_layer );
@@ -1430,10 +1483,10 @@ class Workflow {
 	/**
 	 * Retrieve and validate a data item
 	 *
-	 * @param $name string
+	 * @param string $name The data type name.
 	 * @return mixed
 	 */
-	function get_data_item( $name ) {
+	public function get_data_item( $name ) {
 		return $this->data_layer()->get_item( $name );
 	}
 
@@ -1464,8 +1517,7 @@ class Workflow {
 
 		if ( 'publish' === $status || 'manual' === $this->get_type() ) {
 			$status = 'active';
-		}
-		elseif ( $status === 'aw-disabled' ) {
+		} elseif ( $status === 'aw-disabled' ) {
 			$status = 'disabled';
 		}
 
@@ -1476,29 +1528,29 @@ class Workflow {
 	/**
 	 * @param string $status active|disabled or publish|aw-disabled
 	 */
-	function update_status( $status ) {
+	public function update_status( $status ) {
 
 		if ( $status === 'active' ) {
 			$post_status = 'publish';
-		}
-		elseif ( $status === 'disabled' ) {
+		} elseif ( $status === 'disabled' ) {
 			$post_status = 'aw-disabled';
-		}
-		else {
+		} else {
 			$post_status = $status;
 		}
 
-		wp_update_post([
-			'ID' => $this->get_id(),
-			'post_status' => $post_status
-		]);
+		wp_update_post(
+			[
+				'ID'          => $this->get_id(),
+				'post_status' => $post_status,
+			]
+		);
 	}
 
 
 	/**
 	 * @return bool
 	 */
-	function is_transactional() {
+	public function is_transactional() {
 		return (bool) $this->get_meta( 'is_transactional' );
 	}
 
@@ -1506,7 +1558,7 @@ class Workflow {
 	/**
 	 * @return bool
 	 */
-	function is_tracking_enabled() {
+	public function is_tracking_enabled() {
 		return (bool) $this->get_option( 'click_tracking' );
 	}
 
@@ -1514,7 +1566,7 @@ class Workflow {
 	/**
 	 * @return bool
 	 */
-	function is_conversion_tracking_enabled() {
+	public function is_conversion_tracking_enabled() {
 		return (bool) $this->get_option( 'conversion_tracking' );
 	}
 
@@ -1522,15 +1574,15 @@ class Workflow {
 	/**
 	 * @return bool
 	 */
-	function is_ga_tracking_enabled() {
-		return ( $this->is_tracking_enabled() && $this->get_ga_tracking_params() ) ;
+	public function is_ga_tracking_enabled() {
+		return ( $this->is_tracking_enabled() && $this->get_ga_tracking_params() );
 	}
 
 
 	/**
 	 * @return string
 	 */
-	function get_ga_tracking_params() {
+	public function get_ga_tracking_params() {
 		return trim( $this->get_option( 'ga_link_tracking', true ) );
 	}
 
@@ -1539,7 +1591,7 @@ class Workflow {
 	 * @param string $url
 	 * @return string
 	 */
-	function append_ga_tracking_to_url( $url ) {
+	public function append_ga_tracking_to_url( $url ) {
 
 		if ( empty( $url ) || ! $this->is_ga_tracking_enabled() ) {
 			return $url;
@@ -1556,7 +1608,7 @@ class Workflow {
 	/**
 	 * @return int
 	 */
-	function get_order() {
+	public function get_order() {
 		return (int) $this->post->menu_order ?: 0;
 	}
 
@@ -1564,33 +1616,34 @@ class Workflow {
 	/**
 	 * @return false|string
 	 */
-	function get_language() {
+	public function get_language() {
 		return Language::get_post_language( $this->get_id() ) ?: false;
 	}
 
 
 	/**
 	 * Return array with all versions of this workflow including the original
+	 *
 	 * @return array
 	 */
-	function get_translation_ids() {
+	public function get_translation_ids() {
 		return Language::get_post_translation_ids( $this->get_id() );
 	}
 
 
 	/**
-	 * @param $key
-	 * @param bool $single
+	 * @param string $key    The meta key.
+	 * @param bool   $single Whether to return a single value.
 	 * @return mixed
 	 */
-	function get_meta( $key, $single = true ) {
+	public function get_meta( $key, $single = true ) {
 		return get_post_meta( $this->get_id(), $key, $single );
 	}
 
 
 	/**
-	 * @param $key
-	 * @param $value
+	 * @param string $key   The meta key.
+	 * @param mixed  $value The meta value.
 	 * @return bool|int
 	 */
 	public function update_meta( $key, $value ) {
@@ -1601,7 +1654,7 @@ class Workflow {
 	/**
 	 * Enabling preview mode also enables test mode
 	 */
-	function enable_preview_mode() {
+	public function enable_preview_mode() {
 		$this->preview_mode = true;
 		$this->enable_test_mode();
 	}
@@ -1610,7 +1663,7 @@ class Workflow {
 	/**
 	 * Enable test mode
 	 */
-	function enable_test_mode() {
+	public function enable_test_mode() {
 		$this->test_mode = true;
 	}
 
@@ -1618,7 +1671,7 @@ class Workflow {
 	/**
 	 * @return bool
 	 */
-	function is_test_mode() {
+	public function is_test_mode() {
 		return $this->test_mode;
 	}
 
@@ -1626,17 +1679,18 @@ class Workflow {
 	/**
 	 * @return bool
 	 */
-	function is_preview_mode() {
+	public function is_preview_mode() {
 		return $this->preview_mode;
 	}
 
 
 	/**
-	 * @param Action $action
-	 * @param $note
+	 * @param Action $action The action being logged.
+	 * @param string $note   The note to log.
 	 */
-	function log_action_note( $action, $note ) {
-		if ( ! $log = $this->get_current_log() ) {
+	public function log_action_note( $action, $note ) {
+		$log = $this->get_current_log();
+		if ( ! $log ) {
 			return;
 		}
 
@@ -1645,11 +1699,12 @@ class Workflow {
 
 
 	/**
-	 * @param Action $action
-	 * @param $error
+	 * @param Action $action The action being logged.
+	 * @param string $error  The error message to log.
 	 */
-	function log_action_error( $action, $error ) {
-		if ( ! $log = $this->get_current_log() ) {
+	public function log_action_error( $action, $error ) {
+		$log = $this->get_current_log();
+		if ( ! $log ) {
 			return;
 		}
 
@@ -1665,10 +1720,11 @@ class Workflow {
 	 * Separates true mail errors from unsubscribes and blacklist errors and logs them accordingly.
 	 *
 	 * @param \WP_Error $error
-	 * @param Action $action
+	 * @param Action    $action
 	 */
-	function log_action_email_error( $error, $action ) {
-		if ( ! $log = $this->get_current_log() ) {
+	public function log_action_email_error( $error, $action ) {
+		$log = $this->get_current_log();
+		if ( ! $log ) {
 			return;
 		}
 
@@ -1676,8 +1732,7 @@ class Workflow {
 			$this->log_action_note( $action, $error->get_error_message() );
 			$log->set_has_blocked_emails( true );
 			$log->save();
-		}
-		else {
+		} else {
 			$this->log_action_error( $action, $error->get_error_message() );
 		}
 	}
@@ -1688,7 +1743,7 @@ class Workflow {
 	 *
 	 * @return Workflow_Location
 	 */
-	function get_location() {
+	public function get_location() {
 
 		if ( ! isset( $this->location ) ) {
 			$this->location = new Workflow_Location( $this );
@@ -1702,10 +1757,10 @@ class Workflow {
 	/**
 	 * @return Workflow_Location
 	 */
-	function get_tax_location() {
+	public function get_tax_location() {
 
 		if ( ! isset( $this->tax_location ) ) {
-			$this->tax_location = new Workflow_Location( $this, get_option( 'woocommerce_tax_based_on' )  );
+			$this->tax_location = new Workflow_Location( $this, get_option( 'woocommerce_tax_based_on' ) );
 			$this->tax_location = apply_filters( 'automatewoo/workflow/tax_location', $this->tax_location, $this );
 		}
 
@@ -1716,11 +1771,11 @@ class Workflow {
 	/**
 	 * Set tax location for the current workflow user
 	 *
-	 * @param $location
-	 * @param $tax_class
+	 * @param array  $location  The tax location array.
+	 * @param string $tax_class The tax class.
 	 * @return array
 	 */
-	function filter_tax_location( $location, $tax_class ) {
+	public function filter_tax_location( $location, $tax_class ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- Part of the overridable signature.
 		if ( 'base' === get_option( 'woocommerce_tax_based_on' ) ) {
 			return $location;
 		}
@@ -1730,11 +1785,11 @@ class Workflow {
 
 
 	/**
-	 * @param $name
-	 * @param $item
+	 * @param string $name The data type name.
+	 * @param mixed  $item The data item.
 	 * @deprecated
 	 */
-	function add_data_item( $name, $item ) {
+	public function add_data_item( $name, $item ) {
 		wc_deprecated_function( __METHOD__, '5.2.0' );
 
 		$this->set_data_item( $name, $item );
@@ -1742,10 +1797,10 @@ class Workflow {
 
 	/**
 	 * @deprecated use log_action_note
-	 * @param Action $action
-	 * @param $note
+	 * @param Action $action The action being logged.
+	 * @param string $note   The note to log.
 	 */
-	function add_action_log_note( $action, $note ) {
+	public function add_action_log_note( $action, $note ) {
 		wc_deprecated_function( __METHOD__, '5.2.0' );
 
 		$this->log_action_note( $action, $note );

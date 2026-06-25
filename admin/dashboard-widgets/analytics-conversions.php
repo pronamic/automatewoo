@@ -45,25 +45,9 @@ class Dashboard_Widget_Analytics_Conversions extends Dashboard_Widget_Analytics 
 				interval="<?php echo esc_js( $this->get_interval() ); ?>">
 			<div class="automatewoo-dashboard-chart__header">
 
-				<div class="automatewoo-dashboard-chart__header-group">
-					<automatewoo-dashboard-chart__header-figure
-						class="automatewoo-dashboard-chart__header-figure"
-						name="net_revenue">-</automatewoo-dashboard-chart__header-figure>
-					<div class="automatewoo-dashboard-chart__header-text">
-						<span class="automatewoo-dashboard-chart__legend automatewoo-dashboard-chart__legend--blue"></span>
-						<?php esc_html_e( 'conversion revenue', 'automatewoo' ); ?>
-					</div>
-				</div>
+				<?php $this->output_live_chart_header_group( 'net_revenue', __( 'conversion revenue', 'automatewoo' ), 'blue' ); ?>
 
-				<div class="automatewoo-dashboard-chart__header-group">
-					<automatewoo-dashboard-chart__header-figure
-						class="automatewoo-dashboard-chart__header-figure"
-						name="orders_count">-</automatewoo-dashboard-chart__header-figure>
-					<div class="automatewoo-dashboard-chart__header-text">
-						<span class="automatewoo-dashboard-chart__legend automatewoo-dashboard-chart__legend--purple"></span>
-						<?php esc_html_e( 'conversions', 'automatewoo' ); ?>
-					</div>
-				</div>
+				<?php $this->output_live_chart_header_group( 'orders_count', __( 'conversions', 'automatewoo' ), 'purple' ); ?>
 
 				<?php $this->output_report_arrow_link(); ?>
 			</div>

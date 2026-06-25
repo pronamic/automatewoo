@@ -162,7 +162,7 @@ class Trigger_Customer_Win_Back extends AbstractBatchedDailyTrigger {
 		}
 
 		$days = -1 * (int) $days;
-		$date = new DateTime();
+		$date = $this->get_batch_base_date();
 		$date->modify( "{$days} days" );
 
 		return $date;
@@ -183,7 +183,7 @@ class Trigger_Customer_Win_Back extends AbstractBatchedDailyTrigger {
 		}
 
 		$days = -1 * (int) $days;
-		$date = new DateTime();
+		$date = $this->get_batch_base_date();
 		$date->modify( "{$days} days" );
 
 		return $date;

@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
@@ -13,22 +12,27 @@ defined( 'ABSPATH' ) || exit;
  */
 class Privacy_Erasers {
 
-	static $limit = 10;
+	/**
+	 * Number of items to process per batch.
+	 *
+	 * @var int
+	 */
+	public static $limit = 10;
 
 
 	/**
 	 * Anonymize logs
 	 *
 	 * @param string $email
-	 * @param int $page
+	 * @param int    $page
 	 * @return array
 	 */
-	public static function customer_workflow_logs( $email, $page ) {
+	public static function customer_workflow_logs( $email, $page ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- Part of the overridable signature.
 		$response = [
-			'items_removed' => false,
+			'items_removed'  => false,
 			'items_retained' => false,
-			'messages' => [],
-			'done' => true,
+			'messages'       => [],
+			'done'           => true,
 		];
 
 		$customer = Customer_Factory::get_by_email( $email );
@@ -42,8 +46,8 @@ class Privacy_Erasers {
 		$query->where_customer_or_legacy_user( $customer, true );
 		$query->set_limit( self::$limit );
 
-		$results = $query->get_results();
-		$results_count = count( $results );
+		$results          = $query->get_results();
+		$results_count    = count( $results );
 		$response['done'] = $results_count < self::$limit;
 
 		if ( $response['done'] ) {
@@ -53,7 +57,7 @@ class Privacy_Erasers {
 		if ( $results ) {
 			$response['items_retained'] = true;
 
-			foreach( $results as $log ) {
+			foreach ( $results as $log ) {
 				self::anonymize_personal_log_data( $log, $email );
 			}
 		}
@@ -63,7 +67,7 @@ class Privacy_Erasers {
 
 
 	/**
-	 * @param Log $log
+	 * @param Log    $log
 	 * @param string $email
 	 */
 	public static function anonymize_personal_log_data( $log, $email ) {
@@ -74,7 +78,7 @@ class Privacy_Erasers {
 
 		$log->update_meta( Logs::get_data_layer_storage_key( 'guest' ), aw_anonymize_email( $email ) );
 
-		foreach( $log_storage_keys_to_erase as $key ) {
+		foreach ( $log_storage_keys_to_erase as $key ) {
 			$log->delete_meta( Logs::get_data_layer_storage_key( $key ) );
 		}
 
@@ -87,15 +91,15 @@ class Privacy_Erasers {
 	 * Remove all queued events for the customer.
 	 *
 	 * @param string $email
-	 * @param int $page
+	 * @param int    $page
 	 * @return array
 	 */
-	public static function customer_workflow_queue( $email, $page ) {
+	public static function customer_workflow_queue( $email, $page ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- Part of the overridable signature.
 		$response = [
-			'items_removed' => false,
+			'items_removed'  => false,
 			'items_retained' => false,
-			'messages' => [],
-			'done' => true,
+			'messages'       => [],
+			'done'           => true,
 		];
 
 		$customer = Customer_Factory::get_by_email( $email );
@@ -109,8 +113,8 @@ class Privacy_Erasers {
 		$query->set_limit( self::$limit );
 		$query->where_customer_or_legacy_user( $customer, true );
 
-		$results = $query->get_results();
-		$results_count = count( $results );
+		$results          = $query->get_results();
+		$results_count    = count( $results );
 		$response['done'] = $results_count < self::$limit;
 
 		if ( $response['done'] ) {
@@ -120,7 +124,7 @@ class Privacy_Erasers {
 		if ( $results ) {
 			$response['items_removed'] = true;
 
-			foreach( $results as $result ) {
+			foreach ( $results as $result ) {
 				$result->delete();
 			}
 		}
@@ -131,15 +135,15 @@ class Privacy_Erasers {
 
 	/**
 	 * @param string $email
-	 * @param int $page
+	 * @param int    $page
 	 * @return array
 	 */
-	public static function customer_cart( $email, $page ) {
+	public static function customer_cart( $email, $page ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- Part of the overridable signature.
 		$response = [
-			'items_removed' => false,
+			'items_removed'  => false,
 			'items_retained' => false,
-			'messages' => [],
-			'done' => true,
+			'messages'       => [],
+			'done'           => true,
 		];
 
 		$customer = Customer_Factory::get_by_email( $email );
@@ -150,13 +154,14 @@ class Privacy_Erasers {
 
 		$removed = false;
 
-		if ( $cart = Cart_Factory::get_by_user_id( $customer->get_user_id() ) ) {
+		foreach ( Cart_Factory::get_all_by_user_id( $customer->get_user_id() ) as $cart ) {
 			$removed = true;
 			$cart->delete();
 		}
 
-		if ( $guest = Guest_Factory::get_by_email( Clean::email( $email ) ) ) {
-			if ( $cart = $guest->get_cart() ) {
+		$guest = Guest_Factory::get_by_email( Clean::email( $email ) );
+		if ( $guest ) {
+			foreach ( Cart_Factory::get_all_by_guest_id( $guest->get_id() ) as $cart ) {
 				$removed = true;
 				$cart->delete();
 			}
@@ -164,7 +169,7 @@ class Privacy_Erasers {
 
 		if ( $removed ) {
 			$response['items_removed'] = true;
-			$response['messages'][] = __( 'Removed saved cart.', 'automatewoo' );
+			$response['messages'][]    = __( 'Removed saved cart.', 'automatewoo' );
 		}
 
 		return $response;
@@ -173,15 +178,15 @@ class Privacy_Erasers {
 
 	/**
 	 * @param string $email
-	 * @param int $page
+	 * @param int    $page
 	 * @return array
 	 */
-	public static function user_meta( $email, $page ) {
+	public static function user_meta( $email, $page ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- Part of the overridable signature.
 		$response = [
-			'items_removed' => false,
+			'items_removed'  => false,
 			'items_retained' => false,
-			'messages' => [],
-			'done' => true,
+			'messages'       => [],
+			'done'           => true,
 		];
 
 		$user = get_user_by( 'email', $email );
@@ -200,7 +205,7 @@ class Privacy_Erasers {
 		do_action( 'automatewoo/privacy/erase_user_meta', $user ); // for add-ons
 
 		$response['items_removed'] = true;
-		$response['messages'][] = __( 'Removed AutomateWoo user meta.', 'automatewoo' );
+		$response['messages'][]    = __( 'Removed AutomateWoo user meta.', 'automatewoo' );
 
 		return $response;
 	}
@@ -208,15 +213,15 @@ class Privacy_Erasers {
 
 	/**
 	 * @param string $email
-	 * @param int $page
+	 * @param int    $page
 	 * @return array
 	 */
-	public static function user_tags( $email, $page ) {
+	public static function user_tags( $email, $page ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- Part of the overridable signature.
 		$response = [
-			'items_removed' => false,
+			'items_removed'  => false,
 			'items_retained' => false,
-			'messages' => [],
-			'done' => true,
+			'messages'       => [],
+			'done'           => true,
 		];
 
 		$user = get_user_by( 'email', $email );
@@ -228,7 +233,7 @@ class Privacy_Erasers {
 		wp_set_object_terms( $user->ID, '', 'user_tag' );
 
 		$response['items_removed'] = true;
-		$response['messages'][] = __( 'Removed user tags.', 'automatewoo' );
+		$response['messages'][]    = __( 'Removed user tags.', 'automatewoo' );
 
 		return $response;
 	}
@@ -238,15 +243,15 @@ class Privacy_Erasers {
 	 * Completely erases the guest object matching an email.
 	 *
 	 * @param string $email
-	 * @param int $page
+	 * @param int    $page
 	 * @return array
 	 */
-	public static function customer_and_guest_object( $email, $page ) {
+	public static function customer_and_guest_object( $email, $page ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- Part of the overridable signature.
 		$response = [
-			'items_removed' => false,
+			'items_removed'  => false,
 			'items_retained' => false,
-			'messages' => [],
-			'done' => true,
+			'messages'       => [],
+			'done'           => true,
 		];
 
 		$customer = Customer_Factory::get_by_email( $email );
@@ -257,15 +262,14 @@ class Privacy_Erasers {
 
 		$customer->delete();
 
-		if ( $guest = Guest_Factory::get_by_email( Clean::email( $email ) ) ) {
+		$guest = Guest_Factory::get_by_email( Clean::email( $email ) );
+		if ( $guest ) {
 			$guest->delete();
 		}
 
 		$response['items_removed'] = true;
-		$response['messages'][] = __( 'Removed AutomateWoo customer object.', 'automatewoo' );
+		$response['messages'][]    = __( 'Removed AutomateWoo customer object.', 'automatewoo' );
 
 		return $response;
 	}
-
-
 }

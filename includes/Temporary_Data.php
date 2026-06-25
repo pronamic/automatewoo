@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
@@ -10,25 +9,25 @@ namespace AutomateWoo;
 class Temporary_Data {
 
 	/** @var array  */
-	static $data = [];
+	public static $data = [];
 
 
 	/**
 	 * @param string $type
-	 * @param $key
-	 * @param mixed $value
+	 * @param string $key
+	 * @param mixed  $value
 	 */
-	static function set( $type, $key, $value ) {
+	public static function set( $type, $key, $value ) {
 		self::setup_type( $type );
 		self::$data[ $type ][ (string) $key ] = $value;
 	}
 
 
 	/**
-	 * @param $type
-	 * @param $key
+	 * @param string $type
+	 * @param string $key
 	 */
-	static function delete( $type, $key ) {
+	public static function delete( $type, $key ) {
 		self::setup_type( $type );
 		unset( self::$data[ $type ][ (string) $key ] );
 	}
@@ -36,10 +35,10 @@ class Temporary_Data {
 
 	/**
 	 * @param string $type
-	 * @param $key
+	 * @param string $key
 	 * @return bool
 	 */
-	static function exists( $type, $key ) {
+	public static function exists( $type, $key ) {
 		self::setup_type( $type );
 		return isset( self::$data[ $type ][ (string) $key ] );
 	}
@@ -47,10 +46,10 @@ class Temporary_Data {
 
 	/**
 	 * @param string $type
-	 * @param $key
+	 * @param string $key
 	 * @return mixed
 	 */
-	static function get( $type, $key ) {
+	public static function get( $type, $key ) {
 		self::setup_type( $type );
 
 		if ( isset( self::$data[ $type ][ (string) $key ] ) ) {
@@ -62,9 +61,9 @@ class Temporary_Data {
 
 
 	/**
-	 * @param $type
+	 * @param string $type
 	 */
-	static function setup_type( $type ) {
+	public static function setup_type( $type ) {
 		if ( ! isset( self::$data[ $type ] ) ) {
 			self::$data[ $type ] = [];
 		}
@@ -74,8 +73,7 @@ class Temporary_Data {
 	/**
 	 * Remove all data and reset
 	 */
-	static function reset() {
+	public static function reset() {
 		self::$data = [];
 	}
-
 }

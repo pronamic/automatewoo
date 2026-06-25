@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
@@ -12,7 +11,12 @@ class Communication_Account_Tab {
 	public static $endpoint;
 
 
-	static function init() {
+	/**
+	 * Register the communication preferences account endpoint and its hooks.
+	 *
+	 * @return void
+	 */
+	public static function init() {
 		$self = 'AutomateWoo\Communication_Account_Tab'; /** @var $self Communication_Account_Tab (for IDE) */
 
 		self::$endpoint = apply_filters( 'automatewoo/communication_tab/endpoint', 'communication-preferences' );
@@ -24,7 +28,7 @@ class Communication_Account_Tab {
 		if ( Options::communication_account_tab_enabled() ) {
 			add_filter( 'the_title', [ $self, 'endpoint_title' ] );
 			add_filter( 'woocommerce_account_menu_items', [ $self, 'new_menu_items' ] );
-			add_action( 'woocommerce_account_' . self::$endpoint .  '_endpoint', [ $self, 'endpoint_content' ] );
+			add_action( 'woocommerce_account_' . self::$endpoint . '_endpoint', [ $self, 'endpoint_content' ] );
 		}
 	}
 
@@ -32,7 +36,7 @@ class Communication_Account_Tab {
 	/**
 	 * @return string
 	 */
-	static function get_page_title() {
+	public static function get_page_title() {
 		return apply_filters( 'automatewoo/communication_tab/page_title', __( 'Communication preferences', 'automatewoo' ) );
 	}
 
@@ -40,7 +44,7 @@ class Communication_Account_Tab {
 	/**
 	 * @return string
 	 */
-	static function get_menu_title() {
+	public static function get_menu_title() {
 		return apply_filters( 'automatewoo/communication_tab/menu_title', __( 'Communication', 'automatewoo' ) );
 	}
 
@@ -49,7 +53,7 @@ class Communication_Account_Tab {
 	 * @param array $vars
 	 * @return array
 	 */
-	static function add_query_vars( $vars ) {
+	public static function add_query_vars( $vars ) {
 		$vars[] = self::$endpoint;
 		return $vars;
 	}
@@ -61,7 +65,7 @@ class Communication_Account_Tab {
 	 * @param array $items
 	 * @return array
 	 */
-	static function new_menu_items( $items ) {
+	public static function new_menu_items( $items ) {
 
 		$logout_item = false;
 
@@ -86,7 +90,7 @@ class Communication_Account_Tab {
 	 * @param string $title
 	 * @return string
 	 */
-	static function endpoint_title( $title ) {
+	public static function endpoint_title( $title ) {
 		global $wp_query;
 
 		if ( isset( $wp_query->query_vars[ self::$endpoint ] ) && ! is_admin() && is_main_query() && in_the_loop() && is_account_page() && is_user_logged_in() ) {
@@ -101,10 +105,8 @@ class Communication_Account_Tab {
 	/**
 	 * Endpoint HTML content
 	 */
-	static function endpoint_content() {
+	public static function endpoint_content() {
 		$customer = Customer_Factory::get_by_user_id( get_current_user_id() );
 		Communication_Page::output_preferences_form( $customer );
 	}
-
-
 }

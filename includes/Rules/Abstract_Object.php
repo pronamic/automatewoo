@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo\Rules;
 
@@ -29,13 +28,16 @@ abstract class Abstract_Object extends Rule {
 	public $placeholder;
 
 
-	function __construct() {
+	/**
+	 * Constructor.
+	 */
+	public function __construct() {
 
 		$this->placeholder = __( 'Search...', 'automatewoo' );
 
 		parent::__construct();
 	}
-	
+
 	/**
 	 * Override this method to alter how saved values are displayed.
 	 *
@@ -46,5 +48,4 @@ abstract class Abstract_Object extends Rule {
 	public function get_object_display_value( $value ) {
 		return $value;
 	}
-
 }

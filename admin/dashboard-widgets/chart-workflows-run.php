@@ -62,13 +62,7 @@ class Dashboard_Widget_Chart_Workflows_Run extends Dashboard_Widget_Chart {
 
 			<div class="automatewoo-dashboard-chart__header">
 
-				<div class="automatewoo-dashboard-chart__header-group">
-					<div class="automatewoo-dashboard-chart__header-figure"><?php echo count( $logs ); ?></div>
-					<div class="automatewoo-dashboard-chart__header-text">
-						<span class="automatewoo-dashboard-chart__legend automatewoo-dashboard-chart__legend--blue"></span>
-						<?php esc_html_e( 'workflows run', 'automatewoo' ); ?>
-					</div>
-				</div>
+				<?php $this->output_static_chart_header_group( count( $logs ), __( 'workflows run', 'automatewoo' ), 'blue' ); ?>
 
 				<?php $this->output_report_arrow_link(); ?>
 			</div>

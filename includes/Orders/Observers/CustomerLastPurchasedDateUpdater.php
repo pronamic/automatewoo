@@ -127,15 +127,6 @@ class CustomerLastPurchasedDateUpdater {
 	 * @param Customer $customer
 	 */
 	protected function process_update( Customer $customer ) {
-		$last_paid_order = $customer->get_nth_last_paid_order( 1 );
-
-		if ( $last_paid_order ) {
-			$date = $last_paid_order->get_date_created();
-		} else {
-			$date = null;
-		}
-
-		$customer->set_date_last_purchased( $date );
-		$customer->save();
+		$customer->recache_date_last_purchased();
 	}
 }

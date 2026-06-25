@@ -1,9 +1,10 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * @class Cart_Query
@@ -14,16 +15,17 @@ class Cart_Query extends Query_Abstract {
 	/** @var string */
 	public $table_id = 'carts';
 
+	/** @var string */
 	protected $model = 'AutomateWoo\Cart';
 
 
 	/**
 	 * @since 3.8
 	 * @param string|array $status active, abandoned
-	 * @param $compare bool|string - defaults to '=' or 'IN' if array
+	 * @param bool|string  $compare - defaults to '=' or 'IN' if array
 	 * @return $this
 	 */
-	function where_status( $status, $compare = false ) {
+	public function where_status( $status, $compare = false ) {
 		return $this->where( 'status', $status, $compare );
 	}
 
@@ -31,10 +33,10 @@ class Cart_Query extends Query_Abstract {
 	/**
 	 * @since 3.8
 	 * @param string|DateTime $date
-	 * @param $compare bool|string - defaults to '=' or 'IN' if array
+	 * @param bool|string     $compare - defaults to '=' or 'IN' if array
 	 * @return $this
 	 */
-	function where_date_created( $date, $compare = false ) {
+	public function where_date_created( $date, $compare = false ) {
 		return $this->where( 'created', $date, $compare );
 	}
 
@@ -45,7 +47,7 @@ class Cart_Query extends Query_Abstract {
 	 * @param string|DateTime $end_date
 	 * @return $this
 	 */
-	function where_date_created_between( $start_date, $end_date ) {
+	public function where_date_created_between( $start_date, $end_date ) {
 		$this->where_date_created( $start_date, '>' );
 		return $this->where_date_created( $end_date, '<' );
 	}
@@ -54,10 +56,10 @@ class Cart_Query extends Query_Abstract {
 	/**
 	 * @since 3.8
 	 * @param string|DateTime $date
-	 * @param $compare bool|string - defaults to '=' or 'IN' if array
+	 * @param bool|string     $compare - defaults to '=' or 'IN' if array
 	 * @return $this
 	 */
-	function where_date_modified( $date, $compare = false ) {
+	public function where_date_modified( $date, $compare = false ) {
 		return $this->where( 'last_modified', $date, $compare );
 	}
 
@@ -68,7 +70,7 @@ class Cart_Query extends Query_Abstract {
 	 * @param string|DateTime $end_date
 	 * @return $this
 	 */
-	function where_date_modified_between( $start_date, $end_date ) {
+	public function where_date_modified_between( $start_date, $end_date ) {
 		$this->where_date_modified( $start_date, '>' );
 		return $this->where_date_modified( $end_date, '<' );
 	}
@@ -93,8 +95,7 @@ class Cart_Query extends Query_Abstract {
 	/**
 	 * @return Cart[]
 	 */
-	function get_results() {
+	public function get_results() {
 		return parent::get_results();
 	}
-
 }

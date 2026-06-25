@@ -43,9 +43,29 @@ class SubscriptionPaymentCount extends Abstract_Number {
 	 * @return bool
 	 */
 	public function validate( $subscription, $compare, $value ) {
+		// Offset compares store their own {multiple, offset} array and do not use the count scope.
+		if ( $this->is_offset_compare_type( $compare ) ) {
+			$payment_count = $this->get_payment_count( $subscription, false );
+
+			return $this->validate_number( $payment_count, $compare, $value );
+		}
+
 		$payment_count = $this->get_payment_count( $subscription, $this->should_include_previous_resubscriptions( $value ) );
 
 		return $this->validate_number( $payment_count, $compare, $this->get_rule_count( $value ) );
+	}
+
+	/**
+	 * Whether the compare type uses the {multiple, offset} value structure.
+	 *
+	 * @since 6.6.0
+	 *
+	 * @param string $compare
+	 *
+	 * @return bool
+	 */
+	protected function is_offset_compare_type( $compare ) {
+		return in_array( $compare, [ 'multiple_with_offset', 'not_multiple_with_offset' ], true );
 	}
 
 	/**
@@ -56,7 +76,7 @@ class SubscriptionPaymentCount extends Abstract_Number {
 	 * @return string|array
 	 */
 	public function sanitize_value( $value ) {
-		if ( ! is_array( $value ) ) {
+		if ( ! is_array( $value ) || $this->is_offset_value( $value ) ) {
 			return parent::sanitize_value( $value );
 		}
 
@@ -67,6 +87,19 @@ class SubscriptionPaymentCount extends Abstract_Number {
 	}
 
 	/**
+	 * Whether the stored value uses the {multiple, offset} structure.
+	 *
+	 * @since 6.6.0
+	 *
+	 * @param array $value
+	 *
+	 * @return bool
+	 */
+	protected function is_offset_value( $value ) {
+		return is_array( $value ) && ( isset( $value['multiple'] ) || isset( $value['offset'] ) );
+	}
+
+	/**
 	 * Formats a rule's value for display in the rules UI.
 	 *
 	 * @param string|array $value
@@ -74,7 +107,7 @@ class SubscriptionPaymentCount extends Abstract_Number {
 	 * @return string|array
 	 */
 	public function format_value( $value ) {
-		if ( ! is_array( $value ) ) {
+		if ( ! is_array( $value ) || $this->is_offset_value( $value ) ) {
 			return parent::format_value( $value );
 		}
 

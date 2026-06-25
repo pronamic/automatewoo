@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo\Rules;
 
@@ -23,21 +22,25 @@ class Customer_Email extends Abstract_String implements NonPrimaryDataTypeQuickF
 	use StringQuickFilter;
 	use DataTypeConditions;
 
+	/** @var string */
 	public $data_item = DataTypes::CUSTOMER;
 
 
-	function init() {
+	/**
+	 * Init the rule.
+	 */
+	public function init() {
 		$this->title = __( 'Customer - Email', 'automatewoo' );
 	}
 
 
 	/**
-	 * @param $customer \AutomateWoo\Customer
-	 * @param $compare
-	 * @param $value
+	 * @param \AutomateWoo\Customer $customer
+	 * @param string                $compare
+	 * @param mixed                 $value
 	 * @return bool
 	 */
-	function validate( $customer, $compare, $value ) {
+	public function validate( $customer, $compare, $value ) {
 		return $this->validate_string( $this->data_layer()->get_customer_email(), $compare, $value );
 	}
 

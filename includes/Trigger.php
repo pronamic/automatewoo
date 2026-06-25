@@ -1,14 +1,14 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
+use AutomateWoo\Triggers\TriggerInterface;
 use AutomateWoo\Workflows\Factory;
 
 /**
  * @class Trigger
  */
-abstract class Trigger {
+abstract class Trigger implements TriggerInterface {
 
 	/** @var string */
 	public $title;
@@ -53,34 +53,41 @@ abstract class Trigger {
 
 	/**
 	 * Define whether workflows using this trigger can be queued. Defaults to true
+	 *
 	 * @since 3.8
 	 */
 	const SUPPORTS_QUEUING = true;
 
 	/**
 	 * Define if workflows using this trigger are run daily at a specific time. Defaults to false.
+	 *
 	 * @since 3.8
 	 */
 	const SUPPORTS_CUSTOM_TIME_OF_DAY = false;
 
 
-	abstract function register_hooks();
+	/**
+	 * Register the hooks the trigger listens to.
+	 *
+	 * @return void
+	 */
+	abstract public function register_hooks();
 
 
 	/**
 	 * Construct
 	 */
-	function __construct() {
+	public function __construct() {
 		$this->init();
 		$this->supplied_data_items[] = 'shop';
 
 		// compatibility for user and customer objects
-		if ( in_array( 'user', $this->supplied_data_items ) ) {
+		if ( in_array( 'user', $this->supplied_data_items, true ) ) {
 			$this->supplied_data_items[] = 'customer';
 		}
 
 		// backwards compat for custom triggers using the user data item, IMPORTANT to exclude guest triggers
-		if ( in_array( 'customer', $this->supplied_data_items ) && ! in_array( 'guest', $this->supplied_data_items ) ) {
+		if ( in_array( 'customer', $this->supplied_data_items, true ) && ! in_array( 'guest', $this->supplied_data_items, true ) ) {
 			$this->supplied_data_items[] = 'user';
 		}
 
@@ -93,25 +100,25 @@ abstract class Trigger {
 	/**
 	 * Init
 	 */
-	function init() {}
+	public function init() {}
 
 
 	/**
 	 * Method to set title, group, description and other admin props
 	 */
-	function load_admin_details() {}
+	public function load_admin_details() {}
 
 
 	/**
 	 * Registers any fields used on for a trigger
 	 */
-	function load_fields() {}
+	public function load_fields() {}
 
 
 	/**
 	 * Admin info loader
 	 */
-	function maybe_load_admin_details() {
+	public function maybe_load_admin_details() {
 		if ( ! $this->has_loaded_admin_details ) {
 			$this->load_admin_details();
 			$this->has_loaded_admin_details = true;
@@ -122,7 +129,7 @@ abstract class Trigger {
 	/**
 	 * Field loader
 	 */
-	function maybe_load_fields() {
+	public function maybe_load_fields() {
 		if ( ! $this->has_loaded_fields ) {
 			$this->load_fields();
 			$this->has_loaded_fields = true;
@@ -134,23 +141,23 @@ abstract class Trigger {
 	 * @param \AutomateWoo\Workflow $workflow
 	 * @return bool
 	 */
-	function validate_workflow( $workflow ) {
+	public function validate_workflow( $workflow ) {
 		return true;
 	}
 
 	/**
-	 * @param $option object
+	 * @param object $option
 	 */
-	function add_field( $option ) {
+	public function add_field( $option ) {
 		$option->set_name_base( 'aw_workflow_data[trigger_options]' );
 		$this->fields[ $option->get_name() ] = $option;
 	}
 
 
 	/**
-	 * @param $option_name
+	 * @param string $option_name
 	 */
-	function remove_field( $option_name ) {
+	public function remove_field( $option_name ) {
 		if ( isset( $this->fields[ $option_name ] ) ) {
 			unset( $this->fields[ $option_name ] );
 		}
@@ -160,7 +167,7 @@ abstract class Trigger {
 	/**
 	 * @return array
 	 */
-	function get_supplied_data_items() {
+	public function get_supplied_data_items() {
 		return $this->supplied_data_items;
 	}
 
@@ -170,21 +177,21 @@ abstract class Trigger {
 	 *
 	 * @return Fields\Field|false
 	 */
-	function get_field( $name ) {
+	public function get_field( $name ) {
 		$this->maybe_load_fields();
 
-		if ( ! isset( $this->fields[$name] ) ) {
+		if ( ! isset( $this->fields[ $name ] ) ) {
 			return false;
 		}
 
-		return $this->fields[$name];
+		return $this->fields[ $name ];
 	}
 
 
 	/**
 	 * @return Fields\Field[]
 	 */
-	function get_fields() {
+	public function get_fields() {
 		$this->maybe_load_fields();
 		return $this->fields;
 	}
@@ -210,30 +217,32 @@ abstract class Trigger {
 	/**
 	 * @return bool
 	 */
-	function has_workflows() {
-		$query = new \WP_Query([
-			'post_type' => 'aw_workflow',
-			'post_status' => 'publish',
-			'fields' => 'ids',
-			'posts_per_page' => 1,
-			'meta_query' => [
-				[
-					'key' => 'trigger_name',
-					'value' => $this->get_name()
-				]
-			],
-			'suppress_filters' => true,
-			'no_found_rows' => true
-		]);
+	public function has_workflows() {
+		$query = new \WP_Query(
+			[
+				'post_type'        => 'aw_workflow',
+				'post_status'      => 'publish',
+				'fields'           => 'ids',
+				'posts_per_page'   => 1,
+				'meta_query'       => [
+					[
+						'key'   => 'trigger_name',
+						'value' => $this->get_name(),
+					],
+				],
+				'suppress_filters' => true,
+				'no_found_rows'    => true,
+			]
+		);
 
-		return $query->post_count != 0;
+		return $query->post_count !== 0;
 	}
 
 
 	/**
 	 * @return array
 	 */
-	function get_workflow_ids() {
+	public function get_workflow_ids() {
 		if ( $this->limit_trigger_to_specific_workflows ) {
 			// workflow ids have been explicitly set
 			return $this->limit_trigger_to_specific_workflows;
@@ -252,11 +261,12 @@ abstract class Trigger {
 	/**
 	 * @return Workflow[]
 	 */
-	function get_workflows() {
+	public function get_workflows() {
 		$workflows = [];
 
 		foreach ( $this->get_workflow_ids() as $workflow_id ) {
-			if ( $workflow = Factory::get( $workflow_id ) ) {
+			$workflow = Factory::get( $workflow_id );
+			if ( $workflow ) {
 				$workflows[] = $workflow;
 			}
 		}
@@ -271,10 +281,11 @@ abstract class Trigger {
 	 *
 	 * @param Data_Layer|array $data_layer
 	 */
-	function maybe_run( $data_layer = [] ) {
+	public function maybe_run( $data_layer = [] ) {
 
 		// Get all workflows that are registered to use this trigger
-		if ( ! $workflows = $this->get_workflows() ) {
+		$workflows = $this->get_workflows();
+		if ( ! $workflows ) {
 			return;
 		}
 
@@ -288,7 +299,7 @@ abstract class Trigger {
 	/**
 	 * @return string
 	 */
-	function get_name() {
+	public function get_name() {
 		return $this->name;
 	}
 
@@ -296,7 +307,7 @@ abstract class Trigger {
 	/**
 	 * @param string $name
 	 */
-	function set_name( $name ) {
+	public function set_name( $name ) {
 		$this->name = $name;
 	}
 
@@ -304,7 +315,7 @@ abstract class Trigger {
 	/**
 	 * @return string
 	 */
-	function get_title() {
+	public function get_title() {
 		$this->maybe_load_admin_details();
 		return $this->title;
 	}
@@ -313,7 +324,7 @@ abstract class Trigger {
 	/**
 	 * @return string
 	 */
-	function get_group() {
+	public function get_group() {
 		$this->maybe_load_admin_details();
 		return $this->group ? $this->group : __( 'Other', 'automatewoo' );
 	}
@@ -322,7 +333,7 @@ abstract class Trigger {
 	/**
 	 * @return string|null
 	 */
-	function get_description() {
+	public function get_description() {
 		$this->maybe_load_admin_details();
 		return $this->description;
 	}
@@ -331,20 +342,21 @@ abstract class Trigger {
 	/**
 	 * @return string
 	 */
-	function get_description_html() {
+	public function get_description_html() {
 
-		if ( ! $this->get_description() )
+		if ( ! $this->get_description() ) {
 			return '';
+		}
 
-		return '<p class="aw-field-description">' . $this->get_description() .'</p>';
+		return '<p class="aw-field-description">' . $this->get_description() . '</p>';
 	}
 
 
 	/**
-	 * @param $options array
+	 * @param array $options
 	 * @deprecated
 	 */
-	function set_options( $options ) {
+	public function set_options( $options ) {
 		$this->options = $options;
 	}
 
@@ -357,14 +369,16 @@ abstract class Trigger {
 	 *
 	 * @deprecated use $workflow->get_trigger_option()
 	 */
-	function get_option( $field ) {
+	public function get_option( $field ) {
 
-		if ( ! $field ) return false;
+		if ( ! $field ) {
+			return false;
+		}
 
 		$value = false;
 
-		if ( isset( $this->options[$field] ) ) {
-			$value = $this->options[$field];
+		if ( isset( $this->options[ $field ] ) ) {
+			$value = $this->options[ $field ];
 		}
 
 		return apply_filters( 'automatewoo_trigger_option', $value, $field, $this );
@@ -378,7 +392,7 @@ abstract class Trigger {
 	 * @param Workflow $workflow
 	 * @return bool
 	 */
-	function validate_before_queued_event( $workflow ) {
+	public function validate_before_queued_event( $workflow ) {
 		return true;
 	}
 
@@ -389,21 +403,23 @@ abstract class Trigger {
 	 * @param Workflow $workflow
 	 * @return bool
 	 */
-	function validate_workflow_language( $workflow ) {
+	public function validate_workflow_language( $workflow ) {
 
 		if ( ! Language::is_multilingual() ) {
 			return true;
 		}
 
-		if ( ! $workflow_lang = $workflow->get_language() ) {
+		$workflow_lang = $workflow->get_language();
+		if ( ! $workflow_lang ) {
 			return true; // workflow has no set language
 		}
 
-		if ( ! $data_lang = $workflow->data_layer()->get_customer_language() ) {
+		$data_lang = $workflow->data_layer()->get_customer_language();
+		if ( ! $data_lang ) {
 			return true;
 		}
 
-		return $data_lang == $workflow_lang;
+		return $data_lang === $workflow_lang;
 	}
 
 
@@ -411,7 +427,7 @@ abstract class Trigger {
 	 * @since 4.2.0
 	 * @param array|int $workflow_ids
 	 */
-	function limit_trigger_to_specific_workflows( $workflow_ids ) {
+	public function limit_trigger_to_specific_workflows( $workflow_ids ) {
 		$this->limit_trigger_to_specific_workflows = (array) $workflow_ids;
 	}
 
@@ -420,28 +436,38 @@ abstract class Trigger {
 	 * @since 4.2.0
 	 * Removes trigger limitation and allows triggering for any workflow
 	 */
-	function remove_limit_trigger_to_specific_workflows() {
+	public function remove_limit_trigger_to_specific_workflows() {
 		$this->limit_trigger_to_specific_workflows = [];
 	}
 
 
 
+	/**
+	 * Add the "recheck status before run" checkbox field for queued order status.
+	 *
+	 * @return void
+	 */
 	protected function add_field_validate_queued_order_status() {
 
 		$field = new Fields\Checkbox();
-		$field->set_name('validate_order_status_before_queued_run');
-		$field->set_title( __('Recheck status before run', 'automatewoo' ) );
+		$field->set_name( 'validate_order_status_before_queued_run' );
+		$field->set_title( __( 'Recheck status before run', 'automatewoo' ) );
 		$field->default_to_checked = true;
 		$field->set_description(
-			__( "This is useful for Workflows that are not run immediately as it ensures the status hasn't changed since initial trigger." ,
-				'automatewoo'  ) );
+			__(
+				"This is useful for Workflows that are not run immediately as it ensures the status hasn't changed since initial trigger.",
+				'automatewoo'
+			)
+		);
 
 		$this->add_field( $field );
 	}
 
 
 	/**
+	 * Add the customer pause period field.
 	 *
+	 * @return void
 	 */
 	protected function add_field_user_pause_period() {
 
@@ -454,13 +480,13 @@ abstract class Trigger {
 
 
 	/**
-	 * @param $object_name
+	 * @param string $object_name
 	 */
 	protected function add_field_recheck_status( $object_name ) {
 
 		$field = ( new Fields\Checkbox() )
 			->set_name( 'recheck_status_before_queued_run' )
-			->set_title( __( 'Recheck status before run', 'automatewoo') )
+			->set_title( __( 'Recheck status before run', 'automatewoo' ) )
 			->set_default_to_checked()
 			->set_description(
 				sprintf(
@@ -477,8 +503,8 @@ abstract class Trigger {
 	/**
 	 * Order status field must be named 'order_status'
 	 *
-	 * @param $trigger Trigger
-	 * @param $order \WC_Order
+	 * @param Trigger   $trigger
+	 * @param \WC_Order $order
 	 * @deprecated
 	 * @return bool
 	 * @since 2.0
@@ -487,15 +513,18 @@ abstract class Trigger {
 
 		wc_deprecated_function( __METHOD__, '5.2.0' );
 
-		$status = Clean::string( $trigger->get_option('order_status') );
+		$status = Clean::string( $trigger->get_option( 'order_status' ) );
 
-		if ( ! $status ) return true;
+		if ( ! $status ) {
+			return true;
+		}
 
 		$status = 'wc-' === substr( $status, 0, 3 ) ? substr( $status, 3 ) : $status;
 
 		// wrong status
-		if ( $order->get_status() !== $status )
+		if ( $order->get_status() !== $status ) {
 			return false;
+		}
 
 		return true;
 	}
@@ -503,7 +532,7 @@ abstract class Trigger {
 
 
 	/**
-	 * @param $workflow Workflow
+	 * @param Workflow $workflow
 	 * @return bool
 	 */
 	protected function validate_field_user_pause_period( $workflow ) {
@@ -511,8 +540,8 @@ abstract class Trigger {
 		$period = $workflow->get_trigger_option( 'user_pause_period' );
 
 		$customer = $workflow->data_layer()->get_customer();
-		$user = $workflow->data_layer()->get_user();
-		$guest = $workflow->data_layer()->get_guest();
+		$user     = $workflow->data_layer()->get_user();
+		$guest    = $workflow->data_layer()->get_guest();
 
 		// There could be no pause period set, and the value of $period will be false.
 		// In addition, users had been allowed to save a non-positive int, and these invalid values
@@ -525,7 +554,9 @@ abstract class Trigger {
 			return true;
 		}
 
-		if ( ! $user && ! $guest && ! $customer ) return true; // must have a customer, user or guest
+		if ( ! $user && ! $guest && ! $customer ) {
+			return true; // must have a customer, user or guest
+		}
 
 		$days = -1 * (int) $period;
 
@@ -535,20 +566,17 @@ abstract class Trigger {
 		// Check to see if this workflow has run since the period date
 		$log_query = new Log_Query();
 		$log_query->where_workflow( $workflow->get_translation_ids() );
-		$log_query->where_date( $period_date, '>');
+		$log_query->where_date( $period_date, '>' );
 
 		if ( $customer ) {
 			$log_query->where_customer( $customer->get_id() );
-		}
-		elseif ( $user ) {
+		} elseif ( $user ) {
 			if ( $user->ID === 0 ) { // guest user
 				$log_query->where_guest( $user->user_email );
-			}
-			else {
+			} else {
 				$log_query->where_user( $user->ID );
 			}
-		}
-		elseif( $guest ) {
+		} elseif ( $guest ) {
 			$log_query->where_guest( $guest->get_email() );
 		}
 
@@ -561,30 +589,33 @@ abstract class Trigger {
 
 
 	/**
-	 * @param $allowed_statuses array|string
-	 * @param $current_status string
+	 * @param array|string $allowed_statuses
+	 * @param string       $current_status
 	 *
 	 * @return bool
 	 */
 	protected function validate_status_field( $allowed_statuses, $current_status ) {
 		// allow all if left blank
-		if ( empty( $allowed_statuses ) ) return true;
+		if ( empty( $allowed_statuses ) ) {
+			return true;
+		}
 
 		if ( is_array( $allowed_statuses ) ) {
 			// multi status match
-			$with_prefix_match = in_array( 'wc-' . $current_status, $allowed_statuses );
-			$no_prefix_match = in_array( $current_status, $allowed_statuses );
+			$with_prefix_match = in_array( 'wc-' . $current_status, $allowed_statuses, true );
+			$no_prefix_match   = in_array( $current_status, $allowed_statuses, true );
 
 			// at least one has to match
-			if ( ! $with_prefix_match && ! $no_prefix_match )
+			if ( ! $with_prefix_match && ! $no_prefix_match ) {
 				return false;
-		}
-		else {
+			}
+		} else {
 			// single status match, remove prefix
 			$allowed_statuses = 'wc-' === substr( $allowed_statuses, 0, 3 ) ? substr( $allowed_statuses, 3 ) : $allowed_statuses;
 
-			if ( $allowed_statuses != $current_status )
+			if ( $allowed_statuses !== $current_status ) {
 				return false;
+			}
 		}
 
 		return true;
@@ -593,6 +624,7 @@ abstract class Trigger {
 
 	/**
 	 * Get the order status change hook, async or instant
+	 *
 	 * @return string
 	 */
 	protected function get_hook_order_status_changed() {
@@ -602,6 +634,7 @@ abstract class Trigger {
 
 	/**
 	 * Get the subscription status change hook, async or instant
+	 *
 	 * @return string
 	 */
 	protected function get_hook_subscription_status_changed() {

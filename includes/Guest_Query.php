@@ -1,9 +1,10 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * @class Guest_Query
@@ -23,22 +24,22 @@ class Guest_Query extends Query_Abstract {
 
 	/**
 	 * @since 4.1
-	 * @param int|array $order_id
-	 * @param $compare bool|string - defaults to '=' or 'IN' if array
+	 * @param int|array   $order_id
+	 * @param bool|string $compare - defaults to '=' or 'IN' if array
 	 * @return $this
 	 */
-	function where_most_recent_order( $order_id, $compare = false ) {
+	public function where_most_recent_order( $order_id, $compare = false ) {
 		return $this->where( 'most_recent_order', $order_id, $compare );
 	}
 
 
 	/**
 	 * @since 4.2
-	 * @param string $version
-	 * @param $compare bool|string - defaults to '='
+	 * @param string      $version
+	 * @param bool|string $compare - defaults to '='
 	 * @return $this
 	 */
-	function where_version( $version, $compare = false ) {
+	public function where_version( $version, $compare = false ) {
 		return $this->where( 'version', aw_version_str_to_int( $version ), $compare );
 	}
 
@@ -46,8 +47,7 @@ class Guest_Query extends Query_Abstract {
 	/**
 	 * @return Guest[]
 	 */
-	function get_results() {
+	public function get_results() {
 		return parent::get_results();
 	}
-
 }

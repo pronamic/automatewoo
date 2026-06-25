@@ -75,7 +75,16 @@ defined( 'ABSPATH' ) || exit;
 
 						<# if ( data.rule.object.type === 'number' ) { #>
 
-							<# if ( data.rule.object.has_payment_count_scope === true ) { #>
+							<# if ( data.rule.compare === 'multiple_with_offset' || data.rule.compare === 'not_multiple_with_offset' ) { #>
+								<div class="field-cols">
+									<div class="col-1">
+										<input name="{{ data.fieldNameBase }}[value][multiple]" class="automatewoo-field js-rule-value-field js-rule-value-multiple" type="number" step="1" required placeholder="<?php esc_attr_e( 'multiple of', 'automatewoo' ); ?>">
+									</div>
+									<div class="col-2">
+										<input name="{{ data.fieldNameBase }}[value][offset]" class="automatewoo-field js-rule-value-field js-rule-value-offset" type="number" step="1" required placeholder="<?php esc_attr_e( 'starting at', 'automatewoo' ); ?>">
+									</div>
+								</div>
+							<# } else if ( data.rule.object.has_payment_count_scope === true ) { #>
 								<div class="field-cols">
 									<div class="col-1">
 										<input name="{{ data.fieldNameBase }}[value][count]" class="automatewoo-field js-rule-value-field js-rule-value-count" type="text" required>

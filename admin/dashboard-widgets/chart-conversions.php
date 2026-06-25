@@ -81,18 +81,9 @@ class Dashboard_Widget_Chart_Conversions extends Dashboard_Widget_Chart {
 		<div class="automatewoo-dashboard-chart">
 			<div class="automatewoo-dashboard-chart__header">
 
-				<div class="automatewoo-dashboard-chart__header-group">
-					<div class="automatewoo-dashboard-chart__header-figure"><?php echo wp_kses_post( wc_price( $this->conversion_total ) ); ?></div>
-					<div class="automatewoo-dashboard-chart__header-text">
-						<span class="automatewoo-dashboard-chart__legend automatewoo-dashboard-chart__legend--blue"></span>
-						<?php esc_html_e( 'conversion revenue', 'automatewoo' ); ?>
-					</div>
-				</div>
+				<?php $this->output_static_chart_header_group( wc_price( $this->conversion_total ), __( 'conversion revenue', 'automatewoo' ), 'blue' ); ?>
 
-				<div class="automatewoo-dashboard-chart__header-group">
-					<div class="automatewoo-dashboard-chart__header-figure"><?php echo esc_html( $this->conversion_count ); ?></div>
-					<div class="automatewoo-dashboard-chart__header-text"><?php esc_html_e( 'conversions', 'automatewoo' ); ?></div>
-				</div>
+				<?php $this->output_static_chart_header_group( $this->conversion_count, __( 'conversions', 'automatewoo' ), '' ); ?>
 
 				<?php $this->output_report_arrow_link(); ?>
 			</div>

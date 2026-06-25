@@ -1,12 +1,13 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo\Fields;
 
 use AutomateWoo\Formatters\Boolean_Formatter;
 use AutomateWoo\Formatters\Formattable;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * @class Checkbox
@@ -15,14 +16,20 @@ class Checkbox extends Field implements Formattable {
 
 	use Boolean_Formatter;
 
+	/** @var string */
 	protected $name = 'checkbox';
 
+	/** @var string */
 	protected $type = 'checkbox';
 
+	/** @var bool */
 	public $default_to_checked = false;
 
 
-	function __construct() {
+	/**
+	 * Checkbox constructor.
+	 */
+	public function __construct() {
 		parent::__construct();
 		$this->set_title( __( 'Checkbox', 'automatewoo' ) );
 	}
@@ -32,16 +39,18 @@ class Checkbox extends Field implements Formattable {
 	 * @param bool $checked
 	 * @return $this
 	 */
-	function set_default_to_checked( $checked = true ) {
+	public function set_default_to_checked( $checked = true ) {
 		$this->default_to_checked = $checked;
 		return $this;
 	}
 
 
 	/**
-	 * @param $value
+	 * Output the field HTML.
+	 *
+	 * @param mixed $value
 	 */
-	function render( $value ) {
+	public function render( $value ) {
 
 		if ( $value === null || $value === '' ) {
 			$value = $this->default_to_checked;
@@ -49,13 +58,13 @@ class Checkbox extends Field implements Formattable {
 
 		?>
 		<input type="checkbox"
-			 name="<?php echo esc_attr( $this->get_full_name() ); ?>"
-			 value="1"
-			 <?php echo ( $value ? 'checked' : '' ) ?>
-			 class="<?php echo esc_attr( $this->get_classes() ) ?>"
+			name="<?php echo esc_attr( $this->get_full_name() ); ?>"
+			value="1"
+			<?php echo ( $value ? 'checked' : '' ); ?>
+			class="<?php echo esc_attr( $this->get_classes() ); ?>"
 			<?php $this->output_extra_attrs(); ?>
 			>
-	<?php
+		<?php
 	}
 
 
@@ -66,9 +75,9 @@ class Checkbox extends Field implements Formattable {
 	 *
 	 * @param string $value
 	 *
-	 * @return string
+	 * @return bool
 	 */
-	function sanitize_value( $value ) {
+	public function sanitize_value( $value ) {
 		return (bool) $value;
 	}
 }

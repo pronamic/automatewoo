@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
@@ -42,6 +41,4 @@ class Privacy extends Privacy_Abstract {
 	public function get_privacy_message() {
 		return Privacy_Policy_Guide::get_content();
 	}
-
-
 }

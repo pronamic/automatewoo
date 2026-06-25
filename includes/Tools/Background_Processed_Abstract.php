@@ -1,12 +1,13 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
 use AutomateWoo\Jobs\ToolTaskRunner;
 use WP_Error;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * Abstract class for tools that are processed in the background.
@@ -19,7 +20,10 @@ abstract class Tool_Background_Processed_Abstract extends Tool_Abstract {
 	public $is_background_processed = true;
 
 
-	function __construct() {
+	/**
+	 * Set the additional description shown for background processed tools.
+	 */
+	public function __construct() {
 		$this->additional_description = __( 'If you are processing a large number of items they will be processed in the background.', 'automatewoo' );
 	}
 
@@ -53,6 +57,4 @@ abstract class Tool_Background_Processed_Abstract extends Tool_Abstract {
 
 		return true;
 	}
-
 }
-

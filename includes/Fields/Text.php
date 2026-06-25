@@ -1,19 +1,23 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo\Fields;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * @class Text
  */
 class Text extends Field {
 
+	/** @var string */
 	protected $name = 'text_input';
 
+	/** @var string */
 	protected $type = 'text';
 
+	/** @var bool */
 	public $multiple = false;
 
 	/**
@@ -35,7 +39,10 @@ class Text extends Field {
 	protected $allow_html = false;
 
 
-	function __construct() {
+	/**
+	 * Text constructor.
+	 */
+	public function __construct() {
 		parent::__construct();
 		$this->title = __( 'Text Input', 'automatewoo' );
 	}
@@ -46,7 +53,7 @@ class Text extends Field {
 	 *
 	 * @return $this
 	 */
-	function set_multiple( $multi = true ) {
+	public function set_multiple( $multi = true ) {
 		$this->multiple = $multi;
 		return $this;
 	}
@@ -86,20 +93,19 @@ class Text extends Field {
 	 *
 	 * @param string $value
 	 */
-	function render( $value ) {
+	public function render( $value ) {
 		if ( $this->decode_html_entities_before_render ) {
 			$value = html_entity_decode( $value );
 		}
-	?>
-		<input type="<?php echo esc_attr( $this->get_type() ) ?>"
-		       name="<?php echo esc_attr( $this->get_full_name() ) ?><?php echo $this->multiple ? '[]' : '' ?>"
-		       value="<?php echo esc_attr( $value ); ?>"
-		       class="<?php echo esc_attr( $this->get_classes() ); ?>"
-		       placeholder="<?php echo esc_attr( $this->get_placeholder() ) ?>"
-			   <?php $this->output_extra_attrs(); ?>
-			   <?php echo ( $this->get_required() ? 'required' : '' ) ?>
+		?>
+		<input type="<?php echo esc_attr( $this->get_type() ); ?>"
+				name="<?php echo esc_attr( $this->get_full_name() ); ?><?php echo $this->multiple ? '[]' : ''; ?>"
+				value="<?php echo esc_attr( $value ); ?>"
+				class="<?php echo esc_attr( $this->get_classes() ); ?>"
+				placeholder="<?php echo esc_attr( $this->get_placeholder() ); ?>"
+				<?php $this->output_extra_attrs(); ?>
+				<?php echo ( $this->get_required() ? 'required' : '' ); ?>
 			>
-	<?php
+		<?php
 	}
-
 }

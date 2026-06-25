@@ -1,11 +1,12 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo\DatabaseTables;
 
 use AutomateWoo\Database_Table;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * Logs database table class.
@@ -14,10 +15,13 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  */
 class Logs extends Database_Table {
 
-	function __construct() {
+	/**
+	 * Constructor.
+	 */
+	public function __construct() {
 		global $wpdb;
 
-		$this->name = $wpdb->prefix . 'automatewoo_logs';
+		$this->name        = $wpdb->prefix . 'automatewoo_logs';
 		$this->primary_key = 'id';
 	}
 
@@ -25,15 +29,15 @@ class Logs extends Database_Table {
 	/**
 	 * @return array
 	 */
-	function get_columns() {
+	public function get_columns() {
 		return [
-			'id' => '%d',
-			'workflow_id' => '%d',
-			'date' => '%s',
-			'tracking_enabled' => '%d',
+			'id'                          => '%d',
+			'workflow_id'                 => '%d',
+			'date'                        => '%s',
+			'tracking_enabled'            => '%d',
 			'conversion_tracking_enabled' => '%d',
-			'has_errors' => '%d',
-			'has_blocked_emails' => '%d',
+			'has_errors'                  => '%d',
+			'has_blocked_emails'          => '%d',
 		];
 	}
 
@@ -41,7 +45,7 @@ class Logs extends Database_Table {
 	/**
 	 * @return string
 	 */
-	function get_install_query() {
+	public function get_install_query() {
 		return "CREATE TABLE {$this->get_name()} (
 			id bigint(20) NOT NULL AUTO_INCREMENT,
 			workflow_id bigint(20) NULL,

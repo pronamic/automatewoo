@@ -4,7 +4,6 @@ namespace AutomateWoo\Actions;
 
 use AutomateWoo\Action_Mailchimp_Abstract;
 use AutomateWoo\Fields\Checkbox;
-use AutomateWoo\Integrations;
 
 /**
  * Class Mailchimp_Update_Tags
@@ -68,7 +67,7 @@ class Mailchimp_Update_Tags extends Action_Mailchimp_Abstract {
 
 		$this->validate_contact_for_tag_update( $email, $list, $allow_not_subscribed );
 
-		$existing_tags = $remove ? Integrations::mailchimp()->get_member_tags( $email, $list ) : [];
+		$existing_tags = $remove ? $this->mailchimp()->get_member_tags( $email, $list ) : [];
 		$tag_updates   = [];
 
 		// Tags that need to be added.
@@ -95,7 +94,7 @@ class Mailchimp_Update_Tags extends Action_Mailchimp_Abstract {
 			throw new \Exception( esc_html__( 'There was no tags to update.', 'automatewoo' ) );
 		}
 
-		$this->maybe_log_action( Integrations::mailchimp()->update_member_tags( $email, $list, $tag_updates ) );
+		$this->maybe_log_action( $this->mailchimp()->update_member_tags( $email, $list, $tag_updates ) );
 	}
 
 	/**
@@ -111,7 +110,7 @@ class Mailchimp_Update_Tags extends Action_Mailchimp_Abstract {
 	 */
 	private function validate_contact_for_tag_update( $email, $list, $allow_not_subscribed ) {
 		if ( $allow_not_subscribed ) {
-			if ( ! Integrations::mailchimp()->is_contact( $email, $list ) ) {
+			if ( ! $this->mailchimp()->is_contact( $email, $list ) ) {
 				throw new \Exception( esc_html__( 'Failed because contact is not in the list.', 'automatewoo' ) );
 			}
 

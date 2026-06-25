@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
@@ -11,19 +10,15 @@ namespace AutomateWoo;
 class Emails {
 
 	/**
-	 * Support for custom from name and from email per template by using an array
+	 * Support for custom from name and from email per template by using an array.
 	 *
-	 * custom_template => [
-	 * 	template_name
-	 * 	from_name
-	 * 	from_email
-	 * ]
+	 * Each custom_template maps to an array of template_name, from_name and from_email.
 	 *
 	 * @var array
 	 */
-	static $templates = [
+	public static $templates = [
 		'default' => 'WooCommerce Default',
-		'plain' => 'None',
+		'plain'   => 'None',
 	];
 
 
@@ -33,7 +28,7 @@ class Emails {
 	 * @param string|bool $template_id
 	 * @return string
 	 */
-	static function get_from_name( $template_id = false ) {
+	public static function get_from_name( $template_id = false ) {
 
 		$from_name = false;
 
@@ -61,10 +56,11 @@ class Emails {
 
 	/**
 	 * Get the from address for outgoing emails.
+	 *
 	 * @param string|bool $template_id
 	 * @return string
 	 */
-	static function get_from_address( $template_id = false ) {
+	public static function get_from_address( $template_id = false ) {
 
 		$from_email = false;
 
@@ -91,13 +87,14 @@ class Emails {
 
 
 	/**
-	 * @param $template_id
+	 * @param string $template_id
 	 * @return bool|string|array
 	 */
-	static function get_template( $template_id ) {
+	public static function get_template( $template_id ) {
 
-		if ( ! $template_id )
+		if ( ! $template_id ) {
 			return false;
+		}
 
 		$templates = self::get_email_templates( false );
 		return isset( $templates[ $template_id ] ) ? $templates[ $template_id ] : false;
@@ -108,17 +105,18 @@ class Emails {
 	 * @param bool $names_only : whether to include extra template data or just id => name
 	 * @return array
 	 */
-	static function get_email_templates( $names_only = true ) {
+	public static function get_email_templates( $names_only = true ) {
 
 		$templates = apply_filters( 'automatewoo_email_templates', self::$templates );
 
-		if ( ! $names_only )
+		if ( ! $names_only ) {
 			return $templates;
+		}
 
 		$flat_templates = [];
 
 		foreach ( $templates as $template_id => $template_data ) {
-			$flat_templates[$template_id] = is_array( $template_data ) ? $template_data['template_name'] : $template_data;
+			$flat_templates[ $template_id ] = is_array( $template_data ) ? $template_data['template_name'] : $template_data;
 		}
 
 		return $flat_templates;
@@ -133,18 +131,17 @@ class Emails {
 	 * @param string $recipient_string
 	 * @return array
 	 */
-	static function parse_recipients_string( $recipient_string ) {
+	public static function parse_recipients_string( $recipient_string ) {
 		$items = [];
 
-		foreach( explode(',', $recipient_string ) as $recipient ) {
-			$recipient = Clean::string( $recipient );
+		foreach ( explode( ',', $recipient_string ) as $recipient ) {
+			$recipient       = Clean::string( $recipient );
 			$recipient_parts = explode( ' ', $recipient );
 
 			if ( is_email( $recipient_parts[0] ) ) {
 				$email = Clean::email( $recipient_parts[0] );
 				unset( $recipient_parts[0] );
-			}
-			else {
+			} else {
 				continue;
 			}
 
@@ -155,9 +152,12 @@ class Emails {
 				}
 			}
 
-			$params = wp_parse_args( $params, [
-				'notracking' => false
-			]);
+			$params = wp_parse_args(
+				$params,
+				[
+					'notracking' => false,
+				]
+			);
 
 			$items[ $email ] = $params;
 		}
@@ -168,16 +168,16 @@ class Emails {
 
 
 	/**
-	 * @param $input
-	 * @param bool $remove_invalid
+	 * @param string $input
+	 * @param bool   $remove_invalid
 	 * @return array
 	 */
-	static function parse_multi_email_field( $input, $remove_invalid = true ) {
+	public static function parse_multi_email_field( $input, $remove_invalid = true ) {
 
 		$emails = [];
 
 		$input = preg_replace( '/\s/u', '', $input ); // remove whitespace
-		$input = explode(',', $input );
+		$input = explode( ',', $input );
 
 		foreach ( $input as $email ) {
 			if ( ! $remove_invalid || is_email( $email ) ) {
@@ -187,5 +187,4 @@ class Emails {
 
 		return $emails;
 	}
-
 }

@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
@@ -10,12 +9,17 @@ defined( 'ABSPATH' ) || exit;
  */
 class Rule_Order_Item_Tags extends Rules\Preloaded_Select_Rule_Abstract {
 
+	/** @var string */
 	public $data_item = 'order';
 
+	/** @var bool */
 	public $is_multi = true;
 
 
-	function init() {
+	/**
+	 * Init the rule.
+	 */
+	public function init() {
 		parent::init();
 
 		$this->title = __( 'Order - Item Tags', 'automatewoo' );
@@ -25,18 +29,18 @@ class Rule_Order_Item_Tags extends Rules\Preloaded_Select_Rule_Abstract {
 	/**
 	 * @return array
 	 */
-	function load_select_choices() {
+	public function load_select_choices() {
 		return Fields_Helper::get_product_tags_list();
 	}
 
 
 	/**
-	 * @param $order \WC_Order
-	 * @param $compare
-	 * @param $expected
+	 * @param \WC_Order $order
+	 * @param string    $compare
+	 * @param mixed     $expected
 	 * @return bool
 	 */
-	function validate( $order, $compare, $expected ) {
+	public function validate( $order, $compare, $expected ) {
 		if ( empty( $expected ) ) {
 			return false;
 		}
@@ -44,7 +48,7 @@ class Rule_Order_Item_Tags extends Rules\Preloaded_Select_Rule_Abstract {
 		$tag_ids = [];
 
 		foreach ( $order->get_items() as $item ) {
-			$terms = wp_get_object_terms( $item->get_product_id(), 'product_tag', [ 'fields' => 'ids' ] );
+			$terms   = wp_get_object_terms( $item->get_product_id(), 'product_tag', [ 'fields' => 'ids' ] );
 			$tag_ids = array_merge( $tag_ids, $terms );
 		}
 

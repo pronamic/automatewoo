@@ -1,11 +1,12 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo\DatabaseTables;
 
 use AutomateWoo\Database_Table;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * Carts database table class.
@@ -14,10 +15,13 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  */
 class Carts extends Database_Table {
 
-	function __construct() {
+	/**
+	 * Constructor.
+	 */
+	public function __construct() {
 		global $wpdb;
 
-		$this->name = $wpdb->prefix . 'automatewoo_abandoned_carts';
+		$this->name        = $wpdb->prefix . 'automatewoo_abandoned_carts';
 		$this->primary_key = 'id';
 	}
 
@@ -25,23 +29,24 @@ class Carts extends Database_Table {
 	/**
 	 * @return array
 	 */
-	function get_columns() {
+	public function get_columns() {
 		return [
-			'id' => '%d',
-			'status' => '%s',
-			'user_id' => '%d',
-			'guest_id' => '%d',
-			'last_modified' => '%s',
-			'created' => '%s',
-			'items' => '%s',
-			'coupons' => '%s',
-			'fees' => '%s',
-			'shipping_tax_total' => '%d',
-			'shipping_total' => '%d',
+			'id'                           => '%d',
+			'status'                       => '%s',
+			'has_been_abandoned'           => '%d',
+			'user_id'                      => '%d',
+			'guest_id'                     => '%d',
+			'last_modified'                => '%s',
+			'created'                      => '%s',
+			'items'                        => '%s',
+			'coupons'                      => '%s',
+			'fees'                         => '%s',
+			'shipping_tax_total'           => '%d',
+			'shipping_total'               => '%d',
 			'shipping_total_is_calculated' => '%d',
-			'total' => '%s',
-			'token' => '%s',
-			'currency' => '%s'
+			'total'                        => '%s',
+			'token'                        => '%s',
+			'currency'                     => '%s',
 		];
 	}
 
@@ -49,10 +54,11 @@ class Carts extends Database_Table {
 	/**
 	 * @return string
 	 */
-	function get_install_query() {
+	public function get_install_query() {
 		return "CREATE TABLE {$this->get_name()} (
 			id bigint(20) NOT NULL AUTO_INCREMENT,
 			status varchar(100) NOT NULL default '',
+			has_been_abandoned tinyint(1) NOT NULL default 0,
 			user_id bigint(20) NOT NULL default 0,
 			guest_id bigint(20) NOT NULL default 0,
 			last_modified datetime NULL,
@@ -74,5 +80,4 @@ class Carts extends Database_Table {
 			KEY created (created)
 			) {$this->get_collate()};";
 	}
-
 }

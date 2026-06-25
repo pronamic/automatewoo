@@ -1,12 +1,13 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo\DataTypes;
 
 use AutomateWoo\Workflow as WorkflowModel;
 use AutomateWoo\Workflows\Factory;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * Workflow data type class.
@@ -14,10 +15,10 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 class Workflow extends AbstractDataType {
 
 	/**
-	 * @param $item
+	 * @param mixed $item
 	 * @return bool
 	 */
-	function validate( $item ) {
+	public function validate( $item ) {
 		return $item instanceof WorkflowModel;
 	}
 
@@ -26,17 +27,17 @@ class Workflow extends AbstractDataType {
 	 * @param WorkflowModel $item
 	 * @return mixed
 	 */
-	function compress( $item ) {
+	public function compress( $item ) {
 		return $item->get_id();
 	}
 
 
 	/**
-	 * @param $compressed_item
-	 * @param $compressed_data_layer
+	 * @param int|string|null $compressed_item
+	 * @param array           $compressed_data_layer
 	 * @return mixed
 	 */
-	function decompress( $compressed_item, $compressed_data_layer ) {
+	public function decompress( $compressed_item, $compressed_data_layer ) {
 		$workflow = Factory::get( $compressed_item );
 
 		if ( ! $workflow || $workflow->get_status() === 'trash' ) {
@@ -45,5 +46,4 @@ class Workflow extends AbstractDataType {
 
 		return $workflow;
 	}
-
 }

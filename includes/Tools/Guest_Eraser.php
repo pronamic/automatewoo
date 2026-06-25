@@ -1,9 +1,10 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * @class Guest_Eraser
@@ -11,25 +12,33 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  */
 class Guest_Eraser extends Tool_Background_Processed_Abstract {
 
+	/**
+	 * The tool ID.
+	 *
+	 * @var string
+	 */
 	public $id = 'guest_eraser';
 
 
-	function __construct() {
+	/**
+	 * Guest_Eraser constructor.
+	 */
+	public function __construct() {
 		parent::__construct();
-		$this->title = __( 'Guest Eraser', 'automatewoo' );
-		$this->description = __( "Erase stored data for guests that have not placed an order. Orders that are failed or cancelled are not included.", 'automatewoo' );
+		$this->title       = __( 'Guest Eraser', 'automatewoo' );
+		$this->description = __( 'Erase stored data for guests that have not placed an order. Orders that are failed or cancelled are not included.', 'automatewoo' );
 	}
 
 
 	/**
 	 * @return array
 	 */
-	function get_form_fields() {
+	public function get_form_fields() {
 		$fields = [];
 
 		$type = new Fields\Select();
-		$type->set_name('type');
-		$type->set_name_base('args');
+		$type->set_name( 'type' );
+		$type->set_name_base( 'args' );
 
 		return $fields;
 	}
@@ -39,16 +48,16 @@ class Guest_Eraser extends Tool_Background_Processed_Abstract {
 	 * @param array $args
 	 * @return bool|\WP_Error
 	 */
-	function process( $args ) {
+	public function process( $args ) {
 		$query = new Guest_Query();
-		$query->where('most_recent_order', 0 );
+		$query->where( 'most_recent_order', 0 );
 		$guests = $query->get_results();
 
 		$tasks = [];
 
 		foreach ( $guests as $guest ) {
 			$tasks[] = [
-				'tool_id' => $this->get_id(),
+				'tool_id'     => $this->get_id(),
 				'guest_email' => $guest->get_email(),
 			];
 		}
@@ -60,11 +69,11 @@ class Guest_Eraser extends Tool_Background_Processed_Abstract {
 	/**
 	 * Do validation in the validate_process() method not here
 	 *
-	 * @param $args
+	 * @param array $args
 	 */
-	function display_confirmation_screen( $args ) {
+	public function display_confirmation_screen( $args ) {
 		$query = new Guest_Query();
-		$query->where('most_recent_order', 0 );
+		$query->where( 'most_recent_order', 0 );
 		$count = $query->get_count();
 
 		$text          = __( 'Are you sure you want to permanently delete the guests who have not placed an order? Any workflow logs for deleted guests will be anonymized.', 'automatewoo' );
@@ -74,14 +83,14 @@ class Guest_Eraser extends Tool_Background_Processed_Abstract {
 			$count
 		);
 
-		echo '<p>' . $text . ' ' . $number_string . '</p>';
+		echo '<p>' . esc_html( $text ) . ' ' . esc_html( $number_string ) . '</p>';
 	}
 
 
 	/**
 	 * @param array $task
 	 */
-	function handle_background_task( $task ) {
+	public function handle_background_task( $task ) {
 		$email = isset( $task['guest_email'] ) ? Clean::email( $task['guest_email'] ) : false;
 
 		if ( ! $email ) {
@@ -99,7 +108,7 @@ class Guest_Eraser extends Tool_Background_Processed_Abstract {
 		$query->where_customer_or_legacy_user( $customer, true );
 		$results = $query->get_results();
 
-		foreach( $results as $log ) {
+		foreach ( $results as $log ) {
 			Privacy_Erasers::anonymize_personal_log_data( $log, $email );
 		}
 
@@ -108,13 +117,13 @@ class Guest_Eraser extends Tool_Background_Processed_Abstract {
 		$query->where_customer_or_legacy_user( $customer, true );
 		$results = $query->get_results();
 
-		foreach( $results as $result ) {
+		foreach ( $results as $result ) {
 			$result->delete();
 		}
 
-		if ( $guest = Guest_Factory::get_by_email( $email ) ) {
+		$guest = Guest_Factory::get_by_email( $email );
+		if ( $guest ) {
 			$guest->delete(); // delete the guest, cart and customer
 		}
 	}
-
 }

@@ -1,11 +1,12 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo\DataTypes;
 
 use AutomateWoo\Review as ReviewModel;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * Review data type class.
@@ -13,10 +14,10 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 class Review extends AbstractDataType {
 
 	/**
-	 * @param $item
+	 * @param mixed $item
 	 * @return bool
 	 */
-	function validate( $item ) {
+	public function validate( $item ) {
 		return $item instanceof ReviewModel;
 	}
 
@@ -25,21 +26,20 @@ class Review extends AbstractDataType {
 	 * @param ReviewModel $item
 	 * @return mixed
 	 */
-	function compress( $item ) {
+	public function compress( $item ) {
 		return $item->get_id();
 	}
 
 
 	/**
-	 * @param $compressed_item
-	 * @param $compressed_data_layer
+	 * @param int|string|null $compressed_item
+	 * @param array           $compressed_data_layer
 	 * @return ReviewModel|false
 	 */
-	function decompress( $compressed_item, $compressed_data_layer ) {
+	public function decompress( $compressed_item, $compressed_data_layer ) {
 		if ( ! $compressed_item ) {
 			return false;
 		}
 		return new ReviewModel( $compressed_item );
 	}
-
 }

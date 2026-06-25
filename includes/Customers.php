@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
@@ -12,7 +11,10 @@ namespace AutomateWoo;
 class Customers {
 
 
-	static function init() {
+	/**
+	 * Register hooks.
+	 */
+	public static function init() {
 		$self = 'AutomateWoo\Customers'; /** @var $self Customers */
 
 		add_action( 'automatewoo/object/delete', [ $self, 'delete_customer_on_guest_delete' ] );
@@ -26,12 +28,13 @@ class Customers {
 	/**
 	 * @param Model|Guest $object
 	 */
-	static function delete_customer_on_guest_delete( $object ) {
+	public static function delete_customer_on_guest_delete( $object ) {
 		if ( $object->object_type !== 'guest' ) {
 			return;
 		}
 
-		if ( $customer = Customer_Factory::get_by_guest_id( $object->get_id(), false ) ) {
+		$customer = Customer_Factory::get_by_guest_id( $object->get_id(), false );
+		if ( $customer ) {
 			$customer->delete();
 		}
 	}
@@ -40,12 +43,13 @@ class Customers {
 	/**
 	 * @param int $user_id
 	 */
-	static function delete_customer_on_user_delete( $user_id ) {
+	public static function delete_customer_on_user_delete( $user_id ) {
 		if ( ! $user_id ) {
 			return;
 		}
 
-		if ( $customer = Customer_Factory::get_by_user_id( $user_id, false ) ) {
+		$customer = Customer_Factory::get_by_user_id( $user_id, false );
+		if ( $customer ) {
 			$customer->delete();
 		}
 	}
@@ -57,7 +61,7 @@ class Customers {
 	 * @param int $user_id
 	 * @return bool
 	 */
-	static function maybe_update_guest_customer_when_user_registers( $user_id ) {
+	public static function maybe_update_guest_customer_when_user_registers( $user_id ) {
 		$user = get_userdata( $user_id );
 
 		if ( ! $user || ! $user->user_email ) {
@@ -66,7 +70,8 @@ class Customers {
 
 		// if the guest and user have the same email address convert and delete them
 		// we won't delete the guest record if the emails don't match, e.g. with a cookie matched guest
-		if ( ! $guest = Guest_Factory::get_by_email( Clean::email( $user->user_email ) ) ) {
+		$guest = Guest_Factory::get_by_email( Clean::email( $user->user_email ) );
+		if ( ! $guest ) {
 			return false;
 		}
 
@@ -79,10 +84,10 @@ class Customers {
 	/**
 	 * Convert guest customer to registered user customer.
 	 *
-	 * @param Guest $guest
+	 * @param Guest    $guest
 	 * @param \WP_User $user
 	 */
-	static function convert_guest_to_registered_customer( $guest, $user ) {
+	public static function convert_guest_to_registered_customer( $guest, $user ) {
 		$guest_customer = Customer_Factory::get_by_guest_id( $guest->get_id(), false );
 
 		if ( ! $guest_customer ) {
@@ -112,7 +117,7 @@ class Customers {
 	 *
 	 * @param int $comment_id
 	 */
-	static function clean_review_count_cache_on_clean_comment_cache( $comment_id ) {
+	public static function clean_review_count_cache_on_clean_comment_cache( $comment_id ) {
 		$review = Review_Factory::get( $comment_id );
 
 		if ( ! $review ) {
@@ -125,6 +130,4 @@ class Customers {
 			$customer->clear_review_count_cache();
 		}
 	}
-
-
 }

@@ -104,11 +104,15 @@ class UpdateProduct extends \AutomateWoo\Action_Subscription_Edit_Product_Abstra
 		if ( $this->get_option( 'line_item_cost' ) || $this->get_option( 'quantity' ) ) {
 			$update_product_args['quantity'] = ( $this->get_option( 'quantity' ) ) ? $this->get_option( 'quantity' ) : $item->get_quantity();
 
+			// Pass the subscription as the order context so the custom price resolves taxes the
+			// same way WooCommerce core does for the default product price (e.g. honouring the
+			// `woocommerce_adjust_non_base_location_prices` filter for non-base tax locations).
 			$total = wc_get_price_excluding_tax(
 				$product,
 				array(
 					'price' => $this->get_option( 'line_item_cost', true ),
 					'qty'   => $update_product_args['quantity'],
+					'order' => $item->get_order(),
 				)
 			);
 

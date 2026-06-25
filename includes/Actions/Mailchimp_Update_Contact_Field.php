@@ -69,7 +69,12 @@ class Action_Mailchimp_Update_Contact_Field extends Action_Mailchimp_Abstract {
 			$reference_field_value = $this->get_option( $field->dynamic_options_reference_field_name );
 		}
 
-		foreach ( Integrations::mailchimp()->get_list_fields( $reference_field_value ) as $field ) {
+		$mailchimp = $this->get_mailchimp_integration();
+		if ( ! $mailchimp ) {
+			return [];
+		}
+
+		foreach ( $mailchimp->get_list_fields( $reference_field_value ) as $field ) {
 			$options[ $field['tag'] ] = "{$field['name']} - {$field['tag']}";
 		}
 
@@ -102,6 +107,6 @@ class Action_Mailchimp_Update_Contact_Field extends Action_Mailchimp_Abstract {
 		];
 
 		$args['merge_fields'][ $field ] = $value;
-		$this->maybe_log_action( Integrations::mailchimp()->request( 'PATCH', "/lists/$list_id/members/$subscriber_hash", $args ) );
+		$this->maybe_log_action( $this->mailchimp()->request( 'PATCH', "/lists/$list_id/members/$subscriber_hash", $args ) );
 	}
 }

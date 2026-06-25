@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
@@ -22,7 +21,7 @@ class Cart_Item {
 
 	/**
 	 * @param string $key
-	 * @param array $data
+	 * @param array  $data
 	 */
 	public function __construct( string $key, array $data ) {
 		$this->key  = $key;
@@ -45,7 +44,7 @@ class Cart_Item {
 		// Load the associated product
 		$product = wc_get_product( $this->get_variation_id() ? $this->get_variation_id() : $this->get_product_id() );
 
-		if ( empty( $product ) || ! $product->exists() || 0 >= $this->data['quantity'] ) {
+		if ( empty( $product ) || ! $product->exists() || 0 >= $this->data['quantity'] ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedIf -- Placeholder for pending exception handling (see TODO).
 			// TODO exception should be thrown here due to error when finding product
 		}
 
@@ -92,7 +91,7 @@ class Cart_Item {
 	/**
 	 * @return int
 	 */
-	function get_key() {
+	public function get_key() {
 		return $this->key;
 	}
 
@@ -100,7 +99,7 @@ class Cart_Item {
 	/**
 	 * @return array
 	 */
-	function get_data() {
+	public function get_data() {
 		return $this->data;
 	}
 
@@ -108,7 +107,7 @@ class Cart_Item {
 	/**
 	 * @return array
 	 */
-	function get_variation_data() {
+	public function get_variation_data() {
 		return isset( $this->data['variation'] ) && is_array( $this->data['variation'] ) ? $this->data['variation'] : [];
 	}
 
@@ -116,15 +115,15 @@ class Cart_Item {
 	/**
 	 * @return int
 	 */
-	function get_product_id() {
+	public function get_product_id() {
 		return isset( $this->data['product_id'] ) ? Clean::id( $this->data['product_id'] ) : 0;
 	}
 
 
 	/**
-	 * @param $id
+	 * @param int $id
 	 */
-	function set_product_id( $id ) {
+	public function set_product_id( $id ) {
 		$this->data['product_id'] = Clean::id( $id );
 
 		// Hack alert: Since we allow externally redefining the product_id we need to re-prepare the item data.
@@ -135,15 +134,15 @@ class Cart_Item {
 	/**
 	 * @return int
 	 */
-	function get_variation_id() {
+	public function get_variation_id() {
 		return isset( $this->data['variation_id'] ) ? Clean::id( $this->data['variation_id'] ) : 0;
 	}
 
 
 	/**
-	 * @param $id
+	 * @param int $id
 	 */
-	function set_variation_id( $id ) {
+	public function set_variation_id( $id ) {
 		$this->data['variation_id'] = Clean::id( $id );
 
 		// Hack alert: Since we allow externally redefining the variation_id we need to re-prepare the item data.
@@ -154,7 +153,7 @@ class Cart_Item {
 	/**
 	 * @return float
 	 */
-	function get_line_subtotal() {
+	public function get_line_subtotal() {
 		return isset( $this->data['line_subtotal'] ) ? floatval( $this->data['line_subtotal'] ) : 0;
 	}
 
@@ -162,7 +161,7 @@ class Cart_Item {
 	/**
 	 * @return float
 	 */
-	function get_line_subtotal_tax() {
+	public function get_line_subtotal_tax() {
 		return isset( $this->data['line_subtotal_tax'] ) ? floatval( $this->data['line_subtotal_tax'] ) : 0;
 	}
 
@@ -171,7 +170,7 @@ class Cart_Item {
 	 *
 	 * @return int|float
 	 */
-	function get_quantity() {
+	public function get_quantity() {
 		$quantity = wc_stock_amount( isset( $this->data['quantity'] ) ? $this->data['quantity'] : 0 );
 
 		return apply_filters( 'automatewoo/cart_item/get_quantity', $quantity, $this );
@@ -245,7 +244,4 @@ class Cart_Item {
 
 		return '';
 	}
-
-
-
 }

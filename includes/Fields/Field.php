@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo\Fields;
 
@@ -64,12 +63,12 @@ abstract class Field {
 	 *
 	 * @param mixed $value
 	 */
-	abstract function render( $value );
+	abstract public function render( $value );
 
 	/**
 	 * Field constructor.
 	 */
-	function __construct() {
+	public function __construct() {
 		$this->classes[] = 'automatewoo-field';
 		$this->classes[] = 'automatewoo-field--type-' . $this->type;
 	}
@@ -77,20 +76,20 @@ abstract class Field {
 
 
 	/**
-	 * @param $name
+	 * @param string $name
 	 * @return $this
 	 */
-	function set_name( $name ) {
+	public function set_name( $name ) {
 		$this->name = $name;
 		return $this;
 	}
 
 
 	/**
-	 * @param $title
+	 * @param string $title
 	 * @return $this
 	 */
-	function set_title( $title ) {
+	public function set_title( $title ) {
 		$this->title = $title;
 		return $this;
 	}
@@ -99,32 +98,32 @@ abstract class Field {
 	/**
 	 * @return string
 	 */
-	function get_title() {
-		return $this->title ? $this->title :$this->default_title;
+	public function get_title() {
+		return $this->title ? $this->title : $this->default_title;
 	}
 
 
 	/**
 	 * @return string
 	 */
-	function get_name() {
-		return $this->name ? $this->name :$this->default_name;
+	public function get_name() {
+		return $this->name ? $this->name : $this->default_name;
 	}
 
 
 	/**
 	 * @return string
 	 */
-	function get_type() {
+	public function get_type() {
 		return $this->type;
 	}
 
 
 	/**
-	 * @param $description
+	 * @param string $description
 	 * @return $this
 	 */
-	function set_description( $description ) {
+	public function set_description( $description ) {
 		$this->description = $description;
 		return $this;
 	}
@@ -133,16 +132,16 @@ abstract class Field {
 	/**
 	 * @return string
 	 */
-	function get_description() {
+	public function get_description() {
 		return $this->description;
 	}
 
 
 	/**
-	 * @param $placeholder string
+	 * @param string $placeholder
 	 * @return $this
 	 */
-	function set_placeholder( $placeholder ) {
+	public function set_placeholder( $placeholder ) {
 		$this->placeholder = $placeholder;
 		return $this;
 	}
@@ -151,16 +150,16 @@ abstract class Field {
 	/**
 	 * @return string
 	 */
-	function get_placeholder() {
+	public function get_placeholder() {
 		return $this->placeholder;
 	}
 
 
 	/**
-	 * @param $classes string
+	 * @param string $classes
 	 * @return $this
 	 */
-	function add_classes( $classes ) {
+	public function add_classes( $classes ) {
 		$this->classes = array_merge( $this->classes, explode( ' ', $classes ) );
 		return $this;
 	}
@@ -170,7 +169,7 @@ abstract class Field {
 	 * @param bool $implode
 	 * @return array|string
 	 */
-	function get_classes( $implode = true ) {
+	public function get_classes( $implode = true ) {
 		if ( $implode ) {
 			return implode( ' ', $this->classes );
 		}
@@ -179,31 +178,31 @@ abstract class Field {
 
 
 	/**
-	 * @param $name
-	 * @param $value
+	 * @param string $name
+	 * @param mixed  $value
 	 * @return $this
 	 */
-	function add_extra_attr( $name, $value = null ) {
-		$this->extra_attrs[$name] = $value;
+	public function add_extra_attr( $name, $value = null ) {
+		$this->extra_attrs[ $name ] = $value;
 		return $this;
 	}
 
 
 	/**
-	 * @param $name
+	 * @param string $name
 	 * @return bool
 	 */
-	function has_data_attr( $name ) {
+	public function has_data_attr( $name ) {
 		return isset( $this->extra_attrs[ 'data-' . $name ] );
 	}
 
 
 	/**
-	 * @param $name
-	 * @param $value
+	 * @param string $name
+	 * @param mixed  $value
 	 * @return $this
 	 */
-	function add_data_attr( $name, $value = null ) {
+	public function add_data_attr( $name, $value = null ) {
 		$this->add_extra_attr( 'data-' . $name, $value );
 		return $this;
 	}
@@ -212,19 +211,18 @@ abstract class Field {
 	/**
 	 * Outputs the extra field attrs in HTML attribute format.
 	 */
-	function output_extra_attrs() {
+	public function output_extra_attrs() {
 		$string = '';
 
 		foreach ( $this->extra_attrs as $name => $value ) {
 			if ( is_null( $value ) ) {
 				$string .= esc_attr( $name ) . ' ';
-			}
-			else {
+			} else {
 				$string .= esc_attr( $name ) . '="' . esc_attr( $value ) . '" ';
 			}
 		}
 
-		echo $string;
+		echo $string; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $string is assembled from esc_attr()-escaped parts above.
 	}
 
 
@@ -232,7 +230,7 @@ abstract class Field {
 	 * @param bool $required
 	 * @return $this
 	 */
-	function set_required( $required = true ) {
+	public function set_required( $required = true ) {
 		$this->required = $required;
 		return $this;
 	}
@@ -241,7 +239,7 @@ abstract class Field {
 	/**
 	 * @return bool
 	 */
-	function get_required() {
+	public function get_required() {
 		return $this->required;
 	}
 
@@ -249,17 +247,17 @@ abstract class Field {
 	/**
 	 * @return $this
 	 */
-	function set_disabled() {
+	public function set_disabled() {
 		$this->add_extra_attr( 'disabled', 'true' );
 		return $this;
 	}
 
 
 	/**
-	 * @param $name_base
+	 * @param string $name_base
 	 * @return $this
 	 */
-	function set_name_base( $name_base ) {
+	public function set_name_base( $name_base ) {
 		$this->name_base = $name_base;
 		return $this;
 	}
@@ -268,14 +266,14 @@ abstract class Field {
 	/**
 	 * @return bool
 	 */
-	function get_name_base() {
+	public function get_name_base() {
 		return $this->name_base;
 	}
 
 	/**
 	 * @return string
 	 */
-	function get_full_name() {
+	public function get_full_name() {
 		return ( $this->get_name_base() ? $this->get_name_base() . '[' . $this->get_name() . ']' : $this->get_name() );
 	}
 
@@ -284,7 +282,7 @@ abstract class Field {
 	 * @param string $options
 	 * @return $this
 	 */
-	function set_variable_validation( $options = '' ) {
+	public function set_variable_validation( $options = '' ) {
 		$this->set_validation( 'variables ' . $options );
 		return $this;
 	}
@@ -295,7 +293,7 @@ abstract class Field {
 	 *
 	 * @return bool
 	 */
-	function supports_variables() {
+	public function supports_variables() {
 		if ( ! $this->has_data_attr( 'automatewoo-validate' ) ) {
 			return false;
 		}
@@ -312,7 +310,7 @@ abstract class Field {
 	 * @param string $options
 	 * @return $this
 	 */
-	function set_validation( $options = '' ) {
+	public function set_validation( $options = '' ) {
 		$this->add_data_attr( 'automatewoo-validate', $options );
 		return $this;
 	}
@@ -331,9 +329,7 @@ abstract class Field {
 	 *
 	 * @return string
 	 */
-	function sanitize_value( $value ) {
+	public function sanitize_value( $value ) {
 		return Clean::string( $value );
 	}
-
-
 }

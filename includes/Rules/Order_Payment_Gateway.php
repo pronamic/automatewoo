@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
@@ -17,10 +16,14 @@ class Rule_Order_Payment_Gateway extends Rules\Preloaded_Select_Rule_Abstract im
 
 	use ArrayQuickFilter;
 
+	/** @var string */
 	public $data_item = 'order';
 
 
-	function init() {
+	/**
+	 * Init the rule.
+	 */
+	public function init() {
 		parent::init();
 
 		$this->title = __( 'Order - Payment Gateway', 'automatewoo' );
@@ -30,7 +33,7 @@ class Rule_Order_Payment_Gateway extends Rules\Preloaded_Select_Rule_Abstract im
 	/**
 	 * @return array
 	 */
-	function load_select_choices() {
+	public function load_select_choices() {
 		$choices = [];
 
 		foreach ( WC()->payment_gateways()->payment_gateways() as $gateway ) {
@@ -80,13 +83,13 @@ class Rule_Order_Payment_Gateway extends Rules\Preloaded_Select_Rule_Abstract im
 
 
 	/**
-	 * @param $order \WC_Order
-	 * @param $compare
-	 * @param $value
+	 * @param \WC_Order $order
+	 * @param string    $compare
+	 * @param mixed     $value
 	 *
 	 * @return bool
 	 */
-	function validate( $order, $compare, $value ) {
+	public function validate( $order, $compare, $value ) {
 		return $this->validate_select( $order->get_payment_method(), $compare, $value );
 	}
 
@@ -95,8 +98,8 @@ class Rule_Order_Payment_Gateway extends Rules\Preloaded_Select_Rule_Abstract im
 	 *
 	 * @since 5.0.0
 	 *
-	 * @param mixed  $value
 	 * @param string $compare_type
+	 * @param mixed  $value
 	 *
 	 * @return ClauseInterface
 	 *
@@ -105,5 +108,4 @@ class Rule_Order_Payment_Gateway extends Rules\Preloaded_Select_Rule_Abstract im
 	public function get_quick_filter_clause( $compare_type, $value ) {
 		return $this->generate_array_quick_filter_clause( 'payment_method', $compare_type, $value );
 	}
-
 }

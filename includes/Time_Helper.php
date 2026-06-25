@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
@@ -14,7 +13,7 @@ class Time_Helper {
 	 * @param string|DateTime $time - string must be in format 00:00
 	 * @return int
 	 */
-	static function calculate_seconds_from_day_start( $time ) {
+	public static function calculate_seconds_from_day_start( $time ) {
 
 		if ( is_a( $time, 'DateTime' ) ) {
 			$time = $time->format( 'G:i' );
@@ -33,7 +32,7 @@ class Time_Helper {
 	/**
 	 * @param \DateTime|DateTime $datetime
 	 */
-	static function convert_to_gmt( $datetime ) {
+	public static function convert_to_gmt( $datetime ) {
 		$offset = -1 * self::get_timezone_offset() * HOUR_IN_SECONDS;
 		$datetime->modify( "{$offset} seconds" );
 	}
@@ -42,7 +41,7 @@ class Time_Helper {
 	/**
 	 * @param \DateTime|DateTime $datetime
 	 */
-	static function convert_from_gmt( $datetime ) {
+	public static function convert_from_gmt( $datetime ) {
 		$offset = self::get_timezone_offset() * HOUR_IN_SECONDS;
 		$datetime->modify( "{$offset} seconds" );
 	}
@@ -52,8 +51,9 @@ class Time_Helper {
 	 * @since 3.9
 	 * @return float|int
 	 */
-	static function get_timezone_offset() {
-		if ( $timezone = get_option( 'timezone_string' ) ) {
+	public static function get_timezone_offset() {
+		$timezone = get_option( 'timezone_string' );
+		if ( $timezone ) {
 			$timezone_object = new \DateTimeZone( $timezone );
 			return $timezone_object->getOffset( new \DateTime( 'now', new \DateTimeZone( 'UTC' ) ) ) / HOUR_IN_SECONDS;
 		} else {
@@ -91,6 +91,4 @@ class Time_Helper {
 
 		return intval( absint( $interval_number ) * $seconds );
 	}
-
-
 }

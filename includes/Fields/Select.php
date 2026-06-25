@@ -1,34 +1,41 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo\Fields;
 
 use AutomateWoo\Clean;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * @class Select
  */
 class Select extends Field {
 
+	/** @var string */
 	protected $name = 'select';
 
+	/** @var string */
 	protected $type = 'select';
 
+	/** @var mixed */
 	protected $default_option;
 
+	/** @var bool */
 	public $multiple = false;
 
+	/** @var array */
 	protected $options = [];
 
+	/** @var string */
 	public $dynamic_options_reference_field_name;
 
 
 	/**
 	 * @param bool $show_placeholder
 	 */
-	function __construct( $show_placeholder = true ) {
+	public function __construct( $show_placeholder = true ) {
 		parent::__construct();
 
 		$this->set_title( __( 'Select', 'automatewoo' ) );
@@ -40,10 +47,10 @@ class Select extends Field {
 
 
 	/**
-	 * @param $options
+	 * @param array $options
 	 * @return $this
 	 */
-	function set_options( $options ) {
+	public function set_options( $options ) {
 		$this->options = $options;
 		return $this;
 	}
@@ -52,16 +59,16 @@ class Select extends Field {
 	/**
 	 * @return array
 	 */
-	function get_options() {
+	public function get_options() {
 		return $this->options;
 	}
 
 
 	/**
-	 * @param $option
+	 * @param mixed $option
 	 * @return $this
 	 */
-	function set_default( $option ) {
+	public function set_default( $option ) {
 		$this->default_option = $option;
 		return $this;
 	}
@@ -71,17 +78,17 @@ class Select extends Field {
 	 * @param bool $multi
 	 * @return $this
 	 */
-	function set_multiple( $multi = true ) {
+	public function set_multiple( $multi = true ) {
 		$this->multiple = $multi;
 		return $this;
 	}
 
 
 	/**
-	 * @param $reference_field_name
+	 * @param string $reference_field_name
 	 * @return $this
 	 */
-	function set_dynamic_options_reference( $reference_field_name ) {
+	public function set_dynamic_options_reference( $reference_field_name ) {
 		$this->dynamic_options_reference_field_name = $reference_field_name;
 		return $this;
 	}
@@ -90,16 +97,16 @@ class Select extends Field {
 	/**
 	 * @return bool
 	 */
-	function has_dynamic_options() {
+	public function has_dynamic_options() {
 		return isset( $this->dynamic_options_reference_field_name );
 	}
 
 
 	/**
-	 * @param $value
+	 * @param array|string|bool $value
 	 * @return void
 	 */
-	function render( $value = false ) {
+	public function render( $value = false ) {
 
 		$value = $this->sanitize_value( $value );
 
@@ -114,15 +121,13 @@ class Select extends Field {
 			}
 
 			$this->render_multiple( (array) $value );
-		}
-		else {
+		} else {
 			if ( empty( $value ) && $this->default_option ) {
 				$value = $this->default_option;
 			}
 
 			$this->render_single( (string) $value );
 		}
-
 	}
 
 
@@ -135,31 +140,31 @@ class Select extends Field {
 		?>
 
 		<select name="<?php echo esc_attr( $this->get_full_name() ); ?>"
-		        data-name="<?php echo esc_attr( $this->get_name() ); ?>"
-		        class="<?php echo esc_attr( $this->get_classes() ); ?>"
-		        <?php $this->output_extra_attrs() ?>
-			    <?php echo ( $this->get_required() ? 'required' : '' ) ?>
+				data-name="<?php echo esc_attr( $this->get_name() ); ?>"
+				class="<?php echo esc_attr( $this->get_classes() ); ?>"
+				<?php $this->output_extra_attrs(); ?>
+				<?php echo ( $this->get_required() ? 'required' : '' ); ?>
 		>
 
-			<?php if ( $this->get_placeholder() ): ?>
+			<?php if ( $this->get_placeholder() ) : ?>
 				<option value=""><?php echo esc_html( $this->get_placeholder() ); ?></option>
 			<?php endif; ?>
 
-			<?php foreach( $this->get_options() as $opt_name => $opt_value ): ?>
-				<?php if ( is_array($opt_value) ): ?>
-					<optgroup label="<?php echo esc_attr( $opt_name ) ?>">
-						<?php foreach( $opt_value as $opt_sub_name => $opt_sub_value ): ?>
+			<?php foreach ( $this->get_options() as $opt_name => $opt_value ) : ?>
+				<?php if ( is_array( $opt_value ) ) : ?>
+					<optgroup label="<?php echo esc_attr( $opt_name ); ?>">
+						<?php foreach ( $opt_value as $opt_sub_name => $opt_sub_value ) : ?>
 							<option value="<?php echo esc_attr( $opt_sub_name ); ?>" <?php selected( $value, $opt_sub_name ); ?>><?php echo esc_html( $opt_sub_value ); ?></option>
-						<?php endforeach?>
+						<?php endforeach ?>
 					</optgroup>
-				<?php else: ?>
+				<?php else : ?>
 					<option value="<?php echo esc_attr( $opt_name ); ?>" <?php selected( $value, $opt_name ); ?>><?php echo esc_html( $opt_value ); ?></option>
 				<?php endif; ?>
 			<?php endforeach; ?>
 
 		</select>
 
-	<?php
+		<?php
 	}
 
 
@@ -169,18 +174,18 @@ class Select extends Field {
 	 * @param array $values
 	 */
 	protected function render_multiple( $values ) {
-?>
+		?>
 		<select name="<?php echo esc_attr( $this->get_full_name() ); ?>[]"
-		        data-name="<?php echo esc_attr( $this->get_name() ); ?>"
-		        class="<?php echo esc_attr( $this->get_classes() ); ?> wc-enhanced-select"
-		        multiple="multiple"
-		        data-placeholder="<?php echo esc_attr( $this->get_placeholder() ); ?>"
-			<?php $this->output_extra_attrs() ?>
+				data-name="<?php echo esc_attr( $this->get_name() ); ?>"
+				class="<?php echo esc_attr( $this->get_classes() ); ?> wc-enhanced-select"
+				multiple="multiple"
+				data-placeholder="<?php echo esc_attr( $this->get_placeholder() ); ?>"
+			<?php $this->output_extra_attrs(); ?>
 		>
 
-			<?php foreach( $this->get_options() as $opt_name => $opt_value ): ?>
+			<?php foreach ( $this->get_options() as $opt_name => $opt_value ) : ?>
 				<option value="<?php echo esc_attr( $opt_name ); ?>"
-					<?php echo in_array( $opt_name, $values ) ? 'selected="selected"' : ''; ?>
+					<?php echo in_array( $opt_name, $values ) ? 'selected="selected"' : ''; // phpcs:ignore WordPress.PHP.StrictInArray.MissingTrueStrict -- Option keys may be int while saved values are strings; loose match is intentional. ?>
 					><?php echo esc_html( $opt_value ); ?></option>
 			<?php endforeach; ?>
 
@@ -190,7 +195,7 @@ class Select extends Field {
 			jQuery( 'body' ).trigger( 'wc-enhanced-select-init' );
 		</script>
 
-<?php
+		<?php
 	}
 
 
@@ -203,13 +208,11 @@ class Select extends Field {
 	 *
 	 * @return array|string
 	 */
-	function sanitize_value( $value ) {
+	public function sanitize_value( $value ) {
 		if ( $this->multiple ) {
 			return Clean::recursive( $value );
-		}
-		else{
+		} else {
 			return Clean::string( $value );
 		}
 	}
-
 }

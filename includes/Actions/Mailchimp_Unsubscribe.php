@@ -52,7 +52,7 @@ class Action_Mailchimp_Unsubscribe extends Action_Mailchimp_Abstract {
 
 		if ( $this->get_option( 'unsubscribe_only' ) ) {
 			$this->maybe_log_action(
-				Integrations::mailchimp()->request(
+				$this->mailchimp()->request(
 					'PATCH',
 					"/lists/$list_id/members/$subscriber",
 					[
@@ -61,7 +61,7 @@ class Action_Mailchimp_Unsubscribe extends Action_Mailchimp_Abstract {
 				)
 			);
 		} else {
-			$this->maybe_log_action( Integrations::mailchimp()->request( 'DELETE', "/lists/$list_id/members/$subscriber" ) );
+			$this->maybe_log_action( $this->mailchimp()->request( 'DELETE', "/lists/$list_id/members/$subscriber" ) );
 		}
 	}
 }

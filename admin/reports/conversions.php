@@ -1,9 +1,10 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * @class Report_Conversions
@@ -16,79 +17,87 @@ class Report_Conversions extends \AW_Report_Abstract_Graph {
 
 	/** @var array  */
 	public $chart_colours = [
-		'conversion_value' => '#3498db',
-		'conversion_number' => '#DBE1E3'
+		'conversion_value'  => '#3498db',
+		'conversion_number' => '#DBE1E3',
 	];
 
+	/** @var array */
 	public $workflow_ids = [];
+
+	/** @var array */
 	public $workflow_ids_titles = [];
 
+	/** @var array */
 	public $conversion_orders = [];
 
+	/** @var float|int */
 	public $conversion_total_value = 0;
+
+	/** @var int */
 	public $conversion_total_orders = 0;
 
 
 	/**
 	 * Constructor
 	 */
-	function __construct() {
+	public function __construct() {
 		$this->workflow_ids = $this->get_filtered_workflows();
 	}
 
 
 	/**
-	 *
+	 * Load the chart data.
 	 */
-	function load_chart_data() {
+	public function load_chart_data() {
 		$start_date = new DateTime();
 		$start_date->setTimestamp( $this->start_date );
 
 		$end_date = new DateTime();
 		$end_date->setTimestamp( $this->end_date );
-		$end_date->modify('+1 days');
+		$end_date->modify( '+1 days' );
 
 		$meta_query = [];
 
 		if ( $this->workflow_ids ) {
 			$meta_query[] = [
-				'key' => '_aw_conversion',
+				'key'   => '_aw_conversion',
 				'value' => $this->workflow_ids,
-            ];
-		}
-		else {
+			];
+		} else {
 			$meta_query[] = [
-				'key' => '_aw_conversion',
+				'key'     => '_aw_conversion',
 				'compare' => 'EXISTS',
-            ];
+			];
 		}
 
 		// Get converted orders
-		$orders = new \WP_Query([
-			'post_type' => 'shop_order',
-			'post_status' => array_map( 'aw_add_order_status_prefix', wc_get_is_paid_statuses() ),
-			'posts_per_page' => -1,
-			'fields' => 'ids',
-			'meta_query' => $meta_query,
-			'date_query' => [
-				[
-					'column' => 'post_date',
-					'after' => $start_date->to_mysql_string()
-                ],
-				[
-					'column' => 'post_date',
-					'before' => $end_date->to_mysql_string()
-                ]
-            ]
-		  ]);
+		$orders = new \WP_Query(
+			[
+				'post_type'      => 'shop_order',
+				'post_status'    => array_map( 'aw_add_order_status_prefix', wc_get_is_paid_statuses() ),
+				'posts_per_page' => -1,
+				'fields'         => 'ids',
+				'meta_query'     => $meta_query,
+				'date_query'     => [
+					[
+						'column' => 'post_date',
+						'after'  => $start_date->to_mysql_string(),
+					],
+					[
+						'column' => 'post_date',
+						'before' => $end_date->to_mysql_string(),
+					],
+				],
+			]
+		);
 
 		foreach ( $orders->posts as $order_id ) {
 			$order = wc_get_order( $order_id );
 
 			$this->conversion_total_value += $order->get_total();
 
-			$order_obj = new \stdClass();
-			$order_obj->date = $order->get_date_created()->date( Format::MYSQL ); // keep site time for reports
+			$order_obj        = new \stdClass();
+			$order_obj->date  = $order->get_date_created()->date( Format::MYSQL ); // keep site time for reports
 			$order_obj->total = $order->get_total();
 
 			$this->conversion_orders[] = $order_obj;
@@ -101,9 +110,10 @@ class Report_Conversions extends \AW_Report_Abstract_Graph {
 
 	/**
 	 * Get the legend for the main chart sidebar
+	 *
 	 * @return array
 	 */
-	function get_chart_legend() {
+	public function get_chart_legend() {
 
 		$this->load_chart_data();
 
@@ -138,20 +148,20 @@ class Report_Conversions extends \AW_Report_Abstract_Graph {
 	 *
 	 * @return array
 	 */
-	function get_chart_widgets() {
+	public function get_chart_widgets() {
 		$widgets = [];
 
 		if ( ! empty( $this->workflow_ids ) ) {
 			$widgets[] = [
 				'title'    => __( 'Showing reports for:', 'automatewoo' ),
-				'callback' => [ $this, 'current_filters' ]
-				];
+				'callback' => [ $this, 'current_filters' ],
+			];
 		}
 
 		$widgets[] = [
 			'title'    => '',
-			'callback' => [ $this, 'output_workflows_widget' ]
-		  ];
+			'callback' => [ $this, 'output_workflows_widget' ],
+		];
 
 		return $widgets;
 	}
@@ -160,7 +170,7 @@ class Report_Conversions extends \AW_Report_Abstract_Graph {
 	/**
 	 * Show current filters
 	 */
-	function current_filters() {
+	public function current_filters() {
 
 		$this->workflow_ids_titles = array();
 
@@ -170,36 +180,36 @@ class Report_Conversions extends \AW_Report_Abstract_Graph {
 
 			if ( $workflow ) {
 				$this->workflow_ids_titles[] = $workflow->title;
-			}
-			else {
+			} else {
 				$this->workflow_ids_titles[] = '#' . $workflow_id;
 			}
 		}
 
-		echo '<p>' . ' <strong>' . implode( ', ', $this->workflow_ids_titles ) . '</strong></p>';
-		echo '<p><a class="button" href="' . esc_url( remove_query_arg( 'workflow_ids' ) ) . '">' . __( 'Reset', 'automatewoo' ) . '</a></p>';
+		echo '<p> <strong>' . esc_html( implode( ', ', $this->workflow_ids_titles ) ) . '</strong></p>';
+		echo '<p><a class="button" href="' . esc_url( remove_query_arg( 'workflow_ids' ) ) . '">' . esc_html__( 'Reset', 'automatewoo' ) . '</a></p>';
 	}
 
 
 
 	/**
-	 * Get the main chart
-	 *
-	 * @return string
+	 * Output the main chart.
 	 */
-	function get_main_chart() {
+	public function get_main_chart() {
 
 		global $wp_locale;
 
 		// Prepare data for report
-		$conversion_value = $this->prepare_chart_data( $this->conversion_orders, 'date', 'total', $this->chart_interval, $this->start_date, $this->chart_groupby );
+		$conversion_value  = $this->prepare_chart_data( $this->conversion_orders, 'date', 'total', $this->chart_interval, $this->start_date, $this->chart_groupby );
 		$conversion_number = $this->prepare_chart_data( $this->conversion_orders, 'date', false, $this->chart_interval, $this->start_date, $this->chart_groupby );
 
 		// Encode in json format
-		$chart_data = wp_json_encode( [
-			'conversion_value' => array_values( $conversion_value ),
-			'conversion_number' => array_values( $conversion_number ),
-		], JSON_HEX_TAG | JSON_UNESCAPED_SLASHES );
+		$chart_data = wp_json_encode(
+			[
+				'conversion_value'  => array_values( $conversion_value ),
+				'conversion_number' => array_values( $conversion_number ),
+			],
+			JSON_HEX_TAG | JSON_UNESCAPED_SLASHES
+		);
 
 		?>
 		<div class="chart-container">
@@ -216,19 +226,19 @@ class Report_Conversions extends \AW_Report_Abstract_Graph {
 
 					var series = [
 						{
-							label: "<?php echo esc_js( __( 'Conversion Number', 'automatewoo' ) ) ?>",
+							label: "<?php echo esc_js( __( 'Conversion Number', 'automatewoo' ) ); ?>",
 							data: order_data.conversion_number,
 							yaxis: 1,
-							color: '<?php echo $this->chart_colours['conversion_number']; ?>',
-							bars: { fillColor: '<?php echo $this->chart_colours['conversion_number']; ?>', fill: true, show: true, lineWidth: 0, barWidth: 60 * 60 * 24 * 1000, align: 'center' },
+							color: '<?php echo esc_js( $this->chart_colours['conversion_number'] ); ?>',
+							bars: { fillColor: '<?php echo esc_js( $this->chart_colours['conversion_number'] ); ?>', fill: true, show: true, lineWidth: 0, barWidth: 60 * 60 * 24 * 1000, align: 'center' },
 							shadowSize: 0,
 							hoverable: false
 						},
 						{
-							label: "<?php echo esc_js( __( 'Conversion Value', 'automatewoo' ) ) ?>",
+							label: "<?php echo esc_js( __( 'Conversion Value', 'automatewoo' ) ); ?>",
 							data: order_data.conversion_value,
 							yaxis: 2,
-							color: '<?php echo $this->chart_colours['conversion_value']; ?>',
+							color: '<?php echo esc_js( $this->chart_colours['conversion_value'] ); ?>',
 							points: { show: true, radius: 5, lineWidth: 3, fillColor: '#fff', fill: true },
 							lines: { show: true, lineWidth: 4, fill: false },
 							shadowSize: 0
@@ -266,10 +276,10 @@ class Report_Conversions extends \AW_Report_Abstract_Graph {
 						position: "bottom",
 						tickColor: 'transparent',
 						mode: "time",
-						timeformat: "<?php if ( $this->chart_groupby == 'day' ) echo '%d %b'; else echo '%b'; ?>",
+						timeformat: "<?php echo 'day' === $this->chart_groupby ? '%d %b' : '%b'; ?>",
 						monthNames: JSON.parse( decodeURIComponent( '<?php echo rawurlencode( wp_json_encode( array_values( $wp_locale->month_abbrev ), JSON_HEX_TAG | JSON_UNESCAPED_SLASHES ) ); ?>' ) ),
 						tickLength: 1,
-						minTickSize: [1, "<?php echo $this->chart_groupby; ?>"],
+						minTickSize: [1, "<?php echo esc_js( $this->chart_groupby ); ?>"],
 						font: {
 							color: "#aaa"
 						}
@@ -310,8 +320,6 @@ class Report_Conversions extends \AW_Report_Abstract_Graph {
 
 			});
 		</script>
-	<?php
-
+		<?php
 	}
-
 }

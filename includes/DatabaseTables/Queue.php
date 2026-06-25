@@ -1,11 +1,12 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo\DatabaseTables;
 
 use AutomateWoo\Database_Table;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * Queue database table class.
@@ -14,10 +15,13 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  */
 class Queue extends Database_Table {
 
-	function __construct() {
+	/**
+	 * Constructor.
+	 */
+	public function __construct() {
 		global $wpdb;
 
-		$this->name = $wpdb->prefix . 'automatewoo_queue';
+		$this->name        = $wpdb->prefix . 'automatewoo_queue';
 		$this->primary_key = 'id';
 	}
 
@@ -25,14 +29,14 @@ class Queue extends Database_Table {
 	/**
 	 * @return array
 	 */
-	function get_columns() {
+	public function get_columns() {
 		return [
-			'id' => '%d',
-			'workflow_id' => '%d',
-			'date' => '%s',
-			'created' => '%s',
-			'failed' => '%s',
-			'failure_code' => '%d'
+			'id'           => '%d',
+			'workflow_id'  => '%d',
+			'date'         => '%s',
+			'created'      => '%s',
+			'failed'       => '%s',
+			'failure_code' => '%d',
 		];
 	}
 
@@ -40,7 +44,7 @@ class Queue extends Database_Table {
 	/**
 	 * @return string
 	 */
-	function get_install_query() {
+	public function get_install_query() {
 		return "CREATE TABLE {$this->get_name()} (
 			id bigint(20) NOT NULL AUTO_INCREMENT,
 			workflow_id bigint(20) NULL,

@@ -1,37 +1,43 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
 use AutomateWoo\Workflows\Factory;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * @class Tool_Reset_Workflow_Records
  */
 class Tool_Reset_Workflow_Records extends Tool_Abstract {
 
+	/**
+	 * @var string
+	 */
 	public $id = 'reset_workflow_records';
 
 	/**
 	 * Constructor
 	 */
-	function __construct() {
-		$this->title = __( 'Reset Workflow Records', 'automatewoo' );
+	public function __construct() {
+		$this->title       = __( 'Reset Workflow Records', 'automatewoo' );
 		$this->description = __( 'Deletes all logs, queued events and conversions for a workflow. The workflow itself will not be deleted.', 'automatewoo' );
 	}
 
 
 	/**
+	 * Get the tool's form fields.
 	 *
+	 * @return array
 	 */
-	function get_form_fields() {
+	public function get_form_fields() {
 
 		$fields = [];
 
 		$fields[] = ( new Fields\Workflow() )
-			->set_name_base('args')
+			->set_name_base( 'args' )
 			->add_extra_attr( 'data-aw-tool', $this->id );
 
 		return $fields;
@@ -42,14 +48,16 @@ class Tool_Reset_Workflow_Records extends Tool_Abstract {
 	 * @param array $args sanitized
 	 * @return bool|\WP_Error
 	 */
-	function validate_process( $args ) {
+	public function validate_process( $args ) {
 
 		if ( empty( $args['workflow'] ) ) {
-			return new \WP_Error(1, __( 'Please select a workflow to reset.','automatewoo') );
+			return new \WP_Error( 1, __( 'Please select a workflow to reset.', 'automatewoo' ) );
 		}
 
-		if ( ! $workflow = Factory::get( $args['workflow'] ) )
+		$workflow = Factory::get( $args['workflow'] );
+		if ( ! $workflow ) {
 			return false;
+		}
 
 		return true;
 	}
@@ -59,9 +67,9 @@ class Tool_Reset_Workflow_Records extends Tool_Abstract {
 	/**
 	 * Do validation in the validate_process() method not here
 	 *
-	 * @param $args
+	 * @param array $args
 	 */
-	function display_confirmation_screen( $args ) {
+	public function display_confirmation_screen( $args ) {
 
 		$args = $this->sanitize_args( $args );
 
@@ -79,10 +87,10 @@ class Tool_Reset_Workflow_Records extends Tool_Abstract {
 
 
 	/**
-	 * @param $args
+	 * @param array $args
 	 * @return bool|\WP_Error
 	 */
-	function process( $args ) {
+	public function process( $args ) {
 
 		$args = $this->sanitize_args( $args );
 
@@ -98,12 +106,11 @@ class Tool_Reset_Workflow_Records extends Tool_Abstract {
 
 			$results = $query->get_results();
 
-			foreach( $results as $result ) {
+			foreach ( $results as $result ) {
 				$result->delete();
 			}
 		}
 
 		return true;
 	}
-
 }

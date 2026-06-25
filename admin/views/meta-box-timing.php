@@ -92,6 +92,12 @@ $run_delay_unit
 		]
 	);
 
+$validate_rules_before_queued_run = new Fields\Checkbox();
+$validate_rules_before_queued_run
+	->set_name_base( $option_base )
+	->set_name( 'validate_rules_before_queued_run' )
+	->set_default_to_checked();
+
 // Date/time fields.
 $fixed_date = new Fields\Date();
 $fixed_date
@@ -167,6 +173,18 @@ $fixed_time->set_name_base( $option_base )
 					<?php $run_delay_unit->render( $workflow ? $workflow->get_option( 'run_delay_unit' ) : '' ); ?>
 				</div>
 			</div>
+		</td>
+	</tr>
+
+	<tr class="automatewoo-table__row" data-automatewoo-show="timing=delayed|scheduled|fixed|datetime">
+		<td class="automatewoo-table__col">
+			<label class="automatewoo-label automatewoo-label--inline-checkbox">
+				<?php
+				esc_html_e( 'Revalidate rules before run', 'automatewoo' );
+				$validate_rules_before_queued_run->render( $workflow ? $workflow->should_validate_rules_before_queued_run() : '' );
+				Admin::help_tip( __( 'Ensures workflow rules are still met when the queued workflow runs. Disable this for rules that should only be checked when the workflow is first triggered.', 'automatewoo' ) );
+				?>
+			</label>
 		</td>
 	</tr>
 

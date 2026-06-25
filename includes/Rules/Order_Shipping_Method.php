@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo\Rules;
 
@@ -10,12 +9,17 @@ defined( 'ABSPATH' ) || exit;
  */
 class Order_Shipping_Method extends Preloaded_Select_Rule_Abstract {
 
+	/** @var string */
 	public $data_item = 'order';
 
+	/** @var bool */
 	public $is_multi = true;
 
 
-	function init() {
+	/**
+	 * Init the rule.
+	 */
+	public function init() {
 		parent::init();
 
 		$this->title = __( 'Order - Shipping Method', 'automatewoo' );
@@ -25,7 +29,7 @@ class Order_Shipping_Method extends Preloaded_Select_Rule_Abstract {
 	/**
 	 * @return array
 	 */
-	function load_select_choices() {
+	public function load_select_choices() {
 		$choices = [];
 
 		foreach ( WC()->shipping()->get_shipping_methods() as $method_id => $method ) {
@@ -37,20 +41,19 @@ class Order_Shipping_Method extends Preloaded_Select_Rule_Abstract {
 
 
 	/**
-	 * @param $order \WC_Order
-	 * @param $compare
-	 * @param $value
+	 * @param \WC_Order $order
+	 * @param string    $compare
+	 * @param mixed     $value
 	 * @return bool
 	 */
-	function validate( $order, $compare, $value ) {
+	public function validate( $order, $compare, $value ) {
 
 		$methods = [];
 
-		foreach( $order->get_shipping_methods() as $shipping_line_item ) {
+		foreach ( $order->get_shipping_methods() as $shipping_line_item ) {
 			$methods[] = $shipping_line_item->get_method_id();
 		}
 
 		return $this->validate_select( $methods, $compare, $value );
 	}
-
 }

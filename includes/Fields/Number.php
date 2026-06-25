@@ -1,41 +1,47 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo\Fields;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * @class Number
  */
 class Number extends Text {
 
+	/** @var string */
 	protected $name = 'number_input';
 
+	/** @var string */
 	protected $type = 'number';
 
 
-	function __construct() {
+	/**
+	 * Number constructor.
+	 */
+	public function __construct() {
 		parent::__construct();
 		$this->title = __( 'Number', 'automatewoo' );
 	}
 
 
 	/**
-	 * @param $min string
+	 * @param string $min
 	 * @return $this
 	 */
-	function set_min( $min ) {
+	public function set_min( $min ) {
 		$this->add_extra_attr( 'min', $min );
 		return $this;
 	}
 
 
 	/**
-	 * @param $max string
+	 * @param string $max
 	 * @return $this
 	 */
-	function set_max( $max ) {
+	public function set_max( $max ) {
 		$this->add_extra_attr( 'max', $max );
 		return $this;
 	}
@@ -51,7 +57,7 @@ class Number extends Text {
 	 *
 	 * @return string|float
 	 */
-	function sanitize_value( $value ) {
+	public function sanitize_value( $value ) {
 		$value = trim( $value );
 
 		if ( ! $this->get_required() ) {
@@ -63,5 +69,4 @@ class Number extends Text {
 
 		return (float) $value;
 	}
-
 }

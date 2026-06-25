@@ -231,6 +231,16 @@ class Factory {
 			$workflow->set_actions_data( self::maybe_convert_to_legacy_action_data( $data['actions'] ) );
 		}
 
+		// The queued rule revalidation option is not part of the workflow timing entity, so it would be
+		// lost when an existing workflow is updated from entity data (e.g. via the REST API). Preserve the
+		// stored value when the incoming options do not explicitly set it.
+		if ( $id && ! array_key_exists( 'validate_rules_before_queued_run', $data['options'] ) ) {
+			$existing_options = $workflow->get_meta( 'workflow_options' );
+			if ( is_array( $existing_options ) && array_key_exists( 'validate_rules_before_queued_run', $existing_options ) ) {
+				$data['options']['validate_rules_before_queued_run'] = $existing_options['validate_rules_before_queued_run'];
+			}
+		}
+
 		$workflow->update_meta( 'workflow_options', $data['options'] );
 		$workflow->update_meta( 'is_transactional', $data['is_transactional'] );
 		$workflow->update_meta( 'origin', $data['origin'] );

@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo\Rules;
 
@@ -18,10 +17,14 @@ class Order_Created_Via extends Preloaded_Select_Rule_Abstract implements QuickF
 
 	use ArrayQuickFilter;
 
+	/** @var string */
 	public $data_item = 'order';
 
 
-	function init() {
+	/**
+	 * Init the rule.
+	 */
+	public function init() {
 		parent::init();
 
 		$this->title = __( 'Order - Created Via', 'automatewoo' );
@@ -51,11 +54,11 @@ class Order_Created_Via extends Preloaded_Select_Rule_Abstract implements QuickF
 
 	/**
 	 * @param \WC_Order $order
-	 * @param $compare
-	 * @param $value
+	 * @param string    $compare
+	 * @param mixed     $value
 	 * @return bool
 	 */
-	function validate( $order, $compare, $value ) {
+	public function validate( $order, $compare, $value ) {
 		return $this->validate_select( $order->get_created_via(), $compare, $value );
 	}
 
@@ -74,5 +77,4 @@ class Order_Created_Via extends Preloaded_Select_Rule_Abstract implements QuickF
 	public function get_quick_filter_clause( $compare_type, $value ) {
 		return $this->generate_array_quick_filter_clause( 'created_via', $compare_type, $value );
 	}
-
 }

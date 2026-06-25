@@ -1,11 +1,12 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo\DatabaseTables;
 
 use AutomateWoo\Database_Table;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * Guests database table class.
@@ -14,10 +15,13 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  */
 class Guests extends Database_Table {
 
-	function __construct() {
+	/**
+	 * Constructor.
+	 */
+	public function __construct() {
 		global $wpdb;
 
-		$this->name = $wpdb->prefix . 'automatewoo_guests';
+		$this->name        = $wpdb->prefix . 'automatewoo_guests';
 		$this->primary_key = 'id';
 	}
 
@@ -25,16 +29,16 @@ class Guests extends Database_Table {
 	/**
 	 * @return array
 	 */
-	function get_columns() {
+	public function get_columns() {
 		return [
-			'id' => '%d',
-			'email' => '%s',
-			'tracking_key' => '%s',
-			'created' => '%s',
-			'last_active' => '%s',
-			'language' => '%s',
+			'id'                => '%d',
+			'email'             => '%s',
+			'tracking_key'      => '%s',
+			'created'           => '%s',
+			'last_active'       => '%s',
+			'language'          => '%s',
 			'most_recent_order' => '%d',
-			'version' => '%s',
+			'version'           => '%s',
 		];
 	}
 
@@ -42,7 +46,7 @@ class Guests extends Database_Table {
 	/**
 	 * @return string
 	 */
-	function get_install_query() {
+	public function get_install_query() {
 		return "CREATE TABLE {$this->get_name()} (
 			id bigint(20) NOT NULL AUTO_INCREMENT,
 			email varchar(255) NOT NULL default '',
@@ -59,5 +63,4 @@ class Guests extends Database_Table {
 			KEY version (version)
 			) {$this->get_collate()};";
 	}
-
 }

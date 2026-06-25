@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo\Rules;
 
@@ -18,23 +17,28 @@ class OrderTotal extends Abstract_Number implements QuickFilterable {
 
 	use NumericQuickFilter;
 
+	/** @var string */
 	public $data_item = 'order';
 
+	/** @var bool */
 	public $support_floats = true;
 
 
-	function init() {
+	/**
+	 * Init the rule.
+	 */
+	public function init() {
 		$this->title = __( 'Order - Total', 'automatewoo' );
 	}
 
 
 	/**
 	 * @param WC_Order $order
-	 * @param $compare
-	 * @param $value
+	 * @param string   $compare
+	 * @param mixed    $value
 	 * @return bool
 	 */
-	function validate( $order, $compare, $value ) {
+	public function validate( $order, $compare, $value ) {
 		return $this->validate_number( $order->get_total(), $compare, $value );
 	}
 
@@ -53,5 +57,4 @@ class OrderTotal extends Abstract_Number implements QuickFilterable {
 	public function get_quick_filter_clause( $compare_type, $value ) {
 		return $this->generate_numeric_quick_filter_clause( 'order_total', $compare_type, $value );
 	}
-
 }

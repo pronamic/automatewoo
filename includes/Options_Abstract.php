@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
@@ -10,17 +9,17 @@ namespace AutomateWoo;
 abstract class Options_Abstract {
 
 	/** @var string */
-	static $prefix;
+	public static $prefix;
 
 	/** @var array */
-	static $defaults = [];
+	public static $defaults = [];
 
 
 	/**
 	 * @param string $option_name
 	 * @return mixed
 	 */
-	static function get( $option_name ) {
+	public static function get( $option_name ) {
 		$value = get_option( static::$prefix . $option_name );
 
 		if ( $value !== false && $value !== '' ) {
@@ -28,8 +27,8 @@ abstract class Options_Abstract {
 		}
 
 		// fallback to default
-		if ( isset( static::$defaults[$option_name] ) ) {
-			return static::parse( static::$defaults[$option_name] );
+		if ( isset( static::$defaults[ $option_name ] ) ) {
+			return static::parse( static::$defaults[ $option_name ] );
 		}
 
 		return false;
@@ -39,13 +38,16 @@ abstract class Options_Abstract {
 	/**
 	 * Convert yes / no strings to boolean
 	 *
-	 * @param $value
+	 * @param mixed $value
 	 * @return mixed
 	 */
-	static function parse( $value ) {
-		if ( $value === 'yes' ) return true;
-		if ( $value === 'no' ) return false;
+	public static function parse( $value ) {
+		if ( $value === 'yes' ) {
+			return true;
+		}
+		if ( $value === 'no' ) {
+			return false;
+		}
 		return $value;
 	}
 }
-

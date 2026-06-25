@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo\Rules;
 
@@ -12,10 +11,14 @@ defined( 'ABSPATH' ) || exit;
  */
 class Customer_Role extends Preloaded_Select_Rule_Abstract {
 
+	/** @var string */
 	public $data_item = DataTypes::CUSTOMER;
 
 
-	function init() {
+	/**
+	 * Init the rule.
+	 */
+	public function init() {
 		parent::init();
 
 		$this->title = __( 'Customer - User Role', 'automatewoo' );
@@ -25,12 +28,12 @@ class Customer_Role extends Preloaded_Select_Rule_Abstract {
 	/**
 	 * @return array
 	 */
-	function load_select_choices() {
+	public function load_select_choices() {
 		global $wp_roles;
 		$choices = [];
 
-		foreach( $wp_roles->roles as $key => $role ) {
-			$choices[$key] = $role['name'];
+		foreach ( $wp_roles->roles as $key => $role ) {
+			$choices[ $key ] = $role['name'];
 		}
 
 		$choices['guest'] = __( 'Guest', 'automatewoo' );
@@ -41,13 +44,13 @@ class Customer_Role extends Preloaded_Select_Rule_Abstract {
 
 	/**
 	 * @param \AutomateWoo\Customer $customer
-	 * @param $compare
-	 * @param $value
+	 * @param string                $compare
+	 * @param mixed                 $value
 	 * @return bool
 	 *
 	 * @since 6.5.0
 	 */
-	function validate( $customer, $compare, $value ) {
+	public function validate( $customer, $compare, $value ) {
 		if ( $customer->is_registered() ) {
 			$user = $customer->get_user();
 			if ( $user ) {
@@ -62,5 +65,4 @@ class Customer_Role extends Preloaded_Select_Rule_Abstract {
 
 		return $this->validate_select( 'guest', $compare, $value );
 	}
-
 }

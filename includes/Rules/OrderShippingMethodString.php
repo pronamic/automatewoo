@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo\Rules;
 
@@ -12,22 +11,25 @@ defined( 'ABSPATH' ) || exit;
  */
 class OrderShippingMethodString extends Abstract_String {
 
+	/** @var string */
 	public $data_item = 'order';
 
 
-	function init() {
+	/**
+	 * Init the rule.
+	 */
+	public function init() {
 		$this->title = __( 'Order - Shipping Method - Text Match', 'automatewoo' );
 	}
 
 
 	/**
 	 * @param WC_Order $order
-	 * @param $compare
-	 * @param $value
+	 * @param string   $compare
+	 * @param mixed    $value
 	 * @return bool
 	 */
-	function validate( $order, $compare, $value ) {
+	public function validate( $order, $compare, $value ) {
 		return $this->validate_string( $order->get_shipping_method(), $compare, $value );
 	}
-
 }

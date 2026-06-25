@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo\Rules;
 
@@ -10,11 +9,14 @@ defined( 'ABSPATH' ) || exit;
  */
 abstract class Abstract_String extends Rule {
 
+	/** @var string */
 	public $type = 'string';
 
-	function __construct() {
+	/**
+	 * Constructor.
+	 */
+	public function __construct() {
 		$this->compare_types = $this->get_string_compare_types();
 		parent::__construct();
 	}
-
 }

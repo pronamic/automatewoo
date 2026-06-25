@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo\Rules;
 
@@ -16,22 +15,25 @@ class CartTotal extends Abstract_Number {
 	/** @var string  */
 	public $data_item = DataTypes::CART;
 
+	/** @var bool */
 	public $support_floats = true;
 
 
-	function init() {
+	/**
+	 * Init the rule.
+	 */
+	public function init() {
 		$this->title = __( 'Cart - Total', 'automatewoo' );
 	}
 
 
 	/**
-	 * @param Cart $cart
-	 * @param $compare
-	 * @param $value
+	 * @param Cart   $cart
+	 * @param string $compare
+	 * @param mixed  $value
 	 * @return bool
 	 */
-	function validate( $cart, $compare, $value ) {
+	public function validate( $cart, $compare, $value ) {
 		return $this->validate_number( $cart->get_total(), $compare, $value );
 	}
-
 }

@@ -62,7 +62,7 @@ $workflow_order->add_extra_attr( 'id', 'aw-workflow-menu-order' );
 				<?php
 				esc_html_e( 'Enable tracking', 'automatewoo' );
 				$enable_tracking->render( $workflow ? $workflow->get_option( 'click_tracking' ) : '' );
-				Admin::help_tip( __( 'Enables open and click tracking for this workflow. Note that SMS messages only track clicks and not opens, and plain text emails do not track anything.', 'automatewoo' ) );
+				Admin::help_tip( __( 'Enables open and click tracking for this workflow. Note that SMS messages and plain text emails only track clicks and not opens.', 'automatewoo' ) );
 				?>
 			</label>
 		</td>

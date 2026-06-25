@@ -118,6 +118,16 @@ class AbandonedCarts extends AbstractRecurringBatchedActionSchedulerJob {
 			return;
 		}
 
+		if ( $cart->get_status() !== Cart::STATUS_ACTIVE ) {
+			// The cart is no longer active — for example it was purchased,
+			// recovered or emptied between this batch being built and processed —
+			// so it must not be (re)marked abandoned, which would fire
+			// abandoned-cart workflows for a cart that has already left the
+			// active state. (Before terminal statuses existed such a cart was
+			// deleted, so this path was previously covered by the null check above.)
+			return;
+		}
+
 		if ( ! $this->should_process_cart( $cart ) ) {
 			return;
 		}

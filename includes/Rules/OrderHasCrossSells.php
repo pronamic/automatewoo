@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo\Rules;
 
@@ -12,33 +11,36 @@ defined( 'ABSPATH' ) || exit;
  */
 class OrderHasCrossSells extends Abstract_Bool {
 
+	/**
+	 * @var string
+	 */
 	public $data_item = 'order';
 
 
-	function init() {
+	/**
+	 * Init the rule.
+	 */
+	public function init() {
 		$this->title = __( 'Order - Has Cross-Sells Available', 'automatewoo' );
 	}
 
 
 	/**
 	 * @param WC_Order $order
-	 * @param $compare
-	 * @param $value
+	 * @param string   $compare
+	 * @param mixed    $value
 	 * @return bool
 	 */
-	function validate( $order, $compare, $value ) {
+	public function validate( $order, $compare, $value ) {
 
 		$cross_sells = aw_get_order_cross_sells( $order );
 
 		switch ( $value ) {
 			case 'yes':
 				return ! empty( $cross_sells );
-				break;
 
 			case 'no':
 				return empty( $cross_sells );
-				break;
 		}
 	}
-
 }

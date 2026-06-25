@@ -138,7 +138,8 @@ class Mailer extends Mailer_Abstract {
 	 * @return string
 	 */
 	public function get_content_wrapped_in_template() {
-		$content = $this->content;
+		$content                     = $this->content;
+		$use_woocommerce_email_hooks = $this->should_use_woocommerce_email_hooks();
 
 		add_filter( 'woocommerce_email_footer_text', [ $this, 'add_extra_footer_text' ] );
 
@@ -147,26 +148,79 @@ class Mailer extends Mailer_Abstract {
 		 */
 		$content = apply_filters( 'automatewoo_email_content', $content );
 
+		if ( $use_woocommerce_email_hooks ) {
+			$this->maybe_init_woocommerce_mailer();
+
+			// MailPoet's footer renders its own content and never applies the
+			// 'woocommerce_email_footer_text' filter, so the extra footer text
+			// (e.g. the unsubscribe link) would be silently dropped. Append it
+			// directly after the content instead, and remove the filter so it
+			// can't be added twice if the footer does apply it.
+			remove_filter( 'woocommerce_email_footer_text', [ $this, 'add_extra_footer_text' ] );
+
+			if ( $this->extra_footer_text ) {
+				$content .= '<p>' . $this->extra_footer_text . '</p>';
+			}
+		}
+
 		// Buffer
 		ob_start();
 
-		$this->get_template_part(
-			'email-header.php',
-			[
-				'email_heading' => $this->heading,
-			]
-		);
+		if ( $use_woocommerce_email_hooks ) {
+			// Match WooCommerce's own invocation in WC_Emails::wrap_message(), which passes a
+			// second (email) argument. Omitting it can trigger an ArgumentCountError for callbacks
+			// registered with accepted_args that declare a required parameter.
+			do_action( 'woocommerce_email_header', $this->heading, null );
+		} else {
+			$this->get_template_part(
+				'email-header.php',
+				[
+					'email_heading' => $this->heading,
+				]
+			);
+		}
 
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo $content;
 
-		$this->get_template_part( 'email-footer.php' );
+		if ( $use_woocommerce_email_hooks ) {
+			// Match WooCommerce's own invocation in WC_Emails::wrap_message(), which passes an
+			// (email) argument. Omitting it can trigger an ArgumentCountError for callbacks
+			// registered with accepted_args that declare a required parameter.
+			do_action( 'woocommerce_email_footer', null );
+		} else {
+			$this->get_template_part( 'email-footer.php' );
+		}
 
 		$html = ob_get_clean();
 
 		remove_filter( 'woocommerce_email_footer_text', [ $this, 'add_extra_footer_text' ] );
 
 		return $html;
+	}
+
+	/**
+	 * Determine whether the default template should render through WooCommerce's email hooks.
+	 *
+	 * MailPoet replaces these hooks when its WooCommerce email editor is enabled.
+	 *
+	 * @return bool
+	 */
+	protected function should_use_woocommerce_email_hooks() {
+		return 'default' === $this->template && Integrations::is_mailpoet_overriding_styles();
+	}
+
+	/**
+	 * Ensure WooCommerce's email header and footer hooks have been registered.
+	 */
+	protected function maybe_init_woocommerce_mailer() {
+		if ( function_exists( 'WC' ) ) {
+			$woocommerce = WC();
+
+			if ( is_callable( [ $woocommerce, 'mailer' ] ) ) {
+				$woocommerce->mailer();
+			}
+		}
 	}
 
 

@@ -49,6 +49,7 @@ class ToolsService {
 
 		$class_names[] = $this->options_store->get_optin_enabled() ? Tool_Optin_Importer::class : Tool_Optout_Importer::class;
 		$class_names[] = Guest_Eraser::class;
+		$class_names[] = RebuildCustomerLastPurchasedDates::class;
 		$class_names[] = Tool_Reset_Workflow_Records::class;
 		$class_names[] = Tool_Delete_Data::class;
 

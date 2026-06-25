@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo\Rules;
 
@@ -22,10 +21,14 @@ class Customer_Country extends Preloaded_Select_Rule_Abstract implements NonPrim
 	use DataTypeConditions;
 
 
+	/** @var string */
 	public $data_item = DataTypes::CUSTOMER;
 
 
-	function init() {
+	/**
+	 * Init the rule.
+	 */
+	public function init() {
 		parent::init();
 
 		$this->title = __( 'Customer - Country', 'automatewoo' );
@@ -35,18 +38,18 @@ class Customer_Country extends Preloaded_Select_Rule_Abstract implements NonPrim
 	/**
 	 * @return array
 	 */
-	function load_select_choices() {
+	public function load_select_choices() {
 		return WC()->countries->get_allowed_countries();
 	}
 
 
 	/**
-	 * @param $customer \AutomateWoo\Customer
-	 * @param $compare
-	 * @param $value
+	 * @param \AutomateWoo\Customer $customer
+	 * @param string                $compare
+	 * @param mixed                 $value
 	 * @return bool
 	 */
-	function validate( $customer, $compare, $value ) {
+	public function validate( $customer, $compare, $value ) {
 		return $this->validate_select( $this->data_layer()->get_customer_country(), $compare, $value );
 	}
 

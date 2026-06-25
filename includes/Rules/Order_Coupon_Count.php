@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo\Rules;
 
@@ -11,25 +10,28 @@ defined( 'ABSPATH' ) || exit;
  */
 class Order_Coupon_Count extends Abstract_Number {
 
+	/** @var string */
 	public $data_item = 'order';
 
+	/** @var bool */
 	public $support_floats = false;
 
 
-	function init() {
+	/**
+	 * Init the rule.
+	 */
+	public function init() {
 		$this->title = __( 'Order - Coupon Count', 'automatewoo' );
 	}
 
 
 	/**
-	 * @param $order \WC_Order
-	 * @param $compare
-	 * @param $value
+	 * @param \WC_Order $order
+	 * @param string    $compare
+	 * @param mixed     $value
 	 * @return bool
 	 */
-	function validate( $order, $compare, $value ) {
+	public function validate( $order, $compare, $value ) {
 		return $this->validate_number( count( $order->get_coupon_codes() ), $compare, $value );
 	}
-
-
 }

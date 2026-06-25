@@ -1,5 +1,27 @@
 *** AutomateWoo Changelog ***
 
+2026-06-25 - version 6.6.0
+* Add - Add click tracking to plain URLs in plain-text emails.
+* Add - Apply MailPoet email template customizations to AutomateWoo emails using the default template.
+* Add - Keep carts after they are emptied or purchased and track their status (Emptied, Placed, Recovered) instead of deleting them.
+* Add - Offset option for the "multiple of" integer rule comparisons.
+* Add - Option on the Subscription Renewal Payment Failed trigger to skip running after a successful payment.
+* Add - Option to enable Mailchimp marketing permissions when adding a contact to a GDPR-enabled list.
+* Add - Show an opt-out indicator badge next to opted-out customers on the queue page.
+* Add - Tool to rebuild the customer last order date index so imported orders are factored into Win Back workflows.
+* Add - Workflow timing option to disable rule re-validation at queued runtime.
+* Dev - Add `get_typed_option()` to the settings tab abstract for opt-in typed access to option values.
+* Dev - Add a `TriggerInterface` and a `NoOpTrigger` null-object, with an opt-in `Workflow::get_trigger_or_noop()`.
+* Dev - Refactor dashboard chart widgets to share common markup.
+* Dev - Replace remaining deprecated `Guest::get_key()` usage to stop deprecation notices.
+* Fix - Honor the `woocommerce_adjust_non_base_location_prices` filter when a subscription action updates an item to a custom price on tax-inclusive stores.
+* Fix - Improve plain-text email formatting of the {{ order.items }} variable.
+* Fix - Prevent a fatal error and show a helpful notice when the Mailchimp API key is missing or incorrect.
+* Fix - Render product images at the correct size in classic Outlook by adding explicit image dimensions.
+* Fix - Stop the email editor prepending `http://` to and flagging variable-only link URLs as broken.
+* Fix - Time-of-day workflows scheduled late in the day now reliably run on the intended day.
+* Update - Require WooCommerce 10.8+.
+
 2026-06-22 - version 6.5.0
 * Add - Add a product categories variable.
 * Add - Add an action to stagger subscription renewal payment times.

@@ -58,6 +58,47 @@ abstract class Dashboard_Widget_Chart extends Dashboard_Widget_Analytics {
 	}
 
 	/**
+	 * Output a chart header group for a static (server-rendered) chart widget.
+	 *
+	 * The figure is rendered as a plain `<div>`. Its value is passed through `wp_kses_post()`,
+	 * which leaves plain numbers untouched and preserves the safe markup produced by helpers
+	 * such as `wc_price()`.
+	 *
+	 * @since 6.6.0
+	 *
+	 * @param string $figure The figure value to display (a number or `wc_price()` output).
+	 * @param string $label  The translated, human-readable label for the figure.
+	 * @param string $legend The legend colour modifier (e.g. 'blue', 'purple', 'green').
+	 *                       Pass an empty string to render the label without a legend.
+	 */
+	protected function output_static_chart_header_group( $figure, $label, $legend ) {
+		if ( '' !== $legend ) {
+			$text = sprintf(
+				'<div class="automatewoo-dashboard-chart__header-text">'
+				. '<span class="automatewoo-dashboard-chart__legend automatewoo-dashboard-chart__legend--%1$s"></span>'
+				. '%2$s'
+				. '</div>',
+				esc_attr( $legend ),
+				esc_html( $label )
+			);
+		} else {
+			$text = sprintf(
+				'<div class="automatewoo-dashboard-chart__header-text">%1$s</div>',
+				esc_html( $label )
+			);
+		}
+
+		printf(
+			'<div class="automatewoo-dashboard-chart__header-group">'
+			. '<div class="automatewoo-dashboard-chart__header-figure">%1$s</div>'
+			. '%2$s'
+			. '</div>',
+			wp_kses_post( $figure ),
+			$text // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped above.
+		);
+	}
+
+	/**
 	 * Render chart JS.
 	 */
 	protected function render_js() {

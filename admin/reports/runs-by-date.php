@@ -1,9 +1,10 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * @class Report_Runs_By_Date
@@ -16,22 +17,34 @@ class Report_Runs_By_Date extends \AW_Report_Abstract_Graph {
 
 	/** @var array  */
 	public $chart_colours = [
-		'runs' => '#3498db'
+		'runs' => '#3498db',
 	];
 
+	/** @var array */
 	public $workflow_ids = [];
+
+	/** @var array */
 	public $workflow_ids_titles = [];
 
+	/** @var array|null */
 	public $logs;
+
+	/** @var int */
 	public $logs_count = 0;
 
 
-	function __construct() {
+	/**
+	 * Report_Runs_By_Date constructor.
+	 */
+	public function __construct() {
 		$this->workflow_ids = $this->get_filtered_workflows();
 	}
 
 
-	function load_chart_data() {
+	/**
+	 * Load the chart data.
+	 */
+	public function load_chart_data() {
 
 		$logs_query = new Log_Query();
 
@@ -44,7 +57,7 @@ class Report_Runs_By_Date extends \AW_Report_Abstract_Graph {
 
 		$end_date = new DateTime();
 		$end_date->setTimestamp( $this->end_date );
-		$end_date->modify('+1 days');
+		$end_date->modify( '+1 days' );
 
 		// convert to UTC
 		$start_date->convert_to_utc_time();
@@ -52,17 +65,17 @@ class Report_Runs_By_Date extends \AW_Report_Abstract_Graph {
 
 		$logs_query->where_date_between( $start_date, $end_date );
 
-		$this->logs = $logs_query->get_results();
+		$this->logs       = $logs_query->get_results();
 		$this->logs_count = count( $this->logs );
-
 	}
 
 
 	/**
 	 * Get the legend for the main chart sidebar
+	 *
 	 * @return array
 	 */
-	function get_chart_legend() {
+	public function get_chart_legend() {
 
 		$this->load_chart_data();
 
@@ -88,20 +101,20 @@ class Report_Runs_By_Date extends \AW_Report_Abstract_Graph {
 	 *
 	 * @return array
 	 */
-	function get_chart_widgets() {
+	public function get_chart_widgets() {
 
 		$widgets = [];
 
 		if ( ! empty( $this->workflow_ids ) ) {
 			$widgets[] = [
 				'title'    => __( 'Showing reports for:', 'automatewoo' ),
-				'callback' => [ $this, 'current_filters' ]
+				'callback' => [ $this, 'current_filters' ],
 			];
 		}
 
 		$widgets[] = [
 			'title'    => '',
-			'callback' => [ $this, 'output_workflows_widget' ]
+			'callback' => [ $this, 'output_workflows_widget' ],
 		];
 
 		return $widgets;
@@ -111,7 +124,7 @@ class Report_Runs_By_Date extends \AW_Report_Abstract_Graph {
 	/**
 	 * Show current filters
 	 */
-	function current_filters() {
+	public function current_filters() {
 
 		$this->workflow_ids_titles = [];
 
@@ -121,30 +134,28 @@ class Report_Runs_By_Date extends \AW_Report_Abstract_Graph {
 
 			if ( $workflow ) {
 				$this->workflow_ids_titles[] = $workflow->title;
-			}
-			else {
+			} else {
 				$this->workflow_ids_titles[] = '#' . $workflow_id;
 			}
 		}
 
-		echo '<p>' . ' <strong>' . implode( ', ', $this->workflow_ids_titles ) . '</strong></p>';
-		echo '<p><a class="button" href="' . esc_url( remove_query_arg( 'workflow_ids' ) ) . '">' . __( 'Reset', 'automatewoo' ) . '</a></p>';
+		echo '<p> <strong>' . esc_html( implode( ', ', $this->workflow_ids_titles ) ) . '</strong></p>';
+		echo '<p><a class="button" href="' . esc_url( remove_query_arg( 'workflow_ids' ) ) . '">' . esc_html__( 'Reset', 'automatewoo' ) . '</a></p>';
 	}
 
 
 
 	/**
-	 * Get the main chart```
-	 *
-	 * @return string
+	 * Output the main chart.
 	 */
-	function get_main_chart() {
+	public function get_main_chart() {
 		global $wp_locale;
 
 		$logs = $this->logs;
 
-		if ( ! is_array( $logs ) )
+		if ( ! is_array( $logs ) ) {
 			$logs = [];
+		}
 
 		// convert all dates to site time
 		foreach ( $logs as $log ) {
@@ -152,14 +163,15 @@ class Report_Runs_By_Date extends \AW_Report_Abstract_Graph {
 		}
 
 		// Prepare data for report
-		$log  = $this->prepare_chart_data( $logs, '_date_site_time', false, $this->chart_interval, $this->start_date, $this->chart_groupby );
+		$log = $this->prepare_chart_data( $logs, '_date_site_time', false, $this->chart_interval, $this->start_date, $this->chart_groupby );
 
 		// Encode in json format
-		$chart_data = wp_json_encode( 
+		$chart_data = wp_json_encode(
 			[
 				'logs' => array_values( $log ),
-			]
-		, JSON_HEX_TAG | JSON_UNESCAPED_SLASHES );
+			],
+			JSON_HEX_TAG | JSON_UNESCAPED_SLASHES
+		);
 
 		?>
 		<div class="chart-container">
@@ -175,10 +187,10 @@ class Report_Runs_By_Date extends \AW_Report_Abstract_Graph {
 
 					var series = [
 					{
-						label: "<?php echo esc_js( __( 'Runs', 'automatewoo' ) ) ?>",
+						label: "<?php echo esc_js( __( 'Runs', 'automatewoo' ) ); ?>",
 						data: order_data.logs,
 						yaxis: 2,
-						color: '<?php echo $this->chart_colours['runs']; ?>',
+						color: '<?php echo esc_js( $this->chart_colours['runs'] ); ?>',
 						points: { show: true, radius: 5, lineWidth: 3, fillColor: '#fff', fill: true },
 						lines: { show: true, lineWidth: 4, fill: false },
 						shadowSize: 0
@@ -216,10 +228,10 @@ class Report_Runs_By_Date extends \AW_Report_Abstract_Graph {
 						position: "bottom",
 						tickColor: 'transparent',
 						mode: "time",
-						timeformat: "<?php if ( $this->chart_groupby == 'day' ) echo '%d %b'; else echo '%b'; ?>",
-						monthNames: JSON.parse( decodeURIComponent( '<?php echo rawurlencode( wp_json_encode(  array_values( $wp_locale->month_abbrev ), JSON_HEX_TAG | JSON_UNESCAPED_SLASHES ) ); ?>' ) ),
+						timeformat: "<?php echo 'day' === $this->chart_groupby ? '%d %b' : '%b'; ?>",
+						monthNames: JSON.parse( decodeURIComponent( '<?php echo rawurlencode( wp_json_encode( array_values( $wp_locale->month_abbrev ), JSON_HEX_TAG | JSON_UNESCAPED_SLASHES ) ); ?>' ) ),
 						tickLength: 1,
-						minTickSize: [1, "<?php echo $this->chart_groupby; ?>"],
+						minTickSize: [1, "<?php echo esc_js( $this->chart_groupby ); ?>"],
 						font: {
 							color: "#aaa"
 						}
@@ -259,8 +271,6 @@ class Report_Runs_By_Date extends \AW_Report_Abstract_Graph {
 			;
 			});
 		</script>
-	<?php
-
+		<?php
 	}
-
 }

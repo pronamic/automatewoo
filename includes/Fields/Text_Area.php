@@ -1,19 +1,22 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo\Fields;
 
 use AutomateWoo\Clean;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * @class Text_Area
  */
 class Text_Area extends Text {
 
+	/** @var string */
 	protected $name = 'text_area';
 
+	/** @var string */
 	protected $type = 'text_area';
 
 	/**
@@ -25,7 +28,10 @@ class Text_Area extends Text {
 	protected $allow_html = false;
 
 
-	function __construct() {
+	/**
+	 * Text_Area constructor.
+	 */
+	public function __construct() {
 		parent::__construct();
 		$this->set_title( __( 'Text Area', 'automatewoo' ) );
 	}
@@ -35,8 +41,8 @@ class Text_Area extends Text {
 	 *
 	 * @return $this
 	 */
-	function set_rows( $rows ) {
-		$this->add_extra_attr('rows', $rows );
+	public function set_rows( $rows ) {
+		$this->add_extra_attr( 'rows', $rows );
 		return $this;
 	}
 
@@ -50,7 +56,7 @@ class Text_Area extends Text {
 	 *
 	 * @return $this
 	 */
-	function set_allow_html( $allow_html = true ) {
+	public function set_allow_html( $allow_html = true ) {
 		$this->allow_html = $allow_html;
 		return $this;
 	}
@@ -60,20 +66,20 @@ class Text_Area extends Text {
 	 *
 	 * @param string $value
 	 */
-	function render( $value ) {
+	public function render( $value ) {
 		if ( $this->decode_html_entities_before_render ) {
 			$value = html_entity_decode( $value );
 		}
 
-	?>
+		?>
 		<textarea
-		       name="<?php echo esc_attr( $this->get_full_name() ); ?><?php echo $this->multiple ? '[]' : '' ?>"
-		       class="<?php echo esc_attr( $this->get_classes() ); ?>"
-		       placeholder="<?php echo esc_attr( $this->get_placeholder() ); ?>"
-			   <?php $this->output_extra_attrs(); ?>
-			   <?php echo ( $this->get_required() ? 'required' : '' ) ?>
+				name="<?php echo esc_attr( $this->get_full_name() ); ?><?php echo $this->multiple ? '[]' : ''; ?>"
+				class="<?php echo esc_attr( $this->get_classes() ); ?>"
+				placeholder="<?php echo esc_attr( $this->get_placeholder() ); ?>"
+				<?php $this->output_extra_attrs(); ?>
+				<?php echo ( $this->get_required() ? 'required' : '' ); ?>
 			><?php echo esc_textarea( $value ); ?></textarea>
-	<?php
+		<?php
 	}
 
 	/**
@@ -86,7 +92,7 @@ class Text_Area extends Text {
 	 *
 	 * @return string
 	 */
-	function sanitize_value( $value ) {
+	public function sanitize_value( $value ) {
 		if ( $this->allow_html ) {
 			if ( $this->allow_html === true ) {
 				return wp_kses_post( $value );
@@ -97,5 +103,4 @@ class Text_Area extends Text {
 			return Clean::textarea( $value );
 		}
 	}
-
 }

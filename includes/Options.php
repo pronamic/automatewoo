@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
@@ -39,16 +38,17 @@ namespace AutomateWoo;
  *
  * @property bool $enable_background_system_check
  * @property bool $delete_data_on_uninstall
- *
  */
-
 class Options extends Options_API {
 
 	/** @var string */
 	public $prefix = 'automatewoo_';
 
 
-	function __construct() {
+	/**
+	 * Options constructor.
+	 */
+	public function __construct() {
 		$this->defaults = [
 			'optin_mode'                               => 'optin',
 			'enable_checkout_optin'                    => 'yes',
@@ -90,7 +90,7 @@ class Options extends Options_API {
 	 *
 	 * @return string
 	 */
-	static function database_version() {
+	public static function database_version() {
 		return Clean::string( self::get( 'version' ) );
 	}
 
@@ -103,7 +103,7 @@ class Options extends Options_API {
 	 *
 	 * @return string
 	 */
-	static function file_version() {
+	public static function file_version() {
 		return Clean::string( self::get( 'file_version' ) );
 	}
 
@@ -112,8 +112,8 @@ class Options extends Options_API {
 	 * @since 4.0
 	 * @return bool
 	 */
-	static function optin_enabled() {
-		return Options::get('optin_mode') === 'optin';
+	public static function optin_enabled() {
+		return self::get( 'optin_mode' ) === 'optin';
 	}
 
 
@@ -121,8 +121,8 @@ class Options extends Options_API {
 	 * @since 4.0
 	 * @return bool
 	 */
-	static function session_tracking_enabled() {
-		return (bool) Options::get('session_tracking_enabled');
+	public static function session_tracking_enabled() {
+		return (bool) self::get( 'session_tracking_enabled' );
 	}
 
 
@@ -130,8 +130,8 @@ class Options extends Options_API {
 	 * @since 4.0
 	 * @return bool
 	 */
-	static function session_tracking_requires_cookie_consent() {
-		return (bool) Options::get('session_tracking_requires_cookie_consent');
+	public static function session_tracking_requires_cookie_consent() {
+		return (bool) self::get( 'session_tracking_requires_cookie_consent' );
 	}
 
 
@@ -139,8 +139,8 @@ class Options extends Options_API {
 	 * @since 4.0
 	 * @return string
 	 */
-	static function session_tracking_consent_cookie_name() {
-		return Clean::string( Options::get('session_tracking_consent_cookie_name') );
+	public static function session_tracking_consent_cookie_name() {
+		return Clean::string( self::get( 'session_tracking_consent_cookie_name' ) );
 	}
 
 
@@ -148,8 +148,8 @@ class Options extends Options_API {
 	 * @since 4.0
 	 * @return bool
 	 */
-	static function presubmit_capture_enabled() {
-		return Options::get('session_tracking_enabled') && Options::get('enable_presubmit_data_capture');
+	public static function presubmit_capture_enabled() {
+		return self::get( 'session_tracking_enabled' ) && self::get( 'enable_presubmit_data_capture' );
 	}
 
 
@@ -157,8 +157,8 @@ class Options extends Options_API {
 	 * @since 4.0
 	 * @return bool
 	 */
-	static function abandoned_cart_enabled() {
-		return (bool) Options::get('abandoned_cart_enabled');
+	public static function abandoned_cart_enabled() {
+		return (bool) self::get( 'abandoned_cart_enabled' );
 	}
 
 
@@ -166,8 +166,8 @@ class Options extends Options_API {
 	 * @since 4.0
 	 * @return bool
 	 */
-	static function checkout_optin_enabled() {
-		return (bool) Options::get('enable_checkout_optin');
+	public static function checkout_optin_enabled() {
+		return (bool) self::get( 'enable_checkout_optin' );
 	}
 
 
@@ -175,8 +175,8 @@ class Options extends Options_API {
 	 * @since 4.0
 	 * @return bool
 	 */
-	static function account_optin_enabled() {
-		return (bool) Options::get('enable_account_signup_optin');
+	public static function account_optin_enabled() {
+		return (bool) self::get( 'enable_account_signup_optin' );
 	}
 
 
@@ -184,8 +184,8 @@ class Options extends Options_API {
 	 * @since 4.0
 	 * @return string
 	 */
-	static function optin_checkbox_text() {
-		return trim( wp_kses_post( Options::get('optin_checkbox_text') ) );
+	public static function optin_checkbox_text() {
+		return trim( wp_kses_post( self::get( 'optin_checkbox_text' ) ) );
 	}
 
 
@@ -193,8 +193,8 @@ class Options extends Options_API {
 	 * @since 4.0
 	 * @return int
 	 */
-	static function communication_page_id() {
-		return Clean::id( Options::get('communication_preferences_page_id') );
+	public static function communication_page_id() {
+		return Clean::id( self::get( 'communication_preferences_page_id' ) );
 	}
 
 
@@ -202,8 +202,8 @@ class Options extends Options_API {
 	 * @since 4.0
 	 * @return int
 	 */
-	static function signup_page_id() {
-		return Clean::id( Options::get('communication_signup_page_id') );
+	public static function signup_page_id() {
+		return Clean::id( self::get( 'communication_signup_page_id' ) );
 	}
 
 
@@ -211,8 +211,8 @@ class Options extends Options_API {
 	 * @since 4.0
 	 * @return string
 	 */
-	static function communication_page_legal_text() {
-		return trim( wp_kses_post( Options::get('communication_page_legal_text') ) );
+	public static function communication_page_legal_text() {
+		return trim( wp_kses_post( self::get( 'communication_page_legal_text' ) ) );
 	}
 
 
@@ -220,8 +220,8 @@ class Options extends Options_API {
 	 * @since 4.0
 	 * @return bool
 	 */
-	static function communication_account_tab_enabled() {
-		return (bool) Options::get('enable_communication_account_tab');
+	public static function communication_account_tab_enabled() {
+		return (bool) self::get( 'enable_communication_account_tab' );
 	}
 
 	/**
@@ -231,8 +231,8 @@ class Options extends Options_API {
 	 *
 	 * @return bool
 	 */
-	static function mailchimp_enabled() {
-		return (bool) Options::get( 'mailchimp_integration_enabled' );
+	public static function mailchimp_enabled() {
+		return (bool) self::get( 'mailchimp_integration_enabled' );
 	}
 
 	/**
@@ -242,8 +242,8 @@ class Options extends Options_API {
 	 *
 	 * @return string
 	 */
-	static function mailchimp_api_key() {
-		return trim( Clean::string( Options::get( 'mailchimp_api_key' ) ) );
+	public static function mailchimp_api_key() {
+		return trim( Clean::string( self::get( 'mailchimp_api_key' ) ) );
 	}
 
 	/**
@@ -253,8 +253,8 @@ class Options extends Options_API {
 	 *
 	 * @return bool
 	 */
-	static public function activecampaign_enabled(): bool {
-		return (bool) Options::get( 'active_campaign_integration_enabled' );
+	public static function activecampaign_enabled(): bool {
+		return (bool) self::get( 'active_campaign_integration_enabled' );
 	}
 
 	/**
@@ -264,8 +264,8 @@ class Options extends Options_API {
 	 *
 	 * @return bool
 	 */
-	static public function twilio_enabled(): bool {
-		return (bool) Options::get( 'twilio_integration_enabled' );
+	public static function twilio_enabled(): bool {
+		return (bool) self::get( 'twilio_integration_enabled' );
 	}
 
 	/**
@@ -275,8 +275,8 @@ class Options extends Options_API {
 	 *
 	 * @return bool
 	 */
-	static public function bitly_enabled(): bool {
-		return (bool) Options::get( 'bitly_shorten_sms_links' );
+	public static function bitly_enabled(): bool {
+		return (bool) self::get( 'bitly_shorten_sms_links' );
 	}
 
 	/**
@@ -286,8 +286,8 @@ class Options extends Options_API {
 	 *
 	 * @return bool
 	 */
-	static public function campaign_monitor_enabled(): bool {
-		return (bool) Options::get( 'campaign_monitor_enabled' );
+	public static function campaign_monitor_enabled(): bool {
+		return (bool) self::get( 'campaign_monitor_enabled' );
 	}
 
 	/**
@@ -297,7 +297,7 @@ class Options extends Options_API {
 	 *
 	 * @return bool
 	 */
-	static public function non_production_workflow_override(): bool {
-		return (bool) Options::get( 'non_production_workflow_override' );
+	public static function non_production_workflow_override(): bool {
+		return (bool) self::get( 'non_production_workflow_override' );
 	}
 }

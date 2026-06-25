@@ -464,11 +464,29 @@
 		},
 
 		/**
-		 * @return {boolean|undefined} Whether the model object `has_multiple_value_fields`.
+		 * @return {boolean|undefined} Whether the rule has multiple value fields.
 		 */
 		hasMultipleValueFields() {
 			const object = this.model.get( 'object' );
-			return object && object.has_multiple_value_fields;
+
+			if ( ! object ) {
+				return false;
+			}
+
+			return (
+				object.has_multiple_value_fields ||
+				this.isMultipleWithOffsetCompare()
+			);
+		},
+
+		/**
+		 * @return {boolean} Whether the selected compare type uses multiple offset fields.
+		 */
+		isMultipleWithOffsetCompare() {
+			return (
+				this.model.get( 'compare' ) === 'multiple_with_offset' ||
+				this.model.get( 'compare' ) === 'not_multiple_with_offset'
+			);
 		},
 
 		maybeToggleValueDisplay() {

@@ -1,12 +1,13 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo\DataTypes;
 
 use AutomateWoo\Cart as CartModel;
 use AutomateWoo\Cart_Factory;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * @class Cart
@@ -14,11 +15,11 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 class Cart extends AbstractDataType {
 
 	/**
-	 * @param $item
+	 * @param mixed $item
 	 * @return bool
 	 */
-	function validate( $item ) {
-		return is_a( $item, 'AutomateWoo\Cart');
+	public function validate( $item ) {
+		return is_a( $item, 'AutomateWoo\Cart' );
 	}
 
 
@@ -26,22 +27,23 @@ class Cart extends AbstractDataType {
 	 * @param CartModel $item
 	 * @return mixed
 	 */
-	function compress( $item ) {
+	public function compress( $item ) {
 		return $item->get_id();
 	}
 
 
 	/**
-	 * @param $compressed_item
-	 * @param $compressed_data_layer
+	 * @param int|string|null $compressed_item
+	 * @param array           $compressed_data_layer
 	 * @return mixed
 	 */
-	function decompress( $compressed_item, $compressed_data_layer ) {
+	public function decompress( $compressed_item, $compressed_data_layer ) {
 		if ( ! $compressed_item ) {
 			return false;
 		}
 
-		if ( $cart = Cart_Factory::get( $compressed_item ) ) {
+		$cart = Cart_Factory::get( $compressed_item );
+		if ( $cart ) {
 			return $cart;
 		}
 
@@ -52,5 +54,4 @@ class Cart extends AbstractDataType {
 
 		return $cart;
 	}
-
 }

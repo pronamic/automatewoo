@@ -1,23 +1,29 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo\Fields;
 
 use AutomateWoo\Clean;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * @class Attribute_Term
  */
 class Attribute_Term extends Field {
 
+	/** @var string */
 	protected $name = 'term';
 
+	/** @var string */
 	protected $type = 'term';
 
 
-	function __construct() {
+	/**
+	 * Attribute_Term constructor.
+	 */
+	public function __construct() {
 		parent::__construct();
 		$this->set_title( __( 'Terms', 'automatewoo' ) );
 		$this->classes[] = 'automatewoo-json-search';
@@ -27,7 +33,7 @@ class Attribute_Term extends Field {
 	/**
 	 * @param array $values
 	 */
-	function render( $values ) {
+	public function render( $values ) {
 
 		$values = Clean::multi_select_values( $values );
 
@@ -37,7 +43,8 @@ class Attribute_Term extends Field {
 			if ( strstr( $value, '|' ) ) {
 				list( $term_id, $taxonomy ) = explode( '|', $value );
 
-				if ( $term = get_term_by( 'id', $term_id, $taxonomy ) ) {
+				$term = get_term_by( 'id', $term_id, $taxonomy );
+				if ( $term ) {
 					$display_values[ $value ] = $term->name;
 				}
 			}
@@ -46,11 +53,11 @@ class Attribute_Term extends Field {
 		?>
 
 		<select class="<?php echo esc_attr( $this->get_classes() ); ?>"
-				  multiple="multiple"
-				  name="<?php echo esc_attr( $this->get_full_name() ); ?>[]"
-				  data-placeholder="<?php esc_attr_e( 'Search for a term&hellip;', 'automatewoo' ); ?>"
-				  data-action="aw_json_search_attribute_terms"
-				  data-pass-sibling="aw_workflow_data[trigger_options][attribute]"
+					multiple="multiple"
+					name="<?php echo esc_attr( $this->get_full_name() ); ?>[]"
+					data-placeholder="<?php esc_attr_e( 'Search for a term&hellip;', 'automatewoo' ); ?>"
+					data-action="aw_json_search_attribute_terms"
+					data-pass-sibling="aw_workflow_data[trigger_options][attribute]"
 		>
 			<?php
 			foreach ( $display_values as $key => $value ) {
@@ -59,7 +66,7 @@ class Attribute_Term extends Field {
 			?>
 		</select>
 
-	<?php
+		<?php
 	}
 
 
@@ -72,8 +79,7 @@ class Attribute_Term extends Field {
 	 *
 	 * @return array
 	 */
-	function sanitize_value( $value ) {
+	public function sanitize_value( $value ) {
 		return Clean::recursive( $value );
 	}
-
 }

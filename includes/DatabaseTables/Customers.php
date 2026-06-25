@@ -1,11 +1,12 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo\DatabaseTables;
 
 use AutomateWoo\Database_Table;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * Customers database table class.
@@ -14,10 +15,13 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  */
 class Customers extends Database_Table {
 
-	function __construct() {
+	/**
+	 * Constructor.
+	 */
+	public function __construct() {
 		global $wpdb;
 
-		$this->name = $wpdb->prefix . 'automatewoo_customers';
+		$this->name        = $wpdb->prefix . 'automatewoo_customers';
 		$this->primary_key = 'id';
 	}
 
@@ -25,17 +29,17 @@ class Customers extends Database_Table {
 	/**
 	 * @return array
 	 */
-	function get_columns() {
+	public function get_columns() {
 		return [
-			'id' => '%d',
-			'user_id' => '%d',
-			'guest_id' => '%d',
-			'id_key' => '%s',
-			'last_purchased' => '%s',
-			'unsubscribed' => '%d',
+			'id'                => '%d',
+			'user_id'           => '%d',
+			'guest_id'          => '%d',
+			'id_key'            => '%s',
+			'last_purchased'    => '%s',
+			'unsubscribed'      => '%d',
 			'unsubscribed_date' => '%s',
-			'subscribed' => '%d',
-			'subscribed_date' => '%s',
+			'subscribed'        => '%d',
+			'subscribed_date'   => '%s',
 		];
 	}
 
@@ -43,7 +47,7 @@ class Customers extends Database_Table {
 	/**
 	 * @return string
 	 */
-	function get_install_query() {
+	public function get_install_query() {
 		return "CREATE TABLE {$this->get_name()} (
 			id bigint(20) NOT NULL AUTO_INCREMENT,
 			user_id bigint(20) NOT NULL default 0,
@@ -63,5 +67,4 @@ class Customers extends Database_Table {
 			KEY subscribed (subscribed)
 			) {$this->get_collate()};";
 	}
-
 }

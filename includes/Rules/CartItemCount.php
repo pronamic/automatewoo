@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo\Rules;
 
@@ -13,24 +12,28 @@ defined( 'ABSPATH' ) || exit;
  */
 class CartItemCount extends Abstract_Number {
 
+	/** @var string */
 	public $data_item = DataTypes::CART;
 
+	/** @var bool */
 	public $support_floats = false;
 
 
-	function init() {
+	/**
+	 * Init the rule.
+	 */
+	public function init() {
 		$this->title = __( 'Cart - Item Count', 'automatewoo' );
 	}
 
 
 	/**
-	 * @param Cart $cart
-	 * @param $compare
-	 * @param $value
+	 * @param Cart   $cart
+	 * @param string $compare
+	 * @param mixed  $value
 	 * @return bool
 	 */
-	function validate( $cart, $compare, $value ) {
+	public function validate( $cart, $compare, $value ) {
 		return $this->validate_number( count( $cart->get_items() ), $compare, $value );
 	}
-
 }

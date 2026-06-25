@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 /**
  * @class AutomateWoo_Legacy
@@ -24,25 +23,26 @@ abstract class AutomateWoo_Legacy {
 	 * @since 2.4.4
 	 * @deprecated use WC_Geolocation::get_ip_address()
 	 */
-	function get_ip() {
+	public function get_ip() {
 		wc_deprecated_function( __METHOD__, '5.2.0', 'WC_Geolocation::get_ip_address' );
 
-		if ( ! empty( $_SERVER['HTTP_CLIENT_IP'] ) )
-			$ip = $_SERVER['HTTP_CLIENT_IP'];
-		elseif ( ! empty( $_SERVER['HTTP_X_FORWARDED_FOR'] ) )
-			$ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
-		else
-			$ip = $_SERVER['REMOTE_ADDR'];
+		if ( ! empty( $_SERVER['HTTP_CLIENT_IP'] ) ) {
+			$ip = sanitize_text_field( wp_unslash( $_SERVER['HTTP_CLIENT_IP'] ) );
+		} elseif ( ! empty( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ) {
+			$ip = sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_FORWARDED_FOR'] ) );
+		} else {
+			$ip = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
+		}
 		return $ip;
 	}
 
 
 	/**
 	 * @deprecated
-	 * @param $id
+	 * @param int $id
 	 * @return AutomateWoo\Log|bool
 	 */
-	function get_log( $id ) {
+	public function get_log( $id ) {
 		wc_deprecated_function( __METHOD__, '5.2.0', 'AutomateWoo\Log_Factory::get' );
 
 		return AutomateWoo\Log_Factory::get( $id );
@@ -51,10 +51,10 @@ abstract class AutomateWoo_Legacy {
 
 	/**
 	 * @deprecated
-	 * @param $id
+	 * @param int $id
 	 * @return AutomateWoo\Workflow|bool
 	 */
-	function get_workflow( $id ) {
+	public function get_workflow( $id ) {
 		wc_deprecated_function( __METHOD__, '5.2.0', 'AutomateWoo\Workflows\Factory::get' );
 
 		return \AutomateWoo\Workflows\Factory::get( $id );
@@ -63,10 +63,10 @@ abstract class AutomateWoo_Legacy {
 
 	/**
 	 * @deprecated
-	 * @param $id
+	 * @param int $id
 	 * @return AutomateWoo\Queued_Event|bool
 	 */
-	function get_queued_event( $id ) {
+	public function get_queued_event( $id ) {
 		wc_deprecated_function( __METHOD__, '5.2.0', 'AutomateWoo\Queued_Event_Factory::get' );
 
 		return AutomateWoo\Queued_Event_Factory::get( $id );
@@ -75,10 +75,10 @@ abstract class AutomateWoo_Legacy {
 
 	/**
 	 * @deprecated
-	 * @param $id
+	 * @param int $id
 	 * @return AutomateWoo\Guest|bool
 	 */
-	function get_guest( $id ) {
+	public function get_guest( $id ) {
 		wc_deprecated_function( __METHOD__, '5.2.0', 'AutomateWoo\Guest_Factory::get' );
 
 		return AutomateWoo\Guest_Factory::get( $id );
@@ -87,14 +87,12 @@ abstract class AutomateWoo_Legacy {
 
 	/**
 	 * @deprecated
-	 * @param $id
+	 * @param int $id
 	 * @return AutomateWoo\Cart|bool
 	 */
-	function get_cart( $id ) {
+	public function get_cart( $id ) {
 		wc_deprecated_function( __METHOD__, '5.2.0', 'AutomateWoo\Cart_Factory::get' );
 
 		return AutomateWoo\Cart_Factory::get( $id );
 	}
-
-
 }

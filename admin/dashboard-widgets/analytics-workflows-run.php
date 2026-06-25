@@ -46,15 +46,7 @@ class Dashboard_Widget_Analytics_Workflows_Run extends Dashboard_Widget_Analytic
 
 			<div class="automatewoo-dashboard-chart__header">
 
-				<div class="automatewoo-dashboard-chart__header-group">
-					<automatewoo-dashboard-chart__header-figure
-						class="automatewoo-dashboard-chart__header-figure"
-						name="runs">-</automatewoo-dashboard-chart__header-figure>
-					<div class="automatewoo-dashboard-chart__header-text">
-						<span class="automatewoo-dashboard-chart__legend automatewoo-dashboard-chart__legend--blue"></span>
-						<?php esc_html_e( 'workflows run', 'automatewoo' ); ?>
-					</div>
-				</div>
+				<?php $this->output_live_chart_header_group( 'runs', __( 'workflows run', 'automatewoo' ), 'blue' ); ?>
 				<?php $this->output_report_arrow_link(); ?>
 			</div>
 

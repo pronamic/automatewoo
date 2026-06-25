@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo\Rules;
 
@@ -13,28 +12,33 @@ defined( 'ABSPATH' ) || exit;
  */
 class OrderRunCount extends Abstract_Number {
 
+	/** @var string */
 	public $data_item = DataTypes::ORDER;
 
+	/** @var bool */
 	public $support_floats = false;
 
 
-	function init() {
-		$this->title = __( "Workflow - Run Count For Order", 'automatewoo' );
+	/**
+	 * Init the rule.
+	 */
+	public function init() {
+		$this->title = __( 'Workflow - Run Count For Order', 'automatewoo' );
 	}
 
 
 	/**
 	 * @param WC_Order $order
-	 * @param $compare
-	 * @param $value
+	 * @param string   $compare
+	 * @param mixed    $value
 	 * @return bool
 	 */
-	function validate( $order, $compare, $value ) {
-		if ( ! $workflow = $this->get_workflow() ) {
+	public function validate( $order, $compare, $value ) {
+		$workflow = $this->get_workflow();
+		if ( ! $workflow ) {
 			return false;
 		}
 
 		return $this->validate_number( $workflow->get_run_count_for_order( $order ), $compare, $value );
 	}
-
 }

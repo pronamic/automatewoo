@@ -1,9 +1,10 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * @class Integration_Mad_Mimi
@@ -24,12 +25,12 @@ class Integration_Mad_Mimi extends Integration {
 	private $api_root = 'https://api.madmimi.com';
 
 	/**
-	 * @param $username
-	 * @param $api_key
+	 * @param string $username
+	 * @param string $api_key
 	 */
-	function __construct( $username, $api_key ) {
+	public function __construct( $username, $api_key ) {
 		$this->username = $username;
-		$this->api_key = $api_key;
+		$this->api_key  = $api_key;
 	}
 
 	/**
@@ -55,23 +56,23 @@ class Integration_Mad_Mimi extends Integration {
 	/**
 	 * Automatically logs errors
 	 *
-	 * @param $method
-	 * @param $endpoint
-	 * @param $args
+	 * @param string $method
+	 * @param string $endpoint
+	 * @param array  $args
 	 *
 	 * @return Remote_Request
 	 */
-	function request( $method, $endpoint, $args = [] ) {
+	public function request( $method, $endpoint, $args = [] ) {
 		$args['username'] = $this->username;
-		$args['api_key'] = $this->api_key;
+		$args['api_key']  = $this->api_key;
 
 		$request_args = [
-			'headers' => [
-				'Accept' => 'application/json'
+			'headers'   => [
+				'Accept' => 'application/json',
 			],
-			'timeout' => 10,
-			'method' => $method,
-			'sslverify' => false
+			'timeout'   => 10,
+			'method'    => $method,
+			'sslverify' => false,
 		];
 
 		$url = $this->api_root . $endpoint;
@@ -87,23 +88,28 @@ class Integration_Mad_Mimi extends Integration {
 	}
 
 
-	function build_csv($arr) {
-		$csv = "";
-		$keys = array_keys($arr);
-		foreach ($keys as $key => $value) {
-			$value = esc_attr($value);
-			$csv .= $value . ",";
+	/**
+	 * Builds a CSV string from an associative array.
+	 *
+	 * @param array $arr
+	 *
+	 * @return string
+	 */
+	public function build_csv( $arr ) {
+		$csv  = '';
+		$keys = array_keys( $arr );
+		foreach ( $keys as $key => $value ) {
+			$value = esc_attr( $value );
+			$csv  .= $value . ',';
 		}
-		$csv = substr($csv, 0, -1);
+		$csv  = substr( $csv, 0, -1 );
 		$csv .= "\n";
-		foreach ($arr as $key => $value) {
-			$value = esc_attr($value);
-			$csv .= $value . ",";
+		foreach ( $arr as $key => $value ) {
+			$value = esc_attr( $value );
+			$csv  .= $value . ',';
 		}
-		$csv = substr($csv, 0, -1);
+		$csv  = substr( $csv, 0, -1 );
 		$csv .= "\n";
 		return $csv;
 	}
-
-
 }

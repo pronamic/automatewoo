@@ -1,9 +1,10 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * @class Trigger_Order_Created
@@ -19,20 +20,28 @@ class Trigger_Order_Created extends Trigger_Abstract_Order_Base {
 	protected $required_async_events = 'order_created';
 
 
-	function load_admin_details() {
+	/**
+	 * Load admin details.
+	 */
+	public function load_admin_details() {
 		parent::load_admin_details();
-		$this->title = __( 'Order Created', 'automatewoo' );
+		$this->title       = __( 'Order Created', 'automatewoo' );
 		$this->description = __( 'This trigger fires after an order is created in the database. At checkout this happens before payment is confirmed.', 'automatewoo' );
 	}
 
 
-	function load_fields() {
+	/**
+	 * Load fields.
+	 */
+	public function load_fields() {
 		$this->add_field_only_run_for_checkout_orders();
 	}
 
 
-	function register_hooks() {
+	/**
+	 * Register hooks.
+	 */
+	public function register_hooks() {
 		add_action( 'automatewoo/async/order_created', [ $this, 'trigger_for_order' ] );
 	}
-
 }

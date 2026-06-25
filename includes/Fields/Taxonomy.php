@@ -1,19 +1,24 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo\Fields;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * @class Taxonomy
  */
 class Taxonomy extends Select {
 
+	/** @var string */
 	protected $name = 'taxonomy';
 
 
-	function __construct( $show_placeholder = true ) {
+	/**
+	 * @param bool $show_placeholder
+	 */
+	public function __construct( $show_placeholder = true ) {
 		parent::__construct( $show_placeholder );
 		$this->set_title( __( 'Taxonomy', 'automatewoo' ) );
 	}
@@ -22,7 +27,7 @@ class Taxonomy extends Select {
 	/**
 	 * @return array
 	 */
-	function get_options() {
+	public function get_options() {
 
 		$taxonomies = get_taxonomies( [], false );
 
@@ -40,17 +45,17 @@ class Taxonomy extends Select {
 
 		$options = [];
 
-		foreach( $taxonomies as $tax_slug => $taxonomy ) {
+		foreach ( $taxonomies as $tax_slug => $taxonomy ) {
 
-			if ( in_array($tax_slug, $exclude) )
+			if ( in_array( $tax_slug, $exclude, true ) ) {
 				continue;
+			}
 
-			$options[$tax_slug] = $taxonomy->labels->name;
+			$options[ $tax_slug ] = $taxonomy->labels->name;
 		}
 
 		$this->set_options( $options );
 
 		return $this->options;
 	}
-
 }

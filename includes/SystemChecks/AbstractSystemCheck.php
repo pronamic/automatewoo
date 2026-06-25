@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo\SystemChecks;
 
@@ -23,17 +22,17 @@ abstract class AbstractSystemCheck {
 	/**
 	 * @return array
 	 */
-	abstract function run();
+	abstract public function run();
 
 
 	/**
 	 * @param string $message
 	 * @return array
 	 */
-	function success( $message = '' ) {
+	public function success( $message = '' ) {
 		return [
 			'success' => true,
-			'message' => $message
+			'message' => $message,
 		];
 	}
 
@@ -42,11 +41,10 @@ abstract class AbstractSystemCheck {
 	 * @param string $message
 	 * @return array
 	 */
-	function error( $message = '' ) {
+	public function error( $message = '' ) {
 		return [
 			'success' => false,
-			'message' => $message
+			'message' => $message,
 		];
 	}
-
 }

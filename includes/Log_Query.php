@@ -1,9 +1,10 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * @class Log_Query
@@ -28,7 +29,7 @@ class Log_Query extends Query_Data_Layer_Abstract {
 	 *
 	 * @return $this
 	 */
-	function where_workflow( $workflow, $compare = null ) {
+	public function where_workflow( $workflow, $compare = null ) {
 		$workflow = is_a( $workflow, 'AutomateWoo\Workflow' ) ? $workflow->get_id() : $workflow;
 		return $this->where( 'workflow_id', $workflow, $compare );
 	}
@@ -37,20 +38,20 @@ class Log_Query extends Query_Data_Layer_Abstract {
 	/**
 	 * @since 3.8
 	 * @param string|DateTime $date
-	 * @param $compare bool|string - defaults to '=' or 'IN' if array
+	 * @param bool|string     $compare Defaults to '=' or 'IN' if array.
 	 * @return $this
 	 */
-	function where_date( $date, $compare = false ) {
+	public function where_date( $date, $compare = false ) {
 		return $this->where( 'date', $date, $compare );
 	}
 
 	/**
 	 * @since 3.8
-	 * @param $start_date
-	 * @param $end_date
+	 * @param string|DateTime $start_date
+	 * @param string|DateTime $end_date
 	 * @return $this
 	 */
-	function where_date_between( $start_date, $end_date ) {
+	public function where_date_between( $start_date, $end_date ) {
 		$this->where_date( $start_date, '>' );
 		$this->where_date( $end_date, '<' );
 		return $this;
@@ -62,7 +63,7 @@ class Log_Query extends Query_Data_Layer_Abstract {
 	 * @param string $data_type
 	 * @return string
 	 */
-	function get_data_layer_meta_key( $data_type ) {
+	public function get_data_layer_meta_key( $data_type ) {
 		return Logs::get_data_layer_storage_key( $data_type );
 	}
 
@@ -70,19 +71,18 @@ class Log_Query extends Query_Data_Layer_Abstract {
 	/**
 	 * @since 3.8
 	 * @param string $data_type
-	 * @param mixed $data_object
+	 * @param mixed  $data_object
 	 * @return string
 	 */
-	function get_data_layer_meta_value( $data_type, $data_object ) {
+	public function get_data_layer_meta_value( $data_type, $data_object ) {
 		return Logs::get_data_layer_storage_value( $data_type, $data_object );
 	}
-	
+
 
 	/**
 	 * @return Log[]
 	 */
-	function get_results() {
+	public function get_results() {
 		return parent::get_results();
 	}
-
 }

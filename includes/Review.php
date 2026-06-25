@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo;
 
@@ -43,12 +42,12 @@ class Review {
 			return;
 		}
 
-		$this->exists = true;
-		$this->comment = $comment;
-		$this->comment_id = (int) $comment->comment_ID;
-		$this->user_id = (int) $comment->user_id;
-		$this->product_id = (int) $comment->comment_post_ID;
-		$this->email = Clean::email( $comment->comment_author_email );
+		$this->exists         = true;
+		$this->comment        = $comment;
+		$this->comment_id     = (int) $comment->comment_ID;
+		$this->user_id        = (int) $comment->user_id;
+		$this->product_id     = (int) $comment->comment_post_ID;
+		$this->email          = Clean::email( $comment->comment_author_email );
 		$this->comment_status = wp_get_comment_status( $comment );
 	}
 
@@ -96,7 +95,7 @@ class Review {
 	/**
 	 * @return int
 	 */
-	function get_rating() {
+	public function get_rating() {
 		return (int) get_comment_meta( $this->get_id(), 'rating', true );
 	}
 
@@ -124,5 +123,4 @@ class Review {
 	public function is_approved() {
 		return $this->comment_status === 'approved';
 	}
-
 }

@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo\Rules;
 
@@ -13,28 +12,29 @@ defined( 'ABSPATH' ) || exit;
  */
 class GuestOrderCount extends Abstract_Number {
 
+	/** @var string */
 	public $data_item = 'guest';
 
+	/** @var bool */
 	public $support_floats = false;
 
 
 	/**
 	 * Init
 	 */
-	function init() {
+	public function init() {
 		$this->title = __( 'Guest - Order Count', 'automatewoo' );
 	}
 
 
 	/**
-	 * @param Guest $guest
-	 * @param $compare
-	 * @param $value
+	 * @param Guest  $guest
+	 * @param string $compare
+	 * @param mixed  $value
 	 * @return bool
 	 */
-	function validate( $guest, $compare, $value ) {
+	public function validate( $guest, $compare, $value ) {
 		$customer = Customer_Factory::get_by_email( $guest->get_email() );
 		return $this->validate_number( $customer->get_order_count(), $compare, $value );
 	}
-
 }

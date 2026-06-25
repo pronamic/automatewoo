@@ -1,5 +1,4 @@
 <?php
-// phpcs:ignoreFile
 
 namespace AutomateWoo\Admin\Controllers;
 
@@ -11,7 +10,9 @@ use AutomateWoo\Queued_Event_Factory;
 use AutomateWoo\Report_Queue;
 use AutomateWoo\Jobs\JobException;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * @class Queue
@@ -19,7 +20,12 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 class Queue extends Base {
 
 
-	function handle() {
+	/**
+	 * Handle controller requests
+	 *
+	 * @return void
+	 */
+	public function handle() {
 
 		$action = $this->get_current_action();
 
@@ -42,6 +48,11 @@ class Queue extends Base {
 	}
 
 
+	/**
+	 * Output the queue list table.
+	 *
+	 * @return void
+	 */
 	private function output_list_table() {
 		$table = new Report_Queue();
 		$table->prepare_items();
@@ -71,10 +82,13 @@ class Queue extends Base {
 			Logger::error( 'jobs', $e->getMessage() );
 		}
 
-		$this->output_view( 'page-table-with-sidebar', [
-			'table' => $table,
-			'sidebar_content' => $sidebar_content
-		]);
+		$this->output_view(
+			'page-table-with-sidebar',
+			[
+				'table'           => $table,
+				'sidebar_content' => $sidebar_content,
+			]
+		);
 	}
 
 
@@ -93,16 +107,15 @@ class Queue extends Base {
 
 		if ( $queued_event->run() ) {
 			$this->add_message( __( 'Queued event run successfully.', 'automatewoo' ) );
-		}
-		else {
+		} else {
 			$message = $queued_event->get_failure_message();
-			$this->add_error( __( 'Queued event failed to run.', 'automatewoo'), $message );
+			$this->add_error( __( 'Queued event failed to run.', 'automatewoo' ), $message );
 		}
 	}
 
 
 	/**
-	 * @param $action
+	 * @param string $action
 	 */
 	private function action_bulk_edit( $action ) {
 
@@ -111,7 +124,7 @@ class Queue extends Base {
 		$ids = Clean::ids( aw_request( 'queued_event_ids' ) );
 
 		if ( empty( $ids ) ) {
-			$this->add_error( __( 'Please select some queued events to bulk edit.', 'automatewoo') );
+			$this->add_error( __( 'Please select some queued events to bulk edit.', 'automatewoo' ) );
 			return;
 		}
 
@@ -119,8 +132,9 @@ class Queue extends Base {
 
 			$queued_event = Queued_Event_Factory::get( $id );
 
-			if ( ! $queued_event )
+			if ( ! $queued_event ) {
 				continue;
+			}
 
 			switch ( $action ) {
 				case 'delete':

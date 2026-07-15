@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: AutomateWoo 6.6.0\n"
+"Project-Id-Version: AutomateWoo 6.7.0\n"
 "Report-Msgid-Bugs-To: https://woocommerce.com/my-account/contact-support/\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-06-25T10:09:57+00:00\n"
+"POT-Creation-Date: 2026-07-14T13:12:21+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.7.1\n"
 "X-Domain: automatewoo\n"
@@ -2379,7 +2379,7 @@ msgstr ""
 #: includes/Action.php:125
 #: includes/Action.php:139
 #: includes/Actions/Change_Post_Status.php:26
-#: includes/Rules/Rule.php:442
+#: includes/Rules/Rule.php:447
 #: includes/Trigger.php:329
 msgid "Other"
 msgstr ""
@@ -8265,19 +8265,19 @@ msgstr ""
 msgid "You are managing preferences for %s."
 msgstr ""
 
-#: templates/communication-preferences/communication-preferences-list.php:43
+#: templates/communication-preferences/communication-preferences-list.php:44
 msgid "Updates about products and promotions"
 msgstr ""
 
-#: templates/communication-preferences/communication-preferences-list.php:44
+#: templates/communication-preferences/communication-preferences-list.php:45
 msgid "Receive marketing communications that we think you will be interested in."
 msgstr ""
 
-#: templates/communication-preferences/communication-preferences-list.php:57
+#: templates/communication-preferences/communication-preferences-list.php:63
 msgid "Account and order information"
 msgstr ""
 
-#: templates/communication-preferences/communication-preferences-list.php:58
+#: templates/communication-preferences/communication-preferences-list.php:64
 msgid "Receive important information about your orders and account."
 msgstr ""
 

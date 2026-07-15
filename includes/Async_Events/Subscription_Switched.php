@@ -16,6 +16,18 @@ defined( 'ABSPATH' ) || exit;
 class Subscription_Switched extends Abstract_Async_Event {
 
 	/**
+	 * Per-request guard keyed on "{subscription}:{order}:{direction}".
+	 *
+	 * WooCommerce Subscriptions fires woocommerce_subscription_item_switched once per
+	 * switched line item, so without this several items switched in the same direction on
+	 * one subscription would schedule the async event (and run the workflow) once per item.
+	 * Distinct directions are kept separate, since the trigger filters on switch direction.
+	 *
+	 * @var array
+	 */
+	private $scheduled_switches = [];
+
+	/**
 	 * Init the event.
 	 */
 	public function init() {
@@ -42,8 +54,17 @@ class Subscription_Switched extends Abstract_Async_Event {
 	 * @param int             $old_item_id  Old subscription item ID.
 	 */
 	public function schedule_event( $order, $subscription, $new_item_id, $old_item_id ) {
-		$switch_direction = $this->get_switch_direction( $order, $subscription->get_id(), $new_item_id );
-		$this->create_async_event( [ $subscription->get_id(), $order->get_id(), $switch_direction ] );
+		$subscription_id  = $subscription->get_id();
+		$order_id         = $order->get_id();
+		$switch_direction = $this->get_switch_direction( $order, $subscription_id, $new_item_id );
+		$dedup_key        = "{$subscription_id}:{$order_id}:{$switch_direction}";
+
+		if ( isset( $this->scheduled_switches[ $dedup_key ] ) ) {
+			return;
+		}
+		$this->scheduled_switches[ $dedup_key ] = true;
+
+		$this->create_async_event( [ $subscription_id, $order_id, $switch_direction ] );
 	}
 
 	/**

@@ -1,6 +1,6 @@
 /**
  * This file is cloned from the WooCommerce repo.
- * See {@link https://github.com/woocommerce/automatewoo/blob/develop/admin/assets/src/upstream/woocommerce-admin-analytics/README.md ../../../../README.md}.
+ * See {@link https://github.com/woocommerce/automatewoo/blob/trunk/admin/assets/src/upstream/woocommerce-admin-analytics/README.md ../../../../README.md}.
  */
 /**
  * Internal dependencies

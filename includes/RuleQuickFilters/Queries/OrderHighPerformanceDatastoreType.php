@@ -403,7 +403,11 @@ class OrderHighPerformanceDatastoreType implements DatastoreTypeInterface {
 	/**
 	 * Add query arg for date field.
 	 *
-	 * Dates will be converted to site time since the date column is also in site time.
+	 * The queried "{$field}_gmt" column stores UTC values, and WP_Date_Query compares the
+	 * column against the given strings without any timezone conversion. Clause values are
+	 * already in UTC, so they are used as-is (converting them to site time would shift the
+	 * bounds by the site's UTC offset and, for behind-UTC sites, wrongly exclude recently
+	 * created records from "is in the last"/"is in the next" ranges).
 	 *
 	 * @param string         $field
 	 * @param DateTimeClause $clause
@@ -429,7 +433,7 @@ class OrderHighPerformanceDatastoreType implements DatastoreTypeInterface {
 				$this->query_args['date_query'][] = [
 					'column'    => "{$field}_gmt",
 					'inclusive' => true,
-					$key        => $value->convert_to_site_time()->to_mysql_string(),
+					$key        => $value->to_mysql_string(),
 				];
 				break;
 			case 'BETWEEN':
@@ -453,12 +457,12 @@ class OrderHighPerformanceDatastoreType implements DatastoreTypeInterface {
 					[
 						'column'    => "{$field}_gmt",
 						'inclusive' => true,
-						$key0       => $value[0]->convert_to_site_time()->to_mysql_string(),
+						$key0       => $value[0]->to_mysql_string(),
 					],
 					[
 						'column'    => "{$field}_gmt",
 						'inclusive' => true,
-						$key1       => $value[1]->convert_to_site_time()->to_mysql_string(),
+						$key1       => $value[1]->to_mysql_string(),
 					],
 				];
 				break;

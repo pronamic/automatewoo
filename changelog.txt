@@ -1,5 +1,12 @@
 *** AutomateWoo Changelog ***
 
+2026-07-14 - version 6.7.0
+* Fix - Improved accessibility by associating preference descriptions with their corresponding checkboxes on the communication preferences page via `aria-describedby`.
+* Fix - Order date rules using "is in the last" or "is in the next" now match recent orders on stores with a timezone behind UTC when HPOS is enabled.
+* Fix - Prevent multiple-with-offset workflow rules from matching below their configured start.
+* Fix - Prevent the Subscription Switched workflow from running multiple times when a single switch changes more than one item of the same switch type on a subscription.
+* Fix - Stop AutomateWoo re-running guest and cart tracking on every draft-order save during Store API (block) checkout, which added seconds of overhead per checkout.
+
 2026-06-25 - version 6.6.0
 * Add - Add click tracking to plain URLs in plain-text emails.
 * Add - Apply MailPoet email template customizations to AutomateWoo emails using the default template.

@@ -481,7 +481,25 @@ class Session_Tracker {
 			return;
 		}
 
-		$customer = self::set_session_by_captured_email( $order->get_billing_email() );
+		$email = $order->get_billing_email();
+
+		// WooCommerce (and Subscriptions in particular) can save the same draft order many
+		// times within a single Store API request. The session and stored-cart work in
+		// set_session_by_captured_email() is expensive (DB reads and writes) and only changes
+		// when the captured email changes, so run it once per order + email and short-circuit
+		// repeats. The checkout field capture below still runs on every save so billing values
+		// added or changed on later saves are stored.
+		static $session_captured = [];
+		$capture_key             = $order->get_id() . '|' . $email;
+
+		if ( array_key_exists( $capture_key, $session_captured ) ) {
+			// Reuse the exact customer resolved on the first save so repeats honour the
+			// registered-session-customer guard inside set_session_by_captured_email().
+			$customer = $session_captured[ $capture_key ];
+		} else {
+			$customer                         = self::set_session_by_captured_email( $email );
+			$session_captured[ $capture_key ] = $customer;
+		}
 
 		if ( $customer ) {
 			// Capture the guest's data

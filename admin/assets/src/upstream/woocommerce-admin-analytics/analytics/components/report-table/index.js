@@ -1,6 +1,6 @@
 /**
  * This file is cloned from the WooCommerce repo.
- * See {@link https://github.com/woocommerce/automatewoo/blob/develop/admin/assets/src/upstream/woocommerce-admin-analytics/README.md ../../../README.md}.
+ * See {@link https://github.com/woocommerce/automatewoo/blob/trunk/admin/assets/src/upstream/woocommerce-admin-analytics/README.md ../../../README.md}.
  * With added checkboxes & renderActionButton properties, to be able to extend selected rows action,
  * and className prop to extend the existing classList.
  * It also scopes CSS by adding `automatewoo-clone` className, not to interact with `ReportTable` delivered by WooCommerce itself.

@@ -358,9 +358,10 @@ abstract class Rule {
 	 * @return bool
 	 */
 	protected function validate_number_multiple_of( $actual_value, $compare_type, $expected_value ) {
-		$offset = 0;
+		$offset            = 0;
+		$is_offset_compare = in_array( $compare_type, [ 'multiple_with_offset', 'not_multiple_with_offset' ], true );
 
-		if ( in_array( $compare_type, [ 'multiple_with_offset', 'not_multiple_with_offset' ], true ) ) {
+		if ( $is_offset_compare ) {
 			if ( ! is_array( $expected_value ) ) {
 				return false;
 			}
@@ -389,6 +390,10 @@ abstract class Rule {
 		$offset       = (int) $offset;
 
 		if ( ! $multiple ) {
+			return false;
+		}
+
+		if ( $is_offset_compare && $actual_value < $offset ) {
 			return false;
 		}
 

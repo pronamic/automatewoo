@@ -1,6 +1,6 @@
 <?php
 
-$email_content = <<<EMAIL
+$email_content = <<<'EMAIL'
 Hi {{ customer.first_name | fallback: 'there' }},
 
 Thanks for shopping with {{ shop.title }}! Would you like to tell us what you think of your purchase? We'd love to hear your feedback.

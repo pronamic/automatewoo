@@ -100,7 +100,8 @@ class Privacy_Policy_Guide {
 		<?php esc_html_e( 'AutomateWoo integrates with third party services which means personal data may be shared depending on what integrations you have enabled and which workflows you are using.', 'automatewoo' ); ?>
 	</p>
 	<p>
-		<?php self::suggest_text_html(); ?> <?php
+		<?php self::suggest_text_html(); ?>
+		<?php
 			echo wp_kses_post(
 				sprintf(
 					/* translators: %1$s Privacy policy link start, %2$s Privacy policy link end. */
@@ -112,7 +113,8 @@ class Privacy_Policy_Guide {
 		?>
 	</p>
 	<p>
-		<?php self::suggest_text_html(); ?> <?php
+		<?php self::suggest_text_html(); ?>
+		<?php
 			echo wp_kses_post(
 				sprintf(
 					/* translators: %1$s Privacy policy link start, %2$s Privacy policy link end. */
@@ -124,7 +126,8 @@ class Privacy_Policy_Guide {
 		?>
 	</p>
 	<p>
-		<?php self::suggest_text_html(); ?> <?php
+		<?php self::suggest_text_html(); ?>
+		<?php
 			echo wp_kses_post(
 				sprintf(
 					/* translators: %1$s Privacy policy link start, %2$s Privacy policy link end. */
@@ -136,7 +139,8 @@ class Privacy_Policy_Guide {
 		?>
 	</p>
 	<p>
-		<?php self::suggest_text_html(); ?> <?php
+		<?php self::suggest_text_html(); ?>
+		<?php
 			echo wp_kses_post(
 				sprintf(
 					/* translators: %1$s Privacy policy link start, %2$s Privacy policy link end. */
@@ -148,7 +152,8 @@ class Privacy_Policy_Guide {
 		?>
 	</p>
 	<p>
-		<?php self::suggest_text_html(); ?> <?php
+		<?php self::suggest_text_html(); ?>
+		<?php
 			echo wp_kses_post(
 				sprintf(
 					/* translators: %1$s Privacy policy link start, %2$s Privacy policy link end. */
@@ -160,7 +165,8 @@ class Privacy_Policy_Guide {
 		?>
 	</p>
 	<p>
-		<?php self::suggest_text_html(); ?> <?php
+		<?php self::suggest_text_html(); ?>
+		<?php
 			echo wp_kses_post(
 				sprintf(
 					/* translators: %1$s Privacy policy link start, %2$s Privacy policy link end. */

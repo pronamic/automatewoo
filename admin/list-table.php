@@ -103,6 +103,7 @@ abstract class Admin_List_Table extends \WP_List_Table {
 	/**
 	 * @param DateTime $date
 	 * @param bool     $is_gmt
+	 *
 	 * phpcs:ignore Squiz.Commenting.FunctionComment.InvalidNoReturn
 	 * @return string Return is void but the view is returned as string via "include" statement.
 	 */

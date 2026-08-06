@@ -1,6 +1,6 @@
 <?php
 
-$email_content = <<<EMAIL
+$email_content = <<<'EMAIL'
 Welcome {{ customer.first_name | fallback: 'friend' }},
 
 Thanks for shopping with us at {{ shop.title }}! Be sure to visit again soon to check out these items that we think you'll love:

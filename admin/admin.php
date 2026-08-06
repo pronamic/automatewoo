@@ -281,13 +281,21 @@ class Admin {
 	public static function alter_menu( $menu ) {
 		global $submenu;
 
+		$slugs_to_hide = [
+			'automatewoo', // Duplicate top-level entry that WordPress auto-adds.
+			'automatewoo-preview',
+			'automatewoo-data-upgrade',
+		];
+
 		if ( isset( $submenu['automatewoo'] ) ) {
 			foreach ( $submenu['automatewoo'] as $index => $submenu_item ) {
+				$slug = $submenu_item[2] ?? '';
+
+				// The Manual Workflow Runner is registered through WC Admin, so its slug carries
+				// the wc-admin path (e.g. "wc-admin&path=/automatewoo/manual-workflow-runner").
 				if (
-					$submenu_item[0] === 'AutomateWoo' ||
-					$submenu_item[0] === 'AutomateWoo Data Update' ||
-					$submenu_item[0] === 'Manual Workflow Runner' ||
-					$submenu_item[0] === 'Preview'
+					in_array( $slug, $slugs_to_hide, true ) ||
+					strpos( $slug, '/automatewoo/manual-workflow-runner' ) !== false
 				) {
 					if ( isset( $submenu_item[4] ) ) {
 						$submenu_item[4] .= ' hide-if-js'; // if there are some classes already, concat the new one
@@ -357,13 +365,7 @@ class Admin {
 			$suffix = '.min';
 		}
 
-		$is_wc_10_3_plus  = version_compare( WC()->version, '10.3.0', '>=' );
-		$js_cookie_handle = $is_wc_10_3_plus ? 'wc-js-cookie' : 'js-cookie';
-		$tiptip_handle    = $is_wc_10_3_plus ? 'wc-jquery-tiptip' : 'jquery-tiptip';
-
-		wp_register_script( $js_cookie_handle, WC()->plugin_url() . "/assets/js/js-cookie/js.cookie{$suffix}.js", [], '2.1.4', true );
-
-		wp_register_script( 'automatewoo', "{$url}/automatewoo{$suffix}.js", [ 'jquery', 'jquery-ui-datepicker', $tiptip_handle, 'backbone', 'underscore' ], AW()->version, false );
+		wp_register_script( 'automatewoo', "{$url}/automatewoo{$suffix}.js", [ 'jquery', 'jquery-ui-datepicker', 'wc-jquery-tiptip', 'backbone', 'underscore' ], AW()->version, false );
 		wp_register_script( 'automatewoo-validate', "{$url}/validate{$suffix}.js", [ 'automatewoo' ], AW()->version, false );
 		wp_register_script( 'automatewoo-tracks', "{$url}/tracks{$suffix}.js", [ 'automatewoo' ], AW()->version, false );
 		wp_register_script( 'automatewoo-workflows', "{$url}/workflows{$suffix}.js", [ 'automatewoo', 'automatewoo-validate', 'automatewoo-modal', 'automatewoo-tracks', 'wp-util' ], AW()->version, false );
@@ -474,16 +476,12 @@ class Admin {
 		}
 
 		if ( $is_aw_screen ) {
-			$is_wc_10_3_plus  = version_compare( WC()->version, '10.3.0', '>=' );
-			$js_cookie_handle = $is_wc_10_3_plus ? 'wc-js-cookie' : 'js-cookie';
-			$tiptip_handle    = $is_wc_10_3_plus ? 'wc-jquery-tiptip' : 'jquery-tiptip';
-
 			wp_enqueue_script( 'woocommerce_admin' );
 			wp_enqueue_script( 'wc-enhanced-select' );
-			wp_enqueue_script( $tiptip_handle );
+			wp_enqueue_script( 'wc-jquery-tiptip' );
 			wp_enqueue_script( 'jquery-ui-sortable' );
 			wp_enqueue_script( 'jquery-ui-autocomplete' );
-			wp_enqueue_script( $js_cookie_handle );
+			wp_enqueue_script( 'wc-js-cookie' );
 
 			wp_enqueue_style( 'woocommerce_admin_styles' );
 			wp_enqueue_style( 'jquery-ui-style' );

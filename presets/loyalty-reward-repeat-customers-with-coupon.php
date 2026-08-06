@@ -1,6 +1,6 @@
 <?php
 
-$email_content = <<<EMAIL
+$email_content = <<<'EMAIL'
 Hi {{ customer.first_name | fallback: 'there' }},
 
 As our way of saying thank you for being one of our most valued customers, take XXX% off your next order!

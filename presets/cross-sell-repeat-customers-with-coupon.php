@@ -1,6 +1,6 @@
 <?php
 
-$email_content = <<<EMAIL
+$email_content = <<<'EMAIL'
 Hi {{ customer.first_name | fallback: 'there' }},
 
 Thank you so much for your recent orders. We've found some other items that we think you'll love, use the code <strong>{{ customer.generate_coupon | template:'INSERT TEMPLATE COUPON NAME' }}</strong> to enjoy XXX% off.

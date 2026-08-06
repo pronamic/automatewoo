@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: AutomateWoo 6.7.0\n"
+"Project-Id-Version: AutomateWoo 6.8.0\n"
 "Report-Msgid-Bugs-To: https://woocommerce.com/my-account/contact-support/\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-07-14T13:12:21+00:00\n"
+"POT-Creation-Date: 2026-08-05T11:56:30+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.7.1\n"
 "X-Domain: automatewoo\n"
@@ -18,7 +18,7 @@ msgstr ""
 #. translators: Plugin name.
 #: admin/admin.php:165
 #: admin/admin.php:166
-#: admin/admin.php:804
+#: admin/admin.php:802
 #: admin/coupons-list.php:44
 #: admin/WCAdminConnectPages.php:59
 #: automatewoo.php:133
@@ -137,25 +137,25 @@ msgstr ""
 msgid "Manual Workflow Runner"
 msgstr ""
 
-#: admin/admin.php:385
+#: admin/admin.php:387
 msgid "This field does not support variables."
 msgstr ""
 
 #. translators: Variable name.
-#: admin/admin.php:387
+#: admin/admin.php:389
 msgid "Variable '%s' is not available with the selected trigger. Please only use variables listed in the the variables box."
 msgstr ""
 
 #. translators: Variable name.
-#: admin/admin.php:389
+#: admin/admin.php:391
 msgid "Variable '%s' is not valid. Please only use variables listed in the variables box."
 msgstr ""
 
-#: admin/admin.php:390
+#: admin/admin.php:392
 msgid "Choose a trigger before selecting a variable."
 msgstr ""
 
-#: admin/admin.php:996
+#: admin/admin.php:994
 msgid "View documentation"
 msgstr ""
 
@@ -862,25 +862,25 @@ msgctxt "full name"
 msgid "%1$s %2$s"
 msgstr ""
 
-#: admin/list-table.php:164
+#: admin/list-table.php:165
 msgid "Filter"
-msgstr ""
-
-#: admin/list-table.php:241
-#: admin/reports/abstract-graph.php:93
-msgid "Filter by workflow"
 msgstr ""
 
 #: admin/list-table.php:242
 #: admin/reports/abstract-graph.php:93
+msgid "Filter by workflow"
+msgstr ""
+
+#: admin/list-table.php:243
+#: admin/reports/abstract-graph.php:93
 msgid "Search for a workflow&hellip;"
 msgstr ""
 
-#: admin/list-table.php:273
+#: admin/list-table.php:274
 msgid "Filter by customer"
 msgstr ""
 
-#: admin/list-table.php:274
+#: admin/list-table.php:275
 msgid "Search for a customer&hellip;"
 msgstr ""
 
@@ -4700,36 +4700,36 @@ msgid "AutomateWoo integrates with third party services which means personal dat
 msgstr ""
 
 #. translators: %1$s Privacy policy link start, %2$s Privacy policy link end.
-#: includes/Privacy_Policy_Guide.php:107
+#: includes/Privacy_Policy_Guide.php:108
 msgid "We use Twilio as our SMS delivery service. Your data may be transferred to Twilio for processing in accordance with their %1$sPrivacy Policy%2$s."
 msgstr ""
 
 #. translators: %1$s Privacy policy link start, %2$s Privacy policy link end.
-#: includes/Privacy_Policy_Guide.php:119
+#: includes/Privacy_Policy_Guide.php:121
 msgid "We use MailChimp for email marketing. Your data may be transferred to MailChimp for processing in accordance with their %1$sPrivacy Policy%2$s."
 msgstr ""
 
 #. translators: %1$s Privacy policy link start, %2$s Privacy policy link end.
-#: includes/Privacy_Policy_Guide.php:131
+#: includes/Privacy_Policy_Guide.php:134
 msgid "We use Active Campaign for email marketing. Your data may be transferred to Active Campaign for processing in accordance with their %1$sPrivacy Policy%2$s."
 msgstr ""
 
 #. translators: %1$s Privacy policy link start, %2$s Privacy policy link end.
-#: includes/Privacy_Policy_Guide.php:143
+#: includes/Privacy_Policy_Guide.php:147
 msgid "We use Campaign Monitor for email marketing. Your data may be transferred to Campaign Monitor for processing in accordance with their %1$sPrivacy Policy%2$s."
 msgstr ""
 
 #. translators: %1$s Privacy policy link start, %2$s Privacy policy link end.
-#: includes/Privacy_Policy_Guide.php:155
+#: includes/Privacy_Policy_Guide.php:160
 msgid "We use Bitly for link shortening. Your data may be transferred to Bitly for processing in accordance with their %1$sPrivacy Policy%2$s."
 msgstr ""
 
 #. translators: %1$s Privacy policy link start, %2$s Privacy policy link end.
-#: includes/Privacy_Policy_Guide.php:167
+#: includes/Privacy_Policy_Guide.php:173
 msgid "We use AgileCRM as our CRM. Your data may be transferred to AgileCRM for processing in accordance with their %1$sPrivacy Policy%2$s."
 msgstr ""
 
-#: includes/Privacy_Policy_Guide.php:185
+#: includes/Privacy_Policy_Guide.php:191
 msgid "Suggested text:"
 msgstr ""
 

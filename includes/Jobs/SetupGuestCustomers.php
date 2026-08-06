@@ -68,6 +68,14 @@ class SetupGuestCustomers extends AbstractRecurringBatchedActionSchedulerJob {
 
 		$customer = Customer_Factory::get_by_order( $order );
 		if ( ! $customer ) {
+			// A guest order without a usable billing email can never be linked to a customer,
+			// so skip it instead of failing. Failing here trips the job's failure rate limit,
+			// which stops the run before it completes. The completion flag is then never set
+			// and the job restarts on every interval, failing on the same orders each time.
+			if ( ! $order->get_user_id() && ! is_email( $order->get_billing_email() ) ) {
+				return;
+			}
+
 			throw JobException::item_not_found();
 		}
 

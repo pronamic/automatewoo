@@ -102,6 +102,13 @@ class NotificationsInitializer {
 	 * @return void
 	 */
 	public function process_instant_notifications(): void {
+		// Inbox notes are only rendered on admin screens, never in AJAX responses. Skip
+		// processing during AJAX requests to avoid a note-existence query per notification
+		// on every admin-ajax call (e.g. Heartbeat). Notes are still processed on the next
+		// regular admin page load, which also fires admin_init.
+		if ( wp_doing_ajax() ) {
+			return;
+		}
 		$this->run( Notifications::INSTANT );
 	}
 

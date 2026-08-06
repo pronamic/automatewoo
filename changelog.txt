@@ -1,5 +1,15 @@
 *** AutomateWoo Changelog ***
 
+2026-08-05 - version 6.8.0
+* Dev - Run the PHP coding standards job when dependencies change.
+* Dev - Update WPCS to 3.4.1 to pick up the fix for GHSA-3pwp-g2mj-5p3v.
+* Fix - Avoid processing inbox notifications during AJAX requests.
+* Fix - Hide internal admin pages (Preview, Data Update, Manual Workflow Runner) from the menu on translated sites.
+* Fix - Stop the guest customers setup job failing permanently on guest orders that have no billing email.
+* Fix npm audit vulnerabilities and prune redundant overrides.
+* Update - Bump the minimum required WooCommerce version to 10.9 and the compatibility version to 11.0.
+* Update - Remove obsolete WooCommerce version compatibility checks.
+
 2026-07-14 - version 6.7.0
 * Fix - Improved accessibility by associating preference descriptions with their corresponding checkboxes on the communication preferences page via `aria-describedby`.
 * Fix - Order date rules using "is in the last" or "is in the next" now match recent orders on stores with a timezone behind UTC when HPOS is enabled.

@@ -1,6 +1,6 @@
 <?php
 
-$email_content = <<<EMAIL
+$email_content = <<<'EMAIL'
 Hi {{ customer.first_name | fallback: 'there' }},
 
 The credit card you have on file is expiring next week. In order to avoid problems or interruptions, please update your billing information with an active card.

@@ -1,6 +1,6 @@
 <?php
 
-$email_content = <<<EMAIL
+$email_content = <<<'EMAIL'
 Hi {{ customer.first_name | fallback: 'there' }},
 
 It looks like you didn’t get to finish checking out on {{ shop.url }}, so we saved the items in your cart for you.

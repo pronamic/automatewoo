@@ -155,7 +155,13 @@ class Report_Guests extends Admin_List_Table {
 	 * @return string
 	 */
 	public function column_email( $guest ) {
-		return "<a href='mailto:{$guest->get_email()}'>{$guest->get_email()}</a>";
+		$email = $guest->get_email();
+
+		return sprintf(
+			'<a href="%s">%s</a>',
+			esc_url( 'mailto:' . $email, [ 'mailto' ] ),
+			esc_html( $email )
+		);
 	}
 
 

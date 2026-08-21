@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => 'woocommerce/automatewoo',
-        'pretty_version' => 'dev-release/6.8.0',
-        'version' => 'dev-release/6.8.0',
-        'reference' => '0507af617e80c70aa7a892732973ecda163c6347',
+        'pretty_version' => 'dev-release/6.8.1',
+        'version' => 'dev-release/6.8.1',
+        'reference' => '6cb6c7b5add5c6a8da5e860a192e2bc499891ea3',
         'type' => 'wordpress-plugin',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -11,9 +11,9 @@
     ),
     'versions' => array(
         'woocommerce/automatewoo' => array(
-            'pretty_version' => 'dev-release/6.8.0',
-            'version' => 'dev-release/6.8.0',
-            'reference' => '0507af617e80c70aa7a892732973ecda163c6347',
+            'pretty_version' => 'dev-release/6.8.1',
+            'version' => 'dev-release/6.8.1',
+            'reference' => '6cb6c7b5add5c6a8da5e860a192e2bc499891ea3',
             'type' => 'wordpress-plugin',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

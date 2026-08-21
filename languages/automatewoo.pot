@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: AutomateWoo 6.8.0\n"
+"Project-Id-Version: AutomateWoo 6.8.1\n"
 "Report-Msgid-Bugs-To: https://woocommerce.com/my-account/contact-support/\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-08-05T11:56:30+00:00\n"
+"POT-Creation-Date: 2026-08-19T11:10:50+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.7.1\n"
 "X-Domain: automatewoo\n"
@@ -703,7 +703,7 @@ msgid "View logs"
 msgstr ""
 
 #: admin/dashboard-widgets/logs.php:73
-#: admin/reports/guests.php:198
+#: admin/reports/guests.php:204
 #: admin/reports/queue.php:138
 msgid "View"
 msgstr ""
@@ -988,8 +988,8 @@ msgid "Change status to recovered"
 msgstr ""
 
 #: admin/reports/carts.php:226
-#: admin/reports/guests.php:210
-#: admin/reports/guests.php:221
+#: admin/reports/guests.php:216
+#: admin/reports/guests.php:227
 #: admin/reports/logs.php:194
 #: admin/reports/queue.php:318
 #: admin/views/action.php:32
@@ -8542,6 +8542,7 @@ msgstr ""
 msgid "Enable opt-in for Checkout"
 msgstr ""
 
+#: assets/js/build/block.json
 #: assets/js/marketing-optin-block/block.json
 msgctxt "block title"
 msgid "AutomateWoo Marketing opt-in"

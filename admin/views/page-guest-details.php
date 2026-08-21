@@ -42,7 +42,7 @@ defined( 'ABSPATH' ) || exit;
 
 							<tr>
 								<td class="automatewoo-table__col automatewoo-table__col--label"><?php esc_html_e( 'Email', 'automatewoo' ); ?></td>
-								<td class="automatewoo-table__col"><?php echo make_clickable( $customer->get_email() ); // phpcs:ignore WordPress.Security.EscapeOutput ?></td>
+								<td class="automatewoo-table__col"><?php echo wp_kses_post( Format::email( $customer->get_email() ) ); ?></td>
 							</tr>
 
 							<tr>

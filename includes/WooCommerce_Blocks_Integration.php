@@ -31,10 +31,10 @@ class WooCommerce_Blocks_Integration {
 	 * Register blocks.
 	 */
 	public function register_blocks() {
-		$asset_file_path = AUTOMATEWOO_PATH . '/assets/js/build/marketing-optin-block.asset.php';
+		$metadata_file_path = AUTOMATEWOO_PATH . '/assets/js/build/block.json';
 
-		if ( file_exists( $asset_file_path ) && false === \WP_Block_Type_Registry::get_instance()->is_registered( 'automatewoo/marketing-optin' ) ) {
-			$block = register_block_type( AUTOMATEWOO_PATH . '/assets/js/marketing-optin-block' );
+		if ( file_exists( $metadata_file_path ) && false === \WP_Block_Type_Registry::get_instance()->is_registered( 'automatewoo/marketing-optin' ) ) {
+			$block = register_block_type( AUTOMATEWOO_PATH . '/assets/js/build' );
 			// Setup the block script to be loaded in the footer.
 			if ( $block instanceof \WP_Block_Type && $block->editor_script ) {
 				$wp_scripts = wp_scripts();

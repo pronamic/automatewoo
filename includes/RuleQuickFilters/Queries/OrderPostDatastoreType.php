@@ -57,6 +57,7 @@ class OrderPostDatastoreType extends AbstractPostDatastoreType {
 
 		switch ( $property ) {
 			case 'billing_city':
+			case 'billing_company':
 			case 'billing_country':
 			case 'billing_email':
 			case 'billing_phone':
@@ -66,6 +67,10 @@ class OrderPostDatastoreType extends AbstractPostDatastoreType {
 			case 'payment_method':
 			case 'shipping_country':
 			case 'shipping_state':
+			case 'shipping_city':
+			case 'shipping_postcode':
+			case 'shipping_company':
+			case 'shipping_phone':
 				$this->add_basic_post_meta_query_arg( $query_args, "_{$property}", $clause );
 				break;
 			case 'order_total':

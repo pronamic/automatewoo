@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: AutomateWoo 6.8.1\n"
+"Project-Id-Version: AutomateWoo 6.8.2\n"
 "Report-Msgid-Bugs-To: https://woocommerce.com/my-account/contact-support/\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-08-19T11:10:50+00:00\n"
+"POT-Creation-Date: 2026-08-25T08:02:05+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.7.1\n"
 "X-Domain: automatewoo\n"
@@ -4028,34 +4028,34 @@ msgstr ""
 msgid "Yes"
 msgstr ""
 
-#: includes/Frontend_Endpoints.php:104
+#: includes/Frontend_Endpoints.php:111
 msgid "Your cart has been restored."
 msgstr ""
 
-#: includes/Frontend_Endpoints.php:110
+#: includes/Frontend_Endpoints.php:117
 msgid "This cart has already been restored or is no longer available."
 msgstr ""
 
-#: includes/Frontend_Endpoints.php:115
+#: includes/Frontend_Endpoints.php:122
 msgid "This cart is empty, so there is nothing to restore."
 msgstr ""
 
-#: includes/Frontend_Endpoints.php:118
+#: includes/Frontend_Endpoints.php:125
 msgid "Your cart could not be restored, it may have expired."
 msgstr ""
 
-#: includes/Frontend_Endpoints.php:140
+#: includes/Frontend_Endpoints.php:147
 msgid "The previous order could not be found."
 msgstr ""
 
 #. translators: %d Number of unavailable items from previous order.
-#: includes/Frontend_Endpoints.php:232
+#: includes/Frontend_Endpoints.php:239
 msgid "%d item from your previous order is currently unavailable and could not be added to your cart."
 msgid_plural "%d items from your previous order are currently unavailable and could not be added to your cart."
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/Frontend_Endpoints.php:245
+#: includes/Frontend_Endpoints.php:252
 msgid "The cart has been filled with the items from your previous order."
 msgstr ""
 
@@ -5431,8 +5431,32 @@ msgstr ""
 msgid "Order - Total"
 msgstr ""
 
+#: includes/Rules/Order_Billing_City_Text_Match.php:25
+msgid "Order - Billing City - Text Match"
+msgstr ""
+
+#: includes/Rules/Order_Billing_Company_Text_Match.php:25
+msgid "Order - Billing Company - Text Match"
+msgstr ""
+
 #: includes/Rules/Order_Billing_Country.php:29
 msgid "Order - Billing Country"
+msgstr ""
+
+#: includes/Rules/Order_Billing_Phone_Text_Match.php:25
+msgid "Order - Billing Phone - Text Match"
+msgstr ""
+
+#: includes/Rules/Order_Billing_Postcode_Text_Match.php:25
+msgid "Order - Billing Postcode - Text Match"
+msgstr ""
+
+#: includes/Rules/Order_Billing_State.php:28
+msgid "Order - Billing State"
+msgstr ""
+
+#: includes/Rules/Order_Billing_State_Text_Match.php:19
+msgid "Order - Billing State - Text Match"
 msgstr ""
 
 #: includes/Rules/Order_Coupons.php:41
@@ -5553,8 +5577,32 @@ msgstr ""
 msgid "%s (disabled)"
 msgstr ""
 
+#: includes/Rules/Order_Shipping_City_Text_Match.php:25
+msgid "Order - Shipping City - Text Match"
+msgstr ""
+
+#: includes/Rules/Order_Shipping_Company_Text_Match.php:25
+msgid "Order - Shipping Company - Text Match"
+msgstr ""
+
 #: includes/Rules/Order_Shipping_Method.php:25
 msgid "Order - Shipping Method"
+msgstr ""
+
+#: includes/Rules/Order_Shipping_Phone_Text_Match.php:25
+msgid "Order - Shipping Phone - Text Match"
+msgstr ""
+
+#: includes/Rules/Order_Shipping_Postcode_Text_Match.php:25
+msgid "Order - Shipping Postcode - Text Match"
+msgstr ""
+
+#: includes/Rules/Order_Shipping_State.php:21
+msgid "Order - Shipping State"
+msgstr ""
+
+#: includes/Rules/Order_Shipping_State_Text_Match.php:19
+msgid "Order - Shipping State - Text Match"
 msgstr ""
 
 #: includes/Rules/Order_Status.php:29
@@ -5731,6 +5779,34 @@ msgstr ""
 msgid "Subscription - Payment Count"
 msgstr ""
 
+#: includes/Rules/Subscription_Billing_City_Text_Match.php:19
+msgid "Subscription - Billing City - Text Match"
+msgstr ""
+
+#: includes/Rules/Subscription_Billing_Company_Text_Match.php:19
+msgid "Subscription - Billing Company - Text Match"
+msgstr ""
+
+#: includes/Rules/Subscription_Billing_Country.php:21
+msgid "Subscription - Billing Country"
+msgstr ""
+
+#: includes/Rules/Subscription_Billing_Phone_Text_Match.php:19
+msgid "Subscription - Billing Phone - Text Match"
+msgstr ""
+
+#: includes/Rules/Subscription_Billing_Postcode_Text_Match.php:19
+msgid "Subscription - Billing Postcode - Text Match"
+msgstr ""
+
+#: includes/Rules/Subscription_Billing_State.php:21
+msgid "Subscription - Billing State"
+msgstr ""
+
+#: includes/Rules/Subscription_Billing_State_Text_Match.php:19
+msgid "Subscription - Billing State - Text Match"
+msgstr ""
+
 #: includes/Rules/Subscription_Can_Renew_Early.php:30
 msgid "Subscription - Can Renew Early"
 msgstr ""
@@ -5789,6 +5865,34 @@ msgstr ""
 
 #: includes/Rules/Subscription_Run_Count.php:35
 msgid "Workflow - Run Count For Subscription"
+msgstr ""
+
+#: includes/Rules/Subscription_Shipping_City_Text_Match.php:19
+msgid "Subscription - Shipping City - Text Match"
+msgstr ""
+
+#: includes/Rules/Subscription_Shipping_Company_Text_Match.php:19
+msgid "Subscription - Shipping Company - Text Match"
+msgstr ""
+
+#: includes/Rules/Subscription_Shipping_Country.php:21
+msgid "Subscription - Shipping Country"
+msgstr ""
+
+#: includes/Rules/Subscription_Shipping_Phone_Text_Match.php:19
+msgid "Subscription - Shipping Phone - Text Match"
+msgstr ""
+
+#: includes/Rules/Subscription_Shipping_Postcode_Text_Match.php:19
+msgid "Subscription - Shipping Postcode - Text Match"
+msgstr ""
+
+#: includes/Rules/Subscription_Shipping_State.php:21
+msgid "Subscription - Shipping State"
+msgstr ""
+
+#: includes/Rules/Subscription_Shipping_State_Text_Match.php:19
+msgid "Subscription - Shipping State - Text Match"
 msgstr ""
 
 #: includes/Rules/Subscription_Status.php:30

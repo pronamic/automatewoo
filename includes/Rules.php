@@ -67,6 +67,18 @@ class Rules extends Registry {
 			'order_payment_gateway'              => 'AutomateWoo\Rule_Order_Payment_Gateway',
 			'order_shipping_country'             => Rules\OrderShippingCountry::class,
 			'order_billing_country'              => 'AutomateWoo\Rules\Order_Billing_Country',
+			'order_billing_state'                => 'AutomateWoo\Rules\Order_Billing_State',
+			'order_billing_state_text_match'     => 'AutomateWoo\Rules\Order_Billing_State_Text_Match',
+			'order_billing_city_text_match'      => 'AutomateWoo\Rules\Order_Billing_City_Text_Match',
+			'order_billing_postcode_text_match'  => 'AutomateWoo\Rules\Order_Billing_Postcode_Text_Match',
+			'order_billing_company_text_match'   => 'AutomateWoo\Rules\Order_Billing_Company_Text_Match',
+			'order_billing_phone_text_match'     => 'AutomateWoo\Rules\Order_Billing_Phone_Text_Match',
+			'order_shipping_state'               => 'AutomateWoo\Rules\Order_Shipping_State',
+			'order_shipping_state_text_match'    => 'AutomateWoo\Rules\Order_Shipping_State_Text_Match',
+			'order_shipping_city_text_match'     => 'AutomateWoo\Rules\Order_Shipping_City_Text_Match',
+			'order_shipping_postcode_text_match' => 'AutomateWoo\Rules\Order_Shipping_Postcode_Text_Match',
+			'order_shipping_company_text_match'  => 'AutomateWoo\Rules\Order_Shipping_Company_Text_Match',
+			'order_shipping_phone_text_match'    => 'AutomateWoo\Rules\Order_Shipping_Phone_Text_Match',
 			'order_shipping_method'              => 'AutomateWoo\Rules\Order_Shipping_Method',
 			'order_shipping_method_string'       => Rules\OrderShippingMethodString::class,
 			'order_created_via'                  => 'AutomateWoo\Rules\Order_Created_Via',
@@ -119,21 +131,35 @@ class Rules extends Registry {
 				$includes['order_subscription_payment_retry_count'] = 'AutomateWoo\Rules\Order_Subscription_Failed_Automatic_Payment_Retry_Count';
 			}
 
-			$includes['subscription_status']             = 'AutomateWoo\Rules\Subscription_Status';
-			$includes['subscription_payment_count']      = Rules\SubscriptionPaymentCount::class;
-			$includes['subscription_payment_method']     = 'AutomateWoo\Rules\Subscription_Payment_Method';
-			$includes['subscription_meta']               = 'AutomateWoo\Rules\Subscription_Meta';
-			$includes['subscription_items']              = 'AutomateWoo\Rules\Subscription_Items';
-			$includes['subscription_item_categories']    = Rules\Subscription_Item_Categories::class;
-			$includes['subscription_coupons']            = 'AutomateWoo\Rules\Subscription_Coupons';
-			$includes['subscription_coupons_text_match'] = 'AutomateWoo\Rules\Subscription_Coupons_Text_Match';
-			$includes['subscription_coupon_count']       = 'AutomateWoo\Rules\Subscription_Coupon_Count';
-			$includes['subscription_next_payment_date']  = 'AutomateWoo\Rules\Subscription_Next_Payment_Date';
-			$includes['subscription_last_payment_date']  = 'AutomateWoo\Rules\Subscription_Last_Payment_Date';
-			$includes['subscription_created_date']       = 'AutomateWoo\Rules\Subscription_Created_Date';
-			$includes['subscription_trial_end_date']     = 'AutomateWoo\Rules\Subscription_Trial_End_Date';
-			$includes['subscription_end_date']           = 'AutomateWoo\Rules\Subscription_End_Date';
-			$includes['subscription_run_count']          = Rules\Subscription_Run_Count::class;
+			$includes['subscription_status']                       = 'AutomateWoo\Rules\Subscription_Status';
+			$includes['subscription_billing_country']              = 'AutomateWoo\Rules\Subscription_Billing_Country';
+			$includes['subscription_billing_state']                = 'AutomateWoo\Rules\Subscription_Billing_State';
+			$includes['subscription_billing_state_text_match']     = 'AutomateWoo\Rules\Subscription_Billing_State_Text_Match';
+			$includes['subscription_billing_city_text_match']      = 'AutomateWoo\Rules\Subscription_Billing_City_Text_Match';
+			$includes['subscription_billing_postcode_text_match']  = 'AutomateWoo\Rules\Subscription_Billing_Postcode_Text_Match';
+			$includes['subscription_billing_company_text_match']   = 'AutomateWoo\Rules\Subscription_Billing_Company_Text_Match';
+			$includes['subscription_billing_phone_text_match']     = 'AutomateWoo\Rules\Subscription_Billing_Phone_Text_Match';
+			$includes['subscription_shipping_country']             = 'AutomateWoo\Rules\Subscription_Shipping_Country';
+			$includes['subscription_shipping_state']               = 'AutomateWoo\Rules\Subscription_Shipping_State';
+			$includes['subscription_shipping_state_text_match']    = 'AutomateWoo\Rules\Subscription_Shipping_State_Text_Match';
+			$includes['subscription_shipping_city_text_match']     = 'AutomateWoo\Rules\Subscription_Shipping_City_Text_Match';
+			$includes['subscription_shipping_postcode_text_match'] = 'AutomateWoo\Rules\Subscription_Shipping_Postcode_Text_Match';
+			$includes['subscription_shipping_company_text_match']  = 'AutomateWoo\Rules\Subscription_Shipping_Company_Text_Match';
+			$includes['subscription_shipping_phone_text_match']    = 'AutomateWoo\Rules\Subscription_Shipping_Phone_Text_Match';
+			$includes['subscription_payment_count']                = Rules\SubscriptionPaymentCount::class;
+			$includes['subscription_payment_method']               = 'AutomateWoo\Rules\Subscription_Payment_Method';
+			$includes['subscription_meta']                         = 'AutomateWoo\Rules\Subscription_Meta';
+			$includes['subscription_items']                        = 'AutomateWoo\Rules\Subscription_Items';
+			$includes['subscription_item_categories']              = Rules\Subscription_Item_Categories::class;
+			$includes['subscription_coupons']                      = 'AutomateWoo\Rules\Subscription_Coupons';
+			$includes['subscription_coupons_text_match']           = 'AutomateWoo\Rules\Subscription_Coupons_Text_Match';
+			$includes['subscription_coupon_count']                 = 'AutomateWoo\Rules\Subscription_Coupon_Count';
+			$includes['subscription_next_payment_date']            = 'AutomateWoo\Rules\Subscription_Next_Payment_Date';
+			$includes['subscription_last_payment_date']            = 'AutomateWoo\Rules\Subscription_Last_Payment_Date';
+			$includes['subscription_created_date']                 = 'AutomateWoo\Rules\Subscription_Created_Date';
+			$includes['subscription_trial_end_date']               = 'AutomateWoo\Rules\Subscription_Trial_End_Date';
+			$includes['subscription_end_date']                     = 'AutomateWoo\Rules\Subscription_End_Date';
+			$includes['subscription_run_count']                    = Rules\Subscription_Run_Count::class;
 
 			/**
 			 * @since 4.5.0

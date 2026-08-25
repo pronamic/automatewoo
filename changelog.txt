@@ -1,5 +1,12 @@
 *** AutomateWoo Changelog ***
 
+2026-08-25 - version 6.8.2
+* Add - Order and Subscription billing and shipping address workflow rules, including shipping phone rules.
+* Fix - Hide the redundant value field on the "Order - Custom Field" workflow rule when the operator is "is blank" or "is not blank".
+* Fix - The communication preferences unsubscribe endpoint no longer identifies a recipient by email address; the legacy `user` URL parameter is ignored, so unsubscribe links must include the customer key.
+* Tweak - WordPress 7.1 compatibility.
+* Update - Require WordPress 7.0+.
+
 2026-08-19 - version 6.8.1
 * Fix - Standardize the output of guest email addresses on the Guests report and guest details admin screens.
 

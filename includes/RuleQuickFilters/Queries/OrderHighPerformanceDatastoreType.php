@@ -122,10 +122,15 @@ class OrderHighPerformanceDatastoreType implements DatastoreTypeInterface {
 			case 'billing_postcode':
 			case 'billing_state':
 			case 'billing_city':
+			case 'billing_company':
 			case 'created_via':
 			case 'payment_method':
 			case 'shipping_country':
 			case 'shipping_state':
+			case 'shipping_city':
+			case 'shipping_postcode':
+			case 'shipping_company':
+			case 'shipping_phone':
 				$this->add_field_query_arg( $property, $clause );
 				break;
 			case 'customer_note':

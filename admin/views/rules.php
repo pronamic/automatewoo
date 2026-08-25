@@ -141,7 +141,7 @@ defined( 'ABSPATH' ) || exit;
 									data-aw-internal-meta-keys="{{ data.rule.object.internal_meta_keys.join( ' ' ) }}"
 								<# } #>
 							>
-							<input name="{{ data.fieldNameBase }}[value][]" class="automatewoo-field js-rule-value-field" type="text" placeholder="<?php esc_attr_e( 'value', 'automatewoo' ); ?>">
+							<input name="{{ data.fieldNameBase }}[value][]" class="automatewoo-field js-rule-value-field js-rule-value-field--meta-value" type="text" placeholder="<?php esc_attr_e( 'value', 'automatewoo' ); ?>">
 							<# if ( data.rule.object.internal_meta_key_warning ) { #>
 								<p class="aw-field-description aw-internal-meta-key-warning aw-hidden">{{ data.rule.object.internal_meta_key_warning }}</p>
 							<# } #>

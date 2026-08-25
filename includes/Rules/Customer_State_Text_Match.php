@@ -32,7 +32,8 @@ class Customer_State_Text_Match extends Abstract_String {
 	public function validate( $customer, $compare, $value ) {
 		$state   = $this->data_layer()->get_customer_state();
 		$country = $this->data_layer()->get_customer_country();
+		$label   = aw_get_state_name( $country, $state );
 
-		return $this->validate_string( aw_get_state_name( $country, $state ), $compare, $value );
+		return $this->validate_string( false === $label ? $state : $label, $compare, $value );
 	}
 }

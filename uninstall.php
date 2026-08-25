@@ -5,7 +5,7 @@
  * Removes all AutomateWoo data when the plugin is deleted,
  * if the "Remove data on uninstall" option is enabled.
  *
- * @since x.x.x
+ * @since 6.5.0
  * @package AutomateWoo
  */
 

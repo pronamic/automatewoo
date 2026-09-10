@@ -1,5 +1,11 @@
 *** AutomateWoo Changelog ***
 
+2026-09-08 - version 6.8.3
+* Declare compatibility with WooCommerce 11.1.0.
+* Dev - Pin GitHub Actions and their nested dependencies to immutable commit SHAs.
+* Fix - Security improvements.
+* Update GitHub Action references.
+
 2026-08-25 - version 6.8.2
 * Add - Order and Subscription billing and shipping address workflow rules, including shipping phone rules.
 * Fix - Hide the redundant value field on the "Order - Custom Field" workflow rule when the operator is "is blank" or "is not blank".

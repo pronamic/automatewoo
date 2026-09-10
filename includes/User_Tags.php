@@ -74,7 +74,7 @@ class User_Tags {
 					'manage_terms' => 'edit_users',
 					'edit_terms'   => 'edit_users',
 					'delete_terms' => 'edit_users',
-					'assign_terms' => 'read',
+					'assign_terms' => 'edit_users',
 				],
 				'update_count_callback' => [ $this, 'update_count' ],
 			]
@@ -289,8 +289,8 @@ class User_Tags {
 
 		foreach ( self::$taxonomies as $key => $taxonomy ) {
 
-			// Check the current user can edit this user and assign terms for this taxonomy
-			if ( ! current_user_can( 'edit_user', $user_id ) && current_user_can( $taxonomy->cap->assign_terms ) ) {
+			// Check the current user can edit this user and assign terms for this taxonomy.
+			if ( ! ( current_user_can( 'edit_user', $user_id ) && current_user_can( $taxonomy->cap->assign_terms ) ) ) {
 				continue;
 			}
 

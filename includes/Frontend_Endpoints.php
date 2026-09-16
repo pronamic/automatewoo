@@ -2,6 +2,7 @@
 
 namespace AutomateWoo;
 
+use AutomateWoo\Frontend_Endpoints\Cart_Action_Confirmation;
 use AutomateWoo\Frontend_Endpoints\Login_Redirect;
 
 /**
@@ -28,7 +29,11 @@ class Frontend_Endpoints {
 		switch ( $action ) {
 
 			case 'restore-cart':
-				self::restore_cart();
+				if ( Cart_Action_Confirmation::is_confirmed( 'restore-cart' ) ) {
+					self::restore_cart();
+				} else {
+					Cart_Action_Confirmation::show();
+				}
 				break;
 
 			case 'unsubscribe':
@@ -44,7 +49,11 @@ class Frontend_Endpoints {
 				break;
 
 			case 'reorder':
-				self::reorder();
+				if ( Cart_Action_Confirmation::is_confirmed( 'reorder' ) ) {
+					self::reorder();
+				} else {
+					Cart_Action_Confirmation::show();
+				}
 				break;
 
 			case 'login-redirect':

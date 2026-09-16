@@ -303,7 +303,7 @@ abstract class Action implements ActionInterface {
 		if ( $process_variables ) {
 			return $this->workflow->variable_processor()->process_field( $value, $allow_html );
 		} elseif ( ! $allow_html ) {
-			return html_entity_decode( wp_strip_all_tags( $value ) );
+			return Clean::strip_markup( $value );
 		}
 		return $value;
 	}

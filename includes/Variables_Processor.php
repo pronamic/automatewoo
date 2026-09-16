@@ -38,7 +38,7 @@ class Variables_Processor {
 		$value    = $replacer->process();
 
 		if ( ! $allow_html ) {
-			$value = html_entity_decode( wp_strip_all_tags( $value ) );
+			$value = Clean::strip_markup( $value );
 		}
 
 		return $value;

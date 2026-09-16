@@ -40,10 +40,16 @@ class Integration_Mailchimp extends Integration {
 	 * @param string $api_key The Mailchimp API key.
 	 */
 	public function __construct( $api_key ) {
-		list( $key, $data_center ) = explode( '-', $api_key );
+		$parts       = explode( '-', $api_key, 2 );
+		$data_center = $parts[1] ?? '';
 
-		$this->api_key  = $key;
-		$this->api_root = str_replace( '<dc>', $data_center, $this->api_root );
+		$this->api_key = $parts[0];
+
+		// The data center segment comes from the API key and forms part of the
+		// request host, so it is restricted to hostname characters.
+		if ( preg_match( '/^[a-z0-9.-]+\z/', $data_center ) ) {
+			$this->api_root = str_replace( '<dc>', $data_center, $this->api_root );
+		}
 	}
 
 
@@ -76,12 +82,11 @@ class Integration_Mailchimp extends Integration {
 	 */
 	public function request( $method, $endpoint, $args = [] ) {
 		$request_args = [
-			'headers'   => [
+			'headers' => [
 				'Authorization' => 'Basic ' . base64_encode( 'anystring:' . $this->api_key ),
 			],
-			'timeout'   => 15,
-			'method'    => $method,
-			'sslverify' => false,
+			'timeout' => 15,
+			'method'  => $method,
 		];
 
 		$url = $this->api_root . $endpoint;

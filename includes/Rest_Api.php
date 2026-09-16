@@ -101,11 +101,12 @@ final class Rest_Api {
 			return $allow;
 		}
 
-		$rest_prefix = trailingslashit( rest_get_url_prefix() );
-		$request_uri = esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ) );
+		$rest_prefix  = trailingslashit( rest_get_url_prefix() );
+		$request_uri  = esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ) );
+		$request_path = (string) wp_parse_url( $request_uri, PHP_URL_PATH );
 
 		// Check if the request is to the AutomateWoo namespace.
-		if ( false !== strpos( $request_uri, "{$rest_prefix}{$this->namespace}/" ) ) {
+		if ( false !== strpos( $request_path, "{$rest_prefix}{$this->namespace}/" ) ) {
 			return true;
 		}
 

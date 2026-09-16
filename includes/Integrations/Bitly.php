@@ -110,10 +110,9 @@ class Integration_Bitly extends Integration {
 	public function request( $method, $endpoint, $args = [] ) {
 		$method       = strtoupper( $method );
 		$request_args = [
-			'timeout'   => 10,
-			'method'    => $method,
-			'sslverify' => false,
-			'headers'   => [
+			'timeout' => 10,
+			'method'  => $method,
+			'headers' => [
 				'Authorization' => "Bearer {$this->api_key}",
 			],
 		];

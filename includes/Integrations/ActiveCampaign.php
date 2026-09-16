@@ -30,6 +30,12 @@ class Integration_ActiveCampaign extends Integration {
 	private $active_tags = array();
 
 	/**
+	 * Caps paginated_request() so a remote response cannot drive an unbounded
+	 * number of requests.
+	 */
+	private const MAX_PAGINATED_REQUESTS = 100;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param string $api_url
@@ -403,7 +409,7 @@ class Integration_ActiveCampaign extends Integration {
 					return $this->get_tag_id( $tag, $create_missing_tag, false );
 				}
 				// phpcs:disable WordPress.PHP.DevelopmentFunctions
-				$this->log( 'Unexpected response when attempting to create a tag. Response: ' . print_r( $response, true ) . 'Tags: ' . print_r( $this->active_tags, true ) );
+				$this->log( 'Unexpected response when attempting to create a tag. Response: ' . print_r( $this->redact_log_data( $response ), true ) . 'Tags: ' . print_r( $this->active_tags, true ) );
 
 				// phpcs:enable
 				return false;
@@ -468,10 +474,12 @@ class Integration_ActiveCampaign extends Integration {
 	public function request( $path, $data = [], $method = 'GET' ) {
 		$url          = $this->api_url . $path;
 		$request_args = [
-			'timeout'   => 10,
-			'method'    => $method,
-			'sslverify' => false,
-			'headers'   => [
+			'timeout'            => 10,
+			'method'             => $method,
+			// The API URL is store configurable, so validate it through
+			// WordPress before the request is sent.
+			'reject_unsafe_urls' => true,
+			'headers'            => [
 				'Api-Token' => $this->api_key,
 			],
 		];
@@ -523,17 +531,32 @@ class Integration_ActiveCampaign extends Integration {
 		$data['offset'] = $page * $this->get_api_pagination_limit();
 
 		// Get elements for the current page and add them to the results.
-		$request = $this->request( $path, $data, $method )->get_body();
-		$results = array_merge( $results, $request[ $path ] );
+		$body       = $this->request( $path, $data, $method )->get_body();
+		$page_items = is_array( $body ) && isset( $body[ $path ] ) && is_array( $body[ $path ] ) ? $body[ $path ] : [];
+		$total      = is_array( $body ) && isset( $body['meta']['total'] ) ? (int) $body['meta']['total'] : 0;
 
-		// If there are more elements left. Fetch again with the next page.
-		if ( $request['meta']['total'] > count( $results ) ) {
-			return $this->paginated_request( $path, $data, $method, ++$page, $results );
+		$results = array_merge( $results, $page_items );
+
+		// The empty-page check stops a response that reports more than it ever
+		// returns from looping forever.
+		if ( $total > count( $results ) && ! empty( $page_items ) ) {
+			if ( $page + 1 < self::MAX_PAGINATED_REQUESTS ) {
+				return $this->paginated_request( $path, $data, $method, ++$page, $results );
+			}
+
+			$this->log(
+				sprintf(
+					'Paginated request for "%s" stopped at the maximum page count with %d of %d reported elements retrieved.',
+					$path,
+					count( $results ),
+					$total
+				)
+			);
 		}
 
 		return [
 			$path  => $results,
-			'meta' => [ 'total' => $request['meta']['total'] ],
+			'meta' => [ 'total' => $total ],
 		];
 	}
 

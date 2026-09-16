@@ -1,5 +1,16 @@
 *** AutomateWoo Changelog ***
 
+2026-09-15 - version 6.9.0
+* Dev - Update build dependencies to resolve Dependabot alerts for colord and qs.
+* Fix - Encoded characters in customer data are no longer decoded into markup when a plain text email is rendered.
+* Fix - Let recipients opt out of AutomateWoo email and SMS tracking.
+* Tweak - Bound the number of pages fetched when listing ActiveCampaign tags.
+* Tweak - In plain text emails, a `<` followed immediately by another character now removes the text that follows it, up to the next `>`. Text such as "price < 5" is unaffected.
+* Tweak - Match AutomateWoo REST API requests against the request path.
+* Tweak - Validate the host of ActiveCampaign and Mailchimp API requests before they are sent.
+* Update - Ask customers to confirm before a reorder or cart-restore email link changes their cart.
+* Update - Integration API requests now verify TLS certificates, and configuration values are masked in integration logs.
+
 2026-09-08 - version 6.8.3
 * Declare compatibility with WooCommerce 11.1.0.
 * Dev - Pin GitHub Actions and their nested dependencies to immutable commit SHAs.

@@ -47,5 +47,5 @@ $from_address = Emails::get_from_address( $template );
 		</div>
 	</div>
 
-	<iframe class="aw-preview__email-iframe" src="<?php echo esc_url( $iframe_url ); ?>" width="100%" frameborder="0"></iframe>
+	<iframe class="aw-preview__email-iframe" src="<?php echo esc_url( $iframe_url ); ?>" width="100%" frameborder="0" sandbox="allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation"></iframe>
 </div>

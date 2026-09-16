@@ -136,6 +136,24 @@ class Action_Send_SMS_Twilio extends Action {
 
 
 	/**
+	 * Has the workflow's customer opted out of click tracking?
+	 *
+	 * The SMS body is processed once per run, before the recipient loop, so the subject
+	 * here is the workflow's primary customer, the same one send_sms() already checks.
+	 * If they opted out, the body carries plain links for everyone on that run, which is
+	 * the conservative direction and matches how the workflow's own tracking flag behaves.
+	 *
+	 * @since x.x.x
+	 *
+	 * @return bool
+	 */
+	protected function is_customer_opted_out_of_tracking() {
+		$customer = $this->workflow->data_layer()->get_customer();
+
+		return $customer && $customer->is_tracking_opted_out();
+	}
+
+	/**
 	 * Determines if a recipient is the primary customer for the workflow.
 	 *
 	 * Must be used before the $recipient_phone has variables processed.
@@ -188,9 +206,9 @@ class Action_Send_SMS_Twilio extends Action {
 		$url = html_entity_decode( $url );
 
 		// make URL trackable if enabled
-		if ( $this->workflow->is_tracking_enabled() ) {
-			// don't track unsubscribe clicks
-			if ( ! strstr( $url, 'aw-action=unsubscribe' ) ) {
+		if ( $this->workflow->is_tracking_enabled() && ! $this->is_customer_opted_out_of_tracking() ) {
+			// don't track unsubscribe or tracking opt-out clicks
+			if ( ! Tracking::is_url_excluded_from_click_tracking( $url ) ) {
 				$url = $this->workflow->append_ga_tracking_to_url( $url );
 				$url = esc_url_raw( Tracking::get_click_tracking_url( $this->workflow, $url ) );
 			}

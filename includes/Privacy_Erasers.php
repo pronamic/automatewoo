@@ -83,6 +83,9 @@ class Privacy_Erasers {
 		}
 
 		$log->delete_meta( 'notes' );
+		// Open and click history is personal data about the recipient, and Privacy_Exporters
+		// already exports it as "Click and open tracking", so erasure must remove it too.
+		$log->delete_meta( 'tracking_data' );
 		$log->update_meta( 'is_anonymized', true );
 	}
 

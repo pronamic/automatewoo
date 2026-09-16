@@ -11,6 +11,15 @@ defined( 'ABSPATH' ) || exit;
  */
 class Communication_Page {
 
+	/**
+	 * Intent that records a tracking opt-out straight from a link in an email footer.
+	 *
+	 * @since x.x.x
+	 *
+	 * @var string
+	 */
+	const INTENT_TRACKING_OPT_OUT = 'tracking-opt-out';
+
 	/** @var string $using_customer_key True if the customer is retreived using a customer key */
 	private static $using_customer_key = false;
 
@@ -59,9 +68,14 @@ class Communication_Page {
 		} else {
 			$data['customer'] = $customer;
 
-			if ( self::$using_customer_key && 'unsubscribe' === $data['intent'] && ! aw_request( 'automatewoo_save_changes' ) ) {
-				$customer->opt_out( Clean::id( aw_request( 'workflow' ) ) );
-				wc_add_notice( __( "Saved successfully! You won't receive marketing communications from us.", 'automatewoo' ) );
+			if ( self::$using_customer_key && ! aw_request( 'automatewoo_save_changes' ) ) {
+				if ( 'unsubscribe' === $data['intent'] ) {
+					$customer->opt_out( Clean::id( aw_request( 'workflow' ) ) );
+					wc_add_notice( __( "Saved successfully! You won't receive marketing communications from us.", 'automatewoo' ) );
+				} elseif ( self::INTENT_TRACKING_OPT_OUT === $data['intent'] ) {
+					$customer->opt_out_of_tracking();
+					wc_add_notice( __( 'Saved successfully! We will no longer record when you open our emails or click links in them.', 'automatewoo' ) );
+				}
 			}
 
 			aw_get_template( 'communication-preferences/communication-form.php', $data );

@@ -114,13 +114,12 @@ class Integration_Twilio extends Integration {
 	 */
 	public function request( $method, $endpoint, $args = [] ) {
 		$request_args = [
-			'headers'   => [
+			'headers' => [
 				'Authorization' => 'Basic ' . base64_encode( $this->account_sid . ':' . $this->auth_token ),
 				'Accept'        => 'application/json',
 			],
-			'timeout'   => 10,
-			'method'    => $method,
-			'sslverify' => false,
+			'timeout' => 10,
+			'method'  => $method,
 		];
 
 		$request_args['body'] = http_build_query( $args );

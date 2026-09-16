@@ -70,7 +70,7 @@ class Tracking {
 	public static function handle_open_tracking_url() {
 		$log = Log_Factory::get( aw_request( 'log' ) );
 
-		if ( $log && ! self::is_excluded_user_agent() ) {
+		if ( $log && ! self::is_excluded_user_agent() && ! self::is_log_customer_opted_out( $log ) ) {
 			$log->record_open();
 		}
 
@@ -102,7 +102,7 @@ class Tracking {
 			return;
 		}
 
-		if ( $log && ! self::is_excluded_user_agent() ) {
+		if ( $log && ! self::is_excluded_user_agent() && ! self::is_log_customer_opted_out( $log ) ) {
 			$log->record_click( $redirect );
 		}
 
@@ -121,6 +121,51 @@ class Tracking {
 		return apply_filters( 'automatewoo/click_track/safe_redirect_fallback', home_url() );
 	}
 
+
+	/**
+	 * Has the recipient this log belongs to opted out of tracking?
+	 *
+	 * Defence in depth: emails already delivered still carry pixels and tracked links,
+	 * and those requests must stop being recorded once the recipient has opted out. The
+	 * pixel and the redirect keep working, so nothing looks broken to the recipient.
+	 *
+	 * @internal
+	 * @since x.x.x
+	 *
+	 * @param Log $log
+	 *
+	 * @return bool
+	 */
+	public static function is_log_customer_opted_out( $log ) {
+		$data_layer = $log->get_data_layer( 'object' );
+
+		if ( ! $data_layer ) {
+			return false;
+		}
+
+		$customer = $data_layer->get_customer();
+
+		return $customer && $customer->is_tracking_opted_out();
+	}
+
+	/**
+	 * Should this URL be left alone by click tracking?
+	 *
+	 * Covers the unsubscribe link and the tracking opt-out link: recording a click on a
+	 * link whose whole purpose is to stop tracking would defeat it.
+	 *
+	 * @since x.x.x
+	 *
+	 * @param string $url
+	 *
+	 * @return bool
+	 */
+	public static function is_url_excluded_from_click_tracking( $url ) {
+		$excluded = (bool) strstr( $url, 'aw-action=unsubscribe' )
+			|| (bool) strstr( $url, 'intent=' . Communication_Page::INTENT_TRACKING_OPT_OUT );
+
+		return (bool) apply_filters( 'automatewoo/tracking/is_url_excluded_from_click_tracking', $excluded, $url );
+	}
 
 	/**
 	 * Is the useragent excluded from tracking.

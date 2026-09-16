@@ -58,6 +58,20 @@ class Workflow_Email {
 	/** @var bool */
 	protected $tracking_enabled = false;
 
+	/**
+	 * Memoized recipient customer, see get_recipient_customer().
+	 *
+	 * @var \AutomateWoo\Customer|false|null
+	 */
+	private $recipient_customer;
+
+	/**
+	 * The address $recipient_customer was looked up for, so a new recipient invalidates it.
+	 *
+	 * @var string|null
+	 */
+	private $recipient_customer_email;
+
 	/** @var bool */
 	public $include_automatewoo_styles = true;
 
@@ -207,6 +221,49 @@ class Workflow_Email {
 		return $this;
 	}
 
+	/**
+	 * Is tracking on for this send, taking the recipient's own choice into account?
+	 *
+	 * The workflow flag and the --notracking token both feed $this->tracking_enabled.
+	 * On top of that, a recipient who opted out is never tracked: no pixel and no
+	 * rewritten links, the same shape as --notracking, for that send only.
+	 *
+	 * @since x.x.x
+	 *
+	 * @return bool
+	 */
+	protected function is_tracking_enabled_for_recipient() {
+		if ( ! $this->tracking_enabled ) {
+			return false;
+		}
+
+		$customer = $this->get_recipient_customer();
+
+		return ! ( $customer && $customer->is_tracking_opted_out() );
+	}
+
+	/**
+	 * The AutomateWoo customer behind the recipient address, or false if there isn't one.
+	 *
+	 * Memoized because sending one email asks for it up to five times: the tracking
+	 * check before rendering, then again for each footer link and each opt-out URL,
+	 * HTML and plain text. Every miss was an uncached database read. Keyed on the
+	 * address so set_recipient() invalidates it.
+	 *
+	 * @since x.x.x
+	 *
+	 * @return \AutomateWoo\Customer|false
+	 */
+	protected function get_recipient_customer() {
+		if ( $this->recipient_customer_email !== $this->recipient ) {
+			// Never create a customer record just to read consent or build a link, hence the false.
+			$this->recipient_customer       = Customer_Factory::get_by_email( $this->recipient, false );
+			$this->recipient_customer_email = $this->recipient;
+		}
+
+		return $this->recipient_customer;
+	}
+
 
 	/**
 	 * @param bool $include
@@ -288,11 +345,12 @@ class Workflow_Email {
 	 * @return Mailer|Mailer_Raw_HTML|Mailer_Plain_Text
 	 */
 	public function get_mailer() {
+		$tracking_enabled = $this->is_tracking_enabled_for_recipient();
 
 		if ( $this->is_type( 'plain-text' ) ) {
 			$content = $this->get_content_with_appended_plain_text_footer();
 
-			if ( $this->tracking_enabled ) {
+			if ( $tracking_enabled ) {
 				$content = $this->replace_plain_text_urls( $content );
 			}
 
@@ -306,7 +364,7 @@ class Workflow_Email {
 				$mailer->set_template( $this->template );
 				$mailer->set_heading( $this->heading );
 				$mailer->set_preheader( $this->preheader );
-				$mailer->extra_footer_text = $this->get_unsubscribe_link();
+				$mailer->extra_footer_text = $this->get_footer_links();
 			}
 
 			$allowed_html          = wp_kses_allowed_html( 'post' );
@@ -315,7 +373,7 @@ class Workflow_Email {
 			$mailer->set_content( wp_kses( $this->content, $allowed_html ) );
 			$mailer->set_include_automatewoo_styles( $this->include_automatewoo_styles );
 
-			if ( $this->tracking_enabled ) {
+			if ( $tracking_enabled ) {
 				$mailer->tracking_pixel_url            = Tracking::get_open_tracking_url( $this->workflow );
 				$mailer->replace_content_urls_callback = [ $this, 'replace_content_urls_callback' ];
 			}
@@ -380,6 +438,84 @@ class Workflow_Email {
 	}
 
 	/**
+	 * URL the recipient can use to turn off open and click tracking.
+	 *
+	 * False when there is nothing to opt out of, or nobody to record the choice against.
+	 * Unlike the unsubscribe link this is NOT suppressed for transactional workflows: a
+	 * transactional email can still be tracked, so the consent is owed either way.
+	 *
+	 * @since x.x.x
+	 *
+	 * @return bool|string
+	 */
+	public function get_tracking_opt_out_url() {
+		if ( ! $this->is_tracking_enabled_for_recipient() ) {
+			return false;
+		}
+
+		$customer = $this->get_recipient_customer();
+
+		if ( ! $customer ) {
+			return false;
+		}
+
+		return Frontend::get_communication_page_permalink( $customer, Communication_Page::INTENT_TRACKING_OPT_OUT );
+	}
+
+	/**
+	 * Link text for the tracking opt-out.
+	 *
+	 * @since x.x.x
+	 *
+	 * @return string
+	 */
+	public function get_tracking_opt_out_text() {
+		return apply_filters( 'automatewoo/email/tracking_opt_out_text', __( 'Opt out of tracking', 'automatewoo' ), $this, $this->workflow );
+	}
+
+	/**
+	 * The tracking opt-out link, as HTML.
+	 *
+	 * @since x.x.x
+	 *
+	 * @return bool|string
+	 */
+	public function get_tracking_opt_out_link() {
+		$url  = $this->get_tracking_opt_out_url();
+		$text = $this->get_tracking_opt_out_text();
+
+		if ( ! $url || ! $text ) {
+			return false;
+		}
+
+		return '<a href="' . esc_url( $url ) . '" class="automatewoo-tracking-opt-out-link" target="_blank" rel="noopener noreferrer">' . esc_html( $text ) . '</a>';
+	}
+
+	/**
+	 * Every automatic footer link for this email, joined.
+	 *
+	 * @since x.x.x
+	 *
+	 * @return bool|string
+	 */
+	public function get_footer_links() {
+		$links = array_filter(
+			[
+				$this->get_unsubscribe_link(),
+				$this->get_tracking_opt_out_link(),
+			]
+		);
+
+		if ( ! $links ) {
+			return false;
+		}
+
+		$separator = apply_filters( 'automatewoo/email/footer_links_separator', ' | ', $this );
+
+		return implode( $separator, $links );
+	}
+
+	/**
 	 * Get the plain text unsubscribe footer.
 	 *
 	 * Will return false if workflow is transactional.
@@ -400,6 +536,24 @@ class Workflow_Email {
 	}
 
 	/**
+	 * Get the plain text tracking opt-out footer.
+	 *
+	 * @since x.x.x
+	 *
+	 * @return bool|string
+	 */
+	public function get_plain_text_tracking_opt_out_footer() {
+		$url  = $this->get_tracking_opt_out_url();
+		$text = $this->get_tracking_opt_out_text();
+
+		if ( ! $url || ! $text ) {
+			return false;
+		}
+
+		return apply_filters( 'automatewoo/email/plain_text_tracking_opt_out_footer', "\n\n$text - $url", $this );
+	}
+
+	/**
 	 * Get the email content with the plain text footer added.
 	 *
 	 * @since 4.4.0
@@ -407,11 +561,15 @@ class Workflow_Email {
 	 * @return string
 	 */
 	public function get_content_with_appended_plain_text_footer() {
-		$footer = $this->get_plain_text_unsubscribe_footer();
-		if ( $footer ) {
-			return $this->content . $footer;
+		$content = $this->content;
+
+		foreach ( [ $this->get_plain_text_unsubscribe_footer(), $this->get_plain_text_tracking_opt_out_footer() ] as $footer ) {
+			if ( $footer ) {
+				$content .= $footer;
+			}
 		}
-		return $this->content;
+
+		return $content;
 	}
 
 
@@ -420,7 +578,7 @@ class Workflow_Email {
 	 * @return string
 	 */
 	public function replace_content_urls_callback( $url ) {
-		if ( ! strstr( $url, 'aw-action=unsubscribe' ) ) {
+		if ( ! Tracking::is_url_excluded_from_click_tracking( $url ) ) {
 			$url = html_entity_decode( $url );
 			$url = $this->workflow->append_ga_tracking_to_url( $url );
 			$url = Tracking::get_click_tracking_url( $this->workflow, $url );
@@ -441,7 +599,7 @@ class Workflow_Email {
 	 * @return string
 	 */
 	public function replace_plain_text_url_callback( string $url ): string {
-		if ( ! strstr( $url, 'aw-action=unsubscribe' ) ) {
+		if ( ! Tracking::is_url_excluded_from_click_tracking( $url ) ) {
 			$url = html_entity_decode( $url );
 			$url = $this->workflow->append_ga_tracking_to_url( $url );
 			$url = Tracking::get_click_tracking_url( $this->workflow, $url );

@@ -345,6 +345,7 @@ return array(
     'AutomateWoo\\Formatters\\Int_String_Formatter' => $baseDir . '/includes/Formatters/Int_String_Formatter.php',
     'AutomateWoo\\Frontend' => $baseDir . '/includes/Frontend.php',
     'AutomateWoo\\Frontend_Endpoints' => $baseDir . '/includes/Frontend_Endpoints.php',
+    'AutomateWoo\\Frontend_Endpoints\\Cart_Action_Confirmation' => $baseDir . '/includes/Frontend_Endpoints/Cart_Action_Confirmation.php',
     'AutomateWoo\\Frontend_Endpoints\\Login_Redirect' => $baseDir . '/includes/Frontend_Endpoints/Login_Redirect.php',
     'AutomateWoo\\Frontend_Form_Handler' => $baseDir . '/includes/Frontend_Form_Handler.php',
     'AutomateWoo\\Guest' => $baseDir . '/includes/Guest.php',

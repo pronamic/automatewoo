@@ -63,13 +63,12 @@ class Integration_Campaign_Monitor extends Integration {
 	 */
 	public function request( $method, $endpoint, $args = [] ) {
 		$request_args = [
-			'headers'   => [
+			'headers' => [
 				'Authorization' => 'Basic ' . base64_encode( $this->api_key . ':x' ),
 				'Accept'        => 'application/json',
 			],
-			'timeout'   => 10,
-			'method'    => $method,
-			'sslverify' => false,
+			'timeout' => 10,
+			'method'  => $method,
 		];
 
 		$url = $this->api_root . $endpoint;

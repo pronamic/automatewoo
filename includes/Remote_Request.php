@@ -28,6 +28,11 @@ class Remote_Request {
 	/**
 	 * Passes to wp_remote_request()
 	 *
+	 * TLS verification and unsafe-URL rejection are enabled by default (the same
+	 * defaults wp_safe_remote_request() would apply), but as defaults only, so the
+	 * automatewoo/remote_request/args filter below can still override either flag
+	 * for sites that need to, e.g. a non-standard port or an IPv6-only host.
+	 *
 	 * @param string $url
 	 * @param array  $args
 	 */
@@ -39,14 +44,18 @@ class Remote_Request {
 		$args = wp_parse_args(
 			$args,
 			[
-				'user-agent' => 'AutomateWoo ' . AW()->version . ' - ' . $domain,
+				'user-agent'         => 'AutomateWoo ' . AW()->version . ' - ' . $domain,
+				'sslverify'          => true,
+				'reject_unsafe_urls' => true,
 			]
 		);
 
 		/**
 		 * Filter the arguments passed to wp_remote_request() for all AutomateWoo remote requests.
 		 *
-		 * This can be used to adjust the timeout or other request arguments per integration.
+		 * This can be used to adjust the timeout or other request arguments per integration,
+		 * including overriding the `sslverify` and `reject_unsafe_urls` defaults (both `true`)
+		 * when a site needs to, e.g. for a non-standard port or an IPv6-only host.
 		 *
 		 * @since 6.3.0
 		 *

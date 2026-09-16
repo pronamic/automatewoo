@@ -365,6 +365,7 @@ class ComposerStaticInit952966197e701c747b2b14558dca75ae
         'AutomateWoo\\Formatters\\Int_String_Formatter' => __DIR__ . '/../..' . '/includes/Formatters/Int_String_Formatter.php',
         'AutomateWoo\\Frontend' => __DIR__ . '/../..' . '/includes/Frontend.php',
         'AutomateWoo\\Frontend_Endpoints' => __DIR__ . '/../..' . '/includes/Frontend_Endpoints.php',
+        'AutomateWoo\\Frontend_Endpoints\\Cart_Action_Confirmation' => __DIR__ . '/../..' . '/includes/Frontend_Endpoints/Cart_Action_Confirmation.php',
         'AutomateWoo\\Frontend_Endpoints\\Login_Redirect' => __DIR__ . '/../..' . '/includes/Frontend_Endpoints/Login_Redirect.php',
         'AutomateWoo\\Frontend_Form_Handler' => __DIR__ . '/../..' . '/includes/Frontend_Form_Handler.php',
         'AutomateWoo\\Guest' => __DIR__ . '/../..' . '/includes/Guest.php',

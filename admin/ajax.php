@@ -392,6 +392,16 @@ class Admin_Ajax {
 		$type = Clean::string( aw_request( 'type' ) );
 		$args = Clean::recursive( aw_request( 'args' ) );
 
+		/*
+		 * A preview only ever needs to render, never to run. The iframe that embeds this
+		 * response sets a matching sandbox attribute, but that does not apply when the URL
+		 * is opened directly, nor to previews echoed by add-ons on the hook below.
+		 */
+		if ( ! headers_sent() ) {
+			header( "Content-Security-Policy: script-src 'none'; object-src 'none'; frame-src 'none'" );
+			header( 'X-Content-Type-Options: nosniff' );
+		}
+
 		switch ( $type ) {
 
 			case 'workflow_action':
@@ -405,7 +415,16 @@ class Admin_Ajax {
 
 				$action->workflow->setup();
 
-				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Email preview HTML is generated and escaped by the action's preview renderer.
+				/*
+				 * Each action prepares its own markup:
+				 * - Send_Email and Send_Email_Raw pass content through wp_kses() in
+				 *   Workflow_Email::get_mailer().
+				 * - Send_Email_Plain_Text escapes its body before nl2br().
+				 * Actions added by add-ons implement PreviewableInterface themselves and so
+				 * prepare their own output. The headers above and the iframe sandbox in
+				 * admin/views/email-preview-ui.php apply to all of them either way.
+				 */
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Prepared by the action's own get_preview(), see above.
 				echo $action->get_preview();
 
 				$action->workflow->cleanup();

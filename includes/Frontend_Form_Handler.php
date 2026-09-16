@@ -118,9 +118,35 @@ class Frontend_Form_Handler {
 			$customer->opt_out( Clean::id( aw_request( 'workflow' ) ) );
 		}
 
+		self::update_customer_tracking_preference( $customer );
+
 		// try and start session tracking the customer
 		Session_Tracker::set_session_customer( $customer );
 
 		do_action( 'automatewoo/communication_page/save_preferences', $customer );
+	}
+
+	/**
+	 * Save the tracking preference, but only from a form that actually rendered the control.
+	 *
+	 * A theme override of the preferences template will not have the new block, and a
+	 * missing checkbox must never be read as "opt me out".
+	 *
+	 * @since x.x.x
+	 *
+	 * @param Customer $customer
+	 */
+	protected static function update_customer_tracking_preference( $customer ) {
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified in Frontend_Form_Handler::handle() via wp_verify_nonce() before dispatch.
+		if ( ! isset( $_POST['tracking_preference'] ) ) {
+			return;
+		}
+
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified in Frontend_Form_Handler::handle() via wp_verify_nonce() before dispatch.
+		if ( isset( $_POST['allow_tracking'] ) ) {
+			$customer->opt_in_to_tracking();
+		} else {
+			$customer->opt_out_of_tracking();
+		}
 	}
 }

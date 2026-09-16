@@ -46,6 +46,42 @@ class Clean {
 	}
 
 	/**
+	 * Remove all markup from a string that must not contain HTML.
+	 *
+	 * Entities are decoded *before* the tags are stripped. The other order does not work:
+	 * the strip cannot see encoded markup, so the decode afterwards turns it back into real
+	 * markup. Encoded markup is the common case here, not an unusual one - WooCommerce
+	 * sanitises stored values with sanitize_text_field(), which encodes rather than removes.
+	 *
+	 * This method decodes exactly once, which is all it may do: a second pass here would
+	 * decode `&amp;lt;img&amp;gt;` into live markup after the strip had already run, which
+	 * is the bug this avoids. Doubly-encoded input is left as inert text on purpose. Note
+	 * that callers further down the pipeline may decode again - Mailer_Abstract::send()
+	 * does so for the subject header - so this is a guarantee about this method, not about
+	 * the whole path a value travels.
+	 *
+	 * The cost is that strip_tags() also removes a literal `<` and everything after it,
+	 * up to the next `>` or the end of the string, whenever the `<` is followed by a
+	 * non-space character. So "Ships in <3 days" becomes "Ships in" and "Size <XL> Shirt"
+	 * becomes "Size  Shirt", while "price < 5" is untouched. That loss is accepted, because
+	 * this method's contract is that nothing it returns contains markup.
+	 *
+	 * Protecting those characters with wp_pre_kses_less_than() before the strip would keep
+	 * them, but only by decoding a second time afterwards to restore them, and that second
+	 * decode turns `&amp;lt;img src=x onerror=...&amp;gt;` back into live markup. The text
+	 * is not worth reopening the hole for.
+	 *
+	 * @since x.x.x
+	 *
+	 * @param mixed $value Value to strip markup from. Cast to string.
+	 * @return string
+	 */
+	public static function strip_markup( $value ) {
+		// Decode first. Stripping first would leave encoded markup for the decode to revive.
+		return wp_strip_all_tags( html_entity_decode( (string) $value, ENT_QUOTES | ENT_HTML5, 'UTF-8' ) );
+	}
+
+	/**
 	 * @param string $email
 	 * @return string
 	 */

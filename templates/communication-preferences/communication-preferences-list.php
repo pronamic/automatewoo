@@ -49,6 +49,26 @@ if ( Frontend_Form_Handler::$current_action === 'save_communication_signup' ) {
 
 	<?php do_action( 'automatewoo/communication_form/after_subscribe_preference', $customer ); ?>
 
+	<?php if ( $customer ) : ?>
+	<div class="aw-communication-form__preference">
+		<div class="aw-communication-form__preference-inner">
+
+			<input type="hidden" name="tracking_preference" value="1">
+			<input type="checkbox"
+					name="allow_tracking"
+					id="automatewoo_communication_page_tracking_checkbox"
+					class="aw-communication-form__preference-checkbox"
+					aria-describedby="automatewoo_communication_page_tracking_checkbox_description"
+				<?php checked( ! $customer->is_tracking_opted_out() ); ?>>
+
+			<div class="aw-communication-form__preference-text">
+				<label class="aw-communication-form__preference-title" for="automatewoo_communication_page_tracking_checkbox"><?php esc_html_e( 'Email open and click tracking', 'automatewoo' ); ?></label>
+				<p id="automatewoo_communication_page_tracking_checkbox_description" class="aw-communication-form__preference-description"><?php esc_html_e( 'Allow us to record when you open our emails and when you click links in them. Turning this off does not change which emails you receive.', 'automatewoo' ); ?></p>
+			</div>
+		</div>
+	</div>
+	<?php endif; ?>
+
 	<div class="aw-communication-form__preference aw-communication-form__preference--disabled">
 		<div class="aw-communication-form__preference-inner">
 

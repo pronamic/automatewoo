@@ -67,18 +67,32 @@ class Integration_Mad_Mimi extends Integration {
 		$args['api_key']  = $this->api_key;
 
 		$request_args = [
-			'headers'   => [
+			'headers' => [
 				'Accept' => 'application/json',
 			],
-			'timeout'   => 10,
-			'method'    => $method,
-			'sslverify' => false,
+			'timeout' => 10,
+			'method'  => $method,
 		];
 
-		$url = $this->api_root . $endpoint;
-		// SEMGREP WARNING EXPLANATION
-		// This is escaped with esc_url_raw, but semgrep only takes into consideration esc_url.
-		$url = esc_url_raw( add_query_arg( $args, $url ) );
+		$url    = $this->api_root . $endpoint;
+		$method = strtoupper( $method );
+
+		// WP_Http::request() sets 'data_format' to 'body' for every method except GET and
+		// HEAD, so those two are the only ones where WordPress folds the request arguments
+		// back into the URL. Sending credentials in the body therefore keeps them out of
+		// the URL for every method except GET and HEAD; for those, the arguments cannot
+		// avoid the URL, so Remote_Request::$url is built with the query string instead,
+		// and redact_log_url() masks the credentials when the URL is logged. No GET/HEAD
+		// call site currently sends credentials in the plugin; this is an accepted
+		// residual, mitigated by redaction of logged URLs.
+		if ( ! in_array( $method, [ 'GET', 'HEAD' ], true ) ) {
+			$request_args['body'] = $args;
+			$url                  = esc_url_raw( $url );
+		} else {
+			// SEMGREP WARNING EXPLANATION
+			// This is escaped with esc_url_raw, but semgrep only takes into consideration esc_url.
+			$url = esc_url_raw( add_query_arg( $args, $url ) );
+		}
 
 		$request = new Remote_Request( $url, $request_args );
 

@@ -25,6 +25,26 @@ class Customer extends Abstract_Model_With_Meta_Table {
 	 */
 	const UNSUBSCRIBED_WORKFLOW_META_KEY = 'unsubscribed_workflow_id';
 
+	/**
+	 * The recipient's opt-out from email open and click tracking. 1 when opted out,
+	 * absent otherwise. Also written from outside this plugin by MailPoet's AutomateWoo
+	 * bridge, so the key name is public contract and must not change.
+	 *
+	 * @since x.x.x
+	 *
+	 * @var string
+	 */
+	const TRACKING_OPT_OUT_META_KEY = 'tracking_opt_out';
+
+	/**
+	 * When the tracking opt-out was recorded, as a UTC MySQL datetime.
+	 *
+	 * @since x.x.x
+	 *
+	 * @var string
+	 */
+	const TRACKING_OPT_OUT_DATE_META_KEY = 'tracking_opt_out_date';
+
 	/** @var string */
 	public $table_id = 'customers';
 
@@ -246,6 +266,54 @@ class Customer extends Abstract_Model_With_Meta_Table {
 	 */
 	public function get_unsubscribed_workflow_id() {
 		return Clean::id( $this->get_meta( self::UNSUBSCRIBED_WORKFLOW_META_KEY ) );
+	}
+
+	/**
+	 * Has the recipient asked not to have email opens and clicks recorded?
+	 *
+	 * @since x.x.x
+	 *
+	 * @return bool
+	 */
+	public function is_tracking_opted_out() {
+		$opted_out = (bool) $this->get_meta( self::TRACKING_OPT_OUT_META_KEY );
+
+		return (bool) apply_filters( 'automatewoo/customer/is_tracking_opted_out', $opted_out, $this );
+	}
+
+	/**
+	 * Record that the recipient does not want email opens and clicks tracked.
+	 *
+	 * Idempotent: calling it again keeps the original opt-out date, so the record
+	 * still says when they actually asked.
+	 *
+	 * @since x.x.x
+	 */
+	public function opt_out_of_tracking() {
+		if ( $this->is_tracking_opted_out() ) {
+			return;
+		}
+
+		$this->update_meta( self::TRACKING_OPT_OUT_META_KEY, 1 );
+		$this->update_meta( self::TRACKING_OPT_OUT_DATE_META_KEY, ( new DateTime() )->format( 'Y-m-d H:i:s' ) );
+
+		do_action( 'automatewoo/customer/tracking_opted_out', $this );
+	}
+
+	/**
+	 * Clear the tracking opt-out.
+	 *
+	 * @since x.x.x
+	 */
+	public function opt_in_to_tracking() {
+		if ( ! $this->is_tracking_opted_out() ) {
+			return;
+		}
+
+		$this->delete_meta( self::TRACKING_OPT_OUT_META_KEY );
+		$this->delete_meta( self::TRACKING_OPT_OUT_DATE_META_KEY );
+
+		do_action( 'automatewoo/customer/tracking_opted_in', $this );
 	}
 
 	/**

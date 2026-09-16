@@ -65,8 +65,9 @@ class Action_Send_Email_Plain_Text extends Action_Send_Email_Abstract {
 		$email_body = $this->get_workflow_email_object( $current_user->get( 'user_email' ), $content )
 			->get_email_body();
 
-		// convert new lines to HTML breaks for preview only
-		return nl2br( $email_body, false );
+		// The preview is rendered as HTML, so escape the plain-text body before
+		// converting new lines to HTML breaks.
+		return nl2br( esc_html( $email_body ), false );
 	}
 
 	/**
@@ -168,12 +169,12 @@ class Action_Send_Email_Plain_Text extends Action_Send_Email_Abstract {
 	 * Convert HTML variable output to compact plain text.
 	 *
 	 * HTML entities are intentionally left encoded here. The processed email content is
-	 * passed through wp_strip_all_tags() and html_entity_decode() once more by
-	 * Variables_Processor::process_field(), so entity decoding is deferred to that single,
-	 * final pass to avoid double-decoding. Note that a product name containing a literal
-	 * angle-bracket substring (e.g. "Size <XL>") is escaped to an entity by the template
-	 * and then dropped by the final tag strip - this is intended: arbitrary product names
-	 * must not be able to inject markup into the plain-text body.
+	 * passed through Clean::strip_markup() by Variables_Processor::process_field(), which
+	 * decodes entities and then strips the result, so entity decoding is deferred to that
+	 * single, final pass to avoid double-decoding. Note that a product name containing a
+	 * literal angle-bracket substring (e.g. "Size <XL>") is escaped to an entity by the
+	 * template and then dropped by that final pass - this is intended, since the plain-text
+	 * body must not contain markup.
 	 *
 	 * @param string $html HTML content.
 	 * @return string

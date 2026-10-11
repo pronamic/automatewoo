@@ -48,6 +48,8 @@ class Action_Customer_Update_Meta extends Action {
 
 	/**
 	 * Run the action.
+	 *
+	 * @throws \Exception When the key is a protected user meta key.
 	 */
 	public function run() {
 
@@ -60,8 +62,20 @@ class Action_Customer_Update_Meta extends Action {
 		$meta_value = $this->get_option( 'meta_value', true );
 
 		// Make sure there is a meta key but a value can be blank
-		if ( $meta_key ) {
-			$customer->update_legacy_meta( $meta_key, $meta_value );
+		if ( ! $meta_key ) {
+			return;
 		}
+
+		if ( $customer->is_protected_legacy_meta_key( $meta_key ) ) {
+			throw new \Exception(
+				sprintf(
+					/* translators: %s: meta key */
+					esc_html__( 'The custom field "%s" is protected and cannot be updated by a workflow.', 'automatewoo' ),
+					esc_html( $meta_key )
+				)
+			);
+		}
+
+		$customer->update_legacy_meta( $meta_key, $meta_value );
 	}
 }

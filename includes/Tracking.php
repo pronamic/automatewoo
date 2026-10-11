@@ -130,7 +130,7 @@ class Tracking {
 	 * pixel and the redirect keep working, so nothing looks broken to the recipient.
 	 *
 	 * @internal
-	 * @since x.x.x
+	 * @since 6.9.1
 	 *
 	 * @param Log $log
 	 *
@@ -154,7 +154,7 @@ class Tracking {
 	 * Covers the unsubscribe link and the tracking opt-out link: recording a click on a
 	 * link whose whole purpose is to stop tracking would defeat it.
 	 *
-	 * @since x.x.x
+	 * @since 6.9.1
 	 *
 	 * @param string $url
 	 *

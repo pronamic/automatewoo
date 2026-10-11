@@ -171,7 +171,11 @@ class Tools_Controller extends Base {
 		} elseif ( is_wp_error( $processed ) ) {
 			$this->add_error( $processed->get_error_message() );
 		} elseif ( true === $processed ) {
-			$this->add_message( __( 'Success - Items may be still be processing in the background.', 'automatewoo' ) );
+			$success_message = $tool->get_success_message();
+
+			if ( '' !== $success_message ) {
+				$this->add_message( $success_message );
+			}
 		}
 	}
 

@@ -40,6 +40,23 @@ abstract class Tool_Abstract {
 
 
 	/**
+	 * Message the tools page shows after process() returns true.
+	 *
+	 * The default keeps the historic wording, which hedges about background
+	 * processing. A tool that finishes synchronously can override this with an
+	 * accurate message, or return an empty string when process() queues its
+	 * own messages.
+	 *
+	 * @since 6.9.1
+	 *
+	 * @return string
+	 */
+	public function get_success_message() {
+		return __( 'Success - Items may be still be processing in the background.', 'automatewoo' );
+	}
+
+
+	/**
 	 * @param array $args
 	 */
 	abstract public function display_confirmation_screen( $args );

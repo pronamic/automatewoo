@@ -29,6 +29,13 @@ class ManualWorkflowRunner extends AbstractController {
 	use GetWorkflow;
 
 	/**
+	 * The maximum number of items a single request may search for or add to the queue.
+	 *
+	 * @since 6.9.1
+	 */
+	const MAX_BATCH_SIZE = 100;
+
+	/**
 	 * Route base.
 	 *
 	 * @var string
@@ -72,6 +79,7 @@ class ManualWorkflowRunner extends AbstractController {
 						'rule_group' => [
 							'description'       => __( 'The rule group number to find matches for.', 'automatewoo' ),
 							'type'              => 'integer',
+							'minimum'           => 1,
 							'required'          => true,
 							'validate_callback' => 'rest_validate_request_arg',
 							'sanitize_callback' => 'rest_sanitize_request_arg',
@@ -79,6 +87,7 @@ class ManualWorkflowRunner extends AbstractController {
 						'offset'     => [
 							'description'       => __( 'The current batch offset relative to the rule group number.', 'automatewoo' ),
 							'type'              => 'integer',
+							'minimum'           => 0,
 							'required'          => true,
 							'validate_callback' => 'rest_validate_request_arg',
 							'sanitize_callback' => 'rest_sanitize_request_arg',
@@ -86,6 +95,8 @@ class ManualWorkflowRunner extends AbstractController {
 						'batch_size' => [
 							'description'       => __( 'The maximum number of items to find in a single request.', 'automatewoo' ),
 							'type'              => 'integer',
+							'minimum'           => 1,
+							'maximum'           => self::MAX_BATCH_SIZE,
 							'required'          => true,
 							'validate_callback' => 'rest_validate_request_arg',
 							'sanitize_callback' => 'rest_sanitize_request_arg',
@@ -108,11 +119,14 @@ class ManualWorkflowRunner extends AbstractController {
 						'batch'    => [
 							'description'       => __( 'A batch of items to add to the workflow queue.', 'automatewoo' ),
 							'type'              => 'array',
+							'minItems'          => 1,
+							'maxItems'          => self::MAX_BATCH_SIZE,
 							'required'          => true,
 							'validate_callback' => 'rest_validate_request_arg',
 							'sanitize_callback' => 'rest_sanitize_request_arg',
 							'items'             => [
-								'type' => 'integer',
+								'type'    => 'integer',
+								'minimum' => 1,
 							],
 						],
 					],
@@ -220,7 +234,8 @@ class ManualWorkflowRunner extends AbstractController {
 			$workflow = $this->get_workflow( $request->get_param( 'workflow' ) );
 			$this->validate_manual_workflow( $workflow );
 
-			$items   = $request->get_param( 'batch' );
+			// Each item is queued at most once per request, no matter how often it appears in the batch.
+			$items   = array_unique( $request->get_param( 'batch' ) );
 			$trigger = $workflow->get_trigger();
 
 			foreach ( $items as $item_id ) {

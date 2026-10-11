@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: AutomateWoo 6.9.0\n"
+"Project-Id-Version: AutomateWoo 6.9.2\n"
 "Report-Msgid-Bugs-To: https://woocommerce.com/my-account/contact-support/\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-09-15T12:02:50+00:00\n"
+"POT-Creation-Date: 2026-09-29T07:38:18+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.7.1\n"
 "X-Domain: automatewoo\n"
@@ -26,7 +26,7 @@ msgstr ""
 #: automatewoo.php:153
 #: includes/Actions/Change_Workflow_Status.php:25
 #: includes/Actions/Clear_Queued_Events.php:21
-#: includes/Installer.php:248
+#: includes/Installer.php:267
 #: includes/Privacy.php:17
 #: admin/assets/build/index.js:31
 msgid "AutomateWoo"
@@ -120,7 +120,7 @@ msgstr ""
 
 #: admin/admin.php:223
 #: admin/WCAdminConnectPages.php:147
-#: includes/Installer.php:272
+#: includes/Installer.php:291
 msgid "Settings"
 msgstr ""
 
@@ -637,10 +637,6 @@ msgstr ""
 msgid "Process failed."
 msgstr ""
 
-#: admin/controllers/tools.php:174
-msgid "Success - Items may be still be processing in the background."
-msgstr ""
-
 #: admin/dashboard-widgets/analytics-abstract.php:100
 msgid "View report"
 msgstr ""
@@ -854,7 +850,7 @@ msgstr ""
 
 #. translators: 1: User First name, 2: User Last name
 #: admin/list-table.php:73
-#: includes/Customer.php:480
+#: includes/Customer.php:483
 #: includes/Data_Layer.php:503
 #: includes/Guest.php:206
 #: includes/helpers.php:800
@@ -1799,7 +1795,7 @@ msgstr ""
 
 #: admin/views/meta-box-save.php:60
 #: includes/Actions/Change_Workflow_Status.php:38
-#: includes/Carts.php:112
+#: includes/Carts.php:137
 msgid "Active"
 msgstr ""
 
@@ -2197,7 +2193,7 @@ msgid "or"
 msgstr ""
 
 #: admin/views/settings-form.php:19
-#: templates/communication-preferences/communication-form.php:43
+#: templates/communication-preferences/communication-form.php:50
 #: templates/communication-preferences/signup-form.php:36
 msgid "Save changes"
 msgstr ""
@@ -2631,6 +2627,11 @@ msgstr ""
 #: includes/Actions/Order_Update_Meta.php:38
 #: includes/Actions/Update_Product_Meta.php:34
 msgid "Key"
+msgstr ""
+
+#. translators: %s: meta key
+#: includes/Actions/Customer_Update_Meta.php:73
+msgid "The custom field \"%s\" is protected and cannot be updated by a workflow."
 msgstr ""
 
 #: includes/Actions/Custom_Function.php:19
@@ -3671,19 +3672,19 @@ msgstr ""
 msgid "Free!"
 msgstr ""
 
-#: includes/Carts.php:113
+#: includes/Carts.php:138
 msgid "Abandoned"
 msgstr ""
 
-#: includes/Carts.php:114
+#: includes/Carts.php:139
 msgid "Emptied"
 msgstr ""
 
-#: includes/Carts.php:115
+#: includes/Carts.php:140
 msgid "Placed"
 msgstr ""
 
-#: includes/Carts.php:116
+#: includes/Carts.php:141
 msgid "Recovered"
 msgstr ""
 
@@ -3696,12 +3697,28 @@ msgstr ""
 msgid "Communication"
 msgstr ""
 
-#: includes/Communication_Page.php:74
-#: includes/Frontend_Form_Handler.php:105
+#: includes/Communication_Page.php:211
+msgid "This link is for a different email address, so we didn't change any preferences. To use it, sign out first."
+msgstr ""
+
+#: includes/Communication_Page.php:263
+msgid "Your link had expired, so here are your current preferences."
+msgstr ""
+
+#: includes/Communication_Page.php:379
+msgid "This link can't be used to change your preferences."
+msgstr ""
+
+#. translators: %1$s my account link start, %2$s my account link end.
+#: includes/Communication_Page.php:386
+msgid "To manage other preferences, %1$ssign in to your account%2$s."
+msgstr ""
+
+#: includes/Communication_Page.php:411
 msgid "Saved successfully! You won't receive marketing communications from us."
 msgstr ""
 
-#: includes/Communication_Page.php:77
+#: includes/Communication_Page.php:417
 msgid "Saved successfully! We will no longer record when you open our emails or click links in them."
 msgstr ""
 
@@ -4032,34 +4049,34 @@ msgstr ""
 msgid "Yes"
 msgstr ""
 
-#: includes/Frontend_Endpoints.php:120
+#: includes/Frontend_Endpoints.php:257
 msgid "Your cart has been restored."
 msgstr ""
 
-#: includes/Frontend_Endpoints.php:126
+#: includes/Frontend_Endpoints.php:263
 msgid "This cart has already been restored or is no longer available."
 msgstr ""
 
-#: includes/Frontend_Endpoints.php:131
+#: includes/Frontend_Endpoints.php:268
 msgid "This cart is empty, so there is nothing to restore."
 msgstr ""
 
-#: includes/Frontend_Endpoints.php:134
+#: includes/Frontend_Endpoints.php:271
 msgid "Your cart could not be restored, it may have expired."
 msgstr ""
 
-#: includes/Frontend_Endpoints.php:156
+#: includes/Frontend_Endpoints.php:299
 msgid "The previous order could not be found."
 msgstr ""
 
 #. translators: %d Number of unavailable items from previous order.
-#: includes/Frontend_Endpoints.php:248
+#: includes/Frontend_Endpoints.php:391
 msgid "%d item from your previous order is currently unavailable and could not be added to your cart."
 msgid_plural "%d items from your previous order are currently unavailable and could not be added to your cart."
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/Frontend_Endpoints.php:261
+#: includes/Frontend_Endpoints.php:404
 msgid "The cart has been filled with the items from your previous order."
 msgstr ""
 
@@ -4092,24 +4109,44 @@ msgid "Please login to your account."
 msgstr ""
 
 #. translators: %s Error code when form can not be submitted.
-#: includes/Frontend_Form_Handler.php:42
+#: includes/Frontend_Form_Handler.php:56
 msgid "The form could not be submitted. Error code: %s"
 msgstr ""
 
-#: includes/Frontend_Form_Handler.php:73
+#: includes/Frontend_Form_Handler.php:112
+msgid "Your changes couldn't be saved because this link can't be used to update preferences. Sign in to your account to manage them."
+msgstr ""
+
+#: includes/Frontend_Form_Handler.php:136
+msgid "Your changes couldn't be saved because this link has expired. Sign in to your account to update your preferences."
+msgstr ""
+
+#: includes/Frontend_Form_Handler.php:143
+msgid "Your changes couldn't be saved because this link can no longer be used to update your preferences. Sign in to your account, or use a link from a more recent email."
+msgstr ""
+
+#: includes/Frontend_Form_Handler.php:156
+msgid "Your changes couldn't be saved because this link is for a different email address. To use it, sign out first."
+msgstr ""
+
+#: includes/Frontend_Form_Handler.php:171
 msgid "Your communication preferences were updated."
 msgstr ""
 
-#: includes/Frontend_Form_Handler.php:89
-msgid "It was not possible to update communication preferences for this email."
-msgstr ""
-
-#: includes/Frontend_Form_Handler.php:96
+#: includes/Frontend_Form_Handler.php:186
 msgid "Please enter a valid email address."
 msgstr ""
 
-#: includes/Frontend_Form_Handler.php:103
-msgid "Thanks! Your signup was successful."
+#: includes/Frontend_Form_Handler.php:204
+msgid "Thanks! We've received your request. If your subscription still needs confirming, we've emailed you a link to complete it."
+msgstr ""
+
+#: includes/Frontend_Form_Handler.php:235
+msgid "Thanks! We've received your request to receive marketing communications."
+msgstr ""
+
+#: includes/Frontend_Form_Handler.php:237
+msgid "Thanks! We've received your request to stop receiving marketing communications."
 msgstr ""
 
 #. translators: 1: Deprecated class name, 2: Version number, 3: Replacement class name.
@@ -4122,24 +4159,24 @@ msgstr ""
 msgid "%1$s is deprecated since version %2$s with no alternative available."
 msgstr ""
 
-#: includes/Installer.php:272
+#: includes/Installer.php:291
 msgid "View AutomateWoo Settings"
 msgstr ""
 
-#: includes/Installer.php:273
+#: includes/Installer.php:292
 msgid "View AutomateWoo Documentation"
 msgstr ""
 
-#: includes/Installer.php:273
+#: includes/Installer.php:292
 msgid "Documentation"
 msgstr ""
 
-#: includes/Installer.php:303
+#: includes/Installer.php:322
 msgctxt "Page slug"
 msgid "communication-preferences"
 msgstr ""
 
-#: includes/Installer.php:304
+#: includes/Installer.php:323
 msgctxt "Page title"
 msgid "Communication preferences"
 msgstr ""
@@ -4296,6 +4333,24 @@ msgstr ""
 #: includes/Notifications/WelcomeNotification.php:71
 #: admin/assets/build/index.js:28
 msgid "Create workflow"
+msgstr ""
+
+#: includes/Optin_Confirmation.php:230
+msgid "Thanks for signing up. Please confirm your subscription by opening the link below."
+msgstr ""
+
+#: includes/Optin_Confirmation.php:231
+#: includes/Optin_Confirmation.php:241
+#: templates/optin-confirmation.php:26
+msgid "Confirm your subscription"
+msgstr ""
+
+#: includes/Optin_Confirmation.php:232
+msgid "If you didn't request this, you can ignore this email."
+msgstr ""
+
+#: includes/Optin_Confirmation.php:240
+msgid "Please confirm your subscription"
 msgstr ""
 
 #: includes/Options.php:56
@@ -4858,27 +4913,27 @@ msgstr ""
 msgid "Limit response to one or more orders."
 msgstr ""
 
-#: includes/Rest_Api/Controllers/ManualWorkflowRunner.php:43
+#: includes/Rest_Api/Controllers/ManualWorkflowRunner.php:50
 msgid "The workflow ID."
 msgstr ""
 
-#: includes/Rest_Api/Controllers/ManualWorkflowRunner.php:73
+#: includes/Rest_Api/Controllers/ManualWorkflowRunner.php:80
 msgid "The rule group number to find matches for."
 msgstr ""
 
-#: includes/Rest_Api/Controllers/ManualWorkflowRunner.php:80
+#: includes/Rest_Api/Controllers/ManualWorkflowRunner.php:88
 msgid "The current batch offset relative to the rule group number."
 msgstr ""
 
-#: includes/Rest_Api/Controllers/ManualWorkflowRunner.php:87
+#: includes/Rest_Api/Controllers/ManualWorkflowRunner.php:96
 msgid "The maximum number of items to find in a single request."
 msgstr ""
 
-#: includes/Rest_Api/Controllers/ManualWorkflowRunner.php:109
+#: includes/Rest_Api/Controllers/ManualWorkflowRunner.php:120
 msgid "A batch of items to add to the workflow queue."
 msgstr ""
 
-#: includes/Rest_Api/Controllers/ManualWorkflowRunner.php:273
+#: includes/Rest_Api/Controllers/ManualWorkflowRunner.php:288
 msgid "Workflow must be a manual workflow."
 msgstr ""
 
@@ -6029,6 +6084,10 @@ msgstr ""
 msgid "<a href=\"%s\">View details</a>"
 msgstr ""
 
+#: includes/Tools/Abstract.php:55
+msgid "Success - Items may be still be processing in the background."
+msgstr ""
+
 #: includes/Tools/Background_Processed_Abstract.php:27
 msgid "If you are processing a large number of items they will be processed in the background."
 msgstr ""
@@ -6212,6 +6271,46 @@ msgstr ""
 #. translators: %s Workflow title.
 #: includes/Tools/Reset_Workflow_Records.php:81
 msgid "Are you sure you want to reset all records for the workflow <strong>%s</strong>? This can not be undone."
+msgstr ""
+
+#: includes/Tools/Rotate_Preference_Links.php:24
+msgid "Rotate preference links"
+msgstr ""
+
+#: includes/Tools/Rotate_Preference_Links.php:25
+msgid "Invalidates every previously sent preference link. One-click unsubscribe links in emails already sent keep working for a grace period, so your bulk sending stays compliant. Customers will need a new link to manage their preferences."
+msgstr ""
+
+#: includes/Tools/Rotate_Preference_Links.php:26
+msgid "This only invalidates tokenized links. Older links that contain a raw customer key aren't affected and keep working until customer key acceptance is switched off."
+msgstr ""
+
+#. translators: %s: time until the earlier grace period ends, e.g. "6 days"
+#: includes/Tools/Rotate_Preference_Links.php:42
+msgid "Preference links were already rotated recently. You can rotate again now, but one-click unsubscribe links in emails sent since that rotation will stop working immediately. Links from emails sent before it aren't affected — they keep working for another %s, as promised. This can not be undone."
+msgstr ""
+
+#. translators: %s: human-readable grace period, e.g. "1 week"
+#: includes/Tools/Rotate_Preference_Links.php:53
+msgid "Are you sure you want to rotate preference links? Existing preference links stop working immediately. One-click unsubscribe links in emails already sent keep working for %s, so recipients can still opt out and your sender reputation isn't hurt. This can not be undone."
+msgstr ""
+
+#: includes/Tools/Rotate_Preference_Links.php:57
+msgid "Are you sure you want to rotate preference links? All existing unsubscribe and preference links stop working immediately, including unsubscribe links in emails already sent. Customers who received those emails must visit the site to opt out again. This can not be undone."
+msgstr ""
+
+#. translators: %s: time until the earlier grace period ends, e.g. "6 days"
+#: includes/Tools/Rotate_Preference_Links.php:80
+msgid "Preference links were rotated again. One-click unsubscribe links from emails sent between the two rotations stopped working immediately. Links from emails sent before the earlier rotation weren't affected — they keep working for another %s."
+msgstr ""
+
+#. translators: %s: human-readable grace period, e.g. "1 week"
+#: includes/Tools/Rotate_Preference_Links.php:88
+msgid "Preference links were rotated. Existing links stopped working, except one-click unsubscribe links in emails already sent — those keep working for %s."
+msgstr ""
+
+#: includes/Tools/Rotate_Preference_Links.php:94
+msgid "Preference links were rotated. All existing preference and unsubscribe links stopped working immediately."
 msgstr ""
 
 #: includes/Traits/MailServiceAction.php:45
@@ -8403,13 +8502,29 @@ msgstr ""
 msgid "We couldn't find any customer data matching your request. Your account may have been deleted."
 msgstr ""
 
+#: templates/communication-preferences/communication-form-no-customer.php:17
+msgid "This link has expired. Sign in to your account to manage your communication preferences."
+msgstr ""
+
+#: templates/communication-preferences/communication-form-no-customer.php:18
+msgid "If you don't have an account, use the unsubscribe link in your next email from us."
+msgstr ""
+
+#: templates/communication-preferences/communication-form-no-customer.php:20
+msgid "This link can't be used to unsubscribe, so we didn't change any preferences."
+msgstr ""
+
+#: templates/communication-preferences/communication-form-no-customer.php:21
+msgid "To unsubscribe, use the unsubscribe link in a recent email from us, or sign in to your account to manage your communication preferences."
+msgstr ""
+
 #. translators: %1$s my account link start, %2$s my account link end.
-#: templates/communication-preferences/communication-form-no-customer.php:19
+#: templates/communication-preferences/communication-form-no-customer.php:25
 msgid "%1$sSign in to your account%2$s to manage your communication preferences."
 msgstr ""
 
 #. translators: %s Email address.
-#: templates/communication-preferences/communication-form.php:28
+#: templates/communication-preferences/communication-form.php:35
 msgid "You are managing preferences for %s."
 msgstr ""
 
@@ -8444,6 +8559,31 @@ msgstr ""
 #: templates/email/review-grid-2-col.php:47
 #: templates/email/review-rows.php:42
 msgid "Leave a review"
+msgstr ""
+
+#: templates/optin-confirmation.php:27
+msgid "Please confirm that you want to subscribe."
+msgstr ""
+
+#: templates/optin-confirmation.php:33
+msgid "Confirm subscription"
+msgstr ""
+
+#: templates/optin-confirmation.php:39
+msgid "Your subscription is confirmed"
+msgstr ""
+
+#: templates/optin-confirmation.php:40
+msgid "Thanks! Your subscription has been confirmed."
+msgstr ""
+
+#: templates/optin-confirmation.php:42
+#: templates/optin-confirmation.php:49
+msgid "Continue"
+msgstr ""
+
+#: templates/optin-confirmation.php:47
+msgid "This link is invalid or has expired"
 msgstr ""
 
 #: admin/assets/build/analytics.js:1

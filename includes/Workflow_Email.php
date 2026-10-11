@@ -228,7 +228,7 @@ class Workflow_Email {
 	 * On top of that, a recipient who opted out is never tracked: no pixel and no
 	 * rewritten links, the same shape as --notracking, for that send only.
 	 *
-	 * @since x.x.x
+	 * @since 6.9.1
 	 *
 	 * @return bool
 	 */
@@ -250,7 +250,7 @@ class Workflow_Email {
 	 * HTML and plain text. Every miss was an uncached database read. Keyed on the
 	 * address so set_recipient() invalidates it.
 	 *
-	 * @since x.x.x
+	 * @since 6.9.1
 	 *
 	 * @return \AutomateWoo\Customer|false
 	 */
@@ -444,7 +444,7 @@ class Workflow_Email {
 	 * Unlike the unsubscribe link this is NOT suppressed for transactional workflows: a
 	 * transactional email can still be tracked, so the consent is owed either way.
 	 *
-	 * @since x.x.x
+	 * @since 6.9.1
 	 *
 	 * @return bool|string
 	 */
@@ -465,7 +465,7 @@ class Workflow_Email {
 	/**
 	 * Link text for the tracking opt-out.
 	 *
-	 * @since x.x.x
+	 * @since 6.9.1
 	 *
 	 * @return string
 	 */
@@ -476,7 +476,7 @@ class Workflow_Email {
 	/**
 	 * The tracking opt-out link, as HTML.
 	 *
-	 * @since x.x.x
+	 * @since 6.9.1
 	 *
 	 * @return bool|string
 	 */
@@ -494,7 +494,7 @@ class Workflow_Email {
 	/**
 	 * Every automatic footer link for this email, joined.
 	 *
-	 * @since x.x.x
+	 * @since 6.9.1
 	 *
 	 * @return bool|string
 	 */
@@ -538,7 +538,7 @@ class Workflow_Email {
 	/**
 	 * Get the plain text tracking opt-out footer.
 	 *
-	 * @since x.x.x
+	 * @since 6.9.1
 	 *
 	 * @return bool|string
 	 */

@@ -143,7 +143,7 @@ class Action_Send_SMS_Twilio extends Action {
 	 * If they opted out, the body carries plain links for everyone on that run, which is
 	 * the conservative direction and matches how the workflow's own tracking flag behaves.
 	 *
-	 * @since x.x.x
+	 * @since 6.9.1
 	 *
 	 * @return bool
 	 */

@@ -10,6 +10,7 @@ use AutomateWoo\Tool_Delete_Data;
 use AutomateWoo\Tool_Optin_Importer;
 use AutomateWoo\Tool_Optout_Importer;
 use AutomateWoo\Tool_Reset_Workflow_Records;
+use AutomateWoo\Tool_Rotate_Preference_Links;
 
 /**
  * Tools service class.
@@ -52,6 +53,7 @@ class ToolsService {
 		$class_names[] = RebuildCustomerLastPurchasedDates::class;
 		$class_names[] = Tool_Reset_Workflow_Records::class;
 		$class_names[] = Tool_Delete_Data::class;
+		$class_names[] = Tool_Rotate_Preference_Links::class;
 
 		$class_names = apply_filters( 'automatewoo/tools', $class_names );
 

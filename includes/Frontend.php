@@ -46,12 +46,20 @@ class Frontend {
 
 
 	/**
-	 * If $customer is set the customer key will be added to the link.
+	 * If $customer is set a signed `aw_token` will be added to the link.
 	 *
 	 * @since 6.5.0 Added the $workflow_id parameter.
+	 * @since 6.9.1 Emits a signed, purpose-bound `aw_token` instead of the
+	 *              durable `customer_key`. The raw key is only emitted as a
+	 *              fallback for intents a token cannot represent (an intent
+	 *              not matching `^[A-Za-z0-9_-]*$`, e.g. from an add-on), so those
+	 *              links keep working through the `customer_key` acceptance
+	 *              path while it remains open.
 	 *
 	 * @param Customer|false $customer    Customer object.
-	 * @param bool|string    $intent      Communication page intent.
+	 * @param bool|string    $intent      Communication page intent. Any non-string value
+	 *                                     (e.g. the default `false`, or `true`) means no
+	 *                                     specific intent and yields a management link.
 	 * @param int            $workflow_id Workflow that caused the opt-out.
 	 * @return bool|string
 	 */
@@ -61,17 +69,47 @@ class Frontend {
 			return false;
 		}
 
-		$args = [];
+		if ( ! is_string( $intent ) ) {
+			// Normalise rather than cast: `(string) true` is "1", which would
+			// mint a token bound to the intent "1" instead of a management link.
+			$intent = '';
+		}
+
+		$args        = [];
+		$workflow_id = Clean::id( $workflow_id );
 
 		if ( $customer ) {
-			$args['customer_key'] = urlencode( $customer->get_key() ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.urlencode_urlencode -- Preserve existing query-arg encoding semantics for the customer key.
+			$token = Preferences_Token::generate( $customer, $intent, $workflow_id );
+
+			if ( $token ) {
+				$args['aw_token'] = $token;
+			} else {
+				// The intent cannot be represented in a token (it contains
+				// characters outside `^[A-Za-z0-9_-]*$`). Fall back to the legacy
+				// customer_key so third-party intents keep working while the
+				// `automatewoo/preferences/accept_customer_key` window is open.
+				// Warn once per request per distinct intent: a bulk send generates
+				// this link once per email, and repeating an identical warning
+				// thousands of times would flood the log without adding signal,
+				// while collapsing different intents would hide which one is
+				// falling back. A static local resets with each PHP request.
+				static $warned_intents = [];
+
+				if ( ! isset( $warned_intents[ $intent ] ) ) {
+					$warned_intents[ $intent ] = true;
+					Logger::warning(
+						'preferences',
+						sprintf( 'Communication page link for intent "%s" could not be tokenized; emitting a legacy customer_key. This intent will stop working when customer_key acceptance is disabled — use an intent matching ^[A-Za-z0-9_-]*$.', $intent )
+					);
+				}
+				$args['customer_key'] = urlencode( $customer->get_key() ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.urlencode_urlencode -- Preserve existing query-arg encoding semantics for the customer key.
+			}
 		}
 
 		if ( $intent ) {
 			$args['intent'] = urlencode( $intent ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.urlencode_urlencode -- Preserve existing query-arg encoding semantics for the intent value.
 		}
 
-		$workflow_id = Clean::id( $workflow_id );
 		if ( $workflow_id ) {
 			$args['workflow'] = $workflow_id;
 		}

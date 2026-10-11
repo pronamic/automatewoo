@@ -1244,6 +1244,10 @@ class Workflow {
 	/**
 	 * Returns false if the workflow is exempt from unsubscribing.
 	 *
+	 * @since 6.9.1 The URL carries a signed `aw_token` (bound to the
+	 *              `unsubscribe` intent and this workflow) instead of the
+	 *              durable `customer_key`.
+	 *
 	 * @param Customer $customer
 	 * @return bool|string
 	 */
@@ -1260,10 +1264,9 @@ class Workflow {
 		// Also, the URL is just the My Account Page. Not reaching any user input.
 		$url = add_query_arg(
 			[
-				'aw-action'    => 'unsubscribe',
-				'workflow'     => $this->get_id(),
-				// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.urlencode_urlencode -- Preserve existing URL encoding.
-				'customer_key' => urlencode( $customer->get_key() ),
+				'aw-action' => 'unsubscribe',
+				'workflow'  => $this->get_id(),
+				'aw_token'  => Preferences_Token::generate( $customer, 'unsubscribe', $this->get_id() ),
 			],
 			wc_get_page_permalink( 'myaccount' )
 		);

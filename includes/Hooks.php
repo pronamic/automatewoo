@@ -73,6 +73,10 @@ class Hooks {
 
 		add_action( 'woocommerce_created_customer', [ 'AutomateWoo\Frontend', 'process_account_signup_optin' ], 20 );
 
+		// An explicit opt-out supersedes a pending signup confirmation, so clear the
+		// confirmation token whenever a customer opts out.
+		add_action( 'automatewoo/customer/opted_out', [ 'AutomateWoo\Optin_Confirmation', 'clear_pending' ] );
+
 		// workflow fatal error monitor
 		add_action( 'automatewoo/workflow/before_run', [ 'AutomateWoo\Workflow_Fatal_Error_Monitor', 'attach' ] );
 		add_action( 'automatewoo_after_workflow_run', [ 'AutomateWoo\Workflow_Fatal_Error_Monitor', 'detach' ] );

@@ -11,6 +11,28 @@ use AutomateWoo\Carts\CartRestorer;
  */
 class Carts {
 
+	/**
+	 * Customer meta key recording the ID of the stored cart that was created by an
+	 * unverified capture-only identity — one resolved from a typed email (guest
+	 * checkout, comment form) or from an inherited legacy tracking cookie (bare, or
+	 * its upgraded-marked rewrite). Only a cart carrying this mark may be updated by
+	 * such an identity; every other cart — including all carts that predate this
+	 * protection — is refused (fail closed). The mark is cleared as soon as the cart
+	 * is written under a verified identity (logged in, placed order, or a genuine
+	 * signed tracking cookie), permanently protecting the cart from unverified writes.
+	 *
+	 * Both capture-only classes deliberately share this one mark: they hold identical
+	 * rights (create; update only what they created; a verified write revokes), and a
+	 * single mechanism means no ambiguity about which class authored a cart. The
+	 * accepted residual is that one unverified claim to a customer can update a cart
+	 * another unverified claim to the same customer created — such a cart never had
+	 * verified authorship, so nothing the account holder built is exposed.
+	 *
+	 * @since 6.9.1
+	 * @var string
+	 */
+	const UNVERIFIED_AUTHORED_CART_META_KEY = 'unverified_authored_cart_id';
+
 	/** @var bool - when true cart has been change */
 	public static $is_changed = false;
 
@@ -56,6 +78,9 @@ class Carts {
 		add_action( 'wp', [ $self, 'check_for_cart_update_cookie' ], 99 );
 
 		add_action( 'woocommerce_checkout_create_order', [ $self, 'store_cart_id_in_order_meta' ] );
+		// Block checkout goes through the Store API, which never fires
+		// woocommerce_checkout_create_order, so record the cart there too.
+		add_action( 'woocommerce_store_api_checkout_update_order_meta', [ $self, 'store_cart_id_in_order_meta' ] );
 	}
 
 
@@ -160,15 +185,67 @@ class Carts {
 	 * Will also clear a cart if necessary.
 	 *
 	 * @param Customer $customer
+	 *
+	 * @since 6.9.1 A registered customer's stored cart is only fully writable when their
+	 *              identity is verified (logged in, resolved server-side this request, or
+	 *              a genuine signed tracking cookie). A bare cookie value is not proof of
+	 *              identity, so a forged cookie carrying a leaked key can no longer
+	 *              overwrite the cart — and neither can the marked cookie a legacy value
+	 *              is upgraded to, on any later request. Capture-only identities — a
+	 *              typed email (guest checkout, comment form) or an inherited legacy
+	 *              cookie — may still create a stored cart when the customer has none
+	 *              and may keep writing to the cart they created themselves — content
+	 *              syncs and emptied marks alike — but no other cart, including every
+	 *              cart that predates this protection (fail closed). Marking a cart
+	 *              emptied is included because emptied is terminal for the
+	 *              abandoned-cart workflow: an unverified claim allowed to set it
+	 *              could silently kill the account holder's workflow, and it never
+	 *              reflects the visitor's own action anyway — their WC session cart is
+	 *              a different cart from the account's stored one. This keeps
+	 *              abandoned-cart capture working for existing logged-out shoppers and
+	 *              for registered shoppers checking out as guests when the account has
+	 *              no current stored cart, while stopping either claim from touching a
+	 *              cart the real account holder built. The remaining limitation: when
+	 *              a current stored cart with verified authorship exists, a
+	 *              capture-only session never writes to it at all — updates resume
+	 *              only under a verified identity (e.g. logging in). The guarded early returns leave the WC session
+	 *              completely untouched: refusing to mutate must include refusing to
+	 *              delete or repoint the session's cart (see
+	 *              update_cart_id_in_wc_session(), which deletes a differing session
+	 *              cart as dedupe — a power no refuse path may hold).
 	 */
 	public static function update_stored_customer_cart( $customer ) {
 		if ( ! $customer ) {
 			return;
 		}
 
-		// If the customer is registered and is logged out, their cart will be emptied
-		// At this point we are tracking them via cookie so it doesn't make sense to clear their stored cart
-		if ( $customer->is_registered() && ! is_user_logged_in() && WC()->cart->is_empty() ) {
+		// WooCommerce does not load the cart in REST API, cron or non-AJAX admin requests
+		// (such as admin-post.php), but third-party code can still reach this method there.
+		// With no cart loaded there is nothing to sync, and treating it as an empty cart
+		// would wrongly mark the stored cart emptied.
+		if ( ! WC()->cart ) {
+			return;
+		}
+
+		$is_capture_only_identity = false;
+
+		if ( $customer->is_registered() && ! is_user_logged_in() && ! Session_Tracker::is_customer_identity_verified( $customer ) ) {
+			if (
+				! Session_Tracker::is_customer_identity_from_captured_email( $customer )
+				&& ! Session_Tracker::is_customer_identity_from_legacy_cookie( $customer )
+			) {
+				return; // refuse: an unverified identity mutates nothing, the WC session included
+			}
+			$is_capture_only_identity = true;
+		}
+
+		// A verified cookie identity's WC session cart is emptied by logging out, so an
+		// empty session cart is not evidence they emptied their stored cart — leave it.
+		// A capture-only identity is different: logging in replaces its cookie with a
+		// signed one, so it never holds a logout-emptied session; let it fall through
+		// so it can mark the cart it authored itself emptied. The emptied branch below
+		// enforces that authorship, exactly like the content branch.
+		if ( $customer->is_registered() && ! is_user_logged_in() && WC()->cart->is_empty() && ! $is_capture_only_identity ) {
 			return;
 		}
 
@@ -177,7 +254,21 @@ class Carts {
 		if ( $stored_cart ) {
 			// mark cart if empty otherwise update it
 			if ( WC()->cart->is_empty() ) {
+				if ( $is_capture_only_identity && ! self::is_cart_unverified_authored( $customer, $stored_cart ) ) {
+					// Same rule as the content branch: a capture-only identity may only
+					// write to the cart it authored itself, and marking a cart emptied
+					// IS a write — emptied is terminal, so an unverified claim (a typed
+					// email in an open comment form is enough) allowed to set it could
+					// kill the account holder's abandoned-cart workflow at will. Nor
+					// does the empty session reflect anything this visitor did to the
+					// stored cart: their WC session cart is a different cart. Genuine
+					// guest checkout is unaffected — a shopper at checkout has items
+					// (the sync branch), and a cart captured from their typed email
+					// carries the authorship mark, so they can still empty it later.
+					return;
+				}
 				self::mark_cart_as_emptied( $stored_cart );
+				self::record_cart_authorship( $customer, $stored_cart, $is_capture_only_identity );
 
 				/**
 				 * Runs when a stored cart is cleared via the frontend.
@@ -186,7 +277,12 @@ class Carts {
 				 */
 				do_action( 'automatewoo/stored_cart/deleted_via_frontend', $stored_cart );
 			} else {
+				if ( $is_capture_only_identity && ! self::is_cart_unverified_authored( $customer, $stored_cart ) ) {
+					return; // a capture-only identity may only sync content into the cart it created itself, never any other
+				}
+
 				$stored_cart->sync();
+				self::record_cart_authorship( $customer, $stored_cart, $is_capture_only_identity );
 
 				/**
 				 * Runs when stored cart is updated via the frontend.
@@ -205,6 +301,7 @@ class Carts {
 			}
 			$stored_cart->set_token();
 			$stored_cart->sync();
+			self::record_cart_authorship( $customer, $stored_cart, $is_capture_only_identity );
 
 			/**
 			 * Runs when a new stored cart is created via the frontend.
@@ -215,8 +312,61 @@ class Carts {
 		}
 
 		// If there is a current stored cart, store the ID in session data.
+		// This runs only after a write pass the identity was allowed to make: the
+		// guarded early returns above skip it, because update_cart_id_in_wc_session()
+		// deletes a differing session cart as dedupe, and a refuse path must not be
+		// able to destroy anything. The cost is that a guarded request can leave the
+		// session's automatewoo_cart_id stale (or never written) for
+		// store_cart_id_in_order_meta(). That is safe because clear_cart_by_order()
+		// only trusts the recorded id when it resolves to a real cart, and falls
+		// back to customer resolution otherwise.
 		if ( $stored_cart && $stored_cart->is_current() ) {
 			self::update_cart_id_in_wc_session( $stored_cart );
+		}
+	}
+
+	/**
+	 * Whether a registered customer's stored cart carries the unverified authorship
+	 * mark, i.e. it was created by a capture-only identity (typed email or inherited
+	 * legacy cookie) and has not been written under a verified identity since.
+	 *
+	 * @since 6.9.1
+	 *
+	 * @param Customer $customer
+	 * @param Cart     $cart
+	 *
+	 * @return bool
+	 */
+	private static function is_cart_unverified_authored( $customer, $cart ) {
+		$marked_cart_id = (int) $customer->get_meta( self::UNVERIFIED_AUTHORED_CART_META_KEY );
+
+		return $marked_cart_id && $marked_cart_id === (int) $cart->get_id();
+	}
+
+	/**
+	 * Records how a registered customer's stored cart was just written. A capture-only
+	 * write (typed email or inherited legacy cookie) marks the cart as
+	 * unverified-authored so the same class of identity can keep updating it across
+	 * requests — a multi-request guest checkout, or a returning legacy-cookie shopper
+	 * building a cart; a verified write clears the mark, permanently protecting the
+	 * cart from capture-only writes. Carts never marked — including all carts that
+	 * predate this protection — are protected by default.
+	 *
+	 * @since 6.9.1
+	 *
+	 * @param Customer $customer
+	 * @param Cart     $cart
+	 * @param bool     $is_capture_only_identity
+	 */
+	private static function record_cart_authorship( $customer, $cart, $is_capture_only_identity ) {
+		if ( ! $customer->is_registered() || ! $cart->get_id() ) {
+			return;
+		}
+
+		if ( $is_capture_only_identity ) {
+			$customer->update_meta( self::UNVERIFIED_AUTHORED_CART_META_KEY, $cart->get_id() );
+		} elseif ( (int) $customer->get_meta( self::UNVERIFIED_AUTHORED_CART_META_KEY ) ) {
+			$customer->delete_meta( self::UNVERIFIED_AUTHORED_CART_META_KEY );
 		}
 	}
 
@@ -301,7 +451,16 @@ class Carts {
 
 
 	/**
-	 * Clear cart when transition changes from pending, cancelled or failed
+	 * Clear cart when transition changes from pending, cancelled or failed,
+	 * or when the order becomes paid.
+	 *
+	 * @since 6.9.1 Also runs when the order transitions into a paid status from a
+	 *              non-paid one (e.g. on-hold to processing for a bank transfer).
+	 *              The old guard only fired when leaving pending/failed/cancelled,
+	 *              so the paid-order cleanup in clear_cart_by_order() never re-ran
+	 *              for orders that passed through on-hold. Running twice for one
+	 *              order (pending to processing satisfies both conditions across
+	 *              hooks) is harmless: marking a cart placed/recovered is idempotent.
 	 *
 	 * @param int    $order_id
 	 * @param string $old_status
@@ -309,15 +468,80 @@ class Carts {
 	 */
 	public static function clear_cart_on_order_status_changed( $order_id, $old_status, $new_status ) {
 		$failed_statuses = [ 'pending', 'failed', 'cancelled' ];
+		$paid_statuses   = wc_get_is_paid_statuses();
 
-		if ( in_array( $old_status, $failed_statuses, true ) && ! in_array( $new_status, $failed_statuses, true ) ) {
+		$leaves_failed_status = in_array( $old_status, $failed_statuses, true ) && ! in_array( $new_status, $failed_statuses, true );
+		$becomes_paid         = ! in_array( $old_status, $paid_statuses, true ) && in_array( $new_status, $paid_statuses, true );
+
+		if ( $leaves_failed_status || $becomes_paid ) {
 			self::clear_cart_by_order( $order_id );
 		}
 	}
 
 
 	/**
-	 * Clears and carts that match the customer from an order
+	 * Marks the carts an order settles.
+	 *
+	 * The rule, in one sentence: an order's cleanup marks the current cart of
+	 * every identity the order itself attests — the cart recorded on it at
+	 * checkout, the guest under its billing email, and (for a genuinely paid,
+	 * non-zero guest order) the registered account under that email — skipping a
+	 * lookup only when the recorded cart already belongs to that identity, and
+	 * guessing at the buyer's current cart only when no recorded cart resolves.
+	 * The lookups are peers, not alternatives: each reads its own evidence off
+	 * the order, so which carts get marked never depends on which branch
+	 * happened to run first.
+	 *
+	 * Why each lookup exists, and what bounds it:
+	 *
+	 * - The recorded cart (`automatewoo_cart_id`, written at checkout) is the
+	 *   one cart the order proves it was placed from. A record of 0, or one
+	 *   pointing at a cart that no longer exists, is NOT trusted: 0 can mean "no
+	 *   stored cart existed", but equally that the session pointer was missing
+	 *   or stale when the order was created (expired session row, or a guarded
+	 *   early return skipped the pointer write) while a stored cart very much
+	 *   exists — so anything short of a resolvable id falls back to resolving
+	 *   the order's own user, exactly like an order that predates the record.
+	 *   When the record DOES resolve, that fallback must not run: it guesses at
+	 *   whatever cart the buyer holds now, and marked the wrong cart whenever
+	 *   the two diverged (a fresh cart abandoned while a bank-transfer order sat
+	 *   on hold).
+	 *
+	 * - The billing-email lookups are not guesses about the same thing: they
+	 *   read the order's own billing email, so they run on every path — a
+	 *   resolvable record proves which cart the order came from, not that the
+	 *   email's owner holds no other converted cart. A session pointer that was
+	 *   never refreshed (a capture-only identity takes guarded early returns in
+	 *   update_stored_customer_cart()) can record a resolvable-but-wrong cart,
+	 *   and treating the record as licence to skip the email lookups left the
+	 *   account's real cart live and kept emailing the shopper about the order
+	 *   they had just paid for. The one exception per lookup: when the recorded
+	 *   cart itself belongs to that guest or that account, the order has already
+	 *   named which of their carts converted, and a newer cart they abandoned
+	 *   while the order sat unpaid must stay live.
+	 *
+	 * - The registered-account lookup additionally requires a paid, non-zero
+	 *   guest order. Guest checkout permits typing a registered address, so the
+	 *   buyer may own no guest record and never mint a session identity — but a
+	 *   typed email alone must not touch a registered account's data: an unpaid
+	 *   order is a claim (the paid transition re-runs this method later), and
+	 *   is_paid() is status-based, so a zero-total order (100%-off coupon, free
+	 *   product) reaches processing for nothing. The total is read in the `edit`
+	 *   context: the `view` value passes through the `woocommerce_order_get_total`
+	 *   filter, and a gate deciding whether a cart may be marked must read what
+	 *   the store recorded, not what a theme displays. The accepted trade-offs:
+	 *   a registered shopper guest-checking-out a fully-discounted order with no
+	 *   resolvable cart record keeps their abandoned cart live, and an attacker
+	 *   willing to place a real paid or cash-on-delivery order — spending money,
+	 *   or creating a traceable order the merchant sees and cancels — can still
+	 *   reach the account's cart; that residual is accepted because it attaches
+	 *   cost and visibility, where the closed vector was free and silent. This
+	 *   never verifies the browser or writes a cookie: it only marks carts.
+	 *
+	 * @since 6.9.1 Restructured around the rule above: the recorded cart replaced
+	 *              the customer-resolution guess, and the billing-email lookups
+	 *              (guest, and registered account for a paid non-zero guest order)
+	 *              became peers that run on every path.
 	 *
 	 * @param int $order_id
 	 */
@@ -327,17 +551,48 @@ class Carts {
 			return;
 		}
 
-		$user_id = $order->get_user_id();
-		if ( $user_id ) {
-			$cart = Cart_Factory::get_by_user_id( $user_id );
+		$recorded_cart_id = (int) $order->get_meta( 'automatewoo_cart_id' );
+		$recorded_cart    = $recorded_cart_id ? Cart_Factory::get( $recorded_cart_id ) : false;
+		$billing_email    = Clean::email( $order->get_billing_email() );
+		$order_user_id    = $order->get_user_id();
+
+		// The cart the order was placed from. Only when no recorded cart resolves
+		// may the cleanup guess via the order's own user: marking whatever cart
+		// that user holds now would suppress a genuine abandoned-cart workflow, or
+		// count an unrelated cart as recovered.
+		if ( $recorded_cart ) {
+			self::mark_cart_as_placed_or_recovered( $recorded_cart );
+		} elseif ( $order_user_id ) {
+			$cart = Cart_Factory::get_by_user_id( $order_user_id );
 			if ( $cart ) {
 				self::mark_cart_as_placed_or_recovered( $cart );
 			}
 		}
 
-		// clear by email
-		$guest = Guest_Factory::get_by_email( Clean::email( $order->get_billing_email() ) );
-		if ( $guest ) {
+		// The registered account under the order's billing email, when a guest
+		// order genuinely paid a non-zero total (see the docblock for why both
+		// gates are required and why the total is read in the edit context).
+		// Skipped only when the recorded cart already belongs to that account.
+		// Never creates a customer if none exists.
+		if ( ! $order_user_id && $order->is_paid() && (float) $order->get_total( 'edit' ) > 0 ) {
+			$customer = Customer_Factory::get_by_email( $billing_email, false );
+
+			if (
+				$customer && $customer->is_registered()
+				&& ( ! $recorded_cart || (int) $recorded_cart->get_user_id() !== (int) $customer->get_user_id() )
+			) {
+				$cart = Cart_Factory::get_by_user_id( $customer->get_user_id() );
+				if ( $cart ) {
+					self::mark_cart_as_placed_or_recovered( $cart );
+				}
+			}
+		}
+
+		// The guest under the order's billing email — an earlier, unfinished
+		// guest checkout by the same shopper converted with this purchase too.
+		// Skipped only when the recorded cart already belongs to that guest.
+		$guest = Guest_Factory::get_by_email( $billing_email );
+		if ( $guest && ( ! $recorded_cart || (int) $recorded_cart->get_guest_id() !== (int) $guest->get_id() ) ) {
 			self::mark_cart_as_placed_or_recovered( $guest->get_cart() );
 		}
 
@@ -355,7 +610,9 @@ class Carts {
 	public static function restore_cart( $cart ) {
 		$was_restored = false;
 
-		if ( $cart && $cart->is_restorable() ) {
+		// WooCommerce does not load the cart and session in REST API, cron or non-AJAX
+		// admin requests.
+		if ( $cart && $cart->is_restorable() && WC()->cart && WC()->session ) {
 			self::$is_doing_restore = true;
 
 			$cart_restorer = new CartRestorer( $cart, WC()->cart, WC()->session );
@@ -436,12 +693,19 @@ class Carts {
 	 * When a checkout order is created store the cart ID in order meta.
 	 *
 	 * @since 4.9.0
+	 * @since 6.9.1 Also runs for Store API (block) checkout, and always stores an
+	 *              integer — 0 when the session holds no cart pointer. A 0 is a
+	 *              debugging breadcrumb only: the pointer can be legitimately
+	 *              missing while a stored cart exists (expired session row, or a
+	 *              guarded write pass skipped the pointer update), so
+	 *              clear_cart_by_order() treats 0 like no record at all and falls
+	 *              back to customer resolution.
 	 *
 	 * @param \WC_Order $order
 	 */
 	public static function store_cart_id_in_order_meta( $order ) {
 		if ( WC()->session ) {
-			$order->update_meta_data( 'automatewoo_cart_id', WC()->session->get( 'automatewoo_cart_id' ) );
+			$order->update_meta_data( 'automatewoo_cart_id', (int) WC()->session->get( 'automatewoo_cart_id' ) );
 		}
 	}
 }

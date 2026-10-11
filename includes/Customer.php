@@ -30,7 +30,7 @@ class Customer extends Abstract_Model_With_Meta_Table {
 	 * absent otherwise. Also written from outside this plugin by MailPoet's AutomateWoo
 	 * bridge, so the key name is public contract and must not change.
 	 *
-	 * @since x.x.x
+	 * @since 6.9.1
 	 *
 	 * @var string
 	 */
@@ -39,7 +39,7 @@ class Customer extends Abstract_Model_With_Meta_Table {
 	/**
 	 * When the tracking opt-out was recorded, as a UTC MySQL datetime.
 	 *
-	 * @since x.x.x
+	 * @since 6.9.1
 	 *
 	 * @var string
 	 */
@@ -241,7 +241,10 @@ class Customer extends Abstract_Model_With_Meta_Table {
 	 */
 	public function opt_out( $workflow_id = 0 ) {
 		if ( $this->get_is_unsubscribed() ) {
-			return; // already unsubscribed
+			// Already unsubscribed, so opted_out will not fire. Clear any pending
+			// signup confirmation directly so every opt_out() caller cancels it.
+			Optin_Confirmation::clear_pending( $this );
+			return;
 		}
 
 		$this->set_is_unsubscribed( true );
@@ -271,7 +274,7 @@ class Customer extends Abstract_Model_With_Meta_Table {
 	/**
 	 * Has the recipient asked not to have email opens and clicks recorded?
 	 *
-	 * @since x.x.x
+	 * @since 6.9.1
 	 *
 	 * @return bool
 	 */
@@ -287,7 +290,7 @@ class Customer extends Abstract_Model_With_Meta_Table {
 	 * Idempotent: calling it again keeps the original opt-out date, so the record
 	 * still says when they actually asked.
 	 *
-	 * @since x.x.x
+	 * @since 6.9.1
 	 */
 	public function opt_out_of_tracking() {
 		if ( $this->is_tracking_opted_out() ) {
@@ -303,7 +306,7 @@ class Customer extends Abstract_Model_With_Meta_Table {
 	/**
 	 * Clear the tracking opt-out.
 	 *
-	 * @since x.x.x
+	 * @since 6.9.1
 	 */
 	public function opt_in_to_tracking() {
 		if ( ! $this->is_tracking_opted_out() ) {
@@ -619,11 +622,16 @@ class Customer extends Abstract_Model_With_Meta_Table {
 	/**
 	 * Update meta value using legacy meta system.
 	 *
+	 * Protected user meta keys (capabilities, user level, session tokens) are never written
+	 * for registered customers.
+	 *
 	 * @see \AutomateWoo\Customer::get_legacy_meta()
+	 * @see \AutomateWoo\Customer::is_protected_legacy_meta_key()
 	 *
 	 * @param string $key
 	 * @param mixed  $value
-	 * @return mixed
+	 * @return bool False when nothing was written: the key is empty or protected, or the guest has
+	 *              no record. True once the value has been handed to WordPress or the guest table.
 	 */
 	public function update_legacy_meta( $key, $value ) {
 
@@ -632,13 +640,107 @@ class Customer extends Abstract_Model_With_Meta_Table {
 		}
 
 		if ( $this->is_registered() ) {
+			if ( $this->is_protected_legacy_meta_key( $key ) ) {
+				return false;
+			}
 			update_user_meta( $this->get_user_id(), $key, $value );
-		} else {
-			$guest = $this->get_guest();
-			if ( $guest ) {
-				$guest->update_meta( $key, $value );
+			return true;
+		}
+
+		$guest = $this->get_guest();
+		if ( ! $guest ) {
+			return false;
+		}
+
+		$guest->update_meta( $key, $value );
+		return true;
+	}
+
+	/**
+	 * Whether writing the given legacy meta key would touch a protected user meta row of this customer.
+	 *
+	 * Always false for guests, whose meta lives in AutomateWoo's own table.
+	 *
+	 * The key is checked by name and against the rows the database matches for it, so the
+	 * comparison follows the collation of the usermeta table rather than PHP string equality.
+	 *
+	 * Known limitation: the database lookup can only see rows that already exist.
+	 *
+	 * @since 6.9.1
+	 *
+	 * @param string $key
+	 * @return bool
+	 */
+	public function is_protected_legacy_meta_key( $key ) {
+		if ( ! $this->is_registered() ) {
+			return false;
+		}
+
+		// Normalise the key the same way update_metadata() does before it queries.
+		$key = wp_unslash( (string) $key );
+
+		if ( self::is_protected_user_meta_key( $key ) ) {
+			return true;
+		}
+
+		global $wpdb;
+
+		// Same lookup as update_metadata(), so the same collation rules decide what "equal" means.
+		// Don't add DISTINCT: it could drop rows the collation treats as equal.
+		$colliding_keys = $wpdb->get_col(
+			$wpdb->prepare(
+				"SELECT meta_key FROM {$wpdb->usermeta} WHERE user_id = %d AND meta_key = %s",
+				absint( $this->get_user_id() ),
+				$key
+			)
+		);
+
+		if ( $wpdb->last_error ) {
+			return true;
+		}
+
+		foreach ( $colliding_keys as $colliding_key ) {
+			if ( self::is_protected_user_meta_key( $colliding_key ) ) {
+				return true;
 			}
 		}
+
+		return false;
+	}
+
+	/**
+	 * Whether a user meta key is one WordPress manages internally. AutomateWoo never writes
+	 * such keys.
+	 *
+	 * Covers the current site and every other site in a multisite network. The comparison
+	 * ignores case and surrounding whitespace.
+	 *
+	 * @since 6.9.1
+	 *
+	 * @param string $key
+	 * @return bool
+	 */
+	public static function is_protected_user_meta_key( $key ) {
+		global $wpdb;
+
+		$key = strtolower( trim( wp_unslash( (string) $key ) ) );
+
+		$privilege_key_pattern = '/^' . preg_quote( strtolower( $wpdb->base_prefix ), '/' ) . '(\d+_)?(capabilities|user_level|user-settings|user-settings-time)$/';
+
+		$is_protected = 'session_tokens' === $key || (bool) preg_match( $privilege_key_pattern, $key );
+
+		/**
+		 * Filter whether a user meta key is protected from workflow writes.
+		 *
+		 * The filter can only protect additional keys. Keys protected by default stay protected
+		 * whatever the callback returns.
+		 *
+		 * @since 6.9.1
+		 *
+		 * @param bool   $is_protected
+		 * @param string $key Lower-cased, trimmed key.
+		 */
+		return $is_protected || (bool) apply_filters( 'automatewoo/customer/is_protected_user_meta_key', $is_protected, $key );
 	}
 
 	/**

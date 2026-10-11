@@ -71,7 +71,7 @@ class Clean {
 	 * decode turns `&amp;lt;img src=x onerror=...&amp;gt;` back into live markup. The text
 	 * is not worth reopening the hole for.
 	 *
-	 * @since x.x.x
+	 * @since 6.9.1
 	 *
 	 * @param mixed $value Value to strip markup from. Cast to string.
 	 * @return string

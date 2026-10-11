@@ -11,6 +11,76 @@ namespace AutomateWoo;
  */
 class Session_Tracker {
 
+	/**
+	 * Option storing the timestamp signed tracking cookies were first used on this site.
+	 * Anchors the acceptance window for legacy unsigned cookies.
+	 *
+	 * @since 6.9.1
+	 * @var string
+	 */
+	const SIGNED_COOKIE_SINCE_OPTION = 'automatewoo_signed_tracking_cookie_since';
+
+	/**
+	 * Days after deploy during which legacy unsigned tracking cookies are still accepted.
+	 *
+	 * The window equals the tracking cookie's own lifetime (the unfiltered default of
+	 * `automatewoo_visitor_tracking_cookie_expiry`): by the time it closes, every unsigned
+	 * cookie has either been upgraded to a signed one (the visitor returned at least once)
+	 * or expired naturally (they did not), so no visitor is silently dropped mid-cookie-life.
+	 * When the expiry filter is in effect the window follows the filtered value instead —
+	 * see get_unsigned_cookie_window_days().
+	 *
+	 * @since 6.9.1
+	 * @var int
+	 */
+	const UNSIGNED_COOKIE_WINDOW_DAYS = 365;
+
+	/**
+	 * Anchor value recorded on a first install so the legacy unsigned-cookie acceptance
+	 * window is closed from the start: a fresh site has never issued an unsigned tracking
+	 * cookie, so there is nothing to stay compatible with. This sits far enough in the
+	 * past (epoch + 1s) that the window has always already elapsed, yet is truthy so
+	 * is_unsigned_cookie_accepted() treats the anchor as recorded rather than falling
+	 * back to the no-anchor default.
+	 *
+	 * @since 6.9.1
+	 * @var int
+	 */
+	const UNSIGNED_COOKIE_WINDOW_CLOSED_ANCHOR = 1;
+
+	/**
+	 * Marker segment carried by a signed cookie value that was upgraded from a legacy
+	 * unsigned cookie (`{key}.u.{sig}`). The server signed the value, but it only ever
+	 * inherited the key from a bare cookie it could not verify, so the identity stays
+	 * in the weaker capture-only class across requests: it may create a stored cart
+	 * and update the cart it created itself, but never counts as verified. The marker
+	 * is part of the HMAC payload, so it can be neither stripped nor forged. It is
+	 * shed only when a genuine identity event (login, server-side resolution) issues
+	 * a fresh unmarked cookie.
+	 *
+	 * @since 6.9.1
+	 * @var string
+	 */
+	const UPGRADED_COOKIE_MARKER = 'u';
+
+	/**
+	 * Provenance for set_session_customer(): the customer was resolved from a genuinely
+	 * verified event — a user login or an order they placed.
+	 *
+	 * @since 6.9.1
+	 * @var string
+	 */
+	const PROVENANCE_VERIFIED = 'verified';
+
+	/**
+	 * Provenance for set_session_customer(): the customer was resolved only from an email
+	 * address the visitor typed (comment form, Store API checkout draft, third-party capture).
+	 *
+	 * @since 6.9.1
+	 * @var string
+	 */
+	const PROVENANCE_CAPTURED_EMAIL = 'captured_email';
+
 	/** @var int (days) */
 	private static $tracking_cookie_expiry;
 
@@ -19,6 +89,38 @@ class Session_Tracker {
 
 	/** @var string - This key WILL BE saved */
 	private static $tracking_key_to_set = '';
+
+	/**
+	 * Tracking key whose identity was resolved server-side during this request
+	 * (user login, placed order, captured email) rather than read from the cookie.
+	 *
+	 * @since 6.9.1
+	 * @var string
+	 */
+	private static $verified_tracking_key = '';
+
+	/**
+	 * Tracking key whose only evidence is a cookie the server inherited rather than
+	 * issued from a verified event: a legacy unsigned value accepted during the
+	 * deprecation window, or the marked (`{key}.u.{sig}`) cookie such a value was
+	 * upgraded to on an earlier request. Byte-for-byte, a legacy value is identical
+	 * to a forged one, so this key must never count as a verified identity — it may
+	 * only capture (see is_customer_identity_from_legacy_cookie()).
+	 *
+	 * @since 6.9.1
+	 * @var string
+	 */
+	private static $unverified_upgraded_key = '';
+
+	/**
+	 * Tracking key of a registered customer who was resolved during this request only
+	 * from an email address the visitor typed. A typed email is a claim, not proof of
+	 * identity, so this key is tracked separately from $verified_tracking_key.
+	 *
+	 * @since 6.9.1
+	 * @var string
+	 */
+	private static $captured_email_tracking_key = '';
 
 
 	/**
@@ -82,11 +184,355 @@ class Session_Tracker {
 	 * Returns the tracking key as currently stored in the cookie.
 	 *
 	 * @since 4.3
+	 * @since 6.9.1 Cookie values are HMAC-signed (`{key}.{sig}`). This method verifies the
+	 *              signature and always returns the bare key. A value carrying an invalid
+	 *              signature clears the tracking cookies (a signature can only turn
+	 *              invalid for good — forgery or a signing-secret change — and a dead
+	 *              cookie would otherwise block a fresh key from ever being issued) and
+	 *              returns an empty string. A legacy unsigned value is accepted
+	 *              during the deprecation window (see is_unsigned_cookie_accepted()) and
+	 *              transparently queued for a re-signed cookie write.
+	 *
+	 * @return string The bare, verified tracking key, or an empty string.
+	 */
+	public static function get_tracking_cookie() {
+		$value = Clean::string( Cookies::get( self::$tracking_key_cookie_name ) );
+
+		if ( ! $value ) {
+			return '';
+		}
+
+		$parsed = self::parse_tracking_cookie_value( $value );
+
+		if ( false === $parsed ) {
+			// The signature does not verify: forged, corrupt, or signed under a
+			// different secret — which is every visitor's cookie at once after a
+			// wp_salt() rotation, a migration, or a restore against other salts.
+			// Such a value can never become valid again, so clear both tracking
+			// cookies like the unsigned branch below does — otherwise, when
+			// wp_automatewoo_session_started is already set, the cleanup at the end
+			// of maybe_set_session_cookies() is skipped and no fresh key is ever
+			// issued for the rest of the browser session. Clearing also empties
+			// $_COOKIE, so a later read this request returns early instead of
+			// re-clearing.
+			self::forget_dead_tracking_cookie();
+			return '';
+		}
+
+		if ( ! $parsed['signed'] ) {
+			if ( ! self::is_unsigned_cookie_accepted() ) {
+				// The window has closed: this legacy value is worthless. Clear both
+				// tracking cookies so a dead value can't strand the visitor — otherwise,
+				// when wp_automatewoo_session_started is already set, the cleanup at the
+				// end of maybe_set_session_cookies() is skipped and no fresh key is ever
+				// issued. Clearing lets the next request start a new session.
+				self::forget_dead_tracking_cookie();
+				return '';
+			}
+
+			// Transparently upgrade the legacy cookie: queue a re-signed write via the
+			// header-timing-safe deferred path. The rewrite carries the upgraded marker
+			// (see maybe_set_session_cookies()), so the identity stays capture-only on
+			// every later request too — a legacy value is indistinguishable from a
+			// forged one, and re-signing it must not launder it into a verified one.
+			self::$unverified_upgraded_key = $parsed['key'];
+
+			if ( ! self::$tracking_key_to_set ) {
+				self::set_tracking_key_to_be_set( $parsed['key'] );
+			}
+		} elseif ( $parsed['upgraded'] ) {
+			// A marked cookie the server issued for a legacy value on an earlier
+			// request: still only inherited evidence, so still capture-only.
+			self::$unverified_upgraded_key = $parsed['key'];
+		}
+
+		return $parsed['key'];
+	}
+
+
+	/**
+	 * Parses a raw tracking cookie value into a key, signature state and upgrade marker.
+	 *
+	 * Tracking keys generated by aw_generate_key() are strictly alphanumeric, so any
+	 * value containing a `.` must be a signed value — a dotted value whose signature
+	 * fails verification is forged or corrupt and is rejected outright, never treated
+	 * as a legacy unsigned key. A signed value is `{key}.{sig}` or, when the cookie
+	 * was upgraded in place from a legacy unsigned one, `{key}.u.{sig}`; the marker
+	 * is bound into the HMAC payload, so stripping it or grafting it on invalidates
+	 * the signature.
+	 *
+	 * @since 6.9.1
+	 *
+	 * @param string $value Raw cookie value.
+	 *
+	 * @return array|false Array with `key` (string), `signed` (bool) and `upgraded`
+	 *                     (bool), or false when the value carries an invalid signature.
+	 */
+	private static function parse_tracking_cookie_value( $value ) {
+		$pos = strrpos( $value, '.' );
+
+		if ( false === $pos ) {
+			return [
+				'key'      => $value,
+				'signed'   => false,
+				'upgraded' => false,
+			];
+		}
+
+		$payload = substr( $value, 0, $pos );
+		$sig     = substr( $value, $pos + 1 );
+
+		$upgraded = false;
+		$key      = $payload;
+
+		if ( substr( $payload, -2 ) === '.' . self::UPGRADED_COOKIE_MARKER ) {
+			$upgraded = true;
+			$key      = substr( $payload, 0, -2 );
+		}
+
+		if ( '' !== $key && hash_equals( self::sign_tracking_key( $key, $upgraded ), $sig ) ) {
+			return [
+				'key'      => $key,
+				'signed'   => true,
+				'upgraded' => $upgraded,
+			];
+		}
+
+		return false;
+	}
+
+
+	/**
+	 * Computes the HMAC signature for a tracking key.
+	 *
+	 * The secret is derived from `wp_salt( 'auth' )` under a purpose label distinct
+	 * from the preferences token's, so the two credentials can never substitute for
+	 * one another. The blog ID is bound into the signed payload because `wp_salt()`
+	 * is network-wide on multisite, so without it a signature minted on one site of
+	 * a network would verify on every other site. The upgraded marker is bound in
+	 * too, so a capture-only cookie's signature can never validate an unmarked
+	 * (fully verified) value or vice versa.
+	 *
+	 * @since 6.9.1
+	 *
+	 * @param string $key      Bare tracking key.
+	 * @param bool   $upgraded Whether the value carries the upgraded (capture-only) marker.
+	 *
+	 * @return string 64-character hex sha256 HMAC.
+	 */
+	private static function sign_tracking_key( $key, $upgraded = false ) {
+		$secret = hash_hmac( 'sha256', 'automatewoo-tracking-cookie', wp_salt( 'auth' ) );
+		$marker = $upgraded ? self::UPGRADED_COOKIE_MARKER : '';
+
+		return hash_hmac( 'sha256', $key . '|' . $marker . '|' . get_current_blog_id(), $secret );
+	}
+
+
+	/**
+	 * Builds the full tracking cookie value for a key: `{key}.{sig}`, or
+	 * `{key}.u.{sig}` for a capture-only upgraded value.
+	 *
+	 * @since 6.9.1
+	 *
+	 * @param string $key      Bare tracking key.
+	 * @param bool   $upgraded Whether to mark the value as upgraded (capture-only).
 	 *
 	 * @return string
 	 */
-	public static function get_tracking_cookie() {
-		return Clean::string( Cookies::get( self::$tracking_key_cookie_name ) );
+	private static function build_tracking_cookie_value( $key, $upgraded = false ) {
+		$marker = $upgraded ? '.' . self::UPGRADED_COOKIE_MARKER : '';
+
+		return $key . $marker . '.' . self::sign_tracking_key( $key, $upgraded );
+	}
+
+
+	/**
+	 * Whether a legacy unsigned tracking cookie value is still accepted.
+	 *
+	 * Acceptance is time-boxed server-side: the window is anchored to the deploy
+	 * timestamp Installer::install() records, and unsigned values are rejected
+	 * once the window has elapsed, so the deprecation window closes on a concrete
+	 * date even if no one flips the filter. The window spans one full cookie lifetime, so every unsigned cookie
+	 * still in circulation has either been transparently upgraded to a signed one
+	 * or expired naturally by the time the window closes.
+	 *
+	 * @since 6.9.1
+	 *
+	 * @return bool
+	 */
+	private static function is_unsigned_cookie_accepted() {
+		$since = (int) get_option( self::SIGNED_COOKIE_SINCE_OPTION );
+
+		if ( $since ) {
+			$window_open = time() < $since + self::get_unsigned_cookie_window_days() * DAY_IN_SECONDS;
+		} else {
+			// No anchor recorded yet — the installer hasn't run. Never write the
+			// anchor from this read path: it runs on unauthenticated front-end
+			// requests carrying an attacker-settable cookie, and on a fresh site
+			// activated by WP-CLI or a provisioner (where admin_init hasn't run)
+			// a lazy write would let the first forged request open the window for
+			// its full length. The installer is the sole authority; until it
+			// records the anchor, the database version decides: an upgraded site
+			// (version present) has real legacy unsigned cookies in circulation,
+			// so its window must already be open or returning visitors would have
+			// their live cookies cleared as worthless; a first install (no
+			// version yet) has never issued an unsigned cookie, so the window is
+			// closed from the very first request.
+			$window_open = (bool) Options::database_version();
+		}
+
+		/**
+		 * Filters whether legacy unsigned tracking cookie values are accepted.
+		 *
+		 * The default is true until the server-side deprecation window elapses,
+		 * then false. The window equals the tracking cookie lifetime (365 days by
+		 * default, following the `automatewoo_visitor_tracking_cookie_expiry`
+		 * filter), so by the time it closes every unsigned cookie has either been
+		 * upgraded on a return visit or expired naturally.
+		 * Return false to end the window early, or true to extend it.
+		 *
+		 * @since 6.9.1
+		 *
+		 * @param bool $accept Whether unsigned cookie values are accepted.
+		 */
+		return (bool) apply_filters( 'automatewoo/tracking/accept_unsigned_cookie', $window_open );
+	}
+
+
+	/**
+	 * Length of the unsigned-cookie acceptance window, in days.
+	 *
+	 * Derived from the configured tracking cookie lifetime so the two never drift
+	 * apart; UNSIGNED_COOKIE_WINDOW_DAYS is the fallback when init() has not run.
+	 *
+	 * @since 6.9.1
+	 *
+	 * @return int
+	 */
+	private static function get_unsigned_cookie_window_days() {
+		return self::$tracking_cookie_expiry ? (int) self::$tracking_cookie_expiry : self::UNSIGNED_COOKIE_WINDOW_DAYS;
+	}
+
+
+	/**
+	 * Whether the given customer's identity is verified for the current request.
+	 *
+	 * True when the customer is the logged-in user, when the customer was resolved
+	 * server-side during this request from a genuinely verified event (user login,
+	 * placed order), or when the tracking cookie carries the customer's key with a
+	 * valid signature and no upgraded marker. A bare (unsigned) cookie value is never
+	 * proof of identity, even after it has been queued for a re-signed write this
+	 * request, and neither is the marked (`{key}.u.{sig}`) cookie that write produces:
+	 * the server signed it, but only ever inherited the key from a value it could not
+	 * verify, so the marker keeps the identity capture-only across requests — see
+	 * is_customer_identity_from_legacy_cookie(). A registered customer resolved only
+	 * from a typed email address is likewise never verified — see
+	 * is_customer_identity_from_captured_email().
+	 *
+	 * @since 6.9.1
+	 *
+	 * @param Customer|false $customer
+	 *
+	 * @return bool
+	 */
+	public static function is_customer_identity_verified( $customer ) {
+		if ( ! $customer instanceof Customer ) {
+			return false;
+		}
+
+		if ( is_user_logged_in() && $customer->get_user_id() === get_current_user_id() ) {
+			return true;
+		}
+
+		$key = (string) $customer->get_key();
+
+		if ( ! $key ) {
+			return false;
+		}
+
+		if ( self::$verified_tracking_key && hash_equals( self::$verified_tracking_key, $key ) ) {
+			return true;
+		}
+
+		if ( self::$unverified_upgraded_key && hash_equals( self::$unverified_upgraded_key, $key ) ) {
+			return false;
+		}
+
+		$value = Clean::string( Cookies::get( self::$tracking_key_cookie_name ) );
+
+		if ( ! $value ) {
+			return false;
+		}
+
+		$parsed = self::parse_tracking_cookie_value( $value );
+
+		return false !== $parsed && $parsed['signed'] && ! $parsed['upgraded'] && hash_equals( $parsed['key'], $key );
+	}
+
+
+	/**
+	 * Whether the given customer's identity for this request rests only on a tracking
+	 * cookie the server inherited rather than issued: a legacy unsigned value accepted
+	 * during the deprecation window, or the marked (`{key}.u.{sig}`) cookie such a
+	 * value was upgraded to on an earlier request.
+	 *
+	 * A legacy value is byte-identical to a forged one, so this identity class may
+	 * capture — create a stored cart, and keep updating the cart it created itself —
+	 * exactly like a captured-email identity, but may never overwrite or delete a
+	 * cart authored by anything else. It sheds the class only through a genuine
+	 * identity event (login, server-side resolution), which issues a fresh unmarked
+	 * cookie.
+	 *
+	 * @since 6.9.1
+	 *
+	 * @param Customer|false $customer
+	 *
+	 * @return bool
+	 */
+	public static function is_customer_identity_from_legacy_cookie( $customer ) {
+		if ( ! $customer instanceof Customer ) {
+			return false;
+		}
+
+		// Populates $unverified_upgraded_key when the cookie is a bare legacy value
+		// or a marked upgraded one, and handles the acceptance window and clearing.
+		self::get_tracking_cookie();
+
+		if ( ! self::$unverified_upgraded_key ) {
+			return false;
+		}
+
+		$key = (string) $customer->get_key();
+
+		return $key && hash_equals( self::$unverified_upgraded_key, $key );
+	}
+
+
+	/**
+	 * Whether the given registered customer's identity for this request came only from
+	 * an email address the visitor typed (comment form, Store API checkout draft,
+	 * guest order billing email).
+	 *
+	 * A typed email is an unverified claim: anyone can type anyone's address. Such an
+	 * identity may create a stored cart for the customer (the legitimate guest-checkout
+	 * capture case) and keep updating a cart it created itself, but is never given a
+	 * signed tracking cookie and cannot touch any other cart — including every cart
+	 * that predates this protection.
+	 *
+	 * @since 6.9.1
+	 *
+	 * @param Customer|false $customer
+	 *
+	 * @return bool
+	 */
+	public static function is_customer_identity_from_captured_email( $customer ) {
+		if ( ! $customer instanceof Customer || ! self::$captured_email_tracking_key ) {
+			return false;
+		}
+
+		$key = (string) $customer->get_key();
+
+		return $key && hash_equals( self::$captured_email_tracking_key, $key );
 	}
 
 
@@ -139,12 +585,50 @@ class Session_Tracker {
 
 
 	/**
+	 * Drops a tracking cookie that failed verification, without touching any
+	 * request-level identity state.
+	 *
+	 * This is the clear used by the read path (get_tracking_cookie()), which is
+	 * reached as late as `shutdown` via Carts::maybe_store_cart(). Two things
+	 * distinguish it from clear_tracking_cookies():
+	 *
+	 * - After headers are sent the browser cookie cannot be expired
+	 *   (wc_setcookie() would only raise an E_USER_NOTICE and change nothing), so
+	 *   only the in-request $_COOKIE copies are dropped — later reads this
+	 *   request return early instead of re-parsing, and the next request reads
+	 *   the same dead value before headers are sent and clears the browser
+	 *   cookie then, so nobody is stranded.
+	 * - It never resets $verified_tracking_key, $captured_email_tracking_key or
+	 *   $tracking_key_to_set. Those record an identity resolved server-side
+	 *   earlier in the same request (login, placed order, captured email), and a
+	 *   cookie that fails verification is no evidence against them. Resetting
+	 *   them from a getter silently revoked provenance recorded by
+	 *   set_session_customer() and wiped the very replacement key whose issuance
+	 *   the clear exists to unblock.
+	 *
+	 * @since 6.9.1
+	 */
+	private static function forget_dead_tracking_cookie() {
+		if ( headers_sent() ) {
+			unset( $_COOKIE[ self::$tracking_key_cookie_name ], $_COOKIE['wp_automatewoo_session_started'] );
+			return;
+		}
+
+		Cookies::clear( self::$tracking_key_cookie_name );
+		Cookies::clear( 'wp_automatewoo_session_started' );
+	}
+
+
+	/**
 	 * Clear session cookies
 	 *
 	 * @since 4.3
 	 */
 	public static function clear_tracking_cookies() {
-		self::$tracking_key_to_set = '';
+		self::$tracking_key_to_set         = '';
+		self::$verified_tracking_key       = '';
+		self::$unverified_upgraded_key     = '';
+		self::$captured_email_tracking_key = '';
 		Cookies::clear( self::$tracking_key_cookie_name );
 		Cookies::clear( 'wp_automatewoo_session_started' );
 	}
@@ -181,7 +665,8 @@ class Session_Tracker {
 		}
 
 		self::maybe_clear_previous_session_customers_cart( $new_customer );
-		self::set_session_customer( $new_customer );
+		// A live login is genuine verification, so opt in to the verified class.
+		self::set_session_customer( $new_customer, '', self::PROVENANCE_VERIFIED );
 	}
 
 
@@ -201,6 +686,13 @@ class Session_Tracker {
 			return;
 		}
 
+		// Read the tracking cookie before the write block below: parsing a legacy
+		// unsigned value queues its re-signed rewrite into $tracking_key_to_set, and
+		// that must happen before the write or the upgrade would never be written —
+		// no earlier code reads the cookie on an ordinary logged-out page request,
+		// and by the shutdown re-run headers are already sent.
+		self::get_tracking_cookie();
+
 		/**
 		 * Tracking cookie needs updating when:
 		 * - it's a new session
@@ -218,24 +710,46 @@ class Session_Tracker {
 
 			if ( $logged_in_customer->get_key() !== self::get_tracking_cookie() ) {
 				$cookie_needs_updating = true;
+			} elseif ( self::$unverified_upgraded_key && hash_equals( self::$unverified_upgraded_key, (string) $logged_in_customer->get_key() ) ) {
+				// The browser holds a capture-only (legacy or upgraded-marked) cookie
+				// for the very account that is now logged in: the login is genuine
+				// verification, so replace the cookie with a fully verified one.
+				$cookie_needs_updating = true;
 			}
 		}
 
 		if ( $cookie_needs_updating && $logged_in_customer ) {
-			self::$tracking_key_to_set = $logged_in_customer->get_key();
+			// A live login vouches for the key, so the write below is unmarked.
+			self::$verified_tracking_key = $logged_in_customer->get_key();
+			self::$tracking_key_to_set   = $logged_in_customer->get_key();
 		}
 
-		// Set the tracking cookie if one needs setting
+		// Set the tracking cookie if one needs setting.
+		// The value is signed so the key can be verified when it is read back.
+		// The transparent rewrite of a legacy unsigned cookie keeps the upgraded
+		// marker unless a verified event vouched for the key this request: the
+		// server only inherited that key, so the re-signed cookie must stay in
+		// the capture-only class on every later request too.
 		if ( self::$tracking_key_to_set ) {
-			Cookies::set( self::$tracking_key_cookie_name, self::$tracking_key_to_set, time() + DAY_IN_SECONDS * self::$tracking_cookie_expiry );
+			$is_upgrade_only = self::$unverified_upgraded_key
+				&& hash_equals( self::$unverified_upgraded_key, self::$tracking_key_to_set )
+				&& ! ( self::$verified_tracking_key && hash_equals( self::$verified_tracking_key, self::$tracking_key_to_set ) );
+
+			Cookies::set(
+				self::$tracking_key_cookie_name,
+				self::build_tracking_cookie_value( self::$tracking_key_to_set, $is_upgrade_only ),
+				time() + DAY_IN_SECONDS * self::$tracking_cookie_expiry
+			);
 			self::$tracking_key_to_set = false; // Don't need to set the tracking cookie again
 		}
 
 		// If a tracking cookie is set but no session started cookie, init the session now.
 		// MUST not set the session cookie until we have a tracking key.
 		if ( self::is_tracking_cookie_set() && ! self::is_session_started_cookie_set() ) {
+			$tracking_cookie = self::get_tracking_cookie();
+
 			// check the tracking is valid before starting a session
-			if ( Customer_Factory::get_by_key( self::get_tracking_cookie() ) ) {
+			if ( $tracking_cookie && Customer_Factory::get_by_key( $tracking_cookie ) ) {
 				Cookies::set( 'wp_automatewoo_session_started', 1 );
 				self::new_session_initiated();
 			} else {
@@ -255,6 +769,13 @@ class Session_Tracker {
 	 * @param Customer $new_customer
 	 *
 	 * @since 4.3.0
+	 * @since 6.9.1 Deletes a registered customer's stored cart only when the tracked identity
+	 *              is verified — a signed tracking cookie, or an identity resolved server-side
+	 *              this request (see is_customer_identity_verified()). A legacy unsigned cookie
+	 *              value is byte-identical to a forged one, so it must not be able to destroy a
+	 *              registered customer's cart; a verified identity keeps the pre-existing dedupe
+	 *              so the customer does not receive an abandoned cart email for a cart someone
+	 *              else bought on the same browser. Guest carts keep the unconditional dedupe.
 	 */
 	public static function maybe_clear_previous_session_customers_cart( $new_customer ) {
 		$tracking_cookie = self::get_tracking_cookie();
@@ -267,7 +788,7 @@ class Session_Tracker {
 		}
 
 		$tracked_customer = Customer_Factory::get_by_key( $tracking_cookie );
-		if ( $tracked_customer ) {
+		if ( $tracked_customer && ( ! $tracked_customer->is_registered() || self::is_customer_identity_verified( $tracked_customer ) ) ) {
 			$cart = $tracked_customer->get_cart();
 			if ( $cart ) {
 				$cart->delete();
@@ -385,8 +906,12 @@ class Session_Tracker {
 
 			if ( ! $existing_session_customer || $new_email !== $existing_session_customer->get_email() ) {
 				// Customer has changed so delete the cart for the existing customer
-				// To avoid duplicate abandoned cart emails
-				if ( $existing_session_customer ) {
+				// to avoid duplicate abandoned cart emails.
+				// A registered customer's cart may only be deleted when their tracked
+				// identity is verified (signed cookie); an unverified cookie-derived
+				// identity must not destroy it. Defence in depth: a registered session
+				// customer already bails out above, so today only the guest branch runs.
+				if ( $existing_session_customer && ( ! $existing_session_customer->is_registered() || self::is_customer_identity_verified( $existing_session_customer ) ) ) {
 					$existing_session_customer->delete_cart();
 				}
 			}
@@ -423,7 +948,7 @@ class Session_Tracker {
 
 		// init the new customer tracking, also saves/updates the language
 		if ( $new_customer ) {
-			self::set_session_customer( $new_customer, $language );
+			self::set_session_customer( $new_customer, $language, self::PROVENANCE_CAPTURED_EMAIL );
 		}
 
 		// the new customer could be a user, if the email address matched a user
@@ -523,6 +1048,17 @@ class Session_Tracker {
 	 * Otherwise, if presubmit tracking is disabled, guests won't have session tracking.
 	 *
 	 * @since 4.0
+	 * @since 6.9.1 An order with no account behind it (user ID 0) identifies its
+	 *              customer only by the typed billing email — and guest checkout
+	 *              permits typing a registered account's address before any payment
+	 *              clears — so it is promoted with captured-email provenance, never
+	 *              verified. Only an order genuinely tied to a user account carries
+	 *              verified provenance. This rests on WooCommerce core behaviour:
+	 *              core never attaches a user account to a guest-placed order at
+	 *              processing time, so a non-zero user ID here always means the
+	 *              buyer was logged in. A third-party plugin that links guest
+	 *              orders to existing accounts by billing email at creation time
+	 *              would break that assumption and defeat this guard.
 	 * @param int $order_id
 	 */
 	public static function maybe_track_guest_customer_after_order_placed( $order_id ) {
@@ -541,7 +1077,9 @@ class Session_Tracker {
 			return;
 		}
 
-		self::set_session_customer( $customer );
+		$provenance = $order->get_user_id() ? self::PROVENANCE_VERIFIED : self::PROVENANCE_CAPTURED_EMAIL;
+
+		self::set_session_customer( $customer, '', $provenance );
 	}
 
 
@@ -555,11 +1093,34 @@ class Session_Tracker {
 	 *
 	 * @param Customer $customer
 	 * @param string   $language
+	 * @param string   $provenance How the customer was resolved: self::PROVENANCE_CAPTURED_EMAIL
+	 *                             (an email the visitor typed — the default) or
+	 *                             self::PROVENANCE_VERIFIED (user login, an order placed by the
+	 *                             account itself). The default is the WEAK class on purpose:
+	 *                             this is a public method add-ons call with two arguments, and
+	 *                             a verified identity unlocks overwriting and deleting a
+	 *                             registered customer's stored cart, so a caller must opt in
+	 *                             to it explicitly rather than receive it by omission.
 	 *
 	 * @since 4.0
+	 * @since 6.9.1 Records the customer's key as an identity for the current request,
+	 *              tagged with its provenance. Recording happens even when cookies are
+	 *              not permitted: it is in-request server-side state, not a cookie, so
+	 *              cookie consent governs only what is written to the browser. A
+	 *              registered customer resolved only from a typed email is recorded as
+	 *              a captured-email identity and never receives a signed tracking
+	 *              cookie nor a stored-language update: the signature means "the
+	 *              server vouches for this identity", and a typed email is a claim
+	 *              anyone can make. Guests resolved from a typed email keep the
+	 *              previous behaviour.
+	 * @since 6.9.1 The `$provenance` default is PROVENANCE_CAPTURED_EMAIL, so a
+	 *              two-argument call gets capture-only rights (fail closed). An
+	 *              external caller that genuinely resolved the customer from a
+	 *              login or the account's own order must pass PROVENANCE_VERIFIED
+	 *              explicitly to keep its previous verified treatment.
 	 */
-	public static function set_session_customer( $customer, $language = '' ) {
-		if ( headers_sent() || ! self::cookies_permitted() || ! $customer ) {
+	public static function set_session_customer( $customer, $language = '', $provenance = self::PROVENANCE_CAPTURED_EMAIL ) {
+		if ( ! $customer ) {
 			return;
 		}
 
@@ -567,11 +1128,29 @@ class Session_Tracker {
 			return; // session for logged in user will already be set
 		}
 
-		$key = $customer->get_key();
+		$is_captured_email_for_registered_customer = self::PROVENANCE_CAPTURED_EMAIL === $provenance && $customer->is_registered();
+
+		// Record provenance even when no cookie can or may be written this request.
+		if ( $is_captured_email_for_registered_customer ) {
+			self::$captured_email_tracking_key = (string) $customer->get_key();
+		} else {
+			self::$verified_tracking_key = (string) $customer->get_key();
+		}
+
+		if ( headers_sent() || ! self::cookies_permitted() ) {
+			return;
+		}
+
+		if ( $is_captured_email_for_registered_customer ) {
+			// A typed email must neither mint a durable signed cookie for a registered
+			// account nor rewrite that account's stored language: both are durable
+			// cross-identity writes from an unverified claim.
+			return;
+		}
 
 		$customer->update_language( $language ? $language : Language::get_current() );
 
-		self::set_tracking_key_to_be_set( $key );
+		self::set_tracking_key_to_be_set( $customer->get_key() );
 	}
 
 

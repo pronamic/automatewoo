@@ -22,7 +22,7 @@ abstract class Integration {
 	 * Matching is exact and case-insensitive, never a substring match, so that
 	 * keys such as `monkey` or `token_count` are left alone.
 	 *
-	 * @since x.x.x
+	 * @since 6.9.1
 	 *
 	 * @var string[]
 	 */
@@ -46,7 +46,7 @@ abstract class Integration {
 	/**
 	 * Placeholder used to mask a sensitive value.
 	 *
-	 * @since x.x.x
+	 * @since 6.9.1
 	 *
 	 * @var string
 	 */
@@ -104,7 +104,7 @@ abstract class Integration {
 	 * it: repeated params collapse (e.g. `?id=1&id=2` becomes `id=2`). This is an
 	 * accepted residual for logging purposes only.
 	 *
-	 * @since x.x.x
+	 * @since 6.9.1
 	 *
 	 * @param string $url The URL to redact.
 	 *
@@ -143,7 +143,7 @@ abstract class Integration {
 	/**
 	 * Rebuild a URL string from the components returned by wp_parse_url().
 	 *
-	 * @since x.x.x
+	 * @since 6.9.1
 	 *
 	 * @param array $parts URL components, as returned by wp_parse_url().
 	 *
@@ -166,7 +166,7 @@ abstract class Integration {
 	 * Non-array input (e.g. null or false, as returned by Remote_Request::get_body()
 	 * for a non-JSON body or an HTTP error) is passed through unchanged.
 	 *
-	 * @since x.x.x
+	 * @since 6.9.1
 	 *
 	 * @param mixed $data The data to redact.
 	 *
@@ -193,7 +193,7 @@ abstract class Integration {
 	 *
 	 * Matching is exact and case-insensitive, never a substring match.
 	 *
-	 * @since x.x.x
+	 * @since 6.9.1
 	 *
 	 * @param int|string $key The array/query-string key to check.
 	 *

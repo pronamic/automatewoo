@@ -11,7 +11,14 @@ defined( 'ABSPATH' ) || exit;
  * Customer data is required for this form.
  *
  * @var Customer $customer
+ * @var string   $preferences_token Signed management token authorizing the save,
+ *                                  minted by Communication_Page. When the template
+ *                                  is rendered without one it is minted here.
  */
+
+if ( ! isset( $preferences_token ) ) {
+	$preferences_token = Preferences_Token::generate( $customer );
+}
 
 ?>
 
@@ -38,7 +45,7 @@ defined( 'ABSPATH' ) || exit;
 
 		<p>
 			<?php wp_nonce_field( 'automatewoo_save_communication_preferences' ); ?>
-			<input type="hidden" name="customer_key" value="<?php echo esc_attr( $customer->get_key() ); ?>">
+			<input type="hidden" name="aw_token" value="<?php echo esc_attr( $preferences_token ); ?>">
 			<input type="hidden" name="action" value="automatewoo_save_communication_preferences">
 			<input type="submit" class="woocommerce-Button button aw-communication-form__submit" name="automatewoo_save_changes" value="<?php esc_html_e( 'Save changes', 'automatewoo' ); ?>">
 		</p>

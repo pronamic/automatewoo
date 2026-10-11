@@ -14,7 +14,7 @@ use AutomateWoo\Clean;
  * {@see self::is_confirmed()} and runs the mutation on a confirmed POST;
  * otherwise it calls {@see self::show()} to render this page.
  *
- * @since x.x.x
+ * @since 6.9.1
  */
 class Cart_Action_Confirmation {
 

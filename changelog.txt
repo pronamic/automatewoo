@@ -1,5 +1,18 @@
 *** AutomateWoo Changelog ***
 
+2026-09-29 - version 6.9.2
+* Dev - Update build dependencies to resolve a Dependabot alert for adm-zip.
+* Fix - Fatal error when a third-party plugin triggers guest email capture in a request where WooCommerce does not load the cart, such as a REST API, cron or admin-post.php request.
+
+2026-09-22 - version 6.9.1
+* Add - Tools screen action to rotate unsubscribe and communication preference links.
+* Dev - Count redemptions of legacy customer key preference links, to inform when support for them ends.
+* Fix - Security improvements.
+* Tweak - Limit repeat communication signups from a single source.
+* Tweak - Return a consistent response from the communication signup form.
+* Update - Confirm a new communication signup by email before subscribing.
+* Update - Unsubscribe and communication preference links now use a signed, expiring token.
+
 2026-09-15 - version 6.9.0
 * Dev - Update build dependencies to resolve Dependabot alerts for colord and qs.
 * Fix - Encoded characters in customer data are no longer decoded into markup when a plain text email is rendered.

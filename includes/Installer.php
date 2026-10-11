@@ -100,8 +100,27 @@ class Installer {
 	 * Install
 	 */
 	public static function install() {
+		// Whether this is an update of an existing install rather than a first install:
+		// the database version is only ever empty before the very first install runs
+		// (it is written after this method, so it still reads empty here). Read it before
+		// install_tables() below, whose dbDelta() can commit surrounding state.
+		$is_update = (bool) Options::database_version();
+
 		Database_Tables::install_tables();
 		self::create_pages();
+
+		// Anchor the unsigned-tracking-cookie acceptance window. On an update, anchor it
+		// to this deploy so the window is deterministic. On a first install there are no
+		// legacy unsigned cookies to stay compatible with, so keep the window closed from
+		// the start (an anchor of 1 sits far enough in the past that the window is already
+		// elapsed for any realistic length). The installer is the sole writer of this
+		// option — Session_Tracker::is_unsigned_cookie_accepted() only reads it, so a
+		// forged front-end request can never define the anchor — and add_option() never
+		// overwrites an anchor already recorded by an earlier deploy.
+		add_option(
+			Session_Tracker::SIGNED_COOKIE_SINCE_OPTION,
+			$is_update ? time() : Session_Tracker::UNSIGNED_COOKIE_WINDOW_CLOSED_ANCHOR
+		);
 
 		do_action( 'automatewoo_installed' );
 	}

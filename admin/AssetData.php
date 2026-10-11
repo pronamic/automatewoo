@@ -2,6 +2,7 @@
 
 namespace AutomateWoo\Admin;
 
+use AutomateWoo\Rest_Api\Controllers\ManualWorkflowRunner;
 use Automattic\WooCommerce\Blocks\Assets\AssetDataRegistry;
 use InvalidArgumentException;
 
@@ -42,9 +43,16 @@ class AssetData {
 			],
 		];
 
-		$this->registry->add(
-			'automatewoo',
-			apply_filters( 'automatewoo/admin/asset_data', $data )
+		$data = apply_filters( 'automatewoo/admin/asset_data', $data );
+
+		// The manual runner REST routes reject batches outside these bounds, so keep the JS in step with them.
+		$manual_runner              = is_array( $data['manualRunner'] ?? null ) ? $data['manualRunner'] : [];
+		$manual_runner['batchSize'] = max(
+			1,
+			min( (int) ( $manual_runner['batchSize'] ?? 10 ), ManualWorkflowRunner::MAX_BATCH_SIZE )
 		);
+		$data['manualRunner']       = $manual_runner;
+
+		$this->registry->add( 'automatewoo', $data );
 	}
 }

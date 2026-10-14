@@ -138,6 +138,7 @@ abstract class Admin_Settings_Tab_Abstract {
 	 * required
 	 * wrapper_attributes
 	 * custom_attributes
+	 * desc_as_paragraph
 	 *
 	 * @param array $field
 	 */
@@ -401,6 +402,12 @@ abstract class Admin_Settings_Tab_Abstract {
 	/**
 	 * Output field description.
 	 *
+	 * The description of a textarea or a select is a paragraph of its own. For other fields
+	 * it stays on the same line as the input, which suits a short text such as a unit. A
+	 * field with a longer description can set `desc_as_paragraph` to get the paragraph.
+	 *
+	 * @since 6.9.3 Added the `desc_as_paragraph` field option.
+	 *
 	 * @param array $field
 	 */
 	private function output_description( $field ) {
@@ -411,7 +418,7 @@ abstract class Admin_Settings_Tab_Abstract {
 
 		$description = $field['desc'];
 
-		if ( $description && in_array( $field['type'], [ 'textarea', 'select' ], true ) ) {
+		if ( $description && ( ! empty( $field['desc_as_paragraph'] ) || in_array( $field['type'], [ 'textarea', 'select' ], true ) ) ) {
 			$description = '<p class="description" style="margin-top:2px">' . $description . '</p>';
 		} elseif ( $description ) {
 			$description = '<span class="description">' . $description . '</span>';

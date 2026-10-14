@@ -81,6 +81,58 @@ class Session_Tracker {
 	 */
 	const PROVENANCE_CAPTURED_EMAIL = 'captured_email';
 
+	/**
+	 * Provenance for set_session_customer(): the customer is an existing guest whose email
+	 * the visitor typed, and the visitor holds no verified identity for that guest. The
+	 * identity lasts for the current request only: it never receives a tracking cookie,
+	 * check-in or language update.
+	 *
+	 * @since 6.9.3
+	 * @var string
+	 */
+	const PROVENANCE_CAPTURE_ONLY = 'capture_only';
+
+	/**
+	 * WooCommerce session key holding the tracking key of the guest this session created
+	 * from a typed email. It lives in the server-side WC session, never in a browser
+	 * cookie of ours, so a typed email can not change any AutomateWoo cookie.
+	 *
+	 * @since 6.9.3
+	 * @var string
+	 */
+	const SESSION_TRACKING_KEY = 'automatewoo_tracking';
+
+	/**
+	 * WC session key that holds the server-side stop of cookie-based tracking.
+	 *
+	 * @since 6.9.3
+	 */
+	const SESSION_TRACKING_STOPPED_KEY = 'automatewoo_tracking_stopped';
+
+	/**
+	 * Typed-email claims one source can make per window.
+	 *
+	 * @since 6.9.3
+	 * @var int
+	 */
+	private const CAPTURED_EMAIL_CLAIM_LIMIT = 20;
+
+	/**
+	 * Typed-email claims all sources together can make per window.
+	 *
+	 * @since 6.9.3
+	 * @var int
+	 */
+	private const CAPTURED_EMAIL_CLAIM_GLOBAL_LIMIT = 500;
+
+	/**
+	 * Length of the typed-email claim window, in seconds.
+	 *
+	 * @since 6.9.3
+	 * @var int
+	 */
+	private const CAPTURED_EMAIL_CLAIM_WINDOW = 15 * MINUTE_IN_SECONDS;
+
 	/** @var int (days) */
 	private static $tracking_cookie_expiry;
 
@@ -122,6 +174,15 @@ class Session_Tracker {
 	 */
 	private static $captured_email_tracking_key = '';
 
+	/**
+	 * Tracking key of a guest this session created from a typed email, set in the request
+	 * that created it (whether or not cookie consent allows storing it in the WC session).
+	 *
+	 * @since 6.9.3
+	 * @var string
+	 */
+	private static $session_owned_tracking_key = '';
+
 
 	/**
 	 * Init session tracker, add hooks.
@@ -138,7 +199,6 @@ class Session_Tracker {
 
 		add_action( 'wp', [ $self, 'maybe_set_session_cookies' ], 99 );
 		add_action( 'shutdown', [ $self, 'maybe_set_session_cookies' ], 0 );
-		add_action( 'automatewoo/ajax/before_send_json', [ $self, 'maybe_set_session_cookies' ] );
 
 		add_action( 'set_logged_in_cookie', [ $self, 'update_session_on_user_login' ], 10, 4 );
 
@@ -510,35 +570,76 @@ class Session_Tracker {
 
 	/**
 	 * Whether the given registered customer's identity for this request came only from
-	 * an email address the visitor typed (comment form, Store API checkout draft,
-	 * guest order billing email).
+	 * an email address rather than a login or the account's own order (guest order
+	 * billing email, or an add-on calling set_session_customer() with the default
+	 * provenance).
 	 *
-	 * A typed email is an unverified claim: anyone can type anyone's address. Such an
-	 * identity may create a stored cart for the customer (the legitimate guest-checkout
-	 * capture case) and keep updating a cart it created itself, but is never given a
-	 * signed tracking cookie and cannot touch any other cart — including every cart
-	 * that predates this protection.
+	 * Such an identity is an unverified claim: anyone can type anyone's address. It may
+	 * create a stored cart for the customer and keep updating a cart it created itself,
+	 * but is never given a signed tracking cookie and cannot touch any other cart —
+	 * including every cart that predates this protection.
 	 *
 	 * @since 6.9.1
+	 * @since 6.9.3 Emails typed into the comment form, Store API checkout draft and
+	 *              presubmit capture no longer produce such an identity for a registered
+	 *              customer; see set_session_by_captured_email().
 	 *
 	 * @param Customer|false $customer
 	 *
 	 * @return bool
 	 */
 	public static function is_customer_identity_from_captured_email( $customer ) {
-		if ( ! $customer instanceof Customer || ! self::$captured_email_tracking_key ) {
+		if ( ! $customer instanceof Customer ) {
 			return false;
 		}
 
 		$key = (string) $customer->get_key();
 
-		return $key && hash_equals( self::$captured_email_tracking_key, $key );
+		if ( ! $key ) {
+			return false;
+		}
+
+		if ( self::$captured_email_tracking_key && hash_equals( self::$captured_email_tracking_key, $key ) ) {
+			return true;
+		}
+
+		// The guest this WC session created from a typed email: a claim, never verified.
+		$session_key = self::get_session_tracking_key();
+
+		return $session_key && hash_equals( $session_key, $key ) && ! self::is_customer_identity_verified( $customer );
+	}
+
+
+	/**
+	 * Whether the customer was resolved only from a typed email AND is not a guest this
+	 * session created itself (another guest's email, or a registered account). Only such
+	 * an identity is barred from writing profile data.
+	 *
+	 * @since 6.9.3
+	 * @internal
+	 *
+	 * @param Customer|false $customer
+	 *
+	 * @return bool
+	 */
+	public static function is_customer_identity_capture_only( $customer ) {
+		if ( ! self::is_customer_identity_from_captured_email( $customer ) ) {
+			return false;
+		}
+
+		$key         = (string) $customer->get_key();
+		$session_key = self::get_session_tracking_key();
+
+		return ! ( self::$session_owned_tracking_key && hash_equals( self::$session_owned_tracking_key, $key ) )
+			&& ! ( $session_key && hash_equals( $session_key, $key ) );
 	}
 
 
 	/**
 	 * This method doesn't actually set the cookie, rather it initiates the cookie setting.
-	 * Cookies are set only on 'wp', 'shutdown' or 'automatewoo/ajax/before_send_json'.
+	 * Cookies are set only on 'wp' or 'shutdown', and only for verified events (login, an
+	 * order placed by the browser's own identity). A typed email never queues a cookie: the
+	 * guest it creates is remembered in the WC session instead, see store_session_tracking_key().
 	 *
 	 * @since 4.3
 	 *
@@ -625,10 +726,13 @@ class Session_Tracker {
 	 * @since 4.3
 	 */
 	public static function clear_tracking_cookies() {
+		self::clear_session_tracking_key();
+		self::clear_tracking_stopped();
 		self::$tracking_key_to_set         = '';
 		self::$verified_tracking_key       = '';
 		self::$unverified_upgraded_key     = '';
 		self::$captured_email_tracking_key = '';
+		self::$session_owned_tracking_key  = '';
 		Cookies::clear( self::$tracking_key_cookie_name );
 		Cookies::clear( 'wp_automatewoo_session_started' );
 	}
@@ -665,6 +769,8 @@ class Session_Tracker {
 		}
 
 		self::maybe_clear_previous_session_customers_cart( $new_customer );
+		self::clear_session_tracking_key();
+		self::clear_tracking_stopped();
 		// A live login is genuine verification, so opt in to the verified class.
 		self::set_session_customer( $new_customer, '', self::PROVENANCE_VERIFIED );
 	}
@@ -810,7 +916,153 @@ class Session_Tracker {
 			return self::$tracking_key_to_set;
 		}
 
+		// The session key only ever holds a guest this WC session created or owns, so it is
+		// the browser's most recent identity and wins over the cookie.
+		$session_key = self::get_session_tracking_key();
+
+		if ( $session_key ) {
+			return $session_key;
+		}
+
+		if ( self::is_tracking_stopped() ) {
+			return false;
+		}
+
 		return self::get_tracking_cookie();
+	}
+
+
+	/**
+	 * Remembers the guest this WC session created from a typed email. Server-side only:
+	 * no browser cookie of ours is written.
+	 *
+	 * @since 6.9.3
+	 *
+	 * @param string $key
+	 */
+	private static function store_session_tracking_key( $key ) {
+		if ( ! WC()->session || ! self::cookies_permitted() ) {
+			return;
+		}
+
+		self::maybe_start_wc_session_cookie();
+
+		WC()->session->set(
+			self::SESSION_TRACKING_KEY,
+			[
+				'key' => $key,
+				'sid' => (string) WC()->session->get_customer_id(),
+			]
+		);
+		self::clear_tracking_stopped();
+	}
+
+
+	/**
+	 * Stops tracking the guest this browser's cookie identifies, server-side only: no
+	 * cookie is written or expired, so the response does not depend on why tracking stopped.
+	 *
+	 * @since 6.9.3
+	 */
+	private static function stop_cookie_tracking() {
+		if ( ! WC()->session || ! self::cookies_permitted() ) {
+			return;
+		}
+
+		self::clear_session_tracking_key();
+		WC()->session->set( self::SESSION_TRACKING_STOPPED_KEY, [ 'sid' => (string) WC()->session->get_customer_id() ] );
+	}
+
+
+	/**
+	 * Whether the stop set by stop_cookie_tracking() applies to this WC session. Like the
+	 * session key, it is ignored for another session id and in a cloned session.
+	 *
+	 * @since 6.9.3
+	 *
+	 * @return bool
+	 */
+	private static function is_tracking_stopped() {
+		if ( ! WC()->session || ! self::cookies_permitted() ) {
+			return false;
+		}
+
+		$stored = WC()->session->get( self::SESSION_TRACKING_STOPPED_KEY );
+
+		return is_array( $stored )
+			&& isset( $stored['sid'] )
+			&& $stored['sid'] === (string) WC()->session->get_customer_id()
+			&& ! WC()->session->get( 'previous_customer_id' );
+	}
+
+
+	/**
+	 * @since 6.9.3
+	 */
+	private static function clear_tracking_stopped() {
+		if ( WC()->session ) {
+			WC()->session->set( self::SESSION_TRACKING_STOPPED_KEY, null );
+		}
+	}
+
+
+	/**
+	 * Gives the visitor a WooCommerce session cookie so a stored session key survives to
+	 * the next request (WC saves a session only once it has its own cookie). Called the
+	 * same way for every capture attempt, so the response never depends on the typed email.
+	 * A Store API Cart-Token session is not a browser session and gets no cookie.
+	 *
+	 * @since 6.9.3
+	 * @internal
+	 */
+	public static function maybe_start_wc_session_cookie() {
+		if ( ! WC()->session instanceof \WC_Session_Handler || ! self::cookies_permitted() || headers_sent() ) {
+			return;
+		}
+
+		if ( ! WC()->session->has_session() ) {
+			WC()->session->set_customer_session_cookie( true );
+		}
+	}
+
+
+	/**
+	 * Returns the key stored by store_session_tracking_key(), or an empty string.
+	 *
+	 * Deliberately not gated on headers_sent(): this reads server-side state and runs as
+	 * late as `shutdown` (see Carts::maybe_store_cart()).
+	 *
+	 * @since 6.9.3
+	 *
+	 * @return string
+	 */
+	private static function get_session_tracking_key() {
+		if ( ! WC()->session || ! self::cookies_permitted() ) {
+			return '';
+		}
+
+		$stored = WC()->session->get( self::SESSION_TRACKING_KEY );
+
+		if ( ! is_array( $stored ) || empty( $stored['key'] ) || ! isset( $stored['sid'] ) ) {
+			return '';
+		}
+
+		// A session cloned via `?session=` copies every key and records where it came from.
+		if ( $stored['sid'] !== (string) WC()->session->get_customer_id() || WC()->session->get( 'previous_customer_id' ) ) {
+			return '';
+		}
+
+		return (string) $stored['key'];
+	}
+
+
+	/**
+	 * @since 6.9.3
+	 */
+	private static function clear_session_tracking_key() {
+		if ( WC()->session ) {
+			WC()->session->set( self::SESSION_TRACKING_KEY, null );
+		}
 	}
 
 
@@ -870,16 +1122,28 @@ class Session_Tracker {
 	 * Cases to handle:
 	 *
 	 * - Registered user is logged in or remembered via cookie = bail
-	 * - Email matches existing customer
-	 *      - Cookie customer exists
-	 *          - Cookie and matched customer are the same = do nothing
-	 *          - Cookie and matched customer are different = cookie must be changed, clear cart from previous key to avoid duplicates
-	 *      - No cookie customer = Set new cookie to matched customer key
+	 * - Email belongs to a user account = rejected, nothing is recorded or created
+	 *      - Cookie customer is a different guest = clear that guest's cart and stop tracking
+	 *        this browser server-side (WC session flag, no cookie written or expired)
+	 * - Email matches the session customer = do nothing (check-in only when the identity is verified)
+	 * - Email matches another existing guest = that guest is recorded for this request only
+	 *   (capture-only): no cookie, check-in, language or meta writes, and the previous
+	 *   session customer's cart is kept
 	 * - Email is new
-	 *      - Cookie customer exists
+	 *      - Verified session guest
 	 *          - Customer data is locked = create new customer, change cookie, clear cart from previous key to avoid duplicates
 	 *          - Customer data is not locked = update customer email
-	 *      - No cookie customer = Set new cookie to matched customer key
+	 *      - No session guest, or one that is not verified (e.g. a legacy unsigned cookie)
+	 *          = create a new guest and leave the session guest untouched
+	 *
+	 * @since 4.3.0
+	 * @since 6.9.3 An email that belongs to a user account is never resolved: no
+	 *               customer record, session identity or stored cart is created for it.
+	 *               A different guest tracked in this browser has its cart cleared and
+	 *               tracking stops through a WC session flag, so no cookie is written or
+	 *               expired. Without a WC session only the cart is cleared. An email matching another existing guest is recorded as
+	 *               a capture-only identity. An unverified session guest is never renamed
+	 *               or deleted.
 	 *
 	 * @param string $new_email
 	 * @param string $language
@@ -887,62 +1151,82 @@ class Session_Tracker {
 	 * @return Customer|false
 	 */
 	public static function set_session_by_captured_email( $new_email, $language = '' ) {
+		self::maybe_start_wc_session_cookie();
+
 		if ( ! is_email( $new_email ) || headers_sent() || ! Options::session_tracking_enabled() ) {
 			// must have a valid email, be able to set cookies, have session tracking enabled
 			return false;
 		}
 
-		$new_email                 = Clean::email( $new_email );
+		$new_email = Clean::email( $new_email );
+
 		$existing_session_customer = self::get_session_customer(); // existing session customer from cookie
-		$customer_matching_email   = Customer_Factory::get_by_email( $new_email, false ); // important! don't create new customer
-		$email_is_new              = $customer_matching_email === false;
 
 		if ( $existing_session_customer && $existing_session_customer->is_registered() ) {
 			return $existing_session_customer; // bail if a registered user is already being tracked
 		}
 
-		// Check if a customer already exists matching the supplied email
-		if ( $customer_matching_email ) {
+		$is_noop = $existing_session_customer && $existing_session_customer->get_email() === $new_email;
 
-			if ( ! $existing_session_customer || $new_email !== $existing_session_customer->get_email() ) {
-				// Customer has changed so delete the cart for the existing customer
-				// to avoid duplicate abandoned cart emails.
-				// A registered customer's cart may only be deleted when their tracked
-				// identity is verified (signed cookie); an unverified cookie-derived
-				// identity must not destroy it. Defence in depth: a registered session
-				// customer already bails out above, so today only the guest branch runs.
-				if ( $existing_session_customer && ( ! $existing_session_customer->is_registered() || self::is_customer_identity_verified( $existing_session_customer ) ) ) {
-					$existing_session_customer->delete_cart();
-				}
+		if ( ! $is_noop && self::is_captured_email_claim_over_limit() ) {
+			return false;
+		}
+
+		if ( get_user_by( 'email', $new_email ) ) {
+			// a typed email never resolves a registered account, and it ends tracking of the previous guest
+			if ( $existing_session_customer && $new_email !== $existing_session_customer->get_email() ) {
+				$existing_session_customer->delete_cart();
+				self::stop_cookie_tracking();
 			}
 
-			// Set the matched customer as the new customer
-			$new_customer = $customer_matching_email;
-		} elseif ( $existing_session_customer ) { // Is there an existing session customer
-			// Check if existing and new emails are the same
-			// This is actually impossible considering the previous logic but it's probably more confusing to omit this
-			if ( $existing_session_customer->get_email() === $new_email ) {
-				// Nothing to do
-				$new_customer = $existing_session_customer;
-			} else {
-				$guest = $existing_session_customer->get_guest(); // customer can not be a registered user at this point
+			return false;
+		}
 
-				if ( $guest->is_locked() ) {
-					// email has changed and guest is locked so we must create a new guest
-					// first clear the old guests cart, to avoid duplicate abandoned cart emails
-					$guest->delete_cart();
-					$new_customer = Customer_Factory::get_by_email( $new_email );
-				} else {
-					// Guest is not locked so we can simply update guest email
-					$guest->set_email( $new_email );
-					$guest->save();
+		$customer_matching_email = Customer_Factory::get_by_email( $new_email, false ); // important! don't create new customer
 
-					// Set the new customer to the existing session customer
-					$new_customer = $existing_session_customer;
+		$is_own = $existing_session_customer && (
+			self::is_customer_identity_verified( $existing_session_customer )
+			|| $existing_session_customer->get_key() === self::get_session_tracking_key()
+		);
+		$is_new = false === $customer_matching_email;
+
+		if ( $existing_session_customer && $existing_session_customer->get_email() === $new_email ) {
+			if ( ! $is_own ) {
+				// The session guest's own email, but only inherited evidence: no writes.
+				if ( Options::abandoned_cart_enabled() ) {
+					Carts::update_stored_customer_cart( $existing_session_customer );
 				}
+				return $existing_session_customer;
+			}
+
+			$new_customer = $existing_session_customer;
+		} elseif ( $customer_matching_email ) {
+			// Another existing guest: recorded for this request only.
+			self::set_session_customer( $customer_matching_email, $language, self::PROVENANCE_CAPTURE_ONLY );
+
+			if ( Options::abandoned_cart_enabled() ) {
+				Carts::update_stored_customer_cart( $customer_matching_email );
+			}
+
+			return $customer_matching_email;
+		} elseif ( $is_own ) {
+			$guest = $existing_session_customer->get_guest(); // customer can not be a registered user at this point
+
+			if ( $guest->is_locked() ) {
+				// email has changed and guest is locked so we must create a new guest
+				// first clear the old guests cart, to avoid duplicate abandoned cart emails
+				$guest->delete_cart();
+				$new_customer = Customer_Factory::get_by_email( $new_email );
+			} else {
+				// Guest is not locked so we can simply update guest email
+				$guest->set_email( $new_email );
+				$guest->save();
+
+				// Set the new customer to the existing session customer
+				$new_customer = $existing_session_customer;
 			}
 		} else {
-			// There is no session customer, so create one
+			// No verified session guest to build on, so create a new guest
 			$new_customer = Customer_Factory::get_by_email( $new_email );
 		}
 
@@ -951,7 +1235,6 @@ class Session_Tracker {
 			self::set_session_customer( $new_customer, $language, self::PROVENANCE_CAPTURED_EMAIL );
 		}
 
-		// the new customer could be a user, if the email address matched a user
 		$guest = $new_customer->get_guest();
 		if ( $guest ) {
 			$guest->do_check_in();
@@ -962,7 +1245,7 @@ class Session_Tracker {
 			Carts::update_stored_customer_cart( $new_customer );
 		}
 
-		if ( $email_is_new && $guest ) {
+		if ( $is_new && $guest ) {
 			// fire hook after new email is stored
 			do_action( 'automatewoo/session_tracker/new_stored_guest', $guest );
 		}
@@ -972,11 +1255,50 @@ class Session_Tracker {
 
 
 	/**
-	 * Store guest info if they place a comment
+	 * Counts a typed-email claim and reports whether the source is over its limit.
 	 *
-	 * @param int $comment_id
+	 * @since 6.9.3
+	 *
+	 * @return bool
 	 */
-	public static function capture_from_comment( $comment_id ) {
+	private static function is_captured_email_claim_over_limit(): bool {
+		/**
+		 * Filters how many typed-email claims one source can make per 15 minutes.
+		 *
+		 * @since 6.9.3
+		 *
+		 * @param int $limit Default 20. Use 0 to disable the per-source limit.
+		 */
+		$limit = (int) apply_filters( 'automatewoo/session_tracker/captured_email_claim_limit', self::CAPTURED_EMAIL_CLAIM_LIMIT );
+
+		/**
+		 * Filters how many typed-email claims all sources together can make per 15 minutes.
+		 *
+		 * @since 6.9.3
+		 *
+		 * @param int $limit Default 500. Use 0 to disable the site-wide limit.
+		 */
+		$global_limit = (int) apply_filters( 'automatewoo/session_tracker/captured_email_claim_global_limit', self::CAPTURED_EMAIL_CLAIM_GLOBAL_LIMIT );
+
+		return Rate_Limiter::is_over_limit( 'captured_email', $limit, self::CAPTURED_EMAIL_CLAIM_WINDOW, $global_limit, 'session-tracker' );
+	}
+
+
+	/**
+	 * Store guest info if they place a comment.
+	 *
+	 * Only comments that are pending or approved, and sent from the store's own pages, are
+	 * captured. Comments without an Origin or Referer header (apps, XML-RPC) skip capture;
+	 * the comment itself is unaffected.
+	 *
+	 * @param int        $comment_id
+	 * @param int|string $comment_approved Approval status passed by the comment_post hook.
+	 */
+	public static function capture_from_comment( $comment_id, $comment_approved = 1 ) {
+		if ( ! in_array( $comment_approved, [ 0, '0', 1, '1' ], true ) || ! Request_Origin::is_same_site() ) {
+			return;
+		}
+
 		if ( is_user_logged_in() ) {
 			return;
 		}
@@ -1029,7 +1351,7 @@ class Session_Tracker {
 		if ( $customer ) {
 			// Capture the guest's data
 			$guest = $customer->get_guest();
-			if ( $guest ) {
+			if ( $guest && ! self::is_customer_identity_capture_only( $customer ) ) {
 				foreach ( PreSubmit::get_checkout_capture_fields() as $field ) {
 					$value = $guest->get_checkout_field_from_order( $field, $order );
 					if ( $value !== false && $value !== '' ) {
@@ -1059,6 +1381,11 @@ class Session_Tracker {
 	 *              buyer was logged in. A third-party plugin that links guest
 	 *              orders to existing accounts by billing email at creation time
 	 *              would break that assumption and defeat this guard.
+	 * @since 6.9.3 A returning guest on a new browser no longer receives a tracking
+	 *              cookie from an order: a guest that already existed before the order
+	 *              is promoted only when the browser already holds a verified identity
+	 *              for it, otherwise it is recorded as capture-only. A guest created by
+	 *              the order itself is promoted as before.
 	 * @param int $order_id
 	 */
 	public static function maybe_track_guest_customer_after_order_placed( $order_id ) {
@@ -1077,9 +1404,58 @@ class Session_Tracker {
 			return;
 		}
 
-		$provenance = $order->get_user_id() ? self::PROVENANCE_VERIFIED : self::PROVENANCE_CAPTURED_EMAIL;
+		if ( $order->get_user_id() ) {
+			$provenance = self::PROVENANCE_VERIFIED;
+		} elseif ( $customer->is_registered() ) {
+			$provenance = self::PROVENANCE_CAPTURED_EMAIL;
+		} elseif ( self::is_guest_created_by_order( $customer, $order ) || self::is_customer_identity_verified( $customer ) || $customer->get_key() === self::get_session_tracking_key() ) {
+			$provenance = self::PROVENANCE_VERIFIED;
+		} else {
+			$provenance = self::PROVENANCE_CAPTURE_ONLY;
+		}
 
 		self::set_session_customer( $customer, '', $provenance );
+	}
+
+
+	/**
+	 * Whether the guest row came into being with this order: it was created no earlier than
+	 * a minute before the order and the billing email has no earlier order. Read from stored
+	 * dates, so it does not depend on which listener created the guest first (block checkout
+	 * creates it on the status change, before the order-processed hook).
+	 *
+	 * @since 6.9.3
+	 *
+	 * @param Customer  $customer
+	 * @param \WC_Order $order
+	 *
+	 * @return bool
+	 */
+	private static function is_guest_created_by_order( $customer, $order ) {
+		$guest      = $customer->get_guest();
+		$ordered_at = $order->get_date_created();
+
+		if ( ! $guest || ! $ordered_at ) {
+			return false;
+		}
+
+		$created = $guest->get_date_created();
+
+		if ( ! $created || $created->getTimestamp() < $ordered_at->getTimestamp() - MINUTE_IN_SECONDS ) {
+			return false;
+		}
+
+		$earlier_orders = wc_get_orders(
+			[
+				'billing_email' => $order->get_billing_email(),
+				'exclude'       => [ $order->get_id() ],
+				'date_created'  => '<' . $ordered_at->getTimestamp(),
+				'limit'         => 1,
+				'return'        => 'ids',
+			]
+		);
+
+		return empty( $earlier_orders );
 	}
 
 
@@ -1094,7 +1470,9 @@ class Session_Tracker {
 	 * @param Customer $customer
 	 * @param string   $language
 	 * @param string   $provenance How the customer was resolved: self::PROVENANCE_CAPTURED_EMAIL
-	 *                             (an email the visitor typed — the default) or
+	 *                             (an email the visitor typed — the default),
+	 *                             self::PROVENANCE_CAPTURE_ONLY (a typed email for an existing
+	 *                             guest the visitor is not verified as) or
 	 *                             self::PROVENANCE_VERIFIED (user login, an order placed by the
 	 *                             account itself). The default is the WEAK class on purpose:
 	 *                             this is a public method add-ons call with two arguments, and
@@ -1118,6 +1496,12 @@ class Session_Tracker {
 	 *              external caller that genuinely resolved the customer from a
 	 *              login or the account's own order must pass PROVENANCE_VERIFIED
 	 *              explicitly to keep its previous verified treatment.
+	 * @since 6.9.3 PROVENANCE_CAPTURE_ONLY records a customer for the current request
+	 *              only, exactly like a captured-email identity for a registered
+	 *              customer: no tracking cookie and no language update.
+	 * @since 6.9.3 A captured-email identity for a guest the browser holds no verified
+	 *              identity for is remembered in the WC session instead of a tracking
+	 *              cookie.
 	 */
 	public static function set_session_customer( $customer, $language = '', $provenance = self::PROVENANCE_CAPTURED_EMAIL ) {
 		if ( ! $customer ) {
@@ -1128,10 +1512,26 @@ class Session_Tracker {
 			return; // session for logged in user will already be set
 		}
 
-		$is_captured_email_for_registered_customer = self::PROVENANCE_CAPTURED_EMAIL === $provenance && $customer->is_registered();
+		$is_capture_only = self::PROVENANCE_CAPTURE_ONLY === $provenance
+			|| ( self::PROVENANCE_CAPTURED_EMAIL === $provenance && $customer->is_registered() );
+
+		// A guest created or owned by this session's typing: remembered in the WC session,
+		// never in a cookie. A guest the browser already holds a verified identity for is
+		// recorded as verified (its cookie is already in the browser).
+		if ( ! $is_capture_only && self::PROVENANCE_CAPTURED_EMAIL === $provenance && ! self::is_customer_identity_verified( $customer ) ) {
+			self::$captured_email_tracking_key = (string) $customer->get_key();
+			self::$session_owned_tracking_key  = (string) $customer->get_key();
+
+			if ( ! headers_sent() && self::cookies_permitted() ) {
+				$customer->update_language( $language ? $language : Language::get_current() );
+			}
+
+			self::store_session_tracking_key( $customer->get_key() );
+			return;
+		}
 
 		// Record provenance even when no cookie can or may be written this request.
-		if ( $is_captured_email_for_registered_customer ) {
+		if ( $is_capture_only ) {
 			self::$captured_email_tracking_key = (string) $customer->get_key();
 		} else {
 			self::$verified_tracking_key = (string) $customer->get_key();
@@ -1141,15 +1541,27 @@ class Session_Tracker {
 			return;
 		}
 
-		if ( $is_captured_email_for_registered_customer ) {
+		if ( $is_capture_only ) {
 			// A typed email must neither mint a durable signed cookie for a registered
-			// account nor rewrite that account's stored language: both are durable
-			// cross-identity writes from an unverified claim.
+			// account or another guest nor rewrite their stored language: both are
+			// durable cross-identity writes from an unverified claim.
 			return;
 		}
 
 		$customer->update_language( $language ? $language : Language::get_current() );
 
+		if ( self::PROVENANCE_CAPTURED_EMAIL === $provenance ) {
+			// A typed email never queues the tracking cookie, not even a refresh of the
+			// one the browser already holds: the response must not depend on the email.
+			return;
+		}
+
+		// The new cookie is now the browser's identity: a stale session key must not outrank it.
+		if ( self::get_session_tracking_key() !== (string) $customer->get_key() ) {
+			self::clear_session_tracking_key();
+		}
+
+		self::clear_tracking_stopped();
 		self::set_tracking_key_to_be_set( $customer->get_key() );
 	}
 

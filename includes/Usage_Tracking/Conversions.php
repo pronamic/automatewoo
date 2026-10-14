@@ -39,7 +39,6 @@ class Conversions implements Event_Tracker_Interface {
 				'order_total'       => $order->get_total(),
 				'workflow_run_date' => $log->get_date()->to_mysql_string(),
 				'workflow_trigger'  => $workflow->get_trigger_name(),
-				'workflow_title'    => $workflow->get_title(),
 			]
 		);
 	}

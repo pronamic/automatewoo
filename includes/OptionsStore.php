@@ -94,4 +94,54 @@ class OptionsStore extends AbstractOptionsStore {
 	public function get_log_retention_months(): int {
 		return absint( $this->get_option( 'log_retention_months' ) );
 	}
+
+	/**
+	 * Get the maximum number of clicks recorded for each workflow run.
+	 *
+	 * Returns 0 when every click is recorded.
+	 *
+	 * @since 6.9.3
+	 *
+	 * @return int
+	 */
+	public function get_click_tracking_limit(): int {
+		$value = self::sanitize_click_tracking_limit( $this->get_option( 'click_tracking_limit' ) );
+
+		return '' === $value ? (int) $this->get_defaults()['click_tracking_limit'] : (int) $value;
+	}
+
+	/**
+	 * Sanitize the click tracking limit before it is saved.
+	 *
+	 * Only a string or an integer is read. A whole number of zero or more is kept. A string
+	 * holding a number larger than PHP_INT_MAX becomes 0, which records every click. Anything
+	 * else, including booleans and floats, becomes an empty string, so the default applies.
+	 *
+	 * @internal
+	 * @since 6.9.3
+	 *
+	 * @param mixed $value
+	 *
+	 * @return string
+	 */
+	public static function sanitize_click_tracking_limit( $value ): string {
+		if ( ! is_string( $value ) && ! is_int( $value ) ) {
+			return '';
+		}
+
+		$value = trim( (string) $value );
+
+		if ( ! preg_match( '/^\d+\z/', $value ) ) {
+			return '';
+		}
+
+		$value = ltrim( $value, '0' );
+
+		if ( '' === $value ) {
+			return '0';
+		}
+
+		// Casting to int would clamp a larger number to PHP_INT_MAX, so check the range instead.
+		return false === filter_var( $value, FILTER_VALIDATE_INT ) ? '0' : $value;
+	}
 }

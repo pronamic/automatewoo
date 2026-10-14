@@ -2,6 +2,8 @@
 
 namespace AutomateWoo\Usage_Tracking;
 
+use AutomateWoo\Rules;
+use AutomateWoo\Triggers;
 use AutomateWoo\Workflow;
 
 /**
@@ -27,7 +29,6 @@ trait WorkflowTracksData {
 			'date_created'                => $workflow->get_date_created(),
 			'ga_tracking_enabled'         => $workflow->is_ga_tracking_enabled(),
 			'status'                      => $workflow->get_status(),
-			'title'                       => $workflow->get_title(),
 			'tracking_enabled'            => $workflow->is_tracking_enabled(),
 			'unsubscribe_exempt'          => $workflow->is_exempt_from_unsubscribing(),
 			'type'                        => $workflow->get_type(),
@@ -38,13 +39,14 @@ trait WorkflowTracksData {
 		}
 
 		$data['trigger_name'] = $workflow->get_trigger_name();
-		foreach ( $workflow->get_trigger_options() as $var => $value ) {
+		foreach ( $this->sanitize_trigger_options( $workflow ) as $var => $value ) {
 			$this->recursively_add_items( $data, $var, $value, 'trigger_' );
 		}
 
 		// Drop named index for rule groups and rules to standardize property names.
 		foreach ( array_values( $workflow->get_rule_data() ) as $key => $rules ) {
-			$this->recursively_add_items( $data, $key, array_values( $rules ), 'rule_' );
+			$rules = array_map( [ $this, 'sanitize_rule' ], array_values( $rules ) );
+			$this->recursively_add_items( $data, $key, $rules, 'rule_' );
 		}
 
 		return (array) apply_filters( 'automatewoo/usage_tracking/workflow_data', $data, $workflow );
@@ -61,7 +63,7 @@ trait WorkflowTracksData {
 	private function recursively_add_items( &$data, $key, $value, $prefix = '' ) {
 		if ( is_array( $value ) ) {
 			foreach ( $value as $index => $item ) {
-				$this->recursively_add_items( $data, $index, $this->maybe_anonymize_value( $item ), "{$prefix}{$key}_" );
+				$this->recursively_add_items( $data, $index, $item, "{$prefix}{$key}_" );
 			}
 		} elseif ( is_object( $value ) ) {
 			foreach ( get_object_vars( $value ) as $index => $item ) {
@@ -73,25 +75,46 @@ trait WorkflowTracksData {
 	}
 
 	/**
-	 * If the item name matches either `customer_email` or `customer_phone` then value will be anonymized.
+	 * Keep only trigger option values that come from structured fields. Free-text values are blanked.
 	 *
-	 * @param array|string $item The workflow item.
+	 * @param Workflow $workflow The workflow.
 	 *
-	 * @return array|string
+	 * @return array
 	 */
-	private function maybe_anonymize_value( $item ) {
-		if (
-			isset( $item['name'] ) &&
-			in_array(
-				$item['name'],
-				array(
-					'customer_email',
-					'customer_phone',
-				),
-				true
-			)
-		) {
-			$item['value'] = aw_anonymize_email( $item['value'] );
+	private function sanitize_trigger_options( Workflow $workflow ) {
+		$trigger = Triggers::get( $workflow->get_trigger_name() );
+		$options = $workflow->get_trigger_options();
+
+		foreach ( $options as $key => $value ) {
+			$field = $trigger ? $trigger->get_field( $key ) : false;
+
+			if ( ! $field || ! in_array( $field->get_type(), [ 'select', 'searchable-select', 'checkbox', 'number', 'category', 'term' ], true ) ) {
+				$options[ $key ] = '';
+			}
+		}
+
+		return $options;
+	}
+
+	/**
+	 * Keep a rule value only when its rule type is structured. Email values are anonymized, everything else is blanked.
+	 *
+	 * @param array|mixed $item The rule data containing name, compare and value.
+	 *
+	 * @return array|mixed
+	 */
+	private function sanitize_rule( $item ) {
+		if ( ! is_array( $item ) || ! isset( $item['value'] ) ) {
+			return $item;
+		}
+
+		$name = $item['name'] ?? '';
+		$rule = is_string( $name ) ? Rules::get( $name ) : false;
+
+		if ( in_array( $name, [ 'customer_email', 'guest_email' ], true ) ) {
+			$item['value'] = is_string( $item['value'] ) ? aw_anonymize_email( $item['value'] ) : '';
+		} elseif ( ! $rule || ! in_array( $rule->type, [ 'select', 'object', 'number', 'bool', 'date' ], true ) ) {
+			$item['value'] = '';
 		}
 
 		return $item;

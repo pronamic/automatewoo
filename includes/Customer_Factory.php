@@ -301,9 +301,12 @@ class Customer_Factory extends Factory {
 	/**
 	 * Generates a unique customer key (which doesn't exist yet in the DB).
 	 *
+	 * @since 3.0.0
+	 * @since 6.9.3 Public.
+	 *
 	 * @return string
 	 */
-	private static function generate_unique_customer_key() {
+	public static function generate_unique_customer_key() {
 
 		$key = aw_generate_key( 20, false );
 

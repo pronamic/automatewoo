@@ -19,17 +19,9 @@ class Tracking {
 	 * @return string
 	 */
 	public static function get_open_tracking_url( $workflow ) {
-		$log = $workflow->get_current_log();
-
 		// SEMGREP WARNING EXPLANATION
 		// This URL is escaped later
-		$url = add_query_arg(
-			[
-				'aw-action' => 'open',
-				'log'       => $log ? $log->get_id() : 0,
-			],
-			home_url()
-		);
+		$url = add_query_arg( self::get_tracking_url_args( 'open', $workflow->get_current_log() ), home_url() );
 
 		return apply_filters( 'automatewoo_open_track_url', $url, $workflow );
 	}
@@ -47,13 +39,8 @@ class Tracking {
 			return $redirect; // if redirect is not a valid redirect return the original URL
 		}
 
-		$log = $workflow->get_current_log();
-
-		$args = [
-			'aw-action' => 'click',
-			'log'       => $log ? $log->get_id() : 0,
-			'redirect'  => urlencode( $valid_redirect ), // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.urlencode_urlencode -- Preserve redirect URL encoding.
-		];
+		$args             = self::get_tracking_url_args( 'click', $workflow->get_current_log() );
+		$args['redirect'] = urlencode( $valid_redirect ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.urlencode_urlencode -- Preserve redirect URL encoding.
 
 		// SEMGREP WARNING EXPLANATION
 		// URL is escaped later by the consumer.
@@ -64,13 +51,41 @@ class Tracking {
 
 
 	/**
-	 * Records the open track event if a valid log id is passed.
+	 * Gets the query args that identify a log in its tracking URLs.
+	 *
+	 * @since 6.9.3
+	 *
+	 * @param string   $action The tracking action, open or click.
+	 * @param Log|bool $log    The log of the current workflow run, or false when there is none.
+	 *
+	 * @return array
+	 */
+	private static function get_tracking_url_args( string $action, $log ): array {
+		$args = [
+			'aw-action' => $action,
+			'log'       => $log ? $log->get_id() : 0,
+		];
+
+		$token = $log ? $log->get_tracking_token() : '';
+
+		if ( '' !== $token ) {
+			$args['token'] = $token;
+		}
+
+		return $args;
+	}
+
+
+	/**
+	 * Records an open on the log of the request, when the log records the request.
 	 * Then outputs a blank GIF image.
+	 *
+	 * @see Tracking::get_log_to_record_on()
 	 */
 	public static function handle_open_tracking_url() {
-		$log = Log_Factory::get( aw_request( 'log' ) );
+		$log = self::get_log_to_record_on();
 
-		if ( $log && ! self::is_excluded_user_agent() && ! self::is_log_customer_opted_out( $log ) ) {
+		if ( $log ) {
 			$log->record_open();
 		}
 
@@ -95,14 +110,18 @@ class Tracking {
 	 * Still allow redirect if log param is invalid, when testing a '0' value for log is used.
 	 */
 	public static function handle_click_tracking_url() {
-		$redirect = esc_url_raw( aw_request( 'redirect' ) );
-		$log      = Log_Factory::get( aw_request( 'log' ) );
+		// Only the query string is read, which bounds the stored URL by the length of
+		// the request line. Tracked links always carry the redirect there.
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- A tracked link is opened from an email or text message, so it cannot carry a nonce.
+		$redirect = isset( $_GET['redirect'] ) && is_string( $_GET['redirect'] ) ? esc_url_raw( wp_unslash( $_GET['redirect'] ) ) : '';
 
 		if ( ! $redirect ) {
 			return;
 		}
 
-		if ( $log && ! self::is_excluded_user_agent() && ! self::is_log_customer_opted_out( $log ) ) {
+		$log = self::get_log_to_record_on();
+
+		if ( $log ) {
 			$log->record_click( $redirect );
 		}
 
@@ -111,6 +130,56 @@ class Tracking {
 
 		wp_safe_redirect( $redirect );
 		exit;
+	}
+
+
+	/**
+	 * Gets the log that the current tracking request records an open or a click on.
+	 *
+	 * Tracking links are only sent for a log with tracking enabled, so no other log records
+	 * anything. A log that has a tracking token records only requests that carry the token.
+	 * A log from before tokens were stored has none and is found by its ID alone, so the
+	 * links in messages that were already sent keep recording.
+	 *
+	 * @since 6.9.3
+	 *
+	 * @return Log|false False when nothing is recorded for the request.
+	 */
+	private static function get_log_to_record_on() {
+		$log = Log_Factory::get( aw_request( 'log' ) );
+
+		if ( ! $log || ! $log->is_tracking_enabled() || ! self::is_request_token_valid_for_log( $log ) ) {
+			return false;
+		}
+
+		if ( self::is_excluded_user_agent() || self::is_log_customer_opted_out( $log ) ) {
+			return false;
+		}
+
+		return $log;
+	}
+
+
+	/**
+	 * Does the current request carry the tracking token of the log?
+	 *
+	 * @since 6.9.3
+	 *
+	 * @param Log $log
+	 *
+	 * @return bool True also when the log has no token.
+	 */
+	private static function is_request_token_valid_for_log( Log $log ): bool {
+		$token = $log->get_tracking_token();
+
+		if ( '' === $token ) {
+			return true;
+		}
+
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- A tracked link is opened from an email or text message, so it cannot carry a nonce.
+		$request_token = isset( $_GET['token'] ) && is_string( $_GET['token'] ) ? sanitize_text_field( wp_unslash( $_GET['token'] ) ) : '';
+
+		return hash_equals( $token, $request_token );
 	}
 
 

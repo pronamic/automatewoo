@@ -21,6 +21,8 @@ class Admin_Workflow_Edit {
 	/** @var string The screen ID */
 	public static $screen = 'aw_workflow';
 
+	const CUSTOM_FUNCTION_NOTICE_PREFIX = 'automatewoo_custom_function_notice_';
+
 	/**
 	 * Constructor
 	 */
@@ -29,6 +31,7 @@ class Admin_Workflow_Edit {
 		add_action( 'admin_head', [ $this, 'register_meta_boxes' ] );
 		add_action( 'admin_head', [ $this, 'enqueue_scripts' ], 15 );
 		add_action( 'admin_footer', [ $this, 'workflow_js_templates' ], 15 );
+		add_action( 'admin_notices', [ $this, 'maybe_display_custom_function_notice' ] );
 		add_action( 'save_post', [ $this, 'save' ] );
 		add_action( 'save_post', [ $this, 'maybe_redirect_to_manual_runner' ], 1000 );
 
@@ -407,6 +410,51 @@ class Admin_Workflow_Edit {
 	}
 
 	/**
+	 * Whether the current user may save the posted actions. Sets a notice for the user if not.
+	 *
+	 * @since 6.9.3
+	 *
+	 * @param array    $actions  The posted actions.
+	 * @param Workflow $workflow The workflow being saved.
+	 *
+	 * @return bool
+	 */
+	protected function can_save_posted_actions( array $actions, Workflow $workflow ): bool {
+		$stored = $workflow->get_meta( 'actions' );
+		$stored = is_array( $stored ) ? $stored : [];
+
+		if ( Action_Custom_Function::can_current_user_save_function_names( $actions, $stored ) ) {
+			return true;
+		}
+
+		set_transient( self::CUSTOM_FUNCTION_NOTICE_PREFIX . get_current_user_id(), true, 5 * MINUTE_IN_SECONDS );
+
+		return false;
+	}
+
+	/**
+	 * Tell the user once that Custom Function actions were not saved.
+	 *
+	 * @since 6.9.3
+	 */
+	public function maybe_display_custom_function_notice() {
+		$key = self::CUSTOM_FUNCTION_NOTICE_PREFIX . get_current_user_id();
+
+		if ( false === get_transient( $key ) ) {
+			return;
+		}
+
+		delete_transient( $key );
+
+		Admin::notice(
+			'warning',
+			esc_html__( 'Your changes to the workflow actions weren’t saved.', 'automatewoo' ),
+			esc_html( Action_Custom_Function::get_function_name_permission_message() ),
+			'is-dismissible'
+		);
+	}
+
+	/**
 	 * Save custom post data for workflow
 	 *
 	 * @param int $post_id The ID of the post currently being saved
@@ -416,11 +464,14 @@ class Admin_Workflow_Edit {
 	public function save( $post_id ) {
 		$posted = aw_get_post_var( 'aw_workflow_data' );
 
-		if ( ! is_array( $posted ) ) {
+		if ( ! is_array( $posted ) || ! current_user_can( 'edit_post', $post_id ) ) {
 			return;
 		}
 
 		$workflow = Factory::get( $post_id );
+		if ( ! $workflow ) {
+			return;
+		}
 
 		$workflow->set_type( isset( $posted['type'] ) ? $posted['type'] : 'automatic' );
 
@@ -444,8 +495,10 @@ class Admin_Workflow_Edit {
 
 		$trigger_name = $workflow->get_trigger_name();
 
-		$raw_actions_data = isset( $posted['actions'] ) ? $posted['actions'] : [];
-		$workflow->set_actions_data( $raw_actions_data );
+		$raw_actions_data = isset( $posted['actions'] ) && is_array( $posted['actions'] ) ? $posted['actions'] : [];
+		if ( $this->can_save_posted_actions( $raw_actions_data, $workflow ) ) {
+			$workflow->set_actions_data( $raw_actions_data );
+		}
 
 		$options                   = [];
 		$options['when_to_run']    = $this->extract_string_option_value( 'when_to_run', $posted, 'immediately' );
@@ -508,7 +561,7 @@ class Admin_Workflow_Edit {
 	 * @param int $post_id The post ID
 	 */
 	public function maybe_redirect_to_manual_runner( $post_id ) {
-		if ( aw_get_post_var( 'automatewoo_redirect_to_runner' ) ) {
+		if ( 'aw_workflow' === get_post_type( $post_id ) && aw_get_post_var( 'automatewoo_redirect_to_runner' ) && false === get_transient( self::CUSTOM_FUNCTION_NOTICE_PREFIX . get_current_user_id() ) ) {
 			wp_safe_redirect( Admin::page_url( 'manual-workflow-runner', $post_id ) );
 			exit;
 		}
@@ -545,7 +598,7 @@ class Admin_Workflow_Edit {
 	public function insert_post_data( $data ) {
 		$status = Clean::string( aw_request( 'workflow_status' ) );
 
-		if ( $status ) {
+		if ( $status && 'aw_workflow' === ( $data['post_type'] ?? '' ) ) {
 			$data['post_status'] = $status === 'active' ? 'publish' : 'aw-disabled';
 		}
 

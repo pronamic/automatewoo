@@ -75,7 +75,10 @@ class Customers {
 			return false;
 		}
 
-		self::convert_guest_to_registered_customer( $guest, $user );
+		if ( ! self::convert_guest_to_registered_customer( $guest, $user ) ) {
+			return false;
+		}
+
 		$guest->delete(); // clear all guest data (including cart)
 		return true;
 	}
@@ -84,30 +87,42 @@ class Customers {
 	/**
 	 * Convert guest customer to registered user customer.
 	 *
+	 * @since 4.3.0
+	 * @since 6.9.3 A converted customer gets a new key. Returns false when the customer record could not be saved.
+	 *
 	 * @param Guest    $guest
 	 * @param \WP_User $user
+	 *
+	 * @return bool
 	 */
 	public static function convert_guest_to_registered_customer( $guest, $user ) {
 		$guest_customer = Customer_Factory::get_by_guest_id( $guest->get_id(), false );
 
 		if ( ! $guest_customer ) {
-			return; // nothing to convert
+			return true; // nothing to convert
 		}
 
 		$user_customer = Customer_Factory::get_by_user_id( $user->ID, false );
 
 		if ( $user_customer ) {
-			return; // user already exists, guest will just be deleted
+			return true; // user already exists, guest will just be deleted
 		}
 
 		// we have a guest customer that needs to be converted to a registered customer
 		$guest_customer->set_guest_id( 0 );
 		$guest_customer->set_user_id( $user->ID );
-		$guest_customer->save();
+		$guest_customer->set_key( Customer_Factory::generate_unique_customer_key() );
+
+		if ( ! $guest_customer->save() ) {
+			Customer_Factory::clean_cache( $guest_customer ); // remove the object from the cache so the next lookup reads the stored row
+			return false;
+		}
 
 		$guest_customer->clear_review_count_cache();
 
 		do_action( 'automatewoo/customer/converted_guest_to_registered_customer', $guest_customer );
+
+		return true;
 	}
 
 	/**

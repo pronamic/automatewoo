@@ -2,7 +2,7 @@
 // https://github.com/woocommerce/automatewoo/issues/1212
 /* global $metabox, _, ajaxurl, AutomateWoo, automatewooWorkflowLocalizeScript, AW, Backbone, Cookies, quicktags, tinyMCE */
 // Especially those seem pretty leaky, and dengerous.
-// eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 /* global canvas, name, settings, html, theButtons, use, edButtons, inst, qt */
 
 /**
@@ -1205,14 +1205,14 @@ jQuery( function ( $ ) {
 			) {
 				try {
 					tinymce.init( mceInit );
-				} catch ( e ) {}
+				} catch {}
 			}
 
 			try {
 				const qtags = quicktags( qtInit );
 
 				this.init_wysiwyg_buttons( qtags );
-			} catch ( e ) {}
+			} catch {}
 		},
 
 		/**

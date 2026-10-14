@@ -1,6 +1,6 @@
 // Register eslint ignored glabals - to be revisited.
 // https://github.com/woocommerce/automatewoo/issues/1212
-/* global AW, localStorage */
+/* global AW */
 /**
  * This module is a reduced clone of @woocommerce/tracks, for jQuery/legacy code-base.
  * It has no side-effect, only exports a suggar function on top of `window.wcTracks.recordEvent`.

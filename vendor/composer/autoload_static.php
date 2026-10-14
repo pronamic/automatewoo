@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit952966197e701c747b2b14558dca75ae
+class ComposerStaticInit7b67c3293953591807787457a176fc28
 {
     public static $prefixLengthsPsr4 = array (
         'A' =>
@@ -484,6 +484,7 @@ class ComposerStaticInit952966197e701c747b2b14558dca75ae
         'AutomateWoo\\Queue_Query' => __DIR__ . '/../..' . '/includes/Queue_Query.php',
         'AutomateWoo\\Queued_Event' => __DIR__ . '/../..' . '/includes/Queued_Event.php',
         'AutomateWoo\\Queued_Event_Factory' => __DIR__ . '/../..' . '/includes/Queued_Event_Factory.php',
+        'AutomateWoo\\Rate_Limiter' => __DIR__ . '/../..' . '/includes/Rate_Limiter.php',
         'AutomateWoo\\Registry' => __DIR__ . '/../..' . '/includes/Registry.php',
         'AutomateWoo\\Registry\\ItemConstructorArgsTrait' => __DIR__ . '/../..' . '/includes/Registry/ItemConstructorArgsTrait.php',
         'AutomateWoo\\Remote_Request' => __DIR__ . '/../..' . '/includes/Remote_Request.php',
@@ -498,6 +499,7 @@ class ComposerStaticInit952966197e701c747b2b14558dca75ae
         'AutomateWoo\\Report_Queue' => __DIR__ . '/../..' . '/admin/reports/queue.php',
         'AutomateWoo\\Report_Runs_By_Date' => __DIR__ . '/../..' . '/admin/reports/runs-by-date.php',
         'AutomateWoo\\Reports_Tab_Conversions_List' => __DIR__ . '/../..' . '/admin/reports-tabs/conversions-list.php',
+        'AutomateWoo\\Request_Origin' => __DIR__ . '/../..' . '/includes/Request_Origin.php',
         'AutomateWoo\\Rest_Api' => __DIR__ . '/../..' . '/includes/Rest_Api.php',
         'AutomateWoo\\Rest_Api\\Controllers\\AbstractController' => __DIR__ . '/../..' . '/includes/Rest_Api/Controllers/AbstractController.php',
         'AutomateWoo\\Rest_Api\\Controllers\\ConversionsController' => __DIR__ . '/../..' . '/includes/Rest_Api/Controllers/ConversionsController.php',
@@ -708,6 +710,7 @@ class ComposerStaticInit952966197e701c747b2b14558dca75ae
         'AutomateWoo\\SystemChecks\\ActionSchedulerJobsRunning' => __DIR__ . '/../..' . '/includes/SystemChecks/ActionSchedulerJobsRunning.php',
         'AutomateWoo\\SystemChecks\\DatabaseTablesExist' => __DIR__ . '/../..' . '/includes/SystemChecks/DatabaseTablesExist.php',
         'AutomateWoo\\System_Checks' => __DIR__ . '/../..' . '/includes/System_Checks.php',
+        'AutomateWoo\\System_Status_Report' => __DIR__ . '/../..' . '/includes/System_Status_Report.php',
         'AutomateWoo\\Temporary_Data' => __DIR__ . '/../..' . '/includes/Temporary_Data.php',
         'AutomateWoo\\Time_Helper' => __DIR__ . '/../..' . '/includes/Time_Helper.php',
         'AutomateWoo\\Tool_Abstract' => __DIR__ . '/../..' . '/includes/Tools/Abstract.php',
@@ -1066,9 +1069,9 @@ class ComposerStaticInit952966197e701c747b2b14558dca75ae
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit952966197e701c747b2b14558dca75ae::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit952966197e701c747b2b14558dca75ae::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInit952966197e701c747b2b14558dca75ae::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit7b67c3293953591807787457a176fc28::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit7b67c3293953591807787457a176fc28::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInit7b67c3293953591807787457a176fc28::$classMap;
 
         }, null, ClassLoader::class);
     }

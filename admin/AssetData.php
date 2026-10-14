@@ -53,6 +53,9 @@ class AssetData {
 		);
 		$data['manualRunner']       = $manual_runner;
 
+		// Set after the filter, so the admin JS always shows the limit that is applied.
+		$data['clickTrackingLimit'] = AW()->options_store()->get_click_tracking_limit();
+
 		$this->registry->add( 'automatewoo', $data );
 	}
 }

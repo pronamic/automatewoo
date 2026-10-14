@@ -29,6 +29,13 @@ class Frontend_Form_Handler {
 	private const SIGNUP_SUBMISSION_LIMIT = 10;
 
 	/**
+	 * Maximum signup submissions allowed from all sources combined within the window.
+	 *
+	 * @var int
+	 */
+	private const SIGNUP_GLOBAL_LIMIT = 200;
+
+	/**
 	 * Length of the signup submission window, in seconds.
 	 *
 	 * @var int
@@ -210,8 +217,8 @@ class Frontend_Form_Handler {
 		if ( ! self::count_and_check_signup_rate_limit() ) {
 			$existing = Customer_Factory::get_by_email( $email, false );
 
-			if ( ! $existing ) {
-				// Only a genuinely new address is written.
+			if ( ! $existing && ! get_user_by( 'email', $email ) ) {
+				// Only an address with no customer record and no account is written.
 				$customer = Customer_Factory::get_by_email( $email );
 
 				if ( $customer ) {
@@ -222,7 +229,7 @@ class Frontend_Form_Handler {
 					// behind the conditions the session promotion used to apply.
 					self::update_customer_preferences( $customer, false );
 				}
-			} elseif ( ! $subscribing ) {
+			} elseif ( $existing && ! $subscribing ) {
 				// An opt-out invalidates any pending confirmation for an existing
 				// address, without otherwise changing its preferences.
 				Optin_Confirmation::clear_pending( $existing );
@@ -240,52 +247,23 @@ class Frontend_Form_Handler {
 
 
 	/**
-	 * Count the current submission against the per-source limit and report whether it is over.
+	 * Count the current submission against the per-source limit and the site-wide ceiling.
 	 *
-	 * Uses a fixed-window counter kept in a transient keyed on the request IP
-	 * (WC_Geolocation::get_ip_address()). The count is approximate: it reflects the
-	 * IP the request presents, and the read-modify-write is not atomic, so it can
-	 * overshoot under concurrency. Returns false when no IP is available.
+	 * Counts are approximate; see Rate_Limiter.
 	 *
-	 * @return bool True when the submission is over the limit.
+	 * @return bool True when the submission is over a limit.
 	 */
 	private static function count_and_check_signup_rate_limit() {
-		$ip = \WC_Geolocation::get_ip_address();
+		/**
+		 * Filters the maximum signup submissions allowed from all sources within the window.
+		 *
+		 * @since 6.9.3
+		 *
+		 * @param int $limit Site-wide limit. Use 0 to disable.
+		 */
+		$global_limit = (int) apply_filters( 'automatewoo/frontend_form_handler/signup_global_limit', self::SIGNUP_GLOBAL_LIMIT );
 
-		// With no IP there is nothing to key the counter on, so allow the submission.
-		if ( ! $ip ) {
-			return false;
-		}
-
-		$key    = 'automatewoo_signup_throttle_' . md5( $ip );
-		$window = (array) get_transient( $key );
-
-		// The elapsed check, not the transient TTL, defines the window, so the
-		// window stays anchored to its first submission.
-		if ( empty( $window['start'] ) || ( time() - (int) $window['start'] ) >= self::SIGNUP_SUBMISSION_WINDOW ) {
-			$window = [
-				'start' => time(),
-				'count' => 0,
-			];
-		}
-
-		if ( $window['count'] >= self::SIGNUP_SUBMISSION_LIMIT ) {
-			// A sustained source would otherwise flood the log with an entry per request.
-			if ( empty( $window['logged'] ) ) {
-				Logger::notice( 'communication-signup', 'A communication signup submission was throttled by the per-source limit.' );
-				$window['logged'] = true;
-				set_transient( $key, $window, self::SIGNUP_SUBMISSION_WINDOW );
-			}
-
-			return true;
-		}
-
-		++$window['count'];
-		// The TTL is only a garbage-collection backstop. The window boundary is the
-		// elapsed check above.
-		set_transient( $key, $window, self::SIGNUP_SUBMISSION_WINDOW );
-
-		return false;
+		return Rate_Limiter::is_over_limit( 'signup', self::SIGNUP_SUBMISSION_LIMIT, self::SIGNUP_SUBMISSION_WINDOW, $global_limit, 'communication-signup' );
 	}
 
 

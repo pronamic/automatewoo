@@ -3,6 +3,8 @@
  * Update to 2.6 - Workflow Rules
  */
 
+defined( 'ABSPATH' ) || exit;
+
 $workflows_query                      = new AutomateWoo\Workflow_Query();
 $workflows_query->args['post_status'] = 'any';
 

@@ -2,20 +2,21 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: AutomateWoo 6.9.2\n"
+"Project-Id-Version: AutomateWoo 6.9.3\n"
 "Report-Msgid-Bugs-To: https://woocommerce.com/my-account/contact-support/\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-09-29T07:38:18+00:00\n"
+"POT-Creation-Date: 2026-10-13T10:26:34+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.7.1\n"
+"X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: automatewoo\n"
 
 #. Plugin Name of the plugin
 #. translators: Plugin name.
+#: automatewoo.php:3
 #: admin/admin.php:165
 #: admin/admin.php:166
 #: admin/admin.php:802
@@ -28,23 +29,28 @@ msgstr ""
 #: includes/Actions/Clear_Queued_Events.php:21
 #: includes/Installer.php:267
 #: includes/Privacy.php:17
+#: includes/System_Status_Report.php:57
 #: admin/assets/build/index.js:31
 msgid "AutomateWoo"
 msgstr ""
 
 #. Plugin URI of the plugin
+#: automatewoo.php:4
 msgid "https://automatewoo.com"
 msgstr ""
 
 #. Description of the plugin
+#: automatewoo.php:5
 msgid "Powerful marketing automation for your WooCommerce store."
 msgstr ""
 
 #. Author of the plugin
+#: automatewoo.php:7
 msgid "WooCommerce"
 msgstr ""
 
 #. Author URI of the plugin
+#: automatewoo.php:8
 msgid "https://woocommerce.com"
 msgstr ""
 
@@ -143,11 +149,13 @@ msgstr ""
 
 #. translators: Variable name.
 #: admin/admin.php:389
+#, php-format
 msgid "Variable '%s' is not available with the selected trigger. Please only use variables listed in the the variables box."
 msgstr ""
 
 #. translators: Variable name.
 #: admin/admin.php:391
+#, php-format
 msgid "Variable '%s' is not valid. Please only use variables listed in the variables box."
 msgstr ""
 
@@ -162,11 +170,13 @@ msgstr ""
 #. translators: %s: The error message.
 #: admin/ajax.php:495
 #: admin/assets/build/index.js:31
+#, php-format,js-format
 msgid "Error: %s"
 msgstr ""
 
 #. translators: %s: Number of emails sent.
 #: admin/ajax.php:504
+#, php-format
 msgid "Success! %s email sent"
 msgid_plural "Success! %s emails sent"
 msgstr[0] ""
@@ -405,6 +415,7 @@ msgstr ""
 
 #. translators: %s: Method name
 #: admin/Analytics/Rest_API/Upstream/Generic_Stats_Store.php:118
+#, php-format
 msgid "Method '%s' not implemented. Must be overridden in subclass."
 msgstr ""
 
@@ -419,6 +430,7 @@ msgstr ""
 
 #. translators: %s: Amount of days after which carts will be deleted.
 #: admin/controllers/carts.php:56
+#, php-format
 msgid "Stored carts are shown here, including active and abandoned carts as well as carts that were emptied, placed or recovered. Carts are automatically deleted %s days after their last update."
 msgstr ""
 
@@ -428,6 +440,7 @@ msgstr ""
 
 #. translators: %d: number of carts skipped during the bulk edit.
 #: admin/controllers/carts.php:134
+#, php-format
 msgid "Bulk edit completed. %d cart was skipped because it was already purchased or cleared."
 msgid_plural "Bulk edit completed. %d carts were skipped because they were already purchased or cleared."
 msgstr[0] ""
@@ -435,6 +448,7 @@ msgstr[1] ""
 
 #. translators: %d: number of carts skipped during the bulk edit.
 #: admin/controllers/carts.php:142
+#, php-format
 msgid "Bulk edit completed. %d cart was skipped to avoid creating a duplicate active cart."
 msgid_plural "Bulk edit completed. %d carts were skipped to avoid creating duplicate active carts."
 msgstr[0] ""
@@ -532,6 +546,7 @@ msgstr ""
 
 #. translators: %d: Log ID.
 #: admin/controllers/logs.php:83
+#, php-format
 msgid "Created log #%d."
 msgstr ""
 
@@ -561,6 +576,7 @@ msgstr ""
 
 #. translators: %1$s documentation link start, %2$s documentation link end.
 #: admin/controllers/opt-ins.php:63
+#, php-format
 msgid "More information on opt-ins and opt-outs is available %1$sin the documentation%2$s."
 msgstr ""
 
@@ -570,11 +586,13 @@ msgstr ""
 
 #. translators: %1$s read more link start, %2$s read more link end.
 #: admin/controllers/queue.php:63
+#, php-format
 msgid "Workflows that are not set to run immediately will be added to this queue. The queue is checked every two minutes so actual run times will vary slightly. %1$sRead more&hellip;%2$s"
 msgstr ""
 
 #. translators: %d Number of days to trigger deletion of failed queue items.
 #: admin/controllers/queue.php:73
+#, php-format
 msgid "Failed queue items will be deleted after %d day"
 msgid_plural "Failed queue items will be deleted after %d days"
 msgstr[0] ""
@@ -603,6 +621,7 @@ msgstr ""
 
 #. translators: %s Analytics link, to migrated reports.
 #: admin/controllers/reports.php:49
+#, php-format
 msgid "All reports were migrated to %s. This page will be removed once High Performance Order Storage is enabled in WooCommerce."
 msgstr ""
 
@@ -625,7 +644,7 @@ msgid "Failed to init process."
 msgstr ""
 
 #: admin/controllers/tools.php:156
-#: admin/user-tags-export.php:59
+#: admin/user-tags-export.php:105
 msgid "Security check failed."
 msgstr ""
 
@@ -835,6 +854,7 @@ msgstr ""
 
 #. translators: %1$s customer full name (optionally with guest label appended), %2$s customer email
 #: admin/json-search.php:171
+#, php-format
 msgid "%1$s &ndash; %2$s"
 msgstr ""
 
@@ -854,6 +874,7 @@ msgstr ""
 #: includes/Data_Layer.php:503
 #: includes/Guest.php:206
 #: includes/helpers.php:800
+#, php-format
 msgctxt "full name"
 msgid "%1$s %2$s"
 msgstr ""
@@ -948,7 +969,7 @@ msgstr ""
 #: admin/reports/guests.php:57
 #: admin/reports/logs.php:131
 #: admin/reports/queue.php:241
-#: admin/workflow-edit.php:276
+#: admin/workflow-edit.php:279
 msgid "Actions"
 msgstr ""
 
@@ -960,6 +981,7 @@ msgstr ""
 
 #. translators: %d: cart ID
 #: admin/reports/carts.php:136
+#, php-format
 msgid "Select cart %d"
 msgstr ""
 
@@ -1014,11 +1036,13 @@ msgstr ""
 
 #. translators: %s Conversion total price.
 #: admin/reports/conversions.php:125
+#, php-format
 msgid "%s converted order value"
 msgstr ""
 
 #. translators: %s Number of converted orders.
 #: admin/reports/conversions.php:135
+#, php-format
 msgid "%s converted orders"
 msgstr ""
 
@@ -1044,11 +1068,13 @@ msgstr ""
 
 #. translators: %s Amount of trackable messages sent.
 #: admin/reports/email-tracking.php:180
+#, php-format
 msgid "%s trackable messages sent"
 msgstr ""
 
 #. translators: %s Number of unique opens.
 #: admin/reports/email-tracking.php:190
+#, php-format
 msgid "%s unique opens"
 msgstr ""
 
@@ -1058,16 +1084,19 @@ msgstr ""
 
 #. translators: %s Number of unique clicks.
 #: admin/reports/email-tracking.php:201
+#, php-format
 msgid "%s unique clicks"
 msgstr ""
 
 #. translators: %s Number of clicks.
 #: admin/reports/email-tracking.php:211
+#, php-format
 msgid "%s clicks"
 msgstr ""
 
 #. translators: %s Number of unsubscribed users.
 #: admin/reports/email-tracking.php:221
+#, php-format
 msgid "%s unsubscribes"
 msgstr ""
 
@@ -1085,11 +1114,12 @@ msgstr ""
 
 #: admin/reports/email-tracking.php:402
 #: admin/assets/build/analytics.js:3
+#: admin/assets/build/analytics.js:5
 msgid "Clicks"
 msgstr ""
 
 #: admin/reports/email-tracking.php:411
-#: admin/assets/build/analytics.js:3
+#: admin/assets/build/analytics.js:5
 msgid "Opens"
 msgstr ""
 
@@ -1121,6 +1151,7 @@ msgstr ""
 
 #. translators: %d: guest ID
 #: admin/reports/guests.php:139
+#, php-format
 msgid "Select guest %d"
 msgstr ""
 
@@ -1130,6 +1161,7 @@ msgstr ""
 
 #. translators: %d: log ID
 #: admin/reports/logs.php:63
+#, php-format
 msgid "Select log %d"
 msgstr ""
 
@@ -1167,11 +1199,13 @@ msgstr ""
 
 #. translators: %d: customer ID
 #: admin/reports/opt-ins.php:102
+#, php-format
 msgid "Select customer %d"
 msgstr ""
 
 #. translators: %d Workflow ID.
 #: admin/reports/opt-ins.php:139
+#, php-format
 msgid "Workflow #%d"
 msgstr ""
 
@@ -1212,6 +1246,7 @@ msgstr ""
 
 #. translators: %d: queued event ID
 #: admin/reports/queue.php:79
+#, php-format
 msgid "Select queued event %d"
 msgstr ""
 
@@ -1241,26 +1276,28 @@ msgstr ""
 
 #. translators: %s Number of workflows that have run for the selected period.
 #: admin/reports/runs-by-date.php:87
+#, php-format
 msgid "%s workflows have run for the selected period"
 msgstr ""
 
 #: admin/reports/runs-by-date.php:190
-#: admin/assets/build/analytics.js:3
+#: admin/assets/build/analytics.js:5
 msgid "Runs"
 msgstr ""
 
-#: admin/settings-tabs/abstract.php:295
+#: admin/settings-tabs/abstract.php:296
 msgid "Select a page&hellip;"
 msgstr ""
 
-#: admin/settings-tabs/abstract.php:579
+#: admin/settings-tabs/abstract.php:586
 msgid "Your settings have been saved."
 msgstr ""
 
 #. translators: %1$s: Integration name.
 #. translators: %1$s: The Integration name.
-#: admin/settings-tabs/abstract.php:621
+#: admin/settings-tabs/abstract.php:628
 #: includes/Notifications/Integrations/AbstractIntegrationCheck.php:43
+#, php-format
 msgid "Unable to communicate with the %1$s API. Please check your %1$s settings."
 msgstr ""
 
@@ -1297,6 +1334,7 @@ msgstr ""
 
 #. translators: %1$s: opening link tag, %2$s: closing link tag
 #: admin/settings-tabs/bitly.php:33
+#, php-format
 msgid "Integrating with Bitly allows you to shorten links in your SMS messages. Create a free account at <%1$s>bitly.com<%2$s>."
 msgstr ""
 
@@ -1473,6 +1511,7 @@ msgstr ""
 
 #. translators: %1$s communication preferences shortcode, %2$s communication signup shortcode
 #: admin/settings-tabs/general.php:172
+#, php-format
 msgid "The communication preferences page is where customers can opt-in or opt-out of workflows. It must contain the shortcode %1$s. To set up a signup page use the shortcode %2$s and specify the page in the setting below."
 msgstr ""
 
@@ -1498,6 +1537,7 @@ msgstr ""
 
 #. translators: List of shortcodes.
 #: admin/settings-tabs/general.php:211
+#, php-format
 msgid "This text is shown above the form submit button. Use the following shortcodes to add dynamic content: %s"
 msgstr ""
 
@@ -1534,26 +1574,38 @@ msgid "Sets the number of days after a workflow runs that a new order can be con
 msgstr ""
 
 #: admin/settings-tabs/general.php:261
-msgid "Automatically delete expired coupons"
+msgid "Click tracking limit"
 msgstr ""
 
 #: admin/settings-tabs/general.php:262
+msgid "Maximum number of clicks to record each time a workflow runs. Links keep working after the limit is reached, but further clicks are not recorded. Lowering the limit does not remove clicks that are already recorded. Set to 0 for no limit. Default value is 100."
+msgstr ""
+
+#: admin/settings-tabs/general.php:264
+msgid "Clicks in reports count every recorded click, including repeat clicks. Unique clicks count each workflow run only once, however many times its links are clicked. Both include clicks on forwarded messages and links opened automatically by email security software."
+msgstr ""
+
+#: admin/settings-tabs/general.php:277
+msgid "Automatically delete expired coupons"
+msgstr ""
+
+#: admin/settings-tabs/general.php:278
 msgid "Coupons generated by AutomateWoo will be deleted 14 days after they expire."
 msgstr ""
 
-#: admin/settings-tabs/general.php:270
+#: admin/settings-tabs/general.php:286
 msgid "Log retention period (months)"
 msgstr ""
 
-#: admin/settings-tabs/general.php:271
+#: admin/settings-tabs/general.php:287
 msgid "Automatically delete workflow logs older than this many months. Set to 0 to keep logs indefinitely."
 msgstr ""
 
-#: admin/settings-tabs/general.php:284
+#: admin/settings-tabs/general.php:300
 msgid "Remove data on uninstall"
 msgstr ""
 
-#: admin/settings-tabs/general.php:285
+#: admin/settings-tabs/general.php:301
 msgid "Delete all AutomateWoo data when the plugin is deleted. This includes workflows, logs, carts, customers, guests, queued events, and settings. To delete this data immediately instead, use the \"Delete all data\" tool under AutomateWoo > Tools."
 msgstr ""
 
@@ -1608,7 +1660,7 @@ msgstr ""
 msgid "Auth Token"
 msgstr ""
 
-#: admin/user-tags-export.php:63
+#: admin/user-tags-export.php:109
 msgid "There are no users with that tag."
 msgstr ""
 
@@ -1632,6 +1684,7 @@ msgstr ""
 
 #. translators: Plugin name.
 #: admin/views/data-upgrade-prompt.php:18
+#, php-format
 msgid "%s database update required"
 msgstr ""
 
@@ -1727,6 +1780,7 @@ msgstr ""
 
 #. translators: 1: <strong> tag, 2: button text for Add Action button, 3: </strong> tag
 #: admin/views/meta-box-actions.php:51
+#, php-format
 msgid "No actions. Click the %1$s%2$s%3$s button to create an action."
 msgstr ""
 
@@ -1781,7 +1835,7 @@ msgstr ""
 #: admin/views/meta-box-save.php:17
 #: admin/views/meta-box-save.php:108
 #: admin/views/meta-box-save.php:113
-#: admin/workflow-edit.php:232
+#: admin/workflow-edit.php:235
 msgid "Save"
 msgstr ""
 
@@ -1795,13 +1849,13 @@ msgstr ""
 
 #: admin/views/meta-box-save.php:60
 #: includes/Actions/Change_Workflow_Status.php:38
-#: includes/Carts.php:137
+#: includes/Carts.php:136
 msgid "Active"
 msgstr ""
 
 #: admin/views/meta-box-save.php:61
 #: includes/Actions/Change_Workflow_Status.php:39
-#: includes/Post_Types.php:80
+#: includes/Post_Types.php:99
 msgid "Disabled"
 msgstr ""
 
@@ -1872,7 +1926,7 @@ msgid "Months"
 msgstr ""
 
 #: admin/views/meta-box-timing.php:118
-#: admin/workflow-edit.php:285
+#: admin/workflow-edit.php:288
 #: admin/workflow-list.php:45
 msgid "Timing"
 msgstr ""
@@ -1920,7 +1974,7 @@ msgid "(24 hour time)"
 msgstr ""
 
 #: admin/views/meta-box-trigger.php:31
-#: admin/workflow-edit.php:240
+#: admin/workflow-edit.php:243
 msgid "Trigger"
 msgstr ""
 
@@ -1932,7 +1986,7 @@ msgid "[Select]"
 msgstr ""
 
 #: admin/views/meta-box-variables.php:15
-#: admin/workflow-edit.php:301
+#: admin/workflow-edit.php:304
 msgid "Variables"
 msgstr ""
 
@@ -1942,6 +1996,7 @@ msgstr ""
 
 #. translators: Cart ID.
 #: admin/views/modal-cart-info.php:17
+#, php-format
 msgid "Cart #%s"
 msgstr ""
 
@@ -1976,6 +2031,7 @@ msgstr ""
 #. translators: %s Coupon code.
 #: admin/views/modal-cart-info.php:78
 #: templates/email/cart-table.php:94
+#, php-format
 msgid "Coupon: %s"
 msgstr ""
 
@@ -1993,6 +2049,7 @@ msgstr ""
 #. translators: %s Tax amount (price HTML).
 #: admin/views/modal-cart-info.php:111
 #: templates/email/cart-table.php:128
+#, php-format
 msgid "(includes %s tax)"
 msgstr ""
 
@@ -2007,6 +2064,7 @@ msgstr ""
 
 #. translators: Log ID.
 #: admin/views/modal-log-info.php:21
+#, php-format
 msgid "Log #%s"
 msgstr ""
 
@@ -2055,6 +2113,7 @@ msgstr ""
 
 #. translators: Event ID.
 #: admin/views/modal-queued-event-info.php:18
+#, php-format
 msgid "Queued event #%s"
 msgstr ""
 
@@ -2072,6 +2131,7 @@ msgstr ""
 
 #. translators: Plugin name.
 #: admin/views/page-data-upgrade.php:35
+#, php-format
 msgid "%s - Database Update"
 msgstr ""
 
@@ -2081,16 +2141,19 @@ msgstr ""
 
 #. translators: Version.
 #: admin/views/page-data-upgrade.php:42
+#, php-format
 msgid "Upgrading data to version %s."
 msgstr ""
 
 #. translators: %1$s wrapping span tag, %2$s closing span tag
 #: admin/views/page-data-upgrade.php:44
+#, php-format
 msgid "Approximately %1$s0%2$s items to process."
 msgstr ""
 
 #. translators: %1$s wrapping span tag, %2$s closing span tag
 #: admin/views/page-data-upgrade.php:47
+#, php-format
 msgid "%1$s0%2$s items processed."
 msgstr ""
 
@@ -2134,6 +2197,7 @@ msgstr ""
 
 #. translators: Tab name.
 #: admin/views/page-reports.php:17
+#, php-format
 msgid "%s Report"
 msgstr ""
 
@@ -2148,6 +2212,7 @@ msgstr ""
 
 #. translators: %1$s opening strong tag, %2$s closing strong tag
 #: admin/views/rules.php:31
+#, php-format
 msgid "Rules can be used to add conditional logic to workflows. Click the %1$s+ Add Rule Group%2$s button to create a rule."
 msgstr ""
 
@@ -2185,6 +2250,7 @@ msgstr ""
 
 #. translators: Rule name.
 #: admin/views/rules.php:230
+#, php-format
 msgid "This rule %1$s is no longer available and will be removed by saving this workflow."
 msgstr ""
 
@@ -2230,16 +2296,20 @@ msgstr ""
 msgid "Edit Workflow"
 msgstr ""
 
-#: admin/workflow-edit.php:249
+#: admin/workflow-edit.php:252
 msgid "Manual workflow options"
 msgstr ""
 
-#: admin/workflow-edit.php:267
+#: admin/workflow-edit.php:270
 msgid "Rules <small>(optional)</small>"
 msgstr ""
 
-#: admin/workflow-edit.php:293
+#: admin/workflow-edit.php:296
 msgid "Options"
+msgstr ""
+
+#: admin/workflow-edit.php:451
+msgid "Your changes to the workflow actions weren’t saved."
 msgstr ""
 
 #: admin/workflow-list.php:46
@@ -2256,6 +2326,7 @@ msgstr ""
 
 #. translators: %s: the count of published workflows
 #: admin/workflow-list.php:121
+#, php-format
 msgid "Active <span class=\"count\">(%s)</span>"
 msgid_plural "Active <span class=\"count\">(%s)</span>"
 msgstr[0] ""
@@ -2271,26 +2342,33 @@ msgstr ""
 msgid "Duplicate"
 msgstr ""
 
-#: admin/Workflow_Duplicate.php:48
+#: admin/Workflow_Duplicate.php:61
 msgid "Invalid request."
 msgstr ""
 
-#: admin/Workflow_Duplicate.php:52
+#: admin/Workflow_Duplicate.php:65
 msgid "You do not have permission to duplicate workflows."
 msgstr ""
 
+#: admin/Workflow_Duplicate.php:70
+msgid "You do not have permission to duplicate this workflow."
+msgstr ""
+
 #. translators: %s: workflow ID
-#: admin/Workflow_Duplicate.php:61
+#: admin/Workflow_Duplicate.php:78
+#, php-format
 msgid "Workflow creation failed, could not find original workflow: %d"
 msgstr ""
 
 #. translators: %s: original workflow title
-#: admin/Workflow_Duplicate.php:70
+#: admin/Workflow_Duplicate.php:87
+#, php-format
 msgid "Copy of %s"
 msgstr ""
 
 #. translators: %s: error message
-#: admin/Workflow_Duplicate.php:82
+#: admin/Workflow_Duplicate.php:99
+#, php-format
 msgid "Workflow creation failed: %s"
 msgstr ""
 
@@ -2298,21 +2376,25 @@ msgstr ""
 #: automatewoo.php:133
 #: automatewoo.php:143
 #: automatewoo.php:153
+#, php-format
 msgid "%s is inactive."
 msgstr ""
 
 #. translators: %1$s inactive plugin text, %2$s minimum PHP version
 #: automatewoo.php:135
+#, php-format
 msgid "%1$s The plugin requires PHP version %2$s or newer."
 msgstr ""
 
 #. translators: %1$s inactive plugin text, %2$s minimum WooCommerce version
 #: automatewoo.php:145
+#, php-format
 msgid "%1$s The plugin requires WooCommerce version %2$s or newer."
 msgstr ""
 
 #. translators: %1$s inactive plugin text, %2$s minimum WordPress version
 #: automatewoo.php:155
+#, php-format
 msgid "%1$s The plugin requires WordPress version %2$s or newer."
 msgstr ""
 
@@ -2386,6 +2468,7 @@ msgstr ""
 
 #. translators: Comma separated list of required options.
 #: includes/Action.php:487
+#, php-format
 msgid "The following required option(s) were not provided: %s."
 msgstr ""
 
@@ -2576,6 +2659,12 @@ msgstr ""
 msgid "Post status"
 msgstr ""
 
+#. translators: %s: post status
+#: includes/Actions/Change_Post_Status.php:60
+#, php-format
+msgid "The post status “%s” isn’t one this action can set."
+msgstr ""
+
 #: includes/Actions/Change_Workflow_Status.php:24
 msgid "Change Workflow Status"
 msgstr ""
@@ -2608,6 +2697,22 @@ msgstr ""
 msgid "Please note that if the customer is a guest this action will do nothing."
 msgstr ""
 
+#. translators: %s: role key
+#: includes/Actions/Customer_Change_Role.php:62
+#, php-format
+msgid "The role “%s” does not exist."
+msgstr ""
+
+#. translators: %s: role key
+#: includes/Actions/Customer_Change_Role.php:68
+#, php-format
+msgid "The role “%s” can’t be assigned by this action. Use the automatewoo/change_role/allow_all_roles filter to allow it."
+msgstr ""
+
+#: includes/Actions/Customer_Change_Role.php:72
+msgid "This customer’s role can’t be changed by this action. Use the automatewoo/change_role/allow_all_roles filter to allow it."
+msgstr ""
+
 #: includes/Actions/Customer_Remove_Tags.php:19
 msgid "Remove Tags"
 msgstr ""
@@ -2631,6 +2736,7 @@ msgstr ""
 
 #. translators: %s: meta key
 #: includes/Actions/Customer_Update_Meta.php:73
+#, php-format
 msgid "The custom field \"%s\" is protected and cannot be updated by a workflow."
 msgstr ""
 
@@ -2640,11 +2746,26 @@ msgstr ""
 
 #. translators: %1$s documentation link start, %2$s documentation link end.
 #: includes/Actions/Custom_Function.php:22
+#, php-format
 msgid "This action can be used by developers to trigger custom code from a workflow. %1$sView documentation%2$s."
 msgstr ""
 
 #: includes/Actions/Custom_Function.php:34
 msgid "Function name"
+msgstr ""
+
+#. translators: 1: function name, 2: filter name.
+#: includes/Actions/Custom_Function.php:54
+#, php-format
+msgid "The function “%1$s” can’t be run by this action. Use the %2$s filter to allow it."
+msgstr ""
+
+#: includes/Actions/Custom_Function.php:134
+msgid "Only super admins can set a Custom Function name."
+msgstr ""
+
+#: includes/Actions/Custom_Function.php:135
+msgid "Only administrators can set a Custom Function name."
 msgstr ""
 
 #: includes/Actions/Mailchimp_Abstract.php:95
@@ -2809,16 +2930,19 @@ msgstr ""
 
 #. translators: The Workflow ID
 #: includes/Actions/Memberships_Change_Plan.php:119
+#, php-format
 msgid "Membership created by AutomateWoo workflow #%s"
 msgstr ""
 
 #. translators: The Membership ID
 #: includes/Actions/Memberships_Change_Plan.php:129
+#, php-format
 msgid "Membership #%s successfully created."
 msgstr ""
 
 #. translators: %1$s The Membership plan name, %2$s the new plan name, %3$s The Workflow ID
 #: includes/Actions/Memberships_Change_Plan.php:145
+#, php-format
 msgid "Membership plan changed from %1$s to %2$s by AutomateWoo workflow:#%3$s"
 msgstr ""
 
@@ -2878,11 +3002,13 @@ msgstr ""
 
 #. translators: The Membership ID
 #: includes/Actions/Memberships_Delete_User_Membership.php:76
+#, php-format
 msgid "Deleted membership #%s"
 msgstr ""
 
 #. translators: The Membership ID
 #: includes/Actions/Memberships_Delete_User_Membership.php:79
+#, php-format
 msgid "Failed deleting membership #%s"
 msgstr ""
 
@@ -2910,6 +3036,7 @@ msgstr ""
 
 #. translators: The workflow ID
 #: includes/Actions/Order_Change_Status.php:58
+#, php-format
 msgid "AutomateWoo workflow #%s."
 msgstr ""
 
@@ -2936,6 +3063,7 @@ msgstr ""
 
 #. translators: %1$s Mail title, %2$d The Workflow ID
 #: includes/Actions/Order_Resend_Email.php:117
+#, php-format
 msgid "%1$s email notification sent by AutomateWoo workflow #%2$d"
 msgstr ""
 
@@ -3002,6 +3130,7 @@ msgstr ""
 
 #. translators: %1$s anchor tag with the link to the documentation link, %2$s closing tag for the anchor
 #: includes/Actions/Send_Email.php:35
+#, php-format
 msgid "This action sends an HTML email using a template. The default template matches the style of your WooCommerce transactional emails. <%1$s>View email templates documentation<%2$s>."
 msgstr ""
 
@@ -3133,11 +3262,13 @@ msgstr ""
 
 #. translators: %1$s Bitly integration link start, %2$s Bitly integration link end.
 #: includes/Actions/Send_SMS_Twilio.php:25
+#, php-format
 msgid "Links in the SMS body will be shortened with the %1$sBitly integration%2$s."
 msgstr ""
 
 #. translators: %1$s Bitly integration link start, %2$s Bitly integration link end.
 #: includes/Actions/Send_SMS_Twilio.php:28
+#, php-format
 msgid "To shorten links in the SMS body the %1$sBitly integration%2$s must be enabled."
 msgstr ""
 
@@ -3172,6 +3303,7 @@ msgstr ""
 
 #. translators: %1$s: workflow title, %2$d: workflow ID
 #: includes/Actions/Subscriptions/AbstractEditDateItem.php:78
+#, php-format
 msgid "%1$s workflow run: subscription date was not updated because the payment gateway does not support subscription date changes. (Workflow ID: %2$d)"
 msgstr ""
 
@@ -3189,6 +3321,7 @@ msgstr ""
 
 #. translators: Excluding tax label (ex. tax).
 #: includes/Actions/Subscriptions/AbstractEditItem.php:226
+#, php-format
 msgid "Custom Item Cost %s"
 msgstr ""
 
@@ -3234,6 +3367,7 @@ msgstr ""
 
 #. translators: %1$s: workflow title, %2$s line item name, %3$d shipping method ID, %4$d workflow ID
 #: includes/Actions/Subscriptions/AddShipping.php:94
+#, php-format
 msgid "%1$s workflow run: added %2$s to subscription. (Shipping Method ID: %3$d; Workflow ID: %4$d)"
 msgstr ""
 
@@ -3247,6 +3381,7 @@ msgstr ""
 
 #. translators: %1$s workflow title, %2$d workflow ID
 #: includes/Actions/Subscriptions/RecalculateTaxes.php:57
+#, php-format
 msgid "%1$s workflow run: recalculated taxes. (Workflow ID: %2$d)"
 msgstr ""
 
@@ -3264,6 +3399,7 @@ msgstr ""
 
 #. translators: %1$s: workflow title, %2$s shipping method ID, %3$d workflow ID
 #: includes/Actions/Subscriptions/RemoveShipping.php:95
+#, php-format
 msgid "%1$s workflow run: removed shipping method from subscription. (Shipping Method ID: %2$s; Workflow ID: %3$d)"
 msgstr ""
 
@@ -3301,6 +3437,7 @@ msgstr ""
 
 #. translators: %1$s: workflow name, %2$s: new next payment date, %3$s: workflow ID
 #: includes/Actions/Subscriptions/StaggerNextPaymentTime.php:140
+#, php-format
 msgid "%1$s workflow run: staggered next payment date to %2$s. (Workflow ID: %3$d)"
 msgstr ""
 
@@ -3314,6 +3451,7 @@ msgstr ""
 
 #. translators: %1$s: workflow title, %2$s new currency code, %3$d workflow ID
 #: includes/Actions/Subscriptions/UpdateCurrency.php:74
+#, php-format
 msgid "%1$s workflow run: updated subscription currency to %2$s. (Workflow ID: %3$d)"
 msgstr ""
 
@@ -3339,6 +3477,7 @@ msgstr ""
 
 #. translators: %1$s: workflow name, %2$s: new end date, %3$s: workflow ID
 #: includes/Actions/Subscriptions/UpdateEndDate.php:59
+#, php-format
 msgid "%1$s workflow run: updated end date to %2$s.  (Workflow ID: %3$d)"
 msgstr ""
 
@@ -3360,6 +3499,7 @@ msgstr ""
 
 #. translators: %1$s: workflow name, %2$s: new next payment date, %3$s: workflow ID
 #: includes/Actions/Subscriptions/UpdateNextPaymentDate.php:59
+#, php-format
 msgid "%1$s workflow run: updated next payment date to %2$s.  (Workflow ID: %3$d)"
 msgstr ""
 
@@ -3381,6 +3521,7 @@ msgstr ""
 
 #. translators: %1$s: workflow title, %2$s: product name, %3$d product ID, %4$d workflow ID
 #: includes/Actions/Subscriptions/UpdateProduct.php:156
+#, php-format
 msgid "%1$s workflow run: updated %2$s on subscription. (Product ID: %3$d; Workflow ID: %4$d)"
 msgstr ""
 
@@ -3394,11 +3535,13 @@ msgstr ""
 
 #. translators: %1$s: workflow title, %2$d: workflow ID
 #: includes/Actions/Subscriptions/UpdateSchedule.php:74
+#, php-format
 msgid "%1$s workflow run: subscription schedule was not updated because the payment gateway does not support changes to the billing schedule. (Workflow ID: %2$d)"
 msgstr ""
 
 #. translators: %1$s: workflow title, %2$s: billing interval, %3$s billing period, %4$d workflow ID
 #: includes/Actions/Subscriptions/UpdateSchedule.php:122
+#, php-format
 msgid "%1$s workflow run: updated subscription schedule to renew %2$s %3$s. (Workflow ID: %4$d)"
 msgstr ""
 
@@ -3436,6 +3579,7 @@ msgstr ""
 
 #. translators: %1$s: workflow title, %2$d shipping method ID, %3$d workflow ID
 #: includes/Actions/Subscriptions/UpdateShipping.php:85
+#, php-format
 msgid "%1$s workflow run: updated shipping on subscription. (Shipping Method ID: %2$d; Workflow ID: %3$d)"
 msgstr ""
 
@@ -3457,6 +3601,7 @@ msgstr ""
 
 #. translators: %1$s: workflow name, %2$s: new trial end date, %3$s: workflow ID
 #: includes/Actions/Subscriptions/UpdateTrialEndDate.php:59
+#, php-format
 msgid "%1$s workflow run: updated trial end date to %2$s.  (Workflow ID: %3$d)"
 msgstr ""
 
@@ -3470,6 +3615,7 @@ msgstr ""
 
 #. translators: %1$s: workflow title, %2$s coupon code, %3$d workflow ID
 #: includes/Actions/Subscription_Add_Coupon.php:66
+#, php-format
 msgid "%1$s workflow run: added coupon %2$s to subscription. (Workflow ID: %3$d)"
 msgstr ""
 
@@ -3483,11 +3629,13 @@ msgstr ""
 
 #. translators: %1$s: workflow title, %2$s: product name, %3$d product ID, %4$d workflow ID
 #: includes/Actions/Subscription_Add_Product.php:101
+#, php-format
 msgid "%1$s workflow run: added %2$s to subscription. (Product ID: %3$d; Workflow ID: %4$d)"
 msgstr ""
 
 #. translators: The Workflow ID
 #: includes/Actions/Subscription_Change_Status.php:57
+#, php-format
 msgid "Subscription status changed by AutomateWoo Workflow #%s."
 msgstr ""
 
@@ -3521,6 +3669,7 @@ msgstr ""
 
 #. translators: %1$s: workflow title, %2$s: coupon code, %3$d workflow ID
 #: includes/Actions/Subscription_Remove_Coupon.php:54
+#, php-format
 msgid "%1$s workflow run: removed coupon %2$s. (Workflow ID: %3$d)"
 msgstr ""
 
@@ -3534,6 +3683,7 @@ msgstr ""
 
 #. translators: %1$s: workflow title, %2$s: product name, %3$d product ID, %4$d workflow ID
 #: includes/Actions/Subscription_Remove_Product.php:82
+#, php-format
 msgid "%1$s workflow run: removed all line items for %2$s. (Product ID: %3$d; Workflow ID: %4$d)"
 msgstr ""
 
@@ -3577,16 +3727,19 @@ msgstr ""
 
 #. translators: %1$s AutomateWoo version, %2$s WordPress version, %3$s WooCommerce version
 #: includes/AdminNotices.php:172
+#, php-format
 msgid "AutomateWoo %1$s will require WordPress version %2$s or newer and WooCommerce version %3$s or newer."
 msgstr ""
 
 #. translators: %1$s AutomateWoo version, %2$s WordPress version
 #: includes/AdminNotices.php:180
+#, php-format
 msgid "AutomateWoo %1$s will require WordPress version %2$s or newer."
 msgstr ""
 
 #. translators: %1$s AutomateWoo version, %2$s WooCommerce version
 #: includes/AdminNotices.php:187
+#, php-format
 msgid "AutomateWoo %1$s will require WooCommerce version %2$s or newer."
 msgstr ""
 
@@ -3596,11 +3749,13 @@ msgstr ""
 
 #. translators: Addon name.
 #: includes/AdminNotices/AddonWelcome.php:61
+#, php-format
 msgid "Welcome to the %s add-on!"
 msgstr ""
 
 #. translators: %d: number of months
 #: includes/AdminNotices/LogRetentionWorkflowNotice.php:88
+#, php-format
 msgid "Log retention is enabled (%d months)."
 msgstr ""
 
@@ -3610,6 +3765,7 @@ msgstr ""
 
 #. translators: %1$s: workflow presets opening link tag, %2$s: closing link tag, %3$s: help opening link tag, %4$s: closing link tag
 #: includes/AdminNotices/NewWorkflowHelperManager.php:51
+#, php-format
 msgid "Need help? Try out one of our <%1$s>preset workflows<%2$s> or check out the <%3$s>help center<%4$s>."
 msgstr ""
 
@@ -3619,6 +3775,7 @@ msgstr ""
 
 #. translators: 1: the detected environment type, 2: opening <a> tag, 3: closing </a> tag
 #: includes/AdminNotices/NonProductionEnvironment.php:77
+#, php-format
 msgid "This site is running in a <strong>%1$s</strong> environment. Workflows have been automatically paused to prevent unintended emails, SMS messages, and other actions from being sent to real customers. %2$sEnable workflows anyway%3$s"
 msgstr ""
 
@@ -3628,6 +3785,7 @@ msgstr ""
 
 #. translators: 1: the detected environment type, 2: opening <a> tag, 3: closing </a> tag
 #: includes/AdminNotices/NonProductionEnvironment.php:104
+#, php-format
 msgid "This site is running in a <strong>%1$s</strong> environment. Workflows have been manually enabled and will send real emails, SMS, and other actions. %2$sPause workflows%3$s"
 msgstr ""
 
@@ -3672,19 +3830,19 @@ msgstr ""
 msgid "Free!"
 msgstr ""
 
-#: includes/Carts.php:138
+#: includes/Carts.php:137
 msgid "Abandoned"
 msgstr ""
 
-#: includes/Carts.php:139
+#: includes/Carts.php:138
 msgid "Emptied"
 msgstr ""
 
-#: includes/Carts.php:140
+#: includes/Carts.php:139
 msgid "Placed"
 msgstr ""
 
-#: includes/Carts.php:141
+#: includes/Carts.php:140
 msgid "Recovered"
 msgstr ""
 
@@ -3711,6 +3869,7 @@ msgstr ""
 
 #. translators: %1$s my account link start, %2$s my account link end.
 #: includes/Communication_Page.php:386
+#, php-format
 msgid "To manage other preferences, %1$ssign in to your account%2$s."
 msgstr ""
 
@@ -3760,6 +3919,7 @@ msgstr ""
 
 #. translators: Database table name.
 #: includes/Database_Tables.php:80
+#, php-format
 msgid "Failed to load the '%s' database table."
 msgstr ""
 
@@ -3836,11 +3996,13 @@ msgstr ""
 
 #. translators: Data type.
 #: includes/Exceptions/InvalidPreviewData.php:53
+#, php-format
 msgid "A valid \"%s\" must exist to generate the preview."
 msgstr ""
 
 #. translators: Item name.
 #: includes/Exceptions/InvalidValue.php:24
+#, php-format
 msgid "Item (%s) could not be found."
 msgstr ""
 
@@ -4014,8 +4176,14 @@ msgctxt "time field"
 msgid "MM"
 msgstr ""
 
-#: includes/Fields/User_Role.php:27
+#: includes/Fields/User_Role.php:100
 msgid "User role"
+msgstr ""
+
+#. translators: %s: role name
+#: includes/Fields/User_Role.php:129
+#, php-format
+msgid "%s (not allowed)"
 msgstr ""
 
 #: includes/Fields/User_Tags.php:27
@@ -4028,6 +4196,7 @@ msgstr ""
 
 #. translators: %d Number of seconds.
 #: includes/Format.php:133
+#, php-format
 msgid "%d second"
 msgid_plural "%d seconds"
 msgstr[0] ""
@@ -4035,11 +4204,15 @@ msgstr[1] ""
 
 #. translators: %s Relative time from now in a human readable format.
 #: includes/Format.php:143
+#, php-format
 msgid "%s from now"
 msgstr ""
 
 #. translators: %s How long ago in a human readable format.
+#. translators: %s: human time difference, e.g. "3 hours".
 #: includes/Format.php:149
+#: includes/System_Status_Report.php:34
+#, php-format
 msgid "%s ago"
 msgstr ""
 
@@ -4071,6 +4244,7 @@ msgstr ""
 
 #. translators: %d Number of unavailable items from previous order.
 #: includes/Frontend_Endpoints.php:391
+#, php-format
 msgid "%d item from your previous order is currently unavailable and could not be added to your cart."
 msgid_plural "%d items from your previous order are currently unavailable and could not be added to your cart."
 msgstr[0] ""
@@ -4109,53 +4283,56 @@ msgid "Please login to your account."
 msgstr ""
 
 #. translators: %s Error code when form can not be submitted.
-#: includes/Frontend_Form_Handler.php:56
+#: includes/Frontend_Form_Handler.php:63
+#, php-format
 msgid "The form could not be submitted. Error code: %s"
 msgstr ""
 
-#: includes/Frontend_Form_Handler.php:112
+#: includes/Frontend_Form_Handler.php:119
 msgid "Your changes couldn't be saved because this link can't be used to update preferences. Sign in to your account to manage them."
 msgstr ""
 
-#: includes/Frontend_Form_Handler.php:136
+#: includes/Frontend_Form_Handler.php:143
 msgid "Your changes couldn't be saved because this link has expired. Sign in to your account to update your preferences."
 msgstr ""
 
-#: includes/Frontend_Form_Handler.php:143
+#: includes/Frontend_Form_Handler.php:150
 msgid "Your changes couldn't be saved because this link can no longer be used to update your preferences. Sign in to your account, or use a link from a more recent email."
 msgstr ""
 
-#: includes/Frontend_Form_Handler.php:156
+#: includes/Frontend_Form_Handler.php:163
 msgid "Your changes couldn't be saved because this link is for a different email address. To use it, sign out first."
 msgstr ""
 
-#: includes/Frontend_Form_Handler.php:171
+#: includes/Frontend_Form_Handler.php:178
 msgid "Your communication preferences were updated."
 msgstr ""
 
-#: includes/Frontend_Form_Handler.php:186
+#: includes/Frontend_Form_Handler.php:193
 msgid "Please enter a valid email address."
 msgstr ""
 
-#: includes/Frontend_Form_Handler.php:204
+#: includes/Frontend_Form_Handler.php:211
 msgid "Thanks! We've received your request. If your subscription still needs confirming, we've emailed you a link to complete it."
 msgstr ""
 
-#: includes/Frontend_Form_Handler.php:235
+#: includes/Frontend_Form_Handler.php:242
 msgid "Thanks! We've received your request to receive marketing communications."
 msgstr ""
 
-#: includes/Frontend_Form_Handler.php:237
+#: includes/Frontend_Form_Handler.php:244
 msgid "Thanks! We've received your request to stop receiving marketing communications."
 msgstr ""
 
 #. translators: 1: Deprecated class name, 2: Version number, 3: Replacement class name.
 #: includes/helpers.php:770
+#, php-format
 msgid "%1$s is deprecated since version %2$s! Use %3$s instead."
 msgstr ""
 
 #. translators: 1: Deprecated class name, 2: Version number.
 #: includes/helpers.php:778
+#, php-format
 msgid "%1$s is deprecated since version %2$s with no alternative available."
 msgstr ""
 
@@ -4203,6 +4380,7 @@ msgstr ""
 
 #. translators: Job name.
 #: includes/Jobs/JobException.php:48
+#, php-format
 msgid "The \"%s\" job was stopped because it's failure rate is above the allowed threshold."
 msgstr ""
 
@@ -4214,7 +4392,7 @@ msgstr ""
 msgid "<strong>Activation disabled</strong>. This plugin's features have been added to the main AutomateWoo plugin as of version 5.4. <strong>Please delete this plugin - it is no longer required.</strong>"
 msgstr ""
 
-#: includes/Log.php:555
+#: includes/Log.php:617
 msgid "This log was created from manual workflow re-run."
 msgstr ""
 
@@ -4236,6 +4414,7 @@ msgstr ""
 
 #. translators: PHP Mailer error message.
 #: includes/Mailer_Abstract.php:277
+#, php-format
 msgid "PHP Mailer - %s"
 msgstr ""
 
@@ -4245,6 +4424,7 @@ msgstr ""
 
 #. translators: %1$s object type, %2$s DB error message and query
 #: includes/Model.php:224
+#, php-format
 msgid "Could not insert '%1$s' item to database. AutomateWoo tables may not be installed. (%2$s)"
 msgstr ""
 
@@ -4295,6 +4475,7 @@ msgstr ""
 
 #. translators: Current PHP version.
 #: includes/Notifications/PHPMinVersionCheck.php:46
+#, php-format
 msgid "AutomateWoo may drop support for the version of PHP currently running your website (%s). Please contact your web host to update to the latest version."
 msgstr ""
 
@@ -4353,11 +4534,11 @@ msgstr ""
 msgid "Please confirm your subscription"
 msgstr ""
 
-#: includes/Options.php:56
+#: includes/Options.php:57
 msgid "I want to receive updates about products and promotions."
 msgstr ""
 
-#: includes/Options.php:60
+#: includes/Options.php:61
 msgid "You can update these options at any time by clicking the unsubscribe link in the footer of any email you receive from us, or in your account area. By clicking below, you agree that we may process your information in accordance with our [terms] and [privacy_policy]."
 msgstr ""
 
@@ -4367,11 +4548,13 @@ msgstr ""
 
 #. translators: Points label.
 #: includes/Points_Rewards_Integration.php:36
+#, php-format
 msgid "%s modified by AutomateWoo"
 msgstr ""
 
 #. translators: %1$s: edit workflow URL, %2$s workflow ID
 #: includes/Points_Rewards_Integration.php:61
+#, php-format
 msgid " (Workflow ID: <a href=\"%1$s\">%2$s</a>)"
 msgstr ""
 
@@ -4406,85 +4589,93 @@ msgid "No Workflows found in trash"
 msgstr ""
 
 #. translators: %s Disabled count.
-#: includes/Post_Types.php:86
+#: includes/Post_Types.php:105
+#, php-format
 msgid "Disabled <span class=\"count\">(%s)</span>"
 msgid_plural "Disabled <span class=\"count\">(%s)</span>"
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/Post_Types.php:102
-#: includes/Post_Types.php:105
-#: includes/Post_Types.php:108
+#: includes/Post_Types.php:121
+#: includes/Post_Types.php:124
+#: includes/Post_Types.php:127
 msgid "Workflow updated."
 msgstr ""
 
-#: includes/Post_Types.php:103
+#: includes/Post_Types.php:122
 msgid "Custom field updated."
 msgstr ""
 
-#: includes/Post_Types.php:104
+#: includes/Post_Types.php:123
 msgid "Custom field deleted."
 msgstr ""
 
 #. translators: placeholder is previous workflow title
-#: includes/Post_Types.php:107
+#: includes/Post_Types.php:126
+#, php-format
 msgctxt "used in workflow updated messages"
 msgid "Workflow restored to revision from %s"
 msgstr ""
 
-#: includes/Post_Types.php:109
+#: includes/Post_Types.php:128
 msgid "Workflow saved."
 msgstr ""
 
-#: includes/Post_Types.php:110
+#: includes/Post_Types.php:129
 msgid "Workflow submitted."
 msgstr ""
 
 #. translators: php date string, see http://php.net/date
-#: includes/Post_Types.php:112
+#: includes/Post_Types.php:131
+#, php-format
 msgid "Workflow scheduled for: %1$s."
 msgstr ""
 
 #. translators: php date string, see http://php.net/date
-#: includes/Post_Types.php:112
+#: includes/Post_Types.php:131
 msgctxt "used in \"Workflow scheduled for <date>\""
 msgid "M j, Y @ G:i"
 msgstr ""
 
-#: includes/Post_Types.php:113
+#: includes/Post_Types.php:132
 msgid "Workflow draft updated."
 msgstr ""
 
 #. translators: %s: workflow count
-#: includes/Post_Types.php:129
+#: includes/Post_Types.php:148
+#, php-format
 msgid "%s workflow updated."
 msgid_plural "%s workflows updated."
 msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %s: workflow count
-#: includes/Post_Types.php:131
+#: includes/Post_Types.php:150
+#, php-format
 msgid "%s workflow not updated, somebody is editing it."
 msgid_plural "%s workflows not updated, somebody is editing them."
 msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %s: workflow count
-#: includes/Post_Types.php:133
+#: includes/Post_Types.php:152
+#, php-format
 msgid "%s workflow permanently deleted."
 msgid_plural "%s workflows permanently deleted."
 msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %s: workflow count
-#: includes/Post_Types.php:135
+#: includes/Post_Types.php:154
+#, php-format
 msgid "%s workflow moved to the Trash."
 msgid_plural "%s workflows moved to the Trash."
 msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %s: workflow count
-#: includes/Post_Types.php:137
+#: includes/Post_Types.php:156
+#, php-format
 msgid "%s workflow restored from the Trash."
 msgid_plural "%s workflows restored from the Trash."
 msgstr[0] ""
@@ -4725,16 +4916,19 @@ msgstr ""
 
 #. translators: %s AutomateWoo visitor cookie name.
 #: includes/Privacy_Policy_Guide.php:42
+#, php-format
 msgid "%s - Used to store a secure key that is unique to you - Expires after 2 years"
 msgstr ""
 
 #. translators: %s AutomateWoo session started cookie name.
 #: includes/Privacy_Policy_Guide.php:52
+#, php-format
 msgid "%s - Used to flag when you begin interacting with our website - Expires when you end the browser session"
 msgstr ""
 
 #. translators: %s AutomateWoo do cart update cookie name.
 #: includes/Privacy_Policy_Guide.php:62
+#, php-format
 msgid "%s - Used to store flag when your stored cart needs to be updated - Expires when you end the browser session"
 msgstr ""
 
@@ -4784,31 +4978,37 @@ msgstr ""
 
 #. translators: %1$s Privacy policy link start, %2$s Privacy policy link end.
 #: includes/Privacy_Policy_Guide.php:108
+#, php-format
 msgid "We use Twilio as our SMS delivery service. Your data may be transferred to Twilio for processing in accordance with their %1$sPrivacy Policy%2$s."
 msgstr ""
 
 #. translators: %1$s Privacy policy link start, %2$s Privacy policy link end.
 #: includes/Privacy_Policy_Guide.php:121
+#, php-format
 msgid "We use MailChimp for email marketing. Your data may be transferred to MailChimp for processing in accordance with their %1$sPrivacy Policy%2$s."
 msgstr ""
 
 #. translators: %1$s Privacy policy link start, %2$s Privacy policy link end.
 #: includes/Privacy_Policy_Guide.php:134
+#, php-format
 msgid "We use Active Campaign for email marketing. Your data may be transferred to Active Campaign for processing in accordance with their %1$sPrivacy Policy%2$s."
 msgstr ""
 
 #. translators: %1$s Privacy policy link start, %2$s Privacy policy link end.
 #: includes/Privacy_Policy_Guide.php:147
+#, php-format
 msgid "We use Campaign Monitor for email marketing. Your data may be transferred to Campaign Monitor for processing in accordance with their %1$sPrivacy Policy%2$s."
 msgstr ""
 
 #. translators: %1$s Privacy policy link start, %2$s Privacy policy link end.
 #: includes/Privacy_Policy_Guide.php:160
+#, php-format
 msgid "We use Bitly for link shortening. Your data may be transferred to Bitly for processing in accordance with their %1$sPrivacy Policy%2$s."
 msgstr ""
 
 #. translators: %1$s Privacy policy link start, %2$s Privacy policy link end.
 #: includes/Privacy_Policy_Guide.php:173
+#, php-format
 msgid "We use AgileCRM as our CRM. Your data may be transferred to AgileCRM for processing in accordance with their %1$sPrivacy Policy%2$s."
 msgstr ""
 
@@ -4890,6 +5090,7 @@ msgstr ""
 
 #. translators: Order ID.
 #: includes/Rest_Api/Controllers/ConversionsController.php:195
+#, php-format
 msgid "Invalid order ID %d."
 msgstr ""
 
@@ -5182,60 +5383,68 @@ msgstr ""
 msgid "Use true to permanently delete the workflow, default is false."
 msgstr ""
 
-#: includes/Rest_Api/Utilities/CreateUpdateWorkflow.php:72
-#: includes/Rest_Api/Utilities/CreateUpdateWorkflow.php:130
+#: includes/Rest_Api/Utilities/CreateUpdateWorkflow.php:76
+#: includes/Rest_Api/Utilities/CreateUpdateWorkflow.php:140
 msgid "Invalid workflow data."
 msgstr ""
 
-#: includes/Rest_Api/Utilities/CreateUpdateWorkflow.php:151
+#: includes/Rest_Api/Utilities/CreateUpdateWorkflow.php:179
 msgid "Invalid trigger!"
 msgstr ""
 
 #. translators: Trigger option name.
-#: includes/Rest_Api/Utilities/CreateUpdateWorkflow.php:167
+#: includes/Rest_Api/Utilities/CreateUpdateWorkflow.php:195
+#, php-format
 msgid "Invalid trigger option: %s"
 msgstr ""
 
 #. translators: %1$s trigger name, %2$s option name
-#: includes/Rest_Api/Utilities/CreateUpdateWorkflow.php:183
+#: includes/Rest_Api/Utilities/CreateUpdateWorkflow.php:211
+#, php-format
 msgid "Trigger %1$s requires the option %2$s to be set."
 msgstr ""
 
 #. translators: %s trigger name
-#: includes/Rest_Api/Utilities/CreateUpdateWorkflow.php:217
+#: includes/Rest_Api/Utilities/CreateUpdateWorkflow.php:245
+#, php-format
 msgid "Trigger %s can only be used with automatic workflows."
 msgstr ""
 
 #. translators: %s trigger name
-#: includes/Rest_Api/Utilities/CreateUpdateWorkflow.php:230
+#: includes/Rest_Api/Utilities/CreateUpdateWorkflow.php:258
+#, php-format
 msgid "Trigger %s can only be used with manual workflows."
 msgstr ""
 
 #. translators: Invalid rule name.
-#: includes/Rest_Api/Utilities/CreateUpdateWorkflow.php:262
+#: includes/Rest_Api/Utilities/CreateUpdateWorkflow.php:290
+#, php-format
 msgid "Invalid rule: %s"
 msgstr ""
 
 #. translators: Invalid action name.
-#: includes/Rest_Api/Utilities/CreateUpdateWorkflow.php:305
+#: includes/Rest_Api/Utilities/CreateUpdateWorkflow.php:333
+#, php-format
 msgid "Invalid action: %s"
 msgstr ""
 
 #. translators: Action option name.
-#: includes/Rest_Api/Utilities/CreateUpdateWorkflow.php:321
+#: includes/Rest_Api/Utilities/CreateUpdateWorkflow.php:349
+#, php-format
 msgid "Invalid action option: %s"
 msgstr ""
 
 #. translators: %1$s action name, %2$s option name
-#: includes/Rest_Api/Utilities/CreateUpdateWorkflow.php:337
+#: includes/Rest_Api/Utilities/CreateUpdateWorkflow.php:365
+#, php-format
 msgid "Action %1$s requires the option %2$s to be set."
 msgstr ""
 
-#: includes/Rest_Api/Utilities/CreateUpdateWorkflow.php:407
+#: includes/Rest_Api/Utilities/CreateUpdateWorkflow.php:435
 msgid "Invalid timing date and/or time!"
 msgstr ""
 
-#: includes/Rest_Api/Utilities/CreateUpdateWorkflow.php:415
+#: includes/Rest_Api/Utilities/CreateUpdateWorkflow.php:443
 msgid "Timing variable not specified!"
 msgstr ""
 
@@ -5245,11 +5454,13 @@ msgstr ""
 
 #. translators: Workflow ID.
 #: includes/Rest_Api/Utilities/DeleteWorkflow.php:56
+#, php-format
 msgid "Workflow %d has already been trashed."
 msgstr ""
 
 #. translators: Workflow ID.
 #: includes/Rest_Api/Utilities/DeleteWorkflow.php:73
+#, php-format
 msgid "Unable to delete workflow %d."
 msgstr ""
 
@@ -5657,6 +5868,7 @@ msgstr ""
 
 #. translators: %s: payment gateway title
 #: includes/Rules/Order_Payment_Gateway.php:62
+#, php-format
 msgid "%s (disabled)"
 msgstr ""
 
@@ -6072,6 +6284,7 @@ msgstr ""
 
 #. translators: %1$s list of missing database tables
 #: includes/SystemChecks/DatabaseTablesExist.php:43
+#, php-format
 msgid "Tables not found: %1$s"
 msgstr ""
 
@@ -6081,7 +6294,46 @@ msgstr ""
 
 #. translators: Status page URL.
 #: includes/System_Checks.php:94
+#, php-format
 msgid "<a href=\"%s\">View details</a>"
+msgstr ""
+
+#: includes/System_Status_Report.php:23
+msgid "Filter in use"
+msgstr ""
+
+#: includes/System_Status_Report.php:24
+msgid "Filter not in use"
+msgstr ""
+
+#. translators: 1: bucket name, 2: scope, 3: human time difference, e.g. "3 hours ago".
+#: includes/System_Status_Report.php:29
+#, php-format
+msgid "%1$s (%2$s), %3$s"
+msgstr ""
+
+#: includes/System_Status_Report.php:39
+msgid "None"
+msgstr ""
+
+#: includes/System_Status_Report.php:44
+msgid "Rate limit client IP"
+msgstr ""
+
+#: includes/System_Status_Report.php:45
+msgid "The address AutomateWoo uses to rate limit sign-ups and email capture. Stores behind a CDN or proxy may need the automatewoo/rate_limiter/client_ip filter, or all visitors share one limit."
+msgstr ""
+
+#: includes/System_Status_Report.php:46
+msgid "Unknown"
+msgstr ""
+
+#: includes/System_Status_Report.php:49
+msgid "Last rate limit"
+msgstr ""
+
+#: includes/System_Status_Report.php:50
+msgid "The most recent time a request was refused by a rate limit. If this appears often for real shoppers, the client IP may be wrong. Stores behind a CDN or proxy may need the client IP filter."
 msgstr ""
 
 #: includes/Tools/Abstract.php:55
@@ -6114,11 +6366,13 @@ msgstr ""
 
 #. translators: %s: the word DELETE.
 #: includes/Tools/Delete_Data.php:104
+#, php-format
 msgid "Please type %s exactly to confirm. No data was deleted."
 msgstr ""
 
 #. translators: %s: number of workflows.
 #: includes/Tools/Delete_Data.php:129
+#, php-format
 msgid "%s workflow"
 msgid_plural "%s workflows"
 msgstr[0] ""
@@ -6126,6 +6380,7 @@ msgstr[1] ""
 
 #. translators: %s: number of log entries.
 #: includes/Tools/Delete_Data.php:132
+#, php-format
 msgid "%s log entry"
 msgid_plural "%s log entries"
 msgstr[0] ""
@@ -6133,6 +6388,7 @@ msgstr[1] ""
 
 #. translators: %s: number of queued events.
 #: includes/Tools/Delete_Data.php:135
+#, php-format
 msgid "%s queued event"
 msgid_plural "%s queued events"
 msgstr[0] ""
@@ -6140,6 +6396,7 @@ msgstr[1] ""
 
 #. translators: %s: number of tracked carts.
 #: includes/Tools/Delete_Data.php:138
+#, php-format
 msgid "%s tracked cart"
 msgid_plural "%s tracked carts"
 msgstr[0] ""
@@ -6147,6 +6404,7 @@ msgstr[1] ""
 
 #. translators: %s: number of customer records.
 #: includes/Tools/Delete_Data.php:141
+#, php-format
 msgid "%s customer record"
 msgid_plural "%s customer records"
 msgstr[0] ""
@@ -6154,6 +6412,7 @@ msgstr[1] ""
 
 #. translators: %s: number of guest records.
 #: includes/Tools/Delete_Data.php:144
+#, php-format
 msgid "%s guest record"
 msgid_plural "%s guest records"
 msgstr[0] ""
@@ -6173,6 +6432,7 @@ msgstr ""
 
 #. translators: %d Number of guests that will be deleted.
 #: includes/Tools/Guest_Eraser.php:82
+#, php-format
 msgid "%d guest will be deleted."
 msgid_plural "%d guests will be deleted."
 msgstr[0] ""
@@ -6188,6 +6448,7 @@ msgstr ""
 
 #. translators: %d Number of customers to import for opt-in.
 #: includes/Tools/Optin_Importer.php:40
+#, php-format
 msgid "Are you sure you want to opt-in <strong>%d customer</strong>?"
 msgid_plural "Are you sure you want to opt-in <strong>%d customers</strong>?"
 msgstr[0] ""
@@ -6215,6 +6476,7 @@ msgstr ""
 
 #. translators: %s Invalid email.
 #: includes/Tools/Optout_Importer.php:83
+#, php-format
 msgid "%s is not a valid email."
 msgstr ""
 
@@ -6224,16 +6486,19 @@ msgstr ""
 
 #. translators: %s Number of customers to import for opt-out.
 #: includes/Tools/Optout_Importer.php:129
+#, php-format
 msgid "Are you sure you want to opt-out <strong>%s customers</strong>?"
 msgstr ""
 
 #. translators: %1$s and %2$s are status icons shown next to each email in the preview list.
 #: includes/Tools/Optout_Importer.php:145
+#, php-format
 msgid "%1$s Existing customer &nbsp; %2$s New customer record will be created"
 msgstr ""
 
 #. translators: %d Count of additional items.
 #: includes/Tools/Optout_Importer.php:177
+#, php-format
 msgid "+ %d more items..."
 msgstr ""
 
@@ -6251,6 +6516,7 @@ msgstr ""
 
 #. translators: %d Number of customers that will be updated.
 #: includes/Tools/RebuildCustomerLastPurchasedDates.php:65
+#, php-format
 msgid "%d customer will be updated."
 msgid_plural "%d customers will be updated."
 msgstr[0] ""
@@ -6270,6 +6536,7 @@ msgstr ""
 
 #. translators: %s Workflow title.
 #: includes/Tools/Reset_Workflow_Records.php:81
+#, php-format
 msgid "Are you sure you want to reset all records for the workflow <strong>%s</strong>? This can not be undone."
 msgstr ""
 
@@ -6287,11 +6554,13 @@ msgstr ""
 
 #. translators: %s: time until the earlier grace period ends, e.g. "6 days"
 #: includes/Tools/Rotate_Preference_Links.php:42
+#, php-format
 msgid "Preference links were already rotated recently. You can rotate again now, but one-click unsubscribe links in emails sent since that rotation will stop working immediately. Links from emails sent before it aren't affected — they keep working for another %s, as promised. This can not be undone."
 msgstr ""
 
 #. translators: %s: human-readable grace period, e.g. "1 week"
 #: includes/Tools/Rotate_Preference_Links.php:53
+#, php-format
 msgid "Are you sure you want to rotate preference links? Existing preference links stop working immediately. One-click unsubscribe links in emails already sent keep working for %s, so recipients can still opt out and your sender reputation isn't hurt. This can not be undone."
 msgstr ""
 
@@ -6301,11 +6570,13 @@ msgstr ""
 
 #. translators: %s: time until the earlier grace period ends, e.g. "6 days"
 #: includes/Tools/Rotate_Preference_Links.php:80
+#, php-format
 msgid "Preference links were rotated again. One-click unsubscribe links from emails sent between the two rotations stopped working immediately. Links from emails sent before the earlier rotation weren't affected — they keep working for another %s."
 msgstr ""
 
 #. translators: %s: human-readable grace period, e.g. "1 week"
 #: includes/Tools/Rotate_Preference_Links.php:88
+#, php-format
 msgid "Preference links were rotated. Existing links stopped working, except one-click unsubscribe links in emails already sent — those keep working for %s."
 msgstr ""
 
@@ -6350,6 +6621,7 @@ msgstr ""
 
 #. translators: %s Object name.
 #: includes/Trigger.php:494
+#, php-format
 msgid "This is useful for workflows that are not run immediately as it ensures the status of the %s hasn't changed since initial trigger."
 msgstr ""
 
@@ -6380,6 +6652,7 @@ msgstr ""
 
 #. translators: %1$d number of minutes for cart timeout, %2$s documentation link start, %3$ss documentation link end.
 #: includes/Triggers/Abstract_Abandoned_Cart.php:21
+#, php-format
 msgid "Carts are considered abandoned if they are inactive for %1$d minutes. When a customer purchases or empties their abandoned cart all queued workflows will be automatically cleared. %2$sView documentation.%3$s"
 msgstr ""
 
@@ -6463,6 +6736,7 @@ msgstr ""
 
 #. translators: %1$s docs URL
 #: includes/Triggers/Customer_Before_Saved_Card_Expiry.php:31
+#, php-format
 msgid "This trigger runs a set number of days before a customer's saved card expires. Cards expire on the last calendar day of their expiry month. <a href=\"%1$s\" target=\"_blank\">Some payment gateways are not supported.</a>"
 msgstr ""
 
@@ -7051,6 +7325,7 @@ msgstr ""
 
 #. translators: Wishlist item title.
 #: includes/Triggers/Wishlist_Item_Added.php:26
+#, php-format
 msgid "Customer Adds Product (%s)"
 msgstr ""
 
@@ -7062,6 +7337,7 @@ msgstr ""
 
 #. translators: %s Wishlist item title.
 #: includes/Triggers/Wishlist_Item_Goes_On_Sale.php:32
+#, php-format
 msgid "Wishlist Item On Sale (%s)"
 msgstr ""
 
@@ -7071,6 +7347,7 @@ msgstr ""
 
 #. translators: %s Wishlist reminder title.
 #: includes/Triggers/Wishlist_Reminder.php:29
+#, php-format
 msgid "Wishlist Reminder (%s)"
 msgstr ""
 
@@ -7164,11 +7441,13 @@ msgstr ""
 
 #. translators: Taxonomy label.
 #: includes/User_Tags.php:238
+#, php-format
 msgid "Select %s"
 msgstr ""
 
 #. translators: Taxonomy label.
 #: includes/User_Tags.php:250
+#, php-format
 msgid "There are no %s available."
 msgstr ""
 
@@ -7196,16 +7475,19 @@ msgstr ""
 
 #. translators: %2$s: example date
 #: includes/Variables/Abstract_Datetime.php:70
+#, php-format
 msgid "MySQL datetime - %2$s"
 msgstr ""
 
 #. translators: %2$s: example date
 #: includes/Variables/Abstract_Datetime.php:72
+#, php-format
 msgid "Site setting - %2$s"
 msgstr ""
 
 #. translators: %2$s: example timestamp
 #: includes/Variables/Abstract_Datetime.php:77
+#, php-format
 msgid "Unix timestamp - %2$s"
 msgstr ""
 
@@ -7216,6 +7498,7 @@ msgstr ""
 
 #. translators: %1$s: format name, %2$s: example date
 #: includes/Variables/Abstract_Datetime.php:101
+#, php-format
 msgctxt "date format option"
 msgid "%1$s - %2$s"
 msgstr ""
@@ -7238,11 +7521,13 @@ msgstr ""
 
 #. translators: %1$s: opening link tag, %2$s: closing link tag
 #: includes/Variables/Abstract_Datetime.php:216
+#, php-format
 msgid "To set a custom date or time format please refer to the %1$sWordPress documentation%2$s."
 msgstr ""
 
 #. translators: %1$s: opening link tag, %2$s: closing link tag.
 #: includes/Variables/Abstract_Generate_Coupon.php:19
+#, php-format
 msgid "Generates a unique coupon based on a template coupon. <%1$s>View documentation<%2$s>."
 msgstr ""
 
@@ -7712,6 +7997,7 @@ msgstr ""
 
 #. translators: %1$s documentation link start, %2$s documentation link end.
 #: includes/Variables/Order_Cross_Sells.php:27
+#, php-format
 msgid "Displays a product listing of cross sells based on the items in an order. Be sure to %1$sset up cross sells%2$s before using."
 msgstr ""
 
@@ -7737,6 +8023,7 @@ msgstr ""
 
 #. translators: %1$s shipping tracking link start, %2$s shipping tracking link end.
 #: includes/Variables/Order_Date_Shipped.php:20
+#, php-format
 msgid "Displays the shipping date as set with the %1$sWooCommerce Shipment Tracking%2$s extension."
 msgstr ""
 
@@ -7885,6 +8172,7 @@ msgstr ""
 
 #. translators: %1$s shipping tracking link start, %2$s shipping tracking link end.
 #: includes/Variables/Order_Shipping_Provider.php:18
+#, php-format
 msgid "Displays the name of shipping provider as set with the %1$sWooCommerce Shipment Tracking%2$s extension."
 msgstr ""
 
@@ -7910,11 +8198,13 @@ msgstr ""
 
 #. translators: %1$s shipping tracking link start, %2$s shipping tracking link end.
 #: includes/Variables/Order_Tracking_Number.php:18
+#, php-format
 msgid "Displays the tracking number as set with the %1$sWooCommerce Shipment Tracking%2$s extension."
 msgstr ""
 
 #. translators: %1$s shipping tracking link start, %2$s shipping tracking link end.
 #: includes/Variables/Order_Tracking_Url.php:18
+#, php-format
 msgid "Displays the shipment tracking URL as set with the %1$sWooCommerce Shipment Tracking%2$s extension."
 msgstr ""
 
@@ -8028,6 +8318,7 @@ msgstr ""
 
 #. translators: 1: User First name, 2: User Last name
 #: includes/Variables/Sensei_Course_Students.php:85
+#, php-format
 msgctxt "Student full name"
 msgid "%1$s %2$s"
 msgstr ""
@@ -8354,6 +8645,7 @@ msgstr ""
 
 #. translators: %s: The preset ID.
 #: includes/Workflows/Presets/PresetService.php:65
+#, php-format
 msgid "The preset with ID \"%s\" does not exist."
 msgstr ""
 
@@ -8386,30 +8678,35 @@ msgstr ""
 
 #. translators: Delayed amount in text.
 #: includes/Workflows/TimingDescriptionGenerator.php:95
+#, php-format
 msgctxt "timing option"
 msgid "Delayed for <b>%s</b>"
 msgstr ""
 
 #. translators: Scheduled time of day.
 #: includes/Workflows/TimingDescriptionGenerator.php:108
+#, php-format
 msgctxt "timing option"
 msgid "Scheduled for <b>%s</b>"
 msgstr ""
 
 #. translators: Weekday.
 #: includes/Workflows/TimingDescriptionGenerator.php:117
+#, php-format
 msgctxt "timing option"
 msgid " on <b>%s</b>"
 msgstr ""
 
 #. translators: Delayed amount in text.
 #: includes/Workflows/TimingDescriptionGenerator.php:125
+#, php-format
 msgctxt "timing option"
 msgid " after waiting <b>%s</b>"
 msgstr ""
 
 #. translators: Date and time.
 #: includes/Workflows/TimingDescriptionGenerator.php:142
+#, php-format
 msgctxt "timing option"
 msgid "Fixed at %s"
 msgstr ""
@@ -8420,6 +8717,7 @@ msgstr ""
 
 #. translators: Number of hours.
 #: includes/Workflows/TimingDescriptionGenerator.php:160
+#, php-format
 msgid "%s hour"
 msgid_plural "%s hours"
 msgstr[0] ""
@@ -8427,6 +8725,7 @@ msgstr[1] ""
 
 #. translators: Number of minutes.
 #: includes/Workflows/TimingDescriptionGenerator.php:164
+#, php-format
 msgid "%s minute"
 msgid_plural "%s minutes"
 msgstr[0] ""
@@ -8434,6 +8733,7 @@ msgstr[1] ""
 
 #. translators: Number of days.
 #: includes/Workflows/TimingDescriptionGenerator.php:168
+#, php-format
 msgid "%s day"
 msgid_plural "%s days"
 msgstr[0] ""
@@ -8441,6 +8741,7 @@ msgstr[1] ""
 
 #. translators: Number of weeks.
 #: includes/Workflows/TimingDescriptionGenerator.php:172
+#, php-format
 msgid "%s week"
 msgid_plural "%s weeks"
 msgstr[0] ""
@@ -8448,6 +8749,7 @@ msgstr[1] ""
 
 #. translators: Number of months.
 #: includes/Workflows/TimingDescriptionGenerator.php:176
+#, php-format
 msgid "%s month"
 msgid_plural "%s months"
 msgstr[0] ""
@@ -8468,12 +8770,14 @@ msgstr ""
 
 #. translators: Time of day.
 #: includes/Workflows/TimingDescriptionGenerator.php:230
+#, php-format
 msgctxt "timing option"
 msgid "Runs daily at %s"
 msgstr ""
 
 #. translators: Time of day.
 #: includes/Workflows/TimingDescriptionGenerator.php:233
+#, php-format
 msgctxt "timing option"
 msgid "Checked daily at %s"
 msgstr ""
@@ -8520,11 +8824,13 @@ msgstr ""
 
 #. translators: %1$s my account link start, %2$s my account link end.
 #: templates/communication-preferences/communication-form-no-customer.php:25
+#, php-format
 msgid "%1$sSign in to your account%2$s to manage your communication preferences."
 msgstr ""
 
 #. translators: %s Email address.
 #: templates/communication-preferences/communication-form.php:35
+#, php-format
 msgid "You are managing preferences for %s."
 msgstr ""
 
@@ -8652,46 +8958,81 @@ msgid "Converted orders"
 msgstr ""
 
 #: admin/assets/build/analytics.js:3
-msgid "Sent"
+msgid "How to read click numbers"
 msgstr ""
 
 #: admin/assets/build/analytics.js:3
-msgid "Trackable messages sent"
-msgstr ""
-
-#: admin/assets/build/analytics.js:3
-msgid "Unique opens"
-msgstr ""
-
-#: admin/assets/build/analytics.js:3
+#: admin/assets/build/analytics.js:5
 msgid "Unique clicks"
 msgstr ""
 
 #: admin/assets/build/analytics.js:3
+msgid "The number of workflow runs with at least one click. A run counts once, no matter how many times its links were clicked."
+msgstr ""
+
+#: admin/assets/build/analytics.js:3
+msgid "The total number of recorded clicks. One person clicking three times counts as three clicks."
+msgstr ""
+
+#: admin/assets/build/analytics.js:3
+msgid "Both numbers include clicks on forwarded messages and links opened automatically by email security software. So neither shows exactly how many people clicked."
+msgstr ""
+
+#: admin/assets/build/analytics.js:3
+msgid "There is no limit on the number of clicks recorded for each workflow run."
+msgstr ""
+
+#. translators: %d: maximum number of clicks recorded for one workflow run.
+#: admin/assets/build/analytics.js:4
+#, js-format
+msgid "Up to %d click is recorded for each workflow run. Later clicks are not recorded, but the links keep working."
+msgid_plural "Up to %d clicks are recorded for each workflow run. Later clicks are not recorded, but the links keep working."
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: "Click tracking limit" is the title of a setting on the AutomateWoo settings page.
+#: admin/assets/build/analytics.js:5
+msgid "Change the \"Click tracking limit\" setting"
+msgstr ""
+
+#: admin/assets/build/analytics.js:5
+msgid "Sent"
+msgstr ""
+
+#: admin/assets/build/analytics.js:5
+msgid "Trackable messages sent"
+msgstr ""
+
+#: admin/assets/build/analytics.js:5
+msgid "Unique opens"
+msgstr ""
+
+#: admin/assets/build/analytics.js:5
 msgid "Unsubscribers"
 msgstr ""
 
-#: admin/assets/build/analytics.js:3
+#: admin/assets/build/analytics.js:5
 msgid "Workflows have run for the selected period"
 msgstr ""
 
-#: admin/assets/build/analytics.js:3
+#: admin/assets/build/analytics.js:5
 msgctxt "analytics report title"
 msgid "Workflows"
 msgstr ""
 
-#: admin/assets/build/analytics.js:3
+#: admin/assets/build/analytics.js:5
 msgctxt "analytics report title"
 msgid "Email & SMS Tracking"
 msgstr ""
 
-#: admin/assets/build/analytics.js:3
+#: admin/assets/build/analytics.js:5
 msgctxt "analytics report title"
 msgid "Conversions"
 msgstr ""
 
 #. translators: %s: the progress percentage
 #: admin/assets/build/index.js:4
+#, js-format
 msgid "Progress: %s"
 msgstr ""
 
@@ -8735,11 +9076,13 @@ msgstr ""
 
 #. translators: %d: the number of items
 #: admin/assets/build/index.js:10
+#, js-format
 msgid "Total: %d"
 msgstr ""
 
 #. translators: %s: The type of data e.g. 'orders'
 #: admin/assets/build/index.js:13
+#, js-format
 msgid "There are no matching %s for the selected manual workflow."
 msgstr ""
 
@@ -8750,11 +9093,13 @@ msgstr ""
 
 #. translators: %1$s: type of item e.g. 'orders', %2$s: the workflow title
 #: admin/assets/build/index.js:19
+#, js-format
 msgid "Searching for %1$s that match the rules used in the \"%2$s\" workflow. If you leave this page the process will stop."
 msgstr ""
 
 #. translators: %s: type of item e.g. 'orders'
 #: admin/assets/build/index.js:22
+#, js-format
 msgid "2. Find matching %s"
 msgstr ""
 

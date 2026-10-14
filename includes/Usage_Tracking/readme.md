@@ -80,13 +80,13 @@ Event | Trigger | Properties
 ----- | ------- | ----------
 `workflow_before_run` | A workflow starts running. | `aw_version` plus the workflow properties listed below.
 `workflow_created` | A workflow is first created. | `aw_version` plus the workflow properties listed below.
-`conversion_recorded` | A conversion is recorded from a workflow log. | `aw_version`, `order_currency`, `order_total`, `workflow_run_date`, `workflow_trigger`, `workflow_title`.
+`conversion_recorded` | A conversion is recorded from a workflow log. | `aw_version`, `order_currency`, `order_total`, `workflow_run_date`, `workflow_trigger`.
 `first_installed` | AutomateWoo is installed for the first time. | `aw_version`.
-`manual_workflow_runner_select_workflow` | A workflow is selected in the manual workflow runner. | `conversion_tracking_enabled`, `tracking_enabled`, `title`, `type`, `trigger_name`.
+`manual_workflow_runner_select_workflow` | A workflow is selected in the manual workflow runner. | `conversion_tracking_enabled`, `tracking_enabled`, `type`, `trigger_name`.
 `manual_run_workflow_button_clicked` | The manual workflow runner advances after matching items are found. | `items_count`.
 `manual_find_matching_cancel_button_clicked` | The find matching items step is cancelled. | No custom properties.
 `manual_queue_items_cancel_button_clicked` | The queue items step is cancelled. | No custom properties.
-`manual_run_workflow_complete` | The manual workflow runner finishes queueing items. | `items_count`, `conversion_tracking_enabled`, `tracking_enabled`, `title`, `type`, `trigger_name`.
+`manual_run_workflow_complete` | The manual workflow runner finishes queueing items. | `items_count`, `conversion_tracking_enabled`, `tracking_enabled`, `type`, `trigger_name`.
 `notice_viewed` | A tracked admin notice is displayed. | `notice_identifier`.
 `notice_link_clicked` | A tracked admin notice link is clicked. | `notice_identifier`, `link_type`.
 `notice_dismissed` | A tracked admin notice is dismissed. | `notice_identifier`.
@@ -105,7 +105,6 @@ Static workflow properties:
 * `date_created`
 * `ga_tracking_enabled`
 * `status`
-* `title`
 * `tracking_enabled`
 * `unsubscribe_exempt`
 * `type`
@@ -114,10 +113,10 @@ Static workflow properties:
 Dynamic workflow properties:
 
 * `action_{index}` stores each configured action name. For example, `action_0 = send_email`.
-* `trigger_{option}` stores scalar trigger option values. Nested trigger option arrays are flattened by appending keys, for example `trigger_order_status_0`.
+* `trigger_{option}` stores trigger option values, only for select, searchable select, checkbox, number, category and term fields. Nested trigger option arrays are flattened by appending keys, for example `trigger_order_status_0`.
 * `rule_{group_index}_{rule_index}_{property}` stores rule group data after dropping saved rule group IDs and rule IDs. For example, `rule_0_0_name`, `rule_0_0_compare`, and `rule_0_0_value`.
 * Workflow data can be extended with the `automatewoo/usage_tracking/workflow_data` filter.
-* Rule values for `customer_email` and `customer_phone` are anonymized before being sent.
+* Rule values for `customer_email` and `guest_email` are anonymized before being sent. Other rule values are sent only for select, object, number, bool and date rules. For all other rules the value is an empty string.
 
 The external Tracks event registry is maintained outside this repository. This readme documents the in-repository event emitters and property shapes that should be kept in sync with that registry.
 

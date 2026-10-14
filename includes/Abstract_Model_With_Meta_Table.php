@@ -258,10 +258,20 @@ abstract class Abstract_Model_With_Meta_Table extends Model {
 
 	/**
 	 * Save the object including meta data.
+	 *
+	 * @since 4.6.0
+	 * @since 6.9.3 Returns whether the object was saved.
+	 *
+	 * @return bool
 	 */
 	public function save() {
-		parent::save();
-		$this->save_meta_data();
+		$saved = parent::save();
+
+		if ( $saved ) {
+			$this->save_meta_data();
+		}
+
+		return $saved;
 	}
 
 	/**

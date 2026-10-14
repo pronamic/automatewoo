@@ -1,13 +1,11 @@
 jQuery( function ( $ ) {
-	// eslint-disable-next-line camelcase -- Legacy global.
 	if ( typeof automatewoo_presubmit_params === 'undefined' ) {
 		return false;
 	}
 
-	// eslint-disable-next-line camelcase, no-undef -- Legacy global.
+	// eslint-disable-next-line no-undef -- Legacy global.
 	const params = automatewoo_presubmit_params;
 
-	let guestId = parseInt( params.guest_id, 10 );
 	let email = '';
 	const $checkoutForm = $( 'form.checkout' );
 	const emailFields = params.email_capture_selectors;
@@ -15,6 +13,14 @@ jQuery( function ( $ ) {
 	const checkoutFieldsData = {};
 	const language = params.language;
 	let captureEmailXhr;
+	let captured = false;
+
+	// A reloaded checkout can already hold an email, so field updates are allowed from the start.
+	$( emailFields.join( ', ' ) ).each( function () {
+		if ( $( this ).val() ) {
+			captured = true;
+		}
+	} );
 
 	$.each( checkoutFields, function ( i, fieldName ) {
 		checkoutFieldsData[ fieldName ] = '';
@@ -58,18 +64,19 @@ jQuery( function ( $ ) {
 			params.ajax_url
 				.toString()
 				.replace( '%%endpoint%%', 'capture_email' ),
-			data,
-			function ( response ) {
-				if ( response && response.success ) {
-					guestId = response.data.guest_id;
-				}
-			}
-		);
+			data
+		).done( function () {
+			captured = true;
+		} );
 	}
 
 	function captureCheckoutField() {
 		const fieldName = $( this ).attr( 'name' );
-		if ( ! fieldName || checkoutFields.indexOf( fieldName ) === -1 ) {
+		if (
+			! captured ||
+			! fieldName ||
+			checkoutFields.indexOf( fieldName ) === -1
+		) {
 			return;
 		}
 
@@ -81,18 +88,15 @@ jQuery( function ( $ ) {
 
 		checkoutFieldsData[ fieldName ] = fieldValue;
 
-		if ( guestId ) {
-			$.post(
-				params.ajax_url
-					.toString()
-					.replace( '%%endpoint%%', 'capture_checkout_field' ),
-				{
-					guest_id: guestId,
-					field_name: fieldName,
-					field_value: fieldValue,
-				}
-			);
-		}
+		$.post(
+			params.ajax_url
+				.toString()
+				.replace( '%%endpoint%%', 'capture_checkout_field' ),
+			{
+				field_name: fieldName,
+				field_value: fieldValue,
+			}
+		);
 	}
 
 	$( document ).on( 'blur change', emailFields.join( ', ' ), captureEmail );

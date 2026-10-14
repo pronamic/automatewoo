@@ -2,6 +2,7 @@
 
 namespace AutomateWoo\Rest_Api\Utilities;
 
+use AutomateWoo\Action_Custom_Function;
 use AutomateWoo\Actions;
 use AutomateWoo\DateTime;
 use AutomateWoo\Entity\Action;
@@ -47,6 +48,9 @@ trait CreateUpdateWorkflow {
 	protected function create_workflow( $request ) {
 		$type = $request->get_param( 'type' ) ?? array_key_first( Workflows::get_types() );
 
+		$actions = $this->get_actions( $request->get_param( 'actions' ) );
+		$this->validate_custom_function_names( $actions, [] );
+
 		$workflow_entity = new WorkflowEntity(
 			$this->get_trigger( $request->get_param( 'trigger' ), $type ),
 			$type,
@@ -60,7 +64,7 @@ trait CreateUpdateWorkflow {
 			->set_is_conversion_tracking_enabled( $request->get_param( 'is_conversion_tracking_enabled' ) ?? false )
 			->set_ga_link_tracking( $request->get_param( 'google_analytics_link_tracking' ) ?? '' )
 			->set_rule_groups( $this->get_rules( $request->get_param( 'rules' ) ) )
-			->set_actions( $this->get_actions( $request->get_param( 'actions' ) ) )
+			->set_actions( $actions )
 			->set_order( $request->get_param( 'workflow_order' ) ?? 0 )
 			->set_origin( 'rest-api' );
 
@@ -105,6 +109,12 @@ trait CreateUpdateWorkflow {
 
 		$type = $request->get_param( 'type' ) ?? $workflow->get_type();
 
+		$actions = $this->get_actions( $request->get_param( 'actions' ) );
+		if ( $request->has_param( 'actions' ) ) {
+			$stored_actions = $workflow->get_meta( 'actions' );
+			$this->validate_custom_function_names( $actions, is_array( $stored_actions ) ? $stored_actions : [] );
+		}
+
 		$workflow_entity = new WorkflowEntity(
 			$this->get_trigger( $trigger, $type ),
 			$type,
@@ -119,7 +129,7 @@ trait CreateUpdateWorkflow {
 			->set_is_conversion_tracking_enabled( $request->get_param( 'is_conversion_tracking_enabled' ) ?? $workflow->is_conversion_tracking_enabled() )
 			->set_ga_link_tracking( $request->get_param( 'google_analytics_link_tracking' ) ?? $workflow->get_ga_tracking_params() )
 			->set_rule_groups( $this->get_rules( $request->get_param( 'rules' ) ) ?? $workflow->get_rule_data() )
-			->set_actions( $this->get_actions( $request->get_param( 'actions' ) ) ?? $workflow->get_actions_data() )
+			->set_actions( $actions )
 			->set_order( $request->get_param( 'workflow_order' ) ?? $workflow->get_order() );
 
 		try {
@@ -133,6 +143,24 @@ trait CreateUpdateWorkflow {
 		}
 
 		return $workflow;
+	}
+
+	/**
+	 * Only administrators may set new Custom Function names.
+	 *
+	 * @param Action[] $actions        The incoming actions.
+	 * @param array    $stored_actions The raw stored actions.
+	 *
+	 * @throws RestException If the current user may not save the function names.
+	 */
+	protected function validate_custom_function_names( array $actions, array $stored_actions ) {
+		if ( ! Action_Custom_Function::can_current_user_save_function_names( $actions, $stored_actions ) ) {
+			throw new RestException(
+				'rest_forbidden',
+				esc_html( Action_Custom_Function::get_function_name_permission_message() ),
+				403
+			);
+		}
 	}
 
 	/**

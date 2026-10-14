@@ -41,6 +41,19 @@ class Workflow_Duplicate {
 	}
 
 	/**
+	 * Whether the post is a workflow the current user may edit.
+	 *
+	 * @since 6.9.3
+	 *
+	 * @param int $post_id
+	 *
+	 * @return bool
+	 */
+	public function can_duplicate( int $post_id ): bool {
+		return 'aw_workflow' === get_post_type( $post_id ) && current_user_can( 'edit_post', $post_id );
+	}
+
+	/**
 	 * Handle the duplication process.
 	 */
 	public function duplicate_workflow() {
@@ -52,7 +65,11 @@ class Workflow_Duplicate {
 			wp_die( esc_html__( 'You do not have permission to duplicate workflows.', 'automatewoo' ) );
 		}
 
-		$post_id  = absint( $_GET['post'] );
+		$post_id = absint( $_GET['post'] );
+		if ( ! $this->can_duplicate( $post_id ) ) {
+			wp_die( esc_html__( 'You do not have permission to duplicate this workflow.', 'automatewoo' ) );
+		}
+
 		$workflow = get_post( $post_id );
 		if ( ! $workflow ) {
 			wp_die(

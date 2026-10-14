@@ -1,1 +1,29 @@
-<?php return array('dependencies' => array('automatewoo-modal', 'lodash', 'react-jsx-runtime', 'wc-components', 'wc-csv', 'wc-currency', 'wc-date', 'wc-navigation', 'wc-number', 'wc-settings', 'wc-store-data', 'wc-tracks', 'wp-api-fetch', 'wp-components', 'wp-compose', 'wp-data', 'wp-date', 'wp-dom', 'wp-element', 'wp-hooks', 'wp-i18n', 'wp-polyfill', 'wp-url'), 'version' => '3061ffb1a5aa99a4e712');
+<?php return array(
+	'dependencies' => array(
+		'automatewoo-modal',
+		'lodash',
+		'react-jsx-runtime',
+		'regenerator-runtime',
+		'wc-components',
+		'wc-csv',
+		'wc-currency',
+		'wc-date',
+		'wc-navigation',
+		'wc-number',
+		'wc-settings',
+		'wc-store-data',
+		'wc-tracks',
+		'wp-api-fetch',
+		'wp-components',
+		'wp-compose',
+		'wp-data',
+		'wp-date',
+		'wp-dom',
+		'wp-element',
+		'wp-hooks',
+		'wp-i18n',
+		'wp-polyfill',
+		'wp-url'
+	),
+	'version' => '8acd4f857f87f23999ab'
+);

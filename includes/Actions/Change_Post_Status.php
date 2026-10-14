@@ -44,6 +44,8 @@ class Action_Change_Post_Status extends Action {
 
 	/**
 	 * Run the action.
+	 *
+	 * @throws \Exception When the status can't be set by this action.
 	 */
 	public function run() {
 		$post   = $this->workflow->data_layer()->get_item( 'post' );
@@ -51,6 +53,11 @@ class Action_Change_Post_Status extends Action {
 
 		if ( ! $status || ! $post ) {
 			return;
+		}
+
+		if ( ! array_key_exists( $status, get_post_statuses() ) ) {
+			/* translators: %s: post status */
+			throw new \Exception( esc_html( sprintf( __( 'The post status “%s” isn’t one this action can set.', 'automatewoo' ), $status ) ) );
 		}
 
 		wp_update_post(

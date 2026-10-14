@@ -256,6 +256,22 @@ class Settings_Tab_General extends Admin_Settings_Tab_Abstract {
 		);
 
 		$this->add_setting(
+			'click_tracking_limit',
+			[
+				'title'             => __( 'Click tracking limit', 'automatewoo' ),
+				'desc'              => __( 'Maximum number of clicks to record each time a workflow runs. Links keep working after the limit is reached, but further clicks are not recorded. Lowering the limit does not remove clicks that are already recorded. Set to 0 for no limit. Default value is 100.', 'automatewoo' )
+					. '<br>'
+					. __( 'Clicks in reports count every recorded click, including repeat clicks. Unique clicks count each workflow run only once, however many times its links are clicked. Both include clicks on forwarded messages and links opened automatically by email security software.', 'automatewoo' ),
+				'desc_as_paragraph' => true,
+				'type'              => 'number',
+				'custom_attributes' => [
+					'min'  => '0',
+					'step' => '1',
+				],
+			]
+		);
+
+		$this->add_setting(
 			'clean_expired_coupons',
 			[
 				'title' => __( 'Automatically delete expired coupons', 'automatewoo' ),

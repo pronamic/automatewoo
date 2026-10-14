@@ -35,6 +35,7 @@ namespace AutomateWoo;
  * @property bool $bitly_shorten_sms_links
  *
  * @property int $conversion_window
+ * @property int $click_tracking_limit
  *
  * @property bool $enable_background_system_check
  * @property bool $delete_data_on_uninstall
@@ -72,6 +73,7 @@ class Options extends Options_API {
 			'campaign_monitor_enabled'                 => false,
 			'mailchimp_integration_enabled'            => false,
 			'conversion_window'                        => 14,
+			'click_tracking_limit'                     => 100,
 			'enable_background_system_check'           => true,
 			'bitly_shorten_sms_links'                  => 'no',
 			'delete_data_on_uninstall'                 => 'no',

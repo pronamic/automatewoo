@@ -1,5 +1,7 @@
 <?php
 
+defined( 'ABSPATH' ) || exit;
+
 return [
 	'title'       => 'Loyalty: Birthday Email',
 	'description' => 'Trigger an email with a coupon to your customers when they celebrate their birthday.',

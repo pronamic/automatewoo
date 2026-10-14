@@ -139,6 +139,30 @@ class Log extends Abstract_Model_With_Meta_Table {
 
 
 	/**
+	 * Gives the log a new random token for its tracking links to carry.
+	 *
+	 * Links that were sent with an earlier token of the log stop recording.
+	 *
+	 * @since 6.9.3
+	 */
+	public function generate_tracking_token(): void {
+		$this->update_meta( 'tracking_token', aw_generate_key( 16 ) );
+	}
+
+
+	/**
+	 * Gets the token that the tracking links of this log carry.
+	 *
+	 * @since 6.9.3
+	 *
+	 * @return string An empty string when the log has no token.
+	 */
+	public function get_tracking_token(): string {
+		return Clean::string( $this->get_meta( 'tracking_token' ) );
+	}
+
+
+	/**
 	 * @return bool
 	 */
 	public function is_anonymized() {
@@ -149,6 +173,10 @@ class Log extends Abstract_Model_With_Meta_Table {
 	/**
 	 * Records that a trackable message from a workflow was clicked.
 	 *
+	 * A log keeps up to the number of clicks set by the click tracking limit setting. Once it
+	 * holds that many, later clicks are not written to it, while the record_click action still
+	 * fires.
+	 *
 	 * @param string $url
 	 */
 	public function record_click( $url ) {
@@ -158,30 +186,64 @@ class Log extends Abstract_Model_With_Meta_Table {
 			$tracking = [];
 		}
 
-		$tracking[] = [
-			'type' => 'click',
-			'url'  => $url,
-			'date' => current_time( 'mysql', true ),
-		];
-
-		// clicking requires an open so record one in case images were blocked
-		if ( ! $this->has_open_recorded() ) {
+		if ( $this->can_record_click( $tracking ) ) {
 			$tracking[] = [
-				'type' => 'open',
+				'type' => 'click',
+				'url'  => $url,
 				'date' => current_time( 'mysql', true ),
 			];
-		}
 
-		$this->update_meta( 'tracking_data', $tracking );
+			// clicking requires an open so record one in case images were blocked
+			if ( ! $this->has_open_recorded() ) {
+				$tracking[] = [
+					'type' => 'open',
+					'date' => current_time( 'mysql', true ),
+				];
+			}
+
+			$this->update_meta( 'tracking_data', $tracking );
+		}
 
 		/**
 		 * Fires when a link in a trackable workflow message is clicked.
+		 *
+		 * Also fires for a click that is not written to the log because the log already holds
+		 * the maximum number of clicks.
 		 *
 		 * @param Workflow $workflow The workflow that sent the message.
 		 * @param Log      $log      The record of the workflow running.
 		 * @param string   $url      The URL that was clicked
 		 */
 		do_action( 'automatewoo/workflow/record_click', $this->get_workflow(), $this, $url );
+	}
+
+
+	/**
+	 * Whether the log can hold another click under the click tracking limit.
+	 *
+	 * Only clicks count toward the limit, not the open a first click implies.
+	 *
+	 * @since 6.9.3
+	 *
+	 * @param array $tracking Events already recorded for this log.
+	 *
+	 * @return bool
+	 */
+	private function can_record_click( array $tracking ) {
+		$limit = AW()->options_store()->get_click_tracking_limit();
+
+		if ( 0 === $limit ) {
+			return true;
+		}
+
+		$clicks = 0;
+		foreach ( $tracking as $item ) {
+			if ( 'click' === ( $item['type'] ?? null ) ) {
+				++$clicks;
+			}
+		}
+
+		return $clicks < $limit;
 	}
 
 

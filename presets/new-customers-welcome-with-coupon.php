@@ -1,5 +1,7 @@
 <?php
 
+defined( 'ABSPATH' ) || exit;
+
 $email_content = <<<'EMAIL'
 Welcome {{ customer.first_name | fallback: 'friend' }},
 

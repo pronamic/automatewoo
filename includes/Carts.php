@@ -12,23 +12,22 @@ use AutomateWoo\Carts\CartRestorer;
 class Carts {
 
 	/**
-	 * Customer meta key recording the ID of the stored cart that was created by an
-	 * unverified capture-only identity — one resolved from a typed email (guest
-	 * checkout, comment form) or from an inherited legacy tracking cookie (bare, or
-	 * its upgraded-marked rewrite). Only a cart carrying this mark may be updated by
-	 * such an identity; every other cart — including all carts that predate this
-	 * protection — is refused (fail closed). The mark is cleared as soon as the cart
-	 * is written under a verified identity (logged in, placed order, or a genuine
-	 * signed tracking cookie), permanently protecting the cart from unverified writes.
+	 * Customer meta key recording the stored cart that was created by an unverified
+	 * capture-only identity (an email resolved to an existing guest, a guest order's
+	 * billing email, or a legacy tracking cookie held by a registered customer). The
+	 * value is `[ 'cart_id' => int, 'sid' => string ]`: the cart ID and the ID of the
+	 * WC session that wrote it. Only that session may update
+	 * or empty the cart as a capture-only identity. Every other cart is refused,
+	 * including carts that predate this protection and carts marked with an older
+	 * scalar value, which has no session and so authorises nobody. The mark is cleared
+	 * as soon as the cart is written under a verified identity (logged in, placed order,
+	 * or a genuine signed tracking cookie).
 	 *
-	 * Both capture-only classes deliberately share this one mark: they hold identical
-	 * rights (create; update only what they created; a verified write revokes), and a
-	 * single mechanism means no ambiguity about which class authored a cart. The
-	 * accepted residual is that one unverified claim to a customer can update a cart
-	 * another unverified claim to the same customer created — such a cart never had
-	 * verified authorship, so nothing the account holder built is exposed.
+	 * A guest whose identity is only a legacy tracking cookie is exempt from this guard,
+	 * as it was before the guard existed, and leaves the mark unchanged.
 	 *
 	 * @since 6.9.1
+	 * @since 6.9.3 The value is an array that includes the authoring WC session ID.
 	 * @var string
 	 */
 	const UNVERIFIED_AUTHORED_CART_META_KEY = 'unverified_authored_cart_id';
@@ -186,14 +185,17 @@ class Carts {
 	 *
 	 * @param Customer $customer
 	 *
-	 * @since 6.9.1 A registered customer's stored cart is only fully writable when their
+	 * @since 6.9.3 The same rules apply to guest customers, not only registered ones.
+	 * @since 6.9.1 A customer's stored cart is only fully writable when their
 	 *              identity is verified (logged in, resolved server-side this request, or
 	 *              a genuine signed tracking cookie). A bare cookie value is not proof of
 	 *              identity, so a forged cookie carrying a leaked key can no longer
 	 *              overwrite the cart — and neither can the marked cookie a legacy value
-	 *              is upgraded to, on any later request. Capture-only identities — a
-	 *              typed email (guest checkout, comment form) or an inherited legacy
-	 *              cookie — may still create a stored cart when the customer has none
+	 *              is upgraded to, on any later request. Capture-only identities — an
+	 *              email-derived identity (another guest's typed email, a guest order's
+	 *              billing email, an add-on promoting an email) or an inherited legacy
+	 *              cookie — may still
+	 *              create a stored cart when the customer has none
 	 *              and may keep writing to the cart they created themselves — content
 	 *              syncs and emptied marks alike — but no other cart, including every
 	 *              cart that predates this protection (fail closed). Marking a cart
@@ -202,10 +204,10 @@ class Carts {
 	 *              could silently kill the account holder's workflow, and it never
 	 *              reflects the visitor's own action anyway — their WC session cart is
 	 *              a different cart from the account's stored one. This keeps
-	 *              abandoned-cart capture working for existing logged-out shoppers and
-	 *              for registered shoppers checking out as guests when the account has
-	 *              no current stored cart, while stopping either claim from touching a
-	 *              cart the real account holder built. The remaining limitation: when
+	 *              abandoned-cart capture working for existing logged-out shoppers
+	 *              and for guest orders placed with a registered account's email when
+	 *              the account has no current stored cart, while stopping either claim
+	 *              from touching a cart the real account holder built. The remaining limitation: when
 	 *              a current stored cart with verified authorship exists, a
 	 *              capture-only session never writes to it at all — updates resume
 	 *              only under a verified identity (e.g. logging in). The guarded early returns leave the WC session
@@ -228,15 +230,19 @@ class Carts {
 		}
 
 		$is_capture_only_identity = false;
+		$is_legacy_cookie_guest   = false;
 
-		if ( $customer->is_registered() && ! is_user_logged_in() && ! Session_Tracker::is_customer_identity_verified( $customer ) ) {
-			if (
-				! Session_Tracker::is_customer_identity_from_captured_email( $customer )
-				&& ! Session_Tracker::is_customer_identity_from_legacy_cookie( $customer )
-			) {
+		if ( ! is_user_logged_in() && ! Session_Tracker::is_customer_identity_verified( $customer ) ) {
+			$is_captured_email = Session_Tracker::is_customer_identity_from_captured_email( $customer );
+
+			if ( ! $is_captured_email && ! Session_Tracker::is_customer_identity_from_legacy_cookie( $customer ) ) {
 				return; // refuse: an unverified identity mutates nothing, the WC session included
 			}
-			$is_capture_only_identity = true;
+
+			// A guest holding only a legacy cookie keeps the behaviour it had before the
+			// authorship guard: carts saved before the guard have no mark to match.
+			$is_legacy_cookie_guest   = ! $is_captured_email && ! $customer->is_registered();
+			$is_capture_only_identity = ! $is_legacy_cookie_guest;
 		}
 
 		// A verified cookie identity's WC session cart is emptied by logging out, so an
@@ -263,12 +269,12 @@ class Carts {
 					// does the empty session reflect anything this visitor did to the
 					// stored cart: their WC session cart is a different cart. Genuine
 					// guest checkout is unaffected — a shopper at checkout has items
-					// (the sync branch), and a cart captured from their typed email
+					// (the sync branch), and a cart captured from their email
 					// carries the authorship mark, so they can still empty it later.
 					return;
 				}
 				self::mark_cart_as_emptied( $stored_cart );
-				self::record_cart_authorship( $customer, $stored_cart, $is_capture_only_identity );
+				self::record_cart_authorship( $customer, $stored_cart, $is_capture_only_identity, $is_legacy_cookie_guest );
 
 				/**
 				 * Runs when a stored cart is cleared via the frontend.
@@ -282,7 +288,7 @@ class Carts {
 				}
 
 				$stored_cart->sync();
-				self::record_cart_authorship( $customer, $stored_cart, $is_capture_only_identity );
+				self::record_cart_authorship( $customer, $stored_cart, $is_capture_only_identity, $is_legacy_cookie_guest );
 
 				/**
 				 * Runs when stored cart is updated via the frontend.
@@ -301,7 +307,7 @@ class Carts {
 			}
 			$stored_cart->set_token();
 			$stored_cart->sync();
-			self::record_cart_authorship( $customer, $stored_cart, $is_capture_only_identity );
+			self::record_cart_authorship( $customer, $stored_cart, $is_capture_only_identity, $is_legacy_cookie_guest );
 
 			/**
 			 * Runs when a new stored cart is created via the frontend.
@@ -326,8 +332,8 @@ class Carts {
 	}
 
 	/**
-	 * Whether a registered customer's stored cart carries the unverified authorship
-	 * mark, i.e. it was created by a capture-only identity (typed email or inherited
+	 * Whether a customer's stored cart carries the unverified authorship
+	 * mark, i.e. it was created by a capture-only identity (email-derived or inherited
 	 * legacy cookie) and has not been written under a verified identity since.
 	 *
 	 * @since 6.9.1
@@ -338,34 +344,79 @@ class Carts {
 	 * @return bool
 	 */
 	private static function is_cart_unverified_authored( $customer, $cart ) {
-		$marked_cart_id = (int) $customer->get_meta( self::UNVERIFIED_AUTHORED_CART_META_KEY );
+		$mark = self::get_authorship_mark( $customer );
 
-		return $marked_cart_id && $marked_cart_id === (int) $cart->get_id();
+		return $mark['cart_id'] && $mark['cart_id'] === (int) $cart->get_id() && self::is_current_wc_session( $mark['sid'] );
 	}
 
 	/**
-	 * Records how a registered customer's stored cart was just written. A capture-only
-	 * write (typed email or inherited legacy cookie) marks the cart as
-	 * unverified-authored so the same class of identity can keep updating it across
-	 * requests — a multi-request guest checkout, or a returning legacy-cookie shopper
-	 * building a cart; a verified write clears the mark, permanently protecting the
-	 * cart from capture-only writes. Carts never marked — including all carts that
-	 * predate this protection — are protected by default.
+	 * Reads the authorship mark. A scalar value written by an earlier version has no
+	 * session, so it never matches the current one.
+	 *
+	 * @since 6.9.3
+	 *
+	 * @param Customer $customer
+	 *
+	 * @return array{cart_id: int, sid: string}
+	 */
+	private static function get_authorship_mark( $customer ) {
+		$value = $customer->get_meta( self::UNVERIFIED_AUTHORED_CART_META_KEY );
+
+		if ( is_array( $value ) ) {
+			return [
+				'cart_id' => (int) ( $value['cart_id'] ?? 0 ),
+				'sid'     => (string) ( $value['sid'] ?? '' ),
+			];
+		}
+
+		return [
+			'cart_id' => (int) $value,
+			'sid'     => '',
+		];
+	}
+
+	/**
+	 * @since 6.9.3
+	 *
+	 * @param string $sid
+	 *
+	 * @return bool
+	 */
+	private static function is_current_wc_session( $sid ) {
+		return '' !== $sid && WC()->session && (string) WC()->session->get_customer_id() === $sid;
+	}
+
+	/**
+	 * Records how a customer's stored cart was just written. A capture-only
+	 * write (email-derived or inherited legacy cookie) marks the cart as
+	 * unverified-authored, together with the WC session that wrote it, so only that
+	 * session can keep updating it across requests; a verified write clears the mark,
+	 * permanently protecting the cart from capture-only writes. Carts never marked —
+	 * including all carts that predate this protection — are protected by default.
 	 *
 	 * @since 6.9.1
+	 * @since 6.9.3 The mark carries the authoring WC session id. A write by a legacy-cookie
+	 *              guest leaves the mark as it is.
 	 *
 	 * @param Customer $customer
 	 * @param Cart     $cart
 	 * @param bool     $is_capture_only_identity
+	 * @param bool     $is_legacy_cookie_guest
 	 */
-	private static function record_cart_authorship( $customer, $cart, $is_capture_only_identity ) {
-		if ( ! $customer->is_registered() || ! $cart->get_id() ) {
+	private static function record_cart_authorship( $customer, $cart, $is_capture_only_identity, $is_legacy_cookie_guest = false ) {
+		if ( ! $cart->get_id() || $is_legacy_cookie_guest ) {
 			return;
 		}
 
 		if ( $is_capture_only_identity ) {
-			$customer->update_meta( self::UNVERIFIED_AUTHORED_CART_META_KEY, $cart->get_id() );
-		} elseif ( (int) $customer->get_meta( self::UNVERIFIED_AUTHORED_CART_META_KEY ) ) {
+			$customer->update_meta(
+				self::UNVERIFIED_AUTHORED_CART_META_KEY,
+				[
+					'cart_id' => (int) $cart->get_id(),
+					'sid'     => WC()->session ? (string) WC()->session->get_customer_id() : '',
+				]
+			);
+		} elseif ( self::get_authorship_mark( $customer )['cart_id'] ) {
 			$customer->delete_meta( self::UNVERIFIED_AUTHORED_CART_META_KEY );
 		}
 	}

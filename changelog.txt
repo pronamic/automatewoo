@@ -1,5 +1,17 @@
 *** AutomateWoo Changelog ***
 
+2026-10-12 - version 6.9.3
+* Add - Click tracking limit setting. Each workflow run now records up to 100 clicks by default, and the Email & SMS Tracking report explains how to read click numbers.
+* Add - WooCommerce → Status shows the client IP used for rate limits and the last time a limit was reached.
+* Fix - Security improvements to pre-submit email capture.
+* Tweak - Only administrators can set the function name of a Custom Function action.
+* Tweak - The Change Role action no longer offers roles with admin-level capabilities.
+* Tweak - The Custom Function action logs an error when its function is missing or can’t be run, instead of skipping silently.
+* Tweak - Workflow screens require the Manage WooCommerce capability.
+* Update - Bump the minimum required WooCommerce version to 11.1 and the compatibility version to 11.2.
+* Update - Open and click tracking links now carry a token for the workflow run that sent them.
+* Update - Pre-submit capture skips emails of user accounts; the tracking cookie is set when an order is placed.
+
 2026-09-29 - version 6.9.2
 * Dev - Update build dependencies to resolve a Dependabot alert for adm-zip.
 * Fix - Fatal error when a third-party plugin triggers guest email capture in a request where WooCommerce does not load the cart, such as a REST API, cron or admin-post.php request.

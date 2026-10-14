@@ -618,6 +618,7 @@ class Workflow {
 
 		if ( $this->is_tracking_enabled() ) {
 			$this->log->set_tracking_enabled( true );
+			$this->log->generate_tracking_token();
 
 			if ( $this->is_conversion_tracking_enabled() ) {
 				$this->log->set_conversion_tracking_enabled( true );

@@ -53,13 +53,49 @@ class Action_Customer_Change_Role extends Action {
 		$role = $this->get_option( 'user_type' );
 		$user = $customer->get_user();
 
-		if ( ! $this->allow_all_roles() && ( in_array( $role, User_Role::PROTECTED_ROLES, true ) || in_array( $customer->get_role(), User_Role::PROTECTED_ROLES, true ) ) ) {
+		if ( ! $role || ! $user ) {
 			return;
 		}
 
-		if ( $role && $user ) {
-			$user->set_role( $role );
+		if ( ! get_role( $role ) ) {
+			/* translators: %s: role key */
+			throw new \Exception( esc_html( sprintf( __( 'The role “%s” does not exist.', 'automatewoo' ), $role ) ) );
 		}
+
+		if ( ! $this->allow_all_roles() ) {
+			if ( User_Role::is_protected_role( $role ) ) {
+				/* translators: %s: role key */
+				throw new \Exception( esc_html( sprintf( __( 'The role “%s” can’t be assigned by this action. Use the automatewoo/change_role/allow_all_roles filter to allow it.', 'automatewoo' ), $role ) ) );
+			}
+
+			if ( $this->is_protected_user( $user ) ) {
+				throw new \Exception( esc_html__( 'This customer’s role can’t be changed by this action. Use the automatewoo/change_role/allow_all_roles filter to allow it.', 'automatewoo' ) );
+			}
+		}
+
+		$user->set_role( $role );
+	}
+
+	/**
+	 * Check if the user has a protected role or a protected capability.
+	 *
+	 * @param \WP_User $user
+	 * @return bool
+	 */
+	private function is_protected_user( $user ) {
+		foreach ( $user->roles as $role ) {
+			if ( User_Role::is_protected_role( $role ) ) {
+				return true;
+			}
+		}
+
+		foreach ( User_Role::get_protected_capabilities() as $capability ) {
+			if ( user_can( $user, $capability ) ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**

@@ -25,6 +25,9 @@ class Hooks {
 		// email
 		add_filter( 'automatewoo_email_content', 'wpautop' );
 
+		// settings
+		add_filter( 'sanitize_option_automatewoo_click_tracking_limit', [ 'AutomateWoo\OptionsStore', 'sanitize_click_tracking_limit' ] );
+
 		// pre-submit
 		add_action( 'wp_enqueue_scripts', [ $self, 'maybe_enqueue_presubmit_js' ], 20 );
 		add_action( 'automatewoo/ajax/capture_email', [ 'AutomateWoo\PreSubmit', 'ajax_capture_email' ] );
@@ -48,6 +51,8 @@ class Hooks {
 		add_action( 'admin_init', [ 'AutomateWoo\System_Checks', 'maybe_schedule_check' ], 20 );
 		add_action( 'admin_notices', [ 'AutomateWoo\System_Checks', 'maybe_display_notices' ] );
 		add_action( 'automatewoo/system_check', [ 'AutomateWoo\System_Checks', 'run_system_check' ] );
+
+		add_action( 'woocommerce_system_status_report', [ 'AutomateWoo\System_Status_Report', 'output' ] );
 
 		// pages
 		add_action( 'template_redirect', [ $self, 'maybe_init_pages' ] );

@@ -44,6 +44,52 @@ class User_Tags_Export {
 
 
 	/**
+	 * Prefix values that start with a spreadsheet formula character so they are read as text.
+	 *
+	 * @since 6.9.3
+	 *
+	 * @param mixed $value
+	 * @return string
+	 */
+	public static function escape_cell( $value ): string {
+		if ( is_int( $value ) || is_float( $value ) ) {
+			return (string) $value;
+		}
+
+		$value = (string) $value;
+
+		if ( '' !== $value && in_array( $value[0], [ '=', '+', '-', '@', "\t", "\r" ], true ) ) {
+			$value = "'" . $value;
+		}
+
+		return $value;
+	}
+
+
+	/**
+	 * Build a CSV row of quoted cells for a user.
+	 *
+	 * @since 6.9.3
+	 *
+	 * @param \WP_User $user
+	 * @param array    $fields
+	 * @return string
+	 */
+	public static function get_csv_row( $user, array $fields ): string {
+		$data = [];
+
+		foreach ( $fields as $field ) {
+			$value  = isset( $user->{$field} ) ? $user->{$field} : '';
+			$value  = is_array( $value ) ? serialize( $value ) : $value; // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize
+			$value  = 'ID' === $field ? (int) $value : $value;
+			$data[] = '"' . str_replace( '"', '""', self::escape_cell( $value ) ) . '"';
+		}
+
+		return implode( ',', $data );
+	}
+
+
+	/**
 	 * Process content of CSV file
 	 *
 	 * @since 0.1
@@ -99,15 +145,7 @@ class User_Tags_Export {
 				continue;
 			}
 
-			$data = [];
-
-			foreach ( $fields as $field ) {
-				$value  = isset( $user->{$field} ) ? $user->{$field} : '';
-				$value  = is_array( $value ) ? serialize( $value ) : $value; // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize
-				$data[] = '"' . str_replace( '"', '""', $value ) . '"';
-			}
-
-			echo implode( ',', $data ) . "\n";
+			echo self::get_csv_row( $user, $fields ) . "\n";
 		}
 		// phpcs:enable
 

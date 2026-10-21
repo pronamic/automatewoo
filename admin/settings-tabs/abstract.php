@@ -685,7 +685,7 @@ abstract class Admin_Settings_Tab_Abstract {
 
 			case 'textarea':
 			case 'tinymce':
-				$value = wp_kses_post( trim( $raw_value ) );
+				$value = wp_kses_post( trim( (string) $raw_value ) );
 				break;
 
 			case 'multiselect':

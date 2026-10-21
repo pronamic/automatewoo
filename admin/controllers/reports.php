@@ -89,7 +89,9 @@ class Reports extends Base {
 
 
 	/**
-	 * @return \AW_Admin_Reports_Tab_Abstract|false
+	 * Get the current tab, falling back to the first tab if the requested one is not registered.
+	 *
+	 * @return \AW_Admin_Reports_Tab_Abstract
 	 */
 	public function get_current_tab() {
 
@@ -98,7 +100,7 @@ class Reports extends Base {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only admin tab selection; value sanitized, no state change.
 		$current_tab_id = empty( $_GET['tab'] ) ? current( $tabs )->id : sanitize_title( wp_unslash( $_GET['tab'] ) );
 
-		return isset( $tabs[ $current_tab_id ] ) ? $tabs[ $current_tab_id ] : false;
+		return $tabs[ $current_tab_id ] ?? current( $tabs );
 	}
 
 

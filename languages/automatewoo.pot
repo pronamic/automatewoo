@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: AutomateWoo 6.9.3\n"
+"Project-Id-Version: AutomateWoo 6.9.4\n"
 "Report-Msgid-Bugs-To: https://woocommerce.com/my-account/contact-support/\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-13T10:26:34+00:00\n"
+"POT-Creation-Date: 2026-10-20T10:25:41+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: automatewoo\n"
@@ -22,9 +22,9 @@ msgstr ""
 #: admin/admin.php:802
 #: admin/coupons-list.php:44
 #: admin/WCAdminConnectPages.php:59
-#: automatewoo.php:133
-#: automatewoo.php:143
-#: automatewoo.php:153
+#: automatewoo.php:134
+#: automatewoo.php:144
+#: automatewoo.php:154
 #: includes/Actions/Change_Workflow_Status.php:25
 #: includes/Actions/Clear_Queued_Events.php:21
 #: includes/Installer.php:267
@@ -2373,27 +2373,27 @@ msgid "Workflow creation failed: %s"
 msgstr ""
 
 #. translators: Plugin name.
-#: automatewoo.php:133
-#: automatewoo.php:143
-#: automatewoo.php:153
+#: automatewoo.php:134
+#: automatewoo.php:144
+#: automatewoo.php:154
 #, php-format
 msgid "%s is inactive."
 msgstr ""
 
 #. translators: %1$s inactive plugin text, %2$s minimum PHP version
-#: automatewoo.php:135
+#: automatewoo.php:136
 #, php-format
 msgid "%1$s The plugin requires PHP version %2$s or newer."
 msgstr ""
 
 #. translators: %1$s inactive plugin text, %2$s minimum WooCommerce version
-#: automatewoo.php:145
+#: automatewoo.php:146
 #, php-format
 msgid "%1$s The plugin requires WooCommerce version %2$s or newer."
 msgstr ""
 
 #. translators: %1$s inactive plugin text, %2$s minimum WordPress version
-#: automatewoo.php:155
+#: automatewoo.php:156
 #, php-format
 msgid "%1$s The plugin requires WordPress version %2$s or newer."
 msgstr ""

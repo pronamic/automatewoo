@@ -1,5 +1,12 @@
 *** AutomateWoo Changelog ***
 
+2026-10-20 - version 6.9.4
+* Dev - Add shared npm script names, a pre-commit hook, Dependabot for GitHub Actions, a PR template and agent docs.
+* Dev - Replace Prophecy with PHPUnit mocks in unit tests and update Composer dev dependencies.
+* Dev - Run JavaScript unit tests in CI and fix outdated developer docs.
+* Dev - Run the unit and E2E tests on PHP 8.5, and E2E tests on every PR.
+* Fix - Show the default tab instead of an error when a settings or reports URL has an unknown tab.
+
 2026-10-12 - version 6.9.3
 * Add - Click tracking limit setting. Each workflow run now records up to 100 clicks by default, and the Email & SMS Tracking report explains how to read click numbers.
 * Add - WooCommerce → Status shows the client IP used for rate limits and the last time a limit was reached.

@@ -61,22 +61,32 @@ class Settings extends Base {
 			die( esc_html__( 'Action failed. Please refresh the page and retry.', 'automatewoo' ) );
 		}
 
-		$current_tab = $this->get_current_tab();
-		$current_tab->save();
+		// Never save an unregistered tab into the fallback tab.
+		$tab = $this->get_settings_tabs()[ $this->get_requested_tab_id() ] ?? null;
+
+		if ( $tab ) {
+			$tab->save();
+		}
 	}
 
 
 	/**
-	 * @return \AutomateWoo\Admin_Settings_Tab_Abstract|false
+	 * Get the current tab, falling back to the general tab if the requested one is not registered.
+	 *
+	 * @return \AutomateWoo\Admin_Settings_Tab_Abstract
 	 */
 	public function get_current_tab() {
-
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only admin tab selection; value sanitized, no state change.
-		$current_tab_id = empty( $_GET['tab'] ) ? 'general' : sanitize_title( wp_unslash( $_GET['tab'] ) );
-
 		$tabs = $this->get_settings_tabs();
 
-		return isset( $tabs[ $current_tab_id ] ) ? $tabs[ $current_tab_id ] : false;
+		return $tabs[ $this->get_requested_tab_id() ] ?? $tabs['general'];
+	}
+
+	/**
+	 * @return string
+	 */
+	private function get_requested_tab_id() {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only admin tab selection; value sanitized, no state change.
+		return empty( $_GET['tab'] ) ? 'general' : sanitize_title( wp_unslash( $_GET['tab'] ) );
 	}
 
 

@@ -10,7 +10,7 @@ defined( 'ABSPATH' ) || exit;
 ?>
 
 
-<form method="post" id="mainform" action="" enctype="multipart/form-data">
+<form method="post" id="mainform" action="<?php echo esc_url( $tab->get_url() ); ?>" enctype="multipart/form-data">
 
 	<?php $tab->output_settings_fields(); ?>
 

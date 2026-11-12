@@ -98,11 +98,34 @@ abstract class Action_Send_Email_Abstract extends Action implements PreviewableI
 		$email = new Workflow_Email( $this->workflow, $recipient, $subject, $content );
 		$email->set_type( $this->get_email_type() );
 
-		if ( is_array( $reply_to ) && $reply_to[0] && is_email( $reply_to[1] ) ) {
-			$email->set_reply_to( sprintf( '%s <%s>', $reply_to[0], $reply_to[1] ) );
+		if ( is_array( $reply_to ) && is_string( $reply_to[0] ?? null ) && is_email( $reply_to[1] ?? '' ) ) {
+			$reply_to_name = $this->sanitize_reply_to_name( $reply_to[0] );
+
+			if ( $reply_to_name ) {
+				$email->set_reply_to( sprintf( '%s <%s>', $reply_to_name, $reply_to[1] ) );
+			}
 		}
 
 		return $email;
+	}
+
+	/**
+	 * Clean the reply-to name, which can come from customer data through variables.
+	 *
+	 * Commas are removed, since wp_mail() splits a Reply-To header on commas, and no
+	 * line breaks are left. Matches how WooCommerce cleans its own reply-to names.
+	 *
+	 * @since 6.9.6
+	 *
+	 * @param string $name
+	 *
+	 * @return string
+	 */
+	private function sanitize_reply_to_name( string $name ): string {
+		// The sanitize_text_field filter runs last and could put line breaks back.
+		$name = str_replace( [ "\r", "\n" ], ' ', sanitize_text_field( $name ) );
+
+		return trim( str_replace( ',', '', $name ) );
 	}
 
 

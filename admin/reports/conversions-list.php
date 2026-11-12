@@ -201,7 +201,7 @@ class Report_Conversions_List extends Admin_List_Table {
 			]
 		);
 
-		foreach ( $query->posts as $order ) {
+		foreach ( $query->posts ?? [] as $order ) {
 			$this->items[] = wc_get_order( $order );
 		}
 

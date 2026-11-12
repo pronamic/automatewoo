@@ -47,10 +47,8 @@ class Workflow extends Select {
 
 		$options = [];
 
-		if ( $workflows->have_posts() ) {
-			foreach ( $workflows->posts as $workflow ) {
-				$options[ $workflow->ID ] = $workflow->post_title;
-			}
+		foreach ( $workflows->posts ?? [] as $workflow ) {
+			$options[ $workflow->ID ] = $workflow->post_title;
 		}
 
 		return $options;

@@ -66,17 +66,23 @@ class Hooks {
 		add_action( 'woocommerce_checkout_after_terms_and_conditions', [ 'AutomateWoo\Frontend', 'output_checkout_optin_checkbox' ] );
 		add_action( 'woocommerce_register_form', [ 'AutomateWoo\Frontend', 'output_signup_optin_checkbox' ], 20 );
 		add_action( 'woocommerce_checkout_order_processed', [ 'AutomateWoo\Frontend', 'process_checkout_optin' ], 20 );
+		add_filter( 'woocommerce_thankyou_order_received_text', [ 'AutomateWoo\Frontend', 'filter_order_received_text' ], 20, 2 );
 
 		// order
 		add_action( 'woocommerce_before_order_object_save', [ $self, 'sync_guest_email' ] );
 
 		if ( Integrations::is_woocommerce_blocks_active( '7.2.0' ) ) {
 			add_action( 'woocommerce_store_api_checkout_update_order_from_request', [ 'AutomateWoo\Frontend', 'process_checkout_block_optin' ], 10, 2 );
+			add_action( 'woocommerce_store_api_checkout_order_processed', [ 'AutomateWoo\Frontend', 'process_checkout_block_order' ] );
 		} else {
 			add_action( 'woocommerce_blocks_checkout_update_order_from_request', [ 'AutomateWoo\Frontend', 'process_checkout_block_optin' ], 10, 2 );
 		}
 
+		add_action( 'woocommerce_created_customer', [ 'AutomateWoo\Optin_Confirmation', 'mark_address_unconfirmed' ] );
 		add_action( 'woocommerce_created_customer', [ 'AutomateWoo\Frontend', 'process_account_signup_optin' ], 20 );
+		add_action( 'automatewoo/customer/converted_guest_to_registered_customer', [ 'AutomateWoo\Optin_Confirmation', 'mark_converted_guest_address_unconfirmed' ] );
+		add_action( 'password_reset', [ 'AutomateWoo\Optin_Confirmation', 'confirm_address_on_password_reset' ] );
+		add_action( 'profile_update', [ 'AutomateWoo\Optin_Confirmation', 'handle_account_email_change' ], 10, 2 );
 
 		// An explicit opt-out supersedes a pending signup confirmation, so clear the
 		// confirmation token whenever a customer opts out.
@@ -215,7 +221,7 @@ class Hooks {
 			$suffix = '.min';
 		}
 
-		wp_register_script( 'automatewoo-presubmit', AW()->url( "/assets/js/automatewoo-presubmit$suffix.js" ), [ 'jquery' ], AW()->version, true );
+		wp_register_script( 'automatewoo-presubmit', AW()->url( "/assets/js/automatewoo-presubmit$suffix.js" ) ?: false, [ 'jquery' ], AW()->version, true );
 
 		wp_register_style( 'automatewoo-main', AW()->url( '/assets/css/automatewoo-main.css' ), [], AW()->version );
 		wp_register_style( 'automatewoo-communication-page', AW()->url( '/assets/css/automatewoo-communication-page.css' ), [ 'automatewoo-main' ], AW()->version );

@@ -38,7 +38,11 @@ if ( Frontend_Form_Handler::$current_action === 'save_communication_signup' ) {
 					id="automatewoo_communication_page_subscribe_checkbox"
 					class="aw-communication-form__preference-checkbox"
 					aria-describedby="automatewoo_communication_page_subscribe_checkbox_description"
-				<?php checked( $customer ? ! $customer->is_unsubscribed() : $default ); ?>>
+				<?php
+				// A subscribe held for confirmation stays ticked, so saving another preference doesn't cancel it.
+				checked( $customer ? ! $customer->is_unsubscribed() || ( Optin_Confirmation::needs_address_confirmation( $customer ) && Optin_Confirmation::has_pending( $customer ) ) : $default );
+				?>
+				>
 
 			<div class="aw-communication-form__preference-text">
 				<label class="aw-communication-form__preference-title" for="automatewoo_communication_page_subscribe_checkbox"><?php esc_html_e( 'Updates about products and promotions', 'automatewoo' ); ?></label>

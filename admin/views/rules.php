@@ -112,7 +112,7 @@ defined( 'ABSPATH' ) || exit;
 						<# } else if ( data.rule.object.type === 'select' ) { #>
 
 							<# if ( data.rule.object.is_single_select ) { #>
-								<select name="{{ data.fieldNameBase }}[value]" class="automatewoo-field wc-enhanced-select js-rule-value-field" data-placeholder="{{{ data.rule.object.placeholder }}}">
+								<select name="{{ data.fieldNameBase }}[value]" class="automatewoo-field wc-enhanced-select js-rule-value-field" data-placeholder="{{ wp.htmlEntities.decodeEntities( data.rule.object.placeholder ) }}">
 									<# if ( data.rule.object.placeholder ) { #>
 										<option></option>
 									<# } #>
@@ -121,7 +121,7 @@ defined( 'ABSPATH' ) || exit;
 							<# } #>
 
 								<# _.each( data.rule.object.select_choices, function( option, key ) { #>
-									<option value="{{ key }}">{{{ option }}}</option>
+									<option value="{{ key }}">{{ wp.htmlEntities.decodeEntities( option ) }}</option>
 								<# }) #>
 
 							</select>
@@ -150,7 +150,7 @@ defined( 'ABSPATH' ) || exit;
 
 							<select name="{{ data.fieldNameBase }}[value]" class="automatewoo-field js-rule-value-field">
 									<# _.each( data.rule.object.select_choices, function( option, key ) { #>
-									<option value="{{ key }}">{{{ option }}}</option>
+									<option value="{{ key }}">{{ wp.htmlEntities.decodeEntities( option ) }}</option>
 									<# }); #>
 							</select>
 
@@ -196,7 +196,7 @@ defined( 'ABSPATH' ) || exit;
 										<div class="col-2">
 											<select name="{{ data.fieldNameBase }}[value][measure]" class="automatewoo-field js-rule-value-field js-rule-value-measure" required>
 												<# _.each( data.rule.object.select_choices, function( option, key ) { #>
-												<option value="{{ key }}">{{{ option }}}</option>
+												<option value="{{ key }}">{{ wp.htmlEntities.decodeEntities( option ) }}</option>
 												<# }); #>
 											</select>
 										</div>

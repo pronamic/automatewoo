@@ -63,6 +63,7 @@ abstract class Action_Points_Rewards_Edit_Points_Abstract extends Action {
 		$event_type = 'automatewoo-adjustment';
 		$customer   = $this->workflow->data_layer()->get_customer();
 		$points     = $this->get_option( 'points' );
+		$points     = is_numeric( $points ) ? (int) $points : 0;
 
 		if ( ! $customer || ! $customer->is_registered() || empty( $points ) || empty( $action ) ) {
 			return;

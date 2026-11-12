@@ -209,7 +209,10 @@ class Preview_Data {
 			try {
 				$booking               = AW()->bookings_proxy()->get_most_recent_booking();
 				$data_layer['booking'] = $booking;
-				$data_layer['product'] = $booking->get_product();
+				$product               = $booking->get_product();
+				if ( $product ) {
+					$data_layer['product'] = $product;
+				}
 			} catch ( \Exception $e ) {
 				// rethrow as user-facing InvalidPreviewData exception
 				throw InvalidPreviewData::data_item_needed( 'booking' );

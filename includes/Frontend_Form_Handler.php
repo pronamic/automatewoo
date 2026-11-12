@@ -175,7 +175,9 @@ class Frontend_Form_Handler {
 		// preferences, which is what the language belongs to.
 		self::maybe_refresh_customer_language( $customer );
 
-		wc_add_notice( __( 'Your communication preferences were updated.', 'automatewoo' ) );
+		if ( ! wc_notice_count( 'error' ) ) {
+			wc_add_notice( __( 'Your communication preferences were updated.', 'automatewoo' ) );
+		}
 	}
 
 
@@ -274,7 +276,11 @@ class Frontend_Form_Handler {
 	protected static function update_customer_preferences( $customer, $set_session = true ) {
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified in Frontend_Form_Handler::handle() via wp_verify_nonce() before dispatch.
 		if ( isset( $_POST['subscribe'] ) ) {
-			$customer->opt_in();
+			if ( Optin_Confirmation::needs_address_confirmation( $customer ) ) {
+				self::request_address_confirmation( $customer );
+			} else {
+				$customer->opt_in();
+			}
 		} else {
 			$customer->opt_out( Clean::id( aw_request( 'workflow' ) ) );
 		}
@@ -286,6 +292,31 @@ class Frontend_Form_Handler {
 		}
 
 		do_action( 'automatewoo/communication_page/save_preferences', $customer );
+	}
+
+	/**
+	 * Hold a subscribe from a customer whose address still needs confirming.
+	 *
+	 * A customer who is not unsubscribed has nothing to confirm: that is a ticked
+	 * box saved again, or a new account on a store in opt-out mode. No new link is
+	 * sent while an earlier one is still valid, and sending counts against the
+	 * same limit as the signup form.
+	 *
+	 * @since 6.9.6
+	 *
+	 * @param Customer $customer
+	 * @return void
+	 */
+	private static function request_address_confirmation( $customer ) {
+		if ( ! $customer->is_unsubscribed() ) {
+			return;
+		}
+
+		if ( Optin_Confirmation::has_pending( $customer ) || ( ! self::count_and_check_signup_rate_limit() && Optin_Confirmation::start( $customer ) ) ) {
+			wc_add_notice( __( "Thanks! We've received your request. If your subscription still needs confirming, we've emailed you a link to complete it.", 'automatewoo' ) );
+		} else {
+			wc_add_notice( __( "Your subscription didn't change because we couldn't send the confirmation email. Please try again later.", 'automatewoo' ), 'error' );
+		}
 	}
 
 	/**

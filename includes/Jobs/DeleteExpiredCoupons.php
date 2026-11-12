@@ -119,7 +119,7 @@ class DeleteExpiredCoupons extends AbstractRecurringBatchedActionSchedulerJob {
 
 		$query = new \WP_Query( $query_args );
 
-		return $query->posts;
+		return $query->posts ?? [];
 	}
 
 	/**

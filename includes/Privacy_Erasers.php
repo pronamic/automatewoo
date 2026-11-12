@@ -204,6 +204,7 @@ class Privacy_Erasers {
 		delete_user_meta( $user->ID, '_aw_order_count' );
 		delete_user_meta( $user->ID, '_aw_order_ids' );
 		delete_user_meta( $user->ID, '_aw_persistent_language' );
+		delete_user_meta( $user->ID, Optin_Confirmation::INHERITED_OPT_OUT_ADDRESS_META );
 
 		do_action( 'automatewoo/privacy/erase_user_meta', $user ); // for add-ons
 

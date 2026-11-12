@@ -67,6 +67,8 @@ class Data_Cleaner {
 		'_automatewoo_customer_id',
 		'_aw_order_count',
 		'_aw_order_ids',
+		'_aw_optin_address_unconfirmed',
+		'_aw_optin_inherited_opt_out_address',
 		'_aw_persistent_language',
 		'_aw_user_registered',
 	];
@@ -80,6 +82,7 @@ class Data_Cleaner {
 		'_aw_conversion',
 		'_aw_conversion_log',
 		'_aw_is_paid',
+		'_aw_optin_confirmation_requested',
 		'_automatewoo_order_created',
 		'automatewoo_cart_id',
 	];

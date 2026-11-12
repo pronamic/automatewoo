@@ -70,6 +70,11 @@ class Action_Subscription_Add_Product extends Action_Subscription_Edit_Product_A
 			// Pass the subscription as the order context so the custom price resolves taxes the
 			// same way WooCommerce core does for the default product price (e.g. honouring the
 			// `woocommerce_adjust_non_base_location_prices` filter for non-base tax locations).
+			// With an order that has a customer, that path calls a cart function that WooCommerce
+			// only loads on front-end requests, so load it here for admin, cron and REST runs.
+			if ( ! function_exists( 'wc_get_chosen_shipping_method_ids' ) ) {
+				include_once WC()->plugin_path() . '/includes/wc-cart-functions.php';
+			}
 			$add_product_args['subtotal'] = wc_get_price_excluding_tax(
 				$product,
 				array(

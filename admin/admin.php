@@ -365,7 +365,7 @@ class Admin {
 			$suffix = '.min';
 		}
 
-		wp_register_script( 'automatewoo', "{$url}/automatewoo{$suffix}.js", [ 'jquery', 'jquery-ui-datepicker', 'wc-jquery-tiptip', 'backbone', 'underscore' ], AW()->version, false );
+		wp_register_script( 'automatewoo', "{$url}/automatewoo{$suffix}.js", [ 'jquery', 'jquery-ui-datepicker', 'wc-jquery-tiptip', 'backbone', 'underscore', 'wp-html-entities' ], AW()->version, false );
 		wp_register_script( 'automatewoo-validate', "{$url}/validate{$suffix}.js", [ 'automatewoo' ], AW()->version, false );
 		wp_register_script( 'automatewoo-tracks', "{$url}/tracks{$suffix}.js", [ 'automatewoo' ], AW()->version, false );
 		wp_register_script( 'automatewoo-workflows', "{$url}/workflows{$suffix}.js", [ 'automatewoo', 'automatewoo-validate', 'automatewoo-modal', 'automatewoo-tracks', 'wp-util' ], AW()->version, false );
@@ -373,7 +373,7 @@ class Admin {
 		wp_register_script( 'automatewoo-tools', "{$url}/tools{$suffix}.js", [ 'automatewoo' ], AW()->version, false );
 		wp_register_script( 'automatewoo-sms-test', "{$url}/sms-test{$suffix}.js", [ 'automatewoo' ], AW()->version, false );
 		wp_register_script( 'automatewoo-modal', "{$url}/modal{$suffix}.js", [ 'automatewoo' ], AW()->version, false );
-		wp_register_script( 'automatewoo-rules', "{$url}/rules{$suffix}.js", [ 'automatewoo', 'automatewoo-workflows' ], AW()->version, false );
+		wp_register_script( 'automatewoo-rules', "{$url}/rules{$suffix}.js", [ 'automatewoo', 'automatewoo-workflows', 'wp-html-entities' ], AW()->version, false );
 		wp_register_script( 'automatewoo-dashboard', "{$url}/dashboard{$suffix}.js", [ 'automatewoo', 'automatewoo-modal', 'jquery-masonry', 'flot', 'flot-resize', 'flot-time', 'flot-pie', 'flot-stack' ], AW()->version, false );
 		wp_register_script( 'automatewoo-preview', "{$url}/preview{$suffix}.js", [ 'automatewoo' ], AW()->version, false );
 		wp_register_script( 'automatewoo-settings', "{$url}/settings{$suffix}.js", [ 'automatewoo' ], AW()->version, false );

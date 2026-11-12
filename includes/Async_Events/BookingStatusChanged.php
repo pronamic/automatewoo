@@ -4,6 +4,7 @@ namespace AutomateWoo\Async_Events;
 
 use AutomateWoo\ActionScheduler\ActionSchedulerInterface;
 use AutomateWoo\Proxies\Bookings;
+use WC_Order;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -64,7 +65,7 @@ class BookingStatusChanged extends Abstract_Async_Event {
 		// When the the user is a guest and adds the booking to the cart, the booking is not associated with an order yet neither a customer.
 		// So runnning this workflow for this booking will only log errors as the data layer needs a customer to run the workflow.
 		// See BookingDataLayer::generate_booking_data_layer
-		if ( ( ! $booking->get_order() || ! is_a( $booking->get_order(), 'WC_Order' ) ) && ! $booking->get_customer_id() && $to === 'in-cart' ) {
+		if ( ! $booking->get_order() instanceof WC_Order && ! $booking->get_customer_id() && $to === 'in-cart' ) {
 			return;
 		}
 

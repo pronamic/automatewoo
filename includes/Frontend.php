@@ -11,6 +11,20 @@ namespace AutomateWoo;
  */
 class Frontend {
 
+	/**
+	 * Order meta key set when a checkout opt-in may still need confirming.
+	 *
+	 * @var string
+	 */
+	private const OPTIN_CONFIRMATION_REQUESTED_META = '_aw_optin_confirmation_requested';
+
+	/**
+	 * Orders with the block checkout opt-in ticked in this request, keyed by order ID.
+	 *
+	 * @var array<int, bool>
+	 */
+	private static $block_optin_orders = [];
+
 
 	/**
 	 * @return string
@@ -159,21 +173,17 @@ class Frontend {
 		}
 
 		$order = wc_get_order( $order_id );
-		if ( ! $order ) {
+		if ( ! $order instanceof \WC_Order ) {
 			return;
 		}
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Opt-in is processed within WooCommerce's nonce-verified checkout/registration flow; presence-only isset() check.
 		if ( ! isset( $_POST['automatewoo_optin'] ) ) {
+			self::clear_optin_confirmation_requested( $order );
 			return;
 		}
 
-		$customer = Customer_Factory::get_by_order( $order );
-		if ( ! $customer ) {
-			return;
-		}
-
-		$customer->opt_in();
+		self::opt_in_order_customer( $order );
 	}
 
 	/**
@@ -190,15 +200,142 @@ class Frontend {
 		}
 
 		if ( empty( $request['extensions']['automatewoo']['optin'] ) ) {
+			self::clear_optin_confirmation_requested( $order );
 			return;
 		}
 
+		// WooCommerce can still reject the order after this hook, so the opt-in is
+		// handled in process_checkout_block_order().
+		self::$block_optin_orders[ $order->get_id() ] = true;
+	}
+
+	/**
+	 * Handle the opt-in recorded for a block checkout order once WooCommerce has validated it.
+	 *
+	 * @since 6.9.6
+	 *
+	 * @param \WC_Order $order
+	 * @return void
+	 */
+	public static function process_checkout_block_order( $order ) {
+		if ( ! $order instanceof \WC_Order || empty( self::$block_optin_orders[ $order->get_id() ] ) ) {
+			return;
+		}
+
+		unset( self::$block_optin_orders[ $order->get_id() ] );
+
+		self::opt_in_order_customer( $order );
+	}
+
+	/**
+	 * Remove the opt-in message from an order, for a retry with the checkbox unticked.
+	 *
+	 * @param \WC_Order $order
+	 * @return void
+	 */
+	private static function clear_optin_confirmation_requested( $order ) {
+		if ( $order->get_meta( self::OPTIN_CONFIRMATION_REQUESTED_META ) ) {
+			$order->delete_meta_data( self::OPTIN_CONFIRMATION_REQUESTED_META );
+			$order->save_meta_data();
+		}
+	}
+
+	/**
+	 * Opt in the customer who placed an order with the checkout opt-in checkbox ticked.
+	 *
+	 * An order placed from an account that existed before this checkout opts
+	 * that customer in, unless its address still needs confirming. Any other
+	 * order, a guest order or one that created its account during this checkout,
+	 * goes through request_optin_confirmation().
+	 *
+	 * @since 6.9.6
+	 *
+	 * @param \WC_Order $order
+	 * @return void
+	 */
+	private static function opt_in_order_customer( $order ) {
 		$customer = Customer_Factory::get_by_order( $order );
-		if ( ! $customer ) {
+		if ( ! $customer instanceof Customer ) {
 			return;
 		}
 
-		$customer->opt_in();
+		if ( $order->get_user_id() && ! did_action( 'woocommerce_created_customer' ) && ! Optin_Confirmation::needs_address_confirmation( $customer ) ) {
+			$customer->opt_in();
+			return;
+		}
+
+		$requested = self::request_optin_confirmation( $customer );
+
+		if ( $requested && Optin_Confirmation::is_required() ) {
+			$order->update_meta_data( self::OPTIN_CONFIRMATION_REQUESTED_META, '1' );
+			$order->save_meta_data();
+		}
+	}
+
+	/**
+	 * Tell the shopper on the order received page that an opt-in may need confirming.
+	 *
+	 * The message is the same whatever the state of the address. It is left out
+	 * only when a confirmation email could not be sent.
+	 *
+	 * @since 6.9.6
+	 *
+	 * @param string          $text  The order received text.
+	 * @param \WC_Order|false $order The order, if there is one.
+	 * @return string
+	 */
+	public static function filter_order_received_text( $text, $order ) {
+		if ( ! $order instanceof \WC_Order || ! $order->get_meta( self::OPTIN_CONFIRMATION_REQUESTED_META ) || $order->has_status( [ 'cancelled', 'refunded' ] ) ) {
+			return $text;
+		}
+
+		return $text . ' ' . esc_html__( "If your email subscription still needs confirming, we've emailed you a link to complete it.", 'automatewoo' );
+	}
+
+	/**
+	 * Tell a newly registered customer that an opt-in may need confirming.
+	 *
+	 * @since 6.9.6
+	 *
+	 * @param string $redirect The URL to redirect to after registering.
+	 * @return string
+	 */
+	public static function add_registration_optin_notice( $redirect ) {
+		wc_add_notice( __( "Thanks! We've received your request. If your subscription still needs confirming, we've emailed you a link to complete it.", 'automatewoo' ) );
+
+		return $redirect;
+	}
+
+	/**
+	 * Hold an opt-in pending until it is confirmed from an emailed link.
+	 *
+	 * Used for an opt-in from a guest order or from an account whose address still
+	 * needs confirming, the same as the communication signup form. No new link is
+	 * sent while an earlier one is still valid. When confirmation is turned off,
+	 * the customer is opted in only if the address had no account before this
+	 * request and has never opted out.
+	 *
+	 * @since 6.9.6
+	 *
+	 * @param Customer $customer
+	 * @return bool False only when a confirmation email could not be sent.
+	 */
+	private static function request_optin_confirmation( $customer ) {
+		if ( $customer->get_is_subscribed() || Optin_Confirmation::has_pending( $customer ) ) {
+			return true;
+		}
+
+		if ( Optin_Confirmation::is_required() ) {
+			return Optin_Confirmation::start( $customer );
+		}
+
+		$new_account = (bool) did_action( 'woocommerce_created_customer' );
+
+		if ( ( ! $customer->get_user_id() || $new_account ) && ! $customer->get_is_unsubscribed() ) {
+			$customer->opt_in();
+		}
+
+		return true;
 	}
 
 
@@ -218,7 +355,14 @@ class Frontend {
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Opt-in is processed within WooCommerce's nonce-verified checkout/registration flow; presence-only isset() check.
 		if ( isset( $_POST['automatewoo_optin'] ) ) {
 			$customer = Customer_Factory::get_by_user_id( $user_id );
-			$customer->opt_in();
+			if ( $customer instanceof Customer ) {
+				$requested = self::request_optin_confirmation( $customer );
+
+				if ( $requested && Optin_Confirmation::is_required() ) {
+					// Logging the new customer in reloads the session, so a notice added now would be lost.
+					add_filter( 'woocommerce_registration_redirect', [ __CLASS__, 'add_registration_optin_notice' ] );
+				}
+			}
 		}
 	}
 }

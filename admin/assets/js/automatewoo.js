@@ -3,7 +3,7 @@
  */
 // Register eslint ignored glabals - to be revisited.
 // https://github.com/woocommerce/automatewoo/issues/1212
-/* global automatewooLocalizeScript, ajaxurl */
+/* global _, automatewooLocalizeScript, ajaxurl */
 
 const AutomateWoo = {},
 	AW = {};
@@ -56,7 +56,7 @@ window.AutomateWoo = AutomateWoo;
 					placeholder: $( this ).data( 'placeholder' ),
 					minimumInputLength: '1',
 					escapeMarkup( m ) {
-						return m;
+						return _.escape( wp.htmlEntities.decodeEntities( m ) );
 					},
 					ajax: {
 						url: AW.params.url.ajax,

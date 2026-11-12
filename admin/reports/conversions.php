@@ -91,19 +91,30 @@ class Report_Conversions extends \AW_Report_Abstract_Graph {
 			]
 		);
 
-		foreach ( $orders->posts as $order_id ) {
+		foreach ( $orders->posts ?? [] as $order_id ) {
 			$order = wc_get_order( $order_id );
 
-			$this->conversion_total_value += $order->get_total();
+			if ( ! $order ) {
+				continue;
+			}
+
+			$date = $order->get_date_created();
+			if ( ! $date ) {
+				continue;
+			}
+
+			$total = $order->get_total();
+
+			$this->conversion_total_value += $total;
 
 			$order_obj        = new \stdClass();
-			$order_obj->date  = $order->get_date_created()->date( Format::MYSQL ); // keep site time for reports
-			$order_obj->total = $order->get_total();
+			$order_obj->date  = $date->date( Format::MYSQL ); // keep site time for reports
+			$order_obj->total = $total;
 
 			$this->conversion_orders[] = $order_obj;
 		}
 
-		$this->conversion_total_orders = $orders->post_count;
+		$this->conversion_total_orders = count( $this->conversion_orders );
 	}
 
 

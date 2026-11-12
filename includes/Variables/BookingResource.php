@@ -4,6 +4,7 @@ namespace AutomateWoo\Variables;
 
 use AutomateWoo\Variable;
 use WC_Booking;
+use WC_Product_Booking_Resource;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -31,7 +32,7 @@ class BookingResource extends Variable {
 	 */
 	public function get_value( $booking, $parameters ) {
 		$resource = $booking->get_resource();
-		if ( ! $resource ) {
+		if ( ! $resource instanceof WC_Product_Booking_Resource ) {
 			return '';
 		}
 

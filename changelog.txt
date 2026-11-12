@@ -1,5 +1,34 @@
 *** AutomateWoo Changelog ***
 
+2026-11-10 - version 6.9.6
+* Dev - Merge the weekly PHP stubs Dependabot PR on its own once PHPStan passes.
+* Dev - Merge the weekly PHP stubs Dependabot PR when its required checks have already passed.
+* Dev - Update build dependencies to resolve Dependabot alerts for follow-redirects, qs, postcss-selector-parser and serialize-javascript.
+* Dev - Update the grow actions to 3.0.7 and Playwright to 1.64 so CI runs on Ubuntu 26.04.
+* Dev - `automatewoo/customer/opted_in` now fires after email confirmation for accounts created through WooCommerce, accounts that inherit an opt-out and accounts that change their email, until the address is confirmed.
+* Dev - `automatewoo/customer/opted_in` now fires after email confirmation for guests and new accounts, and the `automatewoo/communication_signup/require_optin_confirmation` filter also covers the checkout and registration opt-ins.
+* Fix - A MailChimp for WordPress form submission no longer changes the stored language of an existing customer account it doesn't belong to.
+* Fix - A comma in a personalized "Reply to" name no longer adds a second reply-to address to workflow emails.
+* Fix - Ask guests and new accounts to confirm the marketing opt-in by email.
+* Fix - Security improvements.
+* Tweak - Pre-submit data capture now always sends to the store's home address instead of the current page address.
+* Update - Customers who change their account email now confirm their marketing subscription from the new address.
+* Update - Non-transactional workflow emails skip guests and new accounts until they confirm the marketing opt-in.
+
+2026-11-03 - version 6.9.5
+* Dev - Add PHPStan at level 9 with a baseline, the `lint:phpstan` script, a pre-commit check and a CI check.
+* Dev - Check calls into other plugins with woocommerce/php-stubs in PHPStan.
+* Dev - Let Dependabot open security PRs for every Composer package.
+* Dev - Merge Dependabot security PRs on their own when they pass the auto-merge checks.
+* Dev - Publish a dev build after a Dependabot auto-merge.
+* Dev - Update build dependencies to resolve Dependabot alerts for simple-git and follow-redirects.
+* Dev - Update npm dependencies to resolve Dependabot alerts for markdown-it.
+* Dev - Update the Dependabot auto-merge workflow to v1.7.1.
+* Fix - Errors for orders without a creation date in the “Order is customer’s first” rule.
+* Fix - Fatal error when the subscription Add Product or Update Product action sets a custom price on a store that charges the same tax-inclusive price in every location.
+* Fix - Load the marketing opt-in block script with its dependencies.
+* Fix - Workflow previews for booking triggers when the booking’s product was deleted.
+
 2026-10-20 - version 6.9.4
 * Dev - Add shared npm script names, a pre-commit hook, Dependabot for GitHub Actions, a PR template and agent docs.
 * Dev - Replace Prophecy with PHPUnit mocks in unit tests and update Composer dev dependencies.

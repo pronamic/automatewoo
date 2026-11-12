@@ -77,7 +77,7 @@ function aw_get_recent_product_ids( $limit = -1 ) {
 			'tax_query'           => WC()->query->get_tax_query(),
 		]
 	);
-	return $query->posts;
+	return $query->posts ?? [];
 }
 
 
@@ -106,7 +106,7 @@ function aw_get_top_selling_product_ids( $limit = -1 ) {
 		]
 	);
 
-	return $query->posts;
+	return $query->posts ?? [];
 }
 
 /**

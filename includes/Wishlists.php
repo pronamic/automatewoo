@@ -168,7 +168,7 @@ class Wishlists {
 
 			try {
 				$query = new \WP_Query( $query_args );
-				$ids   = $query->posts;
+				$ids   = $query->posts ?? [];
 			} finally {
 				if ( $where_filter ) {
 					remove_filter( 'posts_where', $where_filter );

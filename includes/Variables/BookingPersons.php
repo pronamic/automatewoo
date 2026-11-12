@@ -4,6 +4,7 @@ namespace AutomateWoo\Variables;
 
 use AutomateWoo\Variable;
 use WC_Booking;
+use WC_Product_Booking;
 use WC_Product_Booking_Person_Type;
 
 defined( 'ABSPATH' ) || exit;
@@ -39,12 +40,13 @@ class BookingPersons extends Variable {
 		}
 
 		$booking_product = $booking->get_product();
-		if ( ! $booking_product->has_person_types() ) {
-			// Booking has simple person count.
-			return $person_count;
+		if ( ! $booking_product instanceof WC_Product_Booking || ! $booking_product->has_person_types() ) {
+			// Booking has simple person count, or its product no longer exists.
+			return (string) $person_count;
 		}
 
 		// Booking has various types of person.
+		/** @var array<int, int> $booking_persons */
 		$booking_persons = $booking->get_persons();
 		$persons         = [];
 		foreach ( $booking_persons as $person_id => $count ) {

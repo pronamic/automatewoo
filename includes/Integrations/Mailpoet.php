@@ -162,12 +162,18 @@ class Integration_Mailpoet extends Integration {
 	 *
 	 * @see Customer::is_unsubscribed()
 	 * @since 5.7.0
+	 * @since 6.9.6 Skips an address that is waiting for confirmation.
 	 * @param Customer $customer The customer object
 	 */
 	public function sync_subscribed_status( $customer ) {
 
 		// If customer is subscribed in AW, no need to verify MailPoet Status.
 		if ( true === $customer->get_is_subscribed() ) {
+			return;
+		}
+
+		// An address still waiting for confirmation opts in only from the emailed link.
+		if ( Optin_Confirmation::needs_address_confirmation( $customer ) ) {
 			return;
 		}
 

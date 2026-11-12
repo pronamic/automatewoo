@@ -15,6 +15,21 @@ use AutomateWoo\Guest_Query;
 final class JSON_Search {
 
 	/**
+	 * Get a result label for the WooCommerce search selects, which render labels as HTML.
+	 *
+	 * Selects also use the label as the tooltip of a picked value, without decoding it. So
+	 * only the characters that start markup are replaced, which keeps names like O'Brien readable.
+	 *
+	 * @since 6.9.6
+	 *
+	 * @param string $label The label text.
+	 * @return string
+	 */
+	private static function get_result_label( string $label ): string {
+		return str_replace( [ '<', '>' ], [ '&lt;', '&gt;' ], $label );
+	}
+
+	/**
 	 * Search for products and send JSON.
 	 *
 	 * It's more performant to define our own method for this special case, rather than using WC
@@ -90,8 +105,8 @@ final class JSON_Search {
 		$query   = new \WP_Query( $args );
 		$results = [];
 
-		foreach ( $query->posts as $post ) {
-			$results[ $post->ID ] = rawurldecode( $post->post_title );
+		foreach ( $query->posts ?? [] as $post ) {
+			$results[ $post->ID ] = self::get_result_label( rawurldecode( $post->post_title ) );
 		}
 
 		wp_send_json( $results );
@@ -169,8 +184,8 @@ final class JSON_Search {
 			$results[ $customer->get_id() ] = sprintf(
 				/* translators: %1$s customer full name (optionally with guest label appended), %2$s customer email */
 				esc_html__( '%1$s &ndash; %2$s', 'automatewoo' ),
-				$customer->is_registered() ? $customer->get_full_name() : $customer->get_full_name() . ' ' . __( '[Guest]', 'automatewoo' ),
-				$customer->get_email()
+				self::get_result_label( $customer->is_registered() ? $customer->get_full_name() : $customer->get_full_name() . ' ' . __( '[Guest]', 'automatewoo' ) ),
+				self::get_result_label( $customer->get_email() )
 			);
 		}
 
@@ -218,7 +233,7 @@ final class JSON_Search {
 		$query   = new \WP_Query( $args );
 		$results = [];
 
-		foreach ( $query->posts as $coupon ) {
+		foreach ( $query->posts ?? [] as $coupon ) {
 			$code             = wc_format_coupon_code( $coupon->post_title );
 			$results[ $code ] = $code;
 		}
@@ -250,8 +265,8 @@ final class JSON_Search {
 		$query   = new \WP_Query( $args );
 		$results = [];
 
-		foreach ( $query->posts as $data ) {
-			$results[ $data->ID ] = $data->post_title;
+		foreach ( $query->posts ?? [] as $data ) {
+			$results[ $data->ID ] = self::get_result_label( $data->post_title );
 		}
 
 		wp_send_json( $results );

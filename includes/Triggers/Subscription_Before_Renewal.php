@@ -223,7 +223,7 @@ class Trigger_Subscription_Before_Renewal extends AbstractBatchedDailyTrigger {
 
 		try {
 			$query = new WP_Query( $query_args );
-			return $query->posts;
+			return $query->posts ?? [];
 		} finally {
 			if ( $where_filter ) {
 				remove_filter( 'posts_where', $where_filter );

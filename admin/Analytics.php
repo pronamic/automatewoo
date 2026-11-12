@@ -98,7 +98,7 @@ class Analytics {
 
 		wp_register_script(
 			'automatewoo-analytics',
-			AW()->admin_assets_url( '/build/analytics.js' ),
+			AW()->admin_assets_url( '/build/analytics.js' ) ?: false,
 			$script_asset['dependencies'],
 			$script_asset['version'],
 			true

@@ -204,9 +204,9 @@ class Customer_Factory extends Factory {
 	/**
 	 * Get a customer object from the customer/guest that purchased the order.
 	 *
-	 * @param WC_Order $order  Order object.
-	 * @param bool     $create Create the customer record if it doesn't exist.
-	 * @param bool     $log_error Log an error if the order can't be found.
+	 * @param WC_Order|false $order  Order object.
+	 * @param bool           $create Create the customer record if it doesn't exist.
+	 * @param bool           $log_error Log an error if the order can't be found.
 	 *
 	 * @return Customer|bool Returns false if there is no order or customer record can't be created (create = true).
 	 */

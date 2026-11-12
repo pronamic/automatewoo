@@ -110,9 +110,9 @@ class Variable_Abstract_Datetime extends Variable {
 	 * Dates should be passed in the site's timezone.
 	 * WC_DateTime objects will maintain their specified timezone.
 	 *
-	 * @param \WC_DateTime|DateTime|string $input
-	 * @param array                        $parameters [modify, format]
-	 * @param bool                         $is_gmt
+	 * @param \WC_DateTime|DateTime|string|int $input
+	 * @param array                            $parameters [modify, format]
+	 * @param bool                             $is_gmt
 	 *
 	 * @return string
 	 */

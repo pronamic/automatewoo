@@ -64,7 +64,7 @@ abstract class AbstractPostDatastoreType implements DatastoreTypeInterface {
 		$query_args = $this->map_clauses_to_wp_query_args( $clauses, $number, $offset );
 		$query      = $this->do_wp_query( $query_args );
 
-		return $query->posts;
+		return $query->posts ?? [];
 	}
 
 	/**

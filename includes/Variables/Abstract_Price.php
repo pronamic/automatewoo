@@ -31,9 +31,9 @@ abstract class Variable_Abstract_Price extends Variable {
 	/**
 	 * Maybe Format Price.
 	 *
-	 * @param  string $amount
-	 * @param  array  $parameters
-	 * @param  string $currency
+	 * @param  string|float $amount
+	 * @param  array        $parameters
+	 * @param  string       $currency
 	 *
 	 * @return string
 	 */

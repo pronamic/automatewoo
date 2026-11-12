@@ -13,9 +13,9 @@ class Temporary_Data {
 
 
 	/**
-	 * @param string $type
-	 * @param string $key
-	 * @param mixed  $value
+	 * @param string     $type
+	 * @param string|int $key
+	 * @param mixed      $value
 	 */
 	public static function set( $type, $key, $value ) {
 		self::setup_type( $type );
@@ -24,8 +24,8 @@ class Temporary_Data {
 
 
 	/**
-	 * @param string $type
-	 * @param string $key
+	 * @param string     $type
+	 * @param string|int $key
 	 */
 	public static function delete( $type, $key ) {
 		self::setup_type( $type );
@@ -34,8 +34,8 @@ class Temporary_Data {
 
 
 	/**
-	 * @param string $type
-	 * @param string $key
+	 * @param string     $type
+	 * @param string|int $key
 	 * @return bool
 	 */
 	public static function exists( $type, $key ) {
@@ -45,8 +45,8 @@ class Temporary_Data {
 
 
 	/**
-	 * @param string $type
-	 * @param string $key
+	 * @param string     $type
+	 * @param string|int $key
 	 * @return mixed
 	 */
 	public static function get( $type, $key ) {

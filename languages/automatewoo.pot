@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: AutomateWoo 6.9.4\n"
+"Project-Id-Version: AutomateWoo 6.9.6\n"
 "Report-Msgid-Bugs-To: https://woocommerce.com/my-account/contact-support/\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-20T10:25:41+00:00\n"
+"POT-Creation-Date: 2026-11-10T12:50:35+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: automatewoo\n"
@@ -853,12 +853,12 @@ msgid "Teacher"
 msgstr ""
 
 #. translators: %1$s customer full name (optionally with guest label appended), %2$s customer email
-#: admin/json-search.php:171
+#: admin/json-search.php:186
 #, php-format
 msgid "%1$s &ndash; %2$s"
 msgstr ""
 
-#: admin/json-search.php:172
+#: admin/json-search.php:187
 #: admin/list-table.php:88
 #: includes/Format.php:313
 msgid "[Guest]"
@@ -1035,34 +1035,34 @@ msgid "Unmark As Conversion"
 msgstr ""
 
 #. translators: %s Conversion total price.
-#: admin/reports/conversions.php:125
+#: admin/reports/conversions.php:136
 #, php-format
 msgid "%s converted order value"
 msgstr ""
 
 #. translators: %s Number of converted orders.
-#: admin/reports/conversions.php:135
+#: admin/reports/conversions.php:146
 #, php-format
 msgid "%s converted orders"
 msgstr ""
 
-#: admin/reports/conversions.php:156
+#: admin/reports/conversions.php:167
 #: admin/reports/email-tracking.php:244
 #: admin/reports/runs-by-date.php:110
 msgid "Showing reports for:"
 msgstr ""
 
-#: admin/reports/conversions.php:189
+#: admin/reports/conversions.php:200
 #: admin/reports/email-tracking.php:277
 #: admin/reports/runs-by-date.php:143
 msgid "Reset"
 msgstr ""
 
-#: admin/reports/conversions.php:229
+#: admin/reports/conversions.php:240
 msgid "Conversion Number"
 msgstr ""
 
-#: admin/reports/conversions.php:238
+#: admin/reports/conversions.php:249
 msgid "Conversion Value"
 msgstr ""
 
@@ -3203,7 +3203,7 @@ msgstr ""
 msgid "Optionally set a reply-to email for the email. Please note that not all email delivery services support \"Reply-To\" email headers."
 msgstr ""
 
-#: includes/Actions/Send_Email_Abstract.php:118
+#: includes/Actions/Send_Email_Abstract.php:141
 msgid "Email successfully sent."
 msgstr ""
 
@@ -3511,16 +3511,16 @@ msgstr ""
 msgid "Update an existing product line item on a subscription. Only the data set on the action will be updated. This action can be used for bulk editing subscriptions, like changing price or product name. Please note that any coupons applied in the subscription will be reapplied for all line items."
 msgstr ""
 
-#: includes/Actions/Subscriptions/UpdateProduct.php:134
+#: includes/Actions/Subscriptions/UpdateProduct.php:139
 msgid "Optionally set a new quantity for the product. Defaults to the current quantity set on the subscription."
 msgstr ""
 
-#: includes/Actions/Subscriptions/UpdateProduct.php:142
+#: includes/Actions/Subscriptions/UpdateProduct.php:147
 msgid "Optionally set a custom price to use for the line item's cost. Do not include a currency symbol. Total line item cost will be this amount * quantity. Price should be entered the same as it would be on the Edit Product screen - taxes inclusive or exclusive. Defaults to no-change - the current price set on the product line item will remain."
 msgstr ""
 
 #. translators: %1$s: workflow title, %2$s: product name, %3$d product ID, %4$d workflow ID
-#: includes/Actions/Subscriptions/UpdateProduct.php:156
+#: includes/Actions/Subscriptions/UpdateProduct.php:161
 #, php-format
 msgid "%1$s workflow run: updated %2$s on subscription. (Product ID: %3$d; Workflow ID: %4$d)"
 msgstr ""
@@ -3628,7 +3628,7 @@ msgid "Add a product as a new line item on a subscription. The item will be adde
 msgstr ""
 
 #. translators: %1$s: workflow title, %2$s: product name, %3$d product ID, %4$d workflow ID
-#: includes/Actions/Subscription_Add_Product.php:101
+#: includes/Actions/Subscription_Add_Product.php:106
 #, php-format
 msgid "%1$s workflow run: added %2$s to subscription. (Product ID: %3$d; Workflow ID: %4$d)"
 msgstr ""
@@ -4222,6 +4222,16 @@ msgstr ""
 msgid "Yes"
 msgstr ""
 
+#: includes/Frontend.php:292
+msgid "If your email subscription still needs confirming, we've emailed you a link to complete it."
+msgstr ""
+
+#: includes/Frontend.php:304
+#: includes/Frontend_Form_Handler.php:213
+#: includes/Frontend_Form_Handler.php:316
+msgid "Thanks! We've received your request. If your subscription still needs confirming, we've emailed you a link to complete it."
+msgstr ""
+
 #: includes/Frontend_Endpoints.php:257
 msgid "Your cart has been restored."
 msgstr ""
@@ -4304,24 +4314,24 @@ msgstr ""
 msgid "Your changes couldn't be saved because this link is for a different email address. To use it, sign out first."
 msgstr ""
 
-#: includes/Frontend_Form_Handler.php:178
+#: includes/Frontend_Form_Handler.php:179
 msgid "Your communication preferences were updated."
 msgstr ""
 
-#: includes/Frontend_Form_Handler.php:193
+#: includes/Frontend_Form_Handler.php:195
 msgid "Please enter a valid email address."
 msgstr ""
 
-#: includes/Frontend_Form_Handler.php:211
-msgid "Thanks! We've received your request. If your subscription still needs confirming, we've emailed you a link to complete it."
-msgstr ""
-
-#: includes/Frontend_Form_Handler.php:242
+#: includes/Frontend_Form_Handler.php:244
 msgid "Thanks! We've received your request to receive marketing communications."
 msgstr ""
 
-#: includes/Frontend_Form_Handler.php:244
+#: includes/Frontend_Form_Handler.php:246
 msgid "Thanks! We've received your request to stop receiving marketing communications."
+msgstr ""
+
+#: includes/Frontend_Form_Handler.php:318
+msgid "Your subscription didn't change because we couldn't send the confirmation email. Please try again later."
 msgstr ""
 
 #. translators: 1: Deprecated class name, 2: Version number, 3: Replacement class name.
@@ -4516,21 +4526,37 @@ msgstr ""
 msgid "Create workflow"
 msgstr ""
 
-#: includes/Optin_Confirmation.php:230
+#: includes/Optin_Confirmation.php:195
+msgid "Your email address changed, so your subscription ended. To subscribe, please opt in again."
+msgstr ""
+
+#: includes/Optin_Confirmation.php:204
+msgid "Your email address changed, so please confirm your subscription. We've emailed a link to your new address."
+msgstr ""
+
+#: includes/Optin_Confirmation.php:206
+msgid "Your email address changed, so your subscription is paused. We couldn't send the confirmation email."
+msgstr ""
+
+#: includes/Optin_Confirmation.php:213
+msgid "Your email address changed, so your earlier confirmation link no longer works. To subscribe, please opt in again."
+msgstr ""
+
+#: includes/Optin_Confirmation.php:535
 msgid "Thanks for signing up. Please confirm your subscription by opening the link below."
 msgstr ""
 
-#: includes/Optin_Confirmation.php:231
-#: includes/Optin_Confirmation.php:241
+#: includes/Optin_Confirmation.php:536
+#: includes/Optin_Confirmation.php:547
 #: templates/optin-confirmation.php:26
 msgid "Confirm your subscription"
 msgstr ""
 
-#: includes/Optin_Confirmation.php:232
+#: includes/Optin_Confirmation.php:537
 msgid "If you didn't request this, you can ignore this email."
 msgstr ""
 
-#: includes/Optin_Confirmation.php:240
+#: includes/Optin_Confirmation.php:546
 msgid "Please confirm your subscription"
 msgstr ""
 
@@ -4724,15 +4750,15 @@ msgstr ""
 msgid "Removed saved cart."
 msgstr ""
 
-#: includes/Privacy_Erasers.php:211
+#: includes/Privacy_Erasers.php:212
 msgid "Removed AutomateWoo user meta."
 msgstr ""
 
-#: includes/Privacy_Erasers.php:239
+#: includes/Privacy_Erasers.php:240
 msgid "Removed user tags."
 msgstr ""
 
-#: includes/Privacy_Erasers.php:274
+#: includes/Privacy_Erasers.php:275
 msgid "Removed AutomateWoo customer object."
 msgstr ""
 
@@ -7629,11 +7655,11 @@ msgstr ""
 msgid "Displays the booking's unique ID."
 msgstr ""
 
-#: includes/Variables/BookingPersons.php:22
+#: includes/Variables/BookingPersons.php:23
 msgid "Shows the number of persons for the booking (if applicable). If the booking has multiple person types the number of persons will be listed for each type."
 msgstr ""
 
-#: includes/Variables/BookingResource.php:21
+#: includes/Variables/BookingResource.php:22
 msgid "Displays any resources included in the booking."
 msgstr ""
 
@@ -8834,27 +8860,27 @@ msgstr ""
 msgid "You are managing preferences for %s."
 msgstr ""
 
-#: templates/communication-preferences/communication-preferences-list.php:44
+#: templates/communication-preferences/communication-preferences-list.php:48
 msgid "Updates about products and promotions"
 msgstr ""
 
-#: templates/communication-preferences/communication-preferences-list.php:45
+#: templates/communication-preferences/communication-preferences-list.php:49
 msgid "Receive marketing communications that we think you will be interested in."
 msgstr ""
 
-#: templates/communication-preferences/communication-preferences-list.php:65
+#: templates/communication-preferences/communication-preferences-list.php:69
 msgid "Email open and click tracking"
 msgstr ""
 
-#: templates/communication-preferences/communication-preferences-list.php:66
+#: templates/communication-preferences/communication-preferences-list.php:70
 msgid "Allow us to record when you open our emails and when you click links in them. Turning this off does not change which emails you receive."
 msgstr ""
 
-#: templates/communication-preferences/communication-preferences-list.php:83
+#: templates/communication-preferences/communication-preferences-list.php:87
 msgid "Account and order information"
 msgstr ""
 
-#: templates/communication-preferences/communication-preferences-list.php:84
+#: templates/communication-preferences/communication-preferences-list.php:88
 msgid "Receive important information about your orders and account."
 msgstr ""
 

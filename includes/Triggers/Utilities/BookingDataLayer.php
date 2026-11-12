@@ -39,6 +39,7 @@ trait BookingDataLayer {
 	protected function generate_booking_data_layer( WC_Booking $booking ): Data_Layer {
 		// First try to retrieve customer from order.
 		$order = $booking->get_order();
+		$order = $order instanceof WC_Order ? $order : false;
 		// Bookings can be made without an order, so there's no need to log if the customer isn't found through the order.
 		$log_error = false;
 		$customer  = Customer_Factory::get_by_order( $order, true, $log_error );

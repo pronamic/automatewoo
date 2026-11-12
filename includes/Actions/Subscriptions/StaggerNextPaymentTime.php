@@ -264,6 +264,6 @@ class StaggerNextPaymentTime extends AbstractEditItem {
 			]
 		);
 
-		return $query->posts;
+		return $query->posts ?? [];
 	}
 }

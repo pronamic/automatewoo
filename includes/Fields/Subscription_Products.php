@@ -51,15 +51,22 @@ class Subscription_Products extends Select {
 			]
 		);
 
-		foreach ( $query->posts as $subscription_post ) {
+		foreach ( $query->posts ?? [] as $subscription_post ) {
 			$product = wc_get_product( $subscription_post );
+
+			if ( ! $product ) {
+				continue;
+			}
 
 			$options[ $product->get_id() ] = $product->get_formatted_name();
 
 			if ( $product->is_type( 'variable-subscription' ) ) {
 				foreach ( $product->get_children() as $variation_id ) {
-					$variation                = wc_get_product( $variation_id );
-					$options[ $variation_id ] = $variation->get_formatted_name();
+					$variation = wc_get_product( $variation_id );
+
+					if ( $variation ) {
+						$options[ $variation_id ] = $variation->get_formatted_name();
+					}
 				}
 			}
 		}

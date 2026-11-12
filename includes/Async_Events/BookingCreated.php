@@ -7,6 +7,7 @@ use AutomateWoo\Exceptions\Exception as ExceptionInterface;
 use AutomateWoo\Logger;
 use AutomateWoo\Proxies\Bookings;
 use WC_Booking;
+use WC_Order;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -67,7 +68,7 @@ class BookingCreated extends Abstract_Async_Event {
 			// When a booking is created without an order and customer, it's not possible to run the workflow,
 			// it  will only log errors as the data layer needs a customer to run the workflow.
 			// See BookingDataLayer::generate_booking_data_layer
-			if ( ( ! $booking->get_order() || ! is_a( $booking->get_order(), 'WC_Order' ) ) && ! $booking->get_customer_id() && $booking->get_status() === 'confirmed' ) {
+			if ( ! $booking->get_order() instanceof WC_Order && ! $booking->get_customer_id() && $booking->get_status() === 'confirmed' ) {
 				return;
 			}
 
@@ -151,7 +152,7 @@ class BookingCreated extends Abstract_Async_Event {
 			return;
 		}
 
-		$booking->update_meta_data( $meta_key, true );
+		$booking->update_meta_data( $meta_key, '1' );
 		$booking->save();
 
 		// Dispatch actual async hook

@@ -45,6 +45,10 @@ class OrderIsCustomersFirst extends Abstract_Bool {
 			aw_get_draft_order_statuses()
 		);
 
+		// An order without a creation date is not dated yet, so it counts as the newest.
+		$date      = $order->get_date_created();
+		$timestamp = $date ? $date->getTimestamp() : time();
+
 		$orders = wc_get_orders(
 			[
 				'type'         => 'shop_order',
@@ -53,7 +57,7 @@ class OrderIsCustomersFirst extends Abstract_Bool {
 				'limit'        => 1,
 				'return'       => 'ids',
 				'exclude'      => [ $order->get_id() ],
-				'date_created' => '<' . $order->get_date_created()->getTimestamp(),
+				'date_created' => '<' . $timestamp,
 			]
 		);
 

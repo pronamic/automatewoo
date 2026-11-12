@@ -28,10 +28,10 @@ class Marketing_Optin_Block implements IntegrationInterface {
 	 * When called invokes any initialization/setup for the integration.
 	 */
 	public function initialize() {
-		$script_path = WC()->plugin_path() . '/assets/js/build/marketing-optin-block-frontend.js';
+		$script_path = AW()->path( '/assets/js/build/marketing-optin-block-frontend.js' );
 		$script_url  = AW()->url( '/assets/js/build/marketing-optin-block-frontend.js' );
 
-		$script_asset_path = WC()->plugin_path() . '/assets/js/build/marketing-optin-block-frontend.asset.php';
+		$script_asset_path = AW()->path( '/assets/js/build/marketing-optin-block-frontend.asset.php' );
 		$script_asset      = file_exists( $script_asset_path )
 			? require $script_asset_path
 			: array(
@@ -41,7 +41,7 @@ class Marketing_Optin_Block implements IntegrationInterface {
 
 		wp_register_script(
 			'automatewoo-marketing-optin-block-frontend',
-			$script_url,
+			$script_url ?: false,
 			$script_asset['dependencies'],
 			$script_asset['version'],
 			true

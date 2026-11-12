@@ -634,7 +634,7 @@ function aw_date_to_mysql_string( $date ) {
  *
  * @since 4.4.0
  *
- * @param WC_DateTime|DateTime|AutomateWoo\DateTime|string $input
+ * @param WC_DateTime|DateTime|AutomateWoo\DateTime|string|int $input
  *
  * @return AutomateWoo\DateTime|false
  */

@@ -201,11 +201,14 @@ class Hooks {
 	 * Load plugin frontend pages
 	 */
 	public static function maybe_init_pages() {
-		switch ( get_the_ID() ) {
-			case Options::communication_page_id():
-			case Options::signup_page_id():
-				Communication_Page::init();
-				break;
+		$post_id = (int) get_the_ID();
+
+		if ( ! $post_id ) {
+			return;
+		}
+
+		if ( in_array( $post_id, [ Options::communication_page_id(), Options::signup_page_id() ], true ) ) {
+			Communication_Page::init();
 		}
 	}
 

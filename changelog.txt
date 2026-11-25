@@ -1,5 +1,9 @@
 *** AutomateWoo Changelog ***
 
+2026-11-24 - version 6.9.7
+* Fix - Page caching turned off on 404 pages and empty search results when the Communication signup page is not set.
+* Update - Bump the minimum required WooCommerce version to 11.2 and the compatibility version to 11.3.
+
 2026-11-10 - version 6.9.6
 * Dev - Merge the weekly PHP stubs Dependabot PR on its own once PHPStan passes.
 * Dev - Merge the weekly PHP stubs Dependabot PR when its required checks have already passed.
